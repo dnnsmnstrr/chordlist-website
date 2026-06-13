@@ -117,7 +117,7 @@ export function PianoKeyboard() {
 
   return (
     <div
-      className="relative h-40 w-full select-none overflow-hidden sm:h-56"
+      className="relative h-24 w-full select-none overflow-hidden sm:h-32"
       onPointerDown={() => {
         draggingRef.current = true
       }}
