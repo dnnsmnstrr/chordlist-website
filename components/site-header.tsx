@@ -7,7 +7,7 @@ export function SiteHeader() {
         <span className="flex size-8 items-center justify-center rounded-md bg-foreground text-background">
           <KeySquare className="size-4" aria-hidden="true" />
         </span>
-        <span className="font-mono text-lg font-semibold tracking-tight">Chordlist</span>
+        <span className="font-mono text-lg font-semibold tracking-tight">chordlist</span>
       </div>
       <nav className="flex items-center gap-6 text-sm text-muted-foreground">
         <a href="#features" className="transition-colors hover:text-foreground">

@@ -11,7 +11,7 @@ export function Hero() {
         Your lyrics and chords, written in plain markdown.
       </h1>
       <p className="mx-auto mt-6 max-w-xl text-pretty leading-relaxed text-muted-foreground">
-        Chordlist keeps every song as a simple markdown file on your device. No accounts, no cloud, no lock-in. The data
+        chordlist keeps every song as a simple markdown file on your device. No accounts, no cloud, no lock-in. The data
         is yours and is never shared.
       </p>
       <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
