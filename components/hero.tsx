@@ -8,7 +8,7 @@ export function Hero() {
         Local-first songbook for iOS
       </span>
       <h1 className="mx-auto mt-6 max-w-3xl text-balance text-4xl font-semibold tracking-tight sm:text-6xl">
-        Your lyrics and chords, as files in your folder.
+        Your lyrics and chords, as files in your pocket.
       </h1>
       <p className="mx-auto mt-6 max-w-xl text-pretty leading-relaxed text-muted-foreground">
         chordlist keeps every song as a simple markdown file on your device. No accounts, no cloud, no lock-in. The data
