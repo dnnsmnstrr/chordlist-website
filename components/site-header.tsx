@@ -4,7 +4,9 @@ export function SiteHeader() {
   return (
     <header className="mx-auto flex w-full max-w-5xl items-center justify-between px-6 py-6">
       <div className="flex items-center gap-2">
-        <ChordlistIcon className="h-6 w-auto text-foreground" />
+        <span className="flex size-8 items-center justify-center rounded-md bg-foreground text-background">
+          <ChordlistIcon className="h-4 w-auto" />
+        </span>
         <span className="font-mono text-lg font-semibold tracking-tight">chordlist</span>
       </div>
       <nav className="flex items-center gap-6 text-sm text-muted-foreground">
