@@ -4,8 +4,8 @@ export function SiteHeader() {
   return (
     <header className="mx-auto flex w-full max-w-5xl items-center justify-between px-6 py-6">
       <div className="flex items-center gap-2">
-        <span className="flex size-8 items-center justify-center rounded-md bg-foreground text-background">
-          <ChordlistIcon className="h-4 w-auto" />
+        <span className="flex size-8 items-center justify-center overflow-hidden rounded-md bg-foreground text-background">
+          <ChordlistIcon className="h-full w-full" />
         </span>
         <span className="font-mono text-lg font-semibold tracking-tight">chordlist</span>
       </div>

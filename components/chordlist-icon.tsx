@@ -10,6 +10,7 @@ export function ChordlistIcon(props: SVGProps<SVGSVGElement>) {
     <svg
       viewBox="0 0 270 613"
       fill="currentColor"
+      preserveAspectRatio="none"
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden="true"
       {...props}
