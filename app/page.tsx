@@ -14,7 +14,12 @@ export default function Page() {
 
       <footer className="mx-auto flex w-full max-w-5xl flex-col items-center justify-between gap-4 px-6 py-10 text-sm text-muted-foreground sm:flex-row">
         <span className="font-mono">chordlist</span>
-        <span>Local-first. No lock-in. Your data, always.</span>
+        <div className="flex items-center gap-6">
+          <a href="/privacy" className="transition-colors hover:text-foreground">
+            Privacy
+          </a>
+          <span>Local-first. No lock-in. Your data, always.</span>
+        </div>
       </footer>
 
       <section id="keys" aria-label="Interactive piano keyboard" className="w-full border-t border-border">
