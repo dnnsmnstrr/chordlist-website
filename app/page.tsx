@@ -18,6 +18,14 @@ export default function Page() {
           <a href="/privacy" className="transition-colors hover:text-foreground">
             Privacy
           </a>
+          <a
+            href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="transition-colors hover:text-foreground"
+          >
+            Terms
+          </a>
           <span>Local-first. No lock-in. Your data, always.</span>
         </div>
       </footer>
