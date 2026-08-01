@@ -7,8 +7,16 @@ import { Button } from "@/components/ui/button"
 const SAMPLE_SONG_FILE = "morning-light.md"
 const SAMPLE_SONG_URL = `/songs/${SAMPLE_SONG_FILE}`
 
+/** Split YAML frontmatter from the song body so each can be styled on its own. */
+function splitFrontmatter(source: string) {
+  const match = source.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/)
+  if (!match) return { frontmatter: null, body: source.trim() }
+  return { frontmatter: match[1].trim(), body: match[2].trim() }
+}
+
 export async function LyricPreview() {
   const source = await readFile(path.join(process.cwd(), "public", "songs", SAMPLE_SONG_FILE), "utf8")
+  const { frontmatter, body } = splitFrontmatter(source)
 
   return (
     <section id="preview" className="mx-auto w-full max-w-5xl px-6 py-20">
@@ -19,29 +27,40 @@ export async function LyricPreview() {
       </p>
 
       <div className="mt-8 overflow-hidden rounded-xl border border-border">
-        <div className="flex items-center gap-2 border-b border-border bg-muted px-4 py-3">
-          <span className="size-3 rounded-full border border-border" />
-          <span className="size-3 rounded-full border border-border" />
-          <span className="size-3 rounded-full border border-border" />
-          <span className="ml-2 font-mono text-xs text-muted-foreground">{SAMPLE_SONG_FILE}</span>
+        <div className="flex items-center justify-between gap-3 border-b border-border bg-muted px-4 py-3">
+          <div className="flex min-w-0 items-center gap-2">
+            <span className="size-3 shrink-0 rounded-full border border-border" />
+            <span className="size-3 shrink-0 rounded-full border border-border" />
+            <span className="size-3 shrink-0 rounded-full border border-border" />
+            <span className="ml-2 truncate font-mono text-xs text-muted-foreground">{SAMPLE_SONG_FILE}</span>
+          </div>
+          <Button
+            size="sm"
+            variant="outline"
+            nativeButton={false}
+            render={
+              <a href={SAMPLE_SONG_URL} download={SAMPLE_SONG_FILE} aria-label="Download sample song">
+                <Download aria-hidden="true" />
+                <span className="hidden sm:inline">Download</span>
+              </a>
+            }
+          />
         </div>
+
+        {frontmatter ? (
+          <div className="border-b border-border bg-muted/40 px-6 py-4">
+            <pre className="overflow-x-auto font-mono text-xs leading-relaxed text-muted-foreground">
+              {`---\n${frontmatter}\n---`}
+            </pre>
+          </div>
+        ) : null}
+
         <pre className="overflow-x-auto bg-background p-6 font-mono text-sm leading-relaxed text-foreground">
-          {source.trimEnd()}
+          {body}
         </pre>
       </div>
 
-      <div className="mt-6 flex flex-wrap items-center gap-3">
-        <Button
-          nativeButton={false}
-          render={
-            <a href={SAMPLE_SONG_URL} download={SAMPLE_SONG_FILE}>
-              <Download className="size-4" aria-hidden="true" />
-              Download sample song
-            </a>
-          }
-        />
-        <span className="text-sm text-muted-foreground">Plain markdown, 1 KB, yours to keep.</span>
-      </div>
+      <p className="mt-4 text-sm text-muted-foreground">Plain markdown, yours to keep.</p>
     </section>
   )
 }
