@@ -17,6 +17,9 @@ export function SiteFooter({ compact = false }: { compact?: boolean }) {
         aria-label={commonCopy.navigation.footerLabel}
         className="flex flex-wrap items-center justify-center gap-x-5 gap-y-3"
       >
+        <Link href="/docs" className="transition-colors hover:text-foreground">
+          {commonCopy.navigation.docs}
+        </Link>
         <Link href="/faq" className="transition-colors hover:text-foreground">
           {commonCopy.navigation.faq}
         </Link>

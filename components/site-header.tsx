@@ -19,6 +19,9 @@ export function SiteHeader() {
         <span className="font-mono text-lg font-semibold tracking-tight">{siteConfig.name}</span>
       </Link>
       <nav className="flex items-center gap-4 text-sm text-muted-foreground sm:gap-6">
+        <Link href="/docs" className="transition-colors hover:text-foreground">
+          {commonCopy.navigation.docs}
+        </Link>
         <Link href="/#features" className="hidden transition-colors hover:text-foreground sm:inline">
           {commonCopy.navigation.features}
         </Link>

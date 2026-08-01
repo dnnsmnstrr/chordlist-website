@@ -22,6 +22,7 @@ export const commonCopy = {
     homeLabel: `${siteConfig.name} home`,
     features: "Features",
     footerLabel: "Footer",
+    docs: "Docs",
     faq: "FAQ",
     press: "Press",
     privacy: "Privacy",
@@ -102,6 +103,155 @@ export const homeCopy = {
     downloadLabel: "Download sample song",
     frontmatterHelp:
       "Frontmatter: metadata about the song stored at the top of the file. Used by the app to track chord progressions and other song details.",
+  },
+} as const
+
+export const docsCopy = {
+  metadata: {
+    title: "Documentation",
+    description: `Learn how to use ${siteConfig.name}, organize its Markdown files, work with Obsidian, and keep an iCloud song folder available offline.`,
+  },
+  title: "Documentation",
+  introduction: `${siteConfig.name} is a songbook built on ordinary Markdown files. This guide covers the main features and the ways you can organize, edit, sync, and back up those files outside the app.`,
+  onThisPage: "On this page",
+  tableOfContents: [
+    { href: "#getting-started", label: "Getting started" },
+    { href: "#library", label: "Organize and find songs" },
+    { href: "#playing", label: "Play from your songbook" },
+    { href: "#adding-songs", label: "Add and import songs" },
+    { href: "#file-format", label: "File and folder format" },
+    { href: "#other-apps", label: "Manage files with other apps" },
+    { href: "#obsidian", label: "Use chordlist with Obsidian" },
+    { href: "#offline", label: "Keep an iCloud folder offline" },
+  ],
+  sections: {
+    gettingStarted: {
+      title: "Getting started",
+      paragraphs: [
+        `The first time you open ${siteConfig.name}, choose the folder that will contain your song library. You can use a folder under On My iPhone or On My iPad for device-only storage, or choose iCloud Drive when you want Apple's file service to sync the library between your devices.`,
+        `You can change the selected folder later under Settings → Songs Folder. ${siteConfig.name} remembers permission to that folder and scans it again when the app returns to the foreground. Pull down on the song list to refresh immediately after making changes elsewhere.`,
+      ],
+    },
+    library: {
+      title: "Organize and find songs",
+      features: [
+        {
+          title: "Search and filter",
+          body: "Search song titles, artists, and tags together. Tag filters can narrow the library further, and you can hide or reorder tags from the app's settings.",
+        },
+        {
+          title: "Sort the library",
+          body: "Group songs by artist or title, or sort them using when they were last played and how many times they have been played.",
+        },
+        {
+          title: "Shuffle",
+          body: "Open a random song from the currently filtered library when you want a prompt for practice or a set.",
+        },
+        {
+          title: "Now Playing",
+          body: "If you connect Apple Music, chordlist can match the currently playing title and artist to a song already in your library.",
+        },
+      ],
+    },
+    playing: {
+      title: "Play from your songbook",
+      features: [
+        {
+          title: "Autoscroll",
+          body: "Start and pause automatic lyric scrolling from the song view. A speed control adjusts the pace, and the global multiplier in Settings lets you tune every speed to your preference.",
+        },
+        {
+          title: "Transpose chords",
+          body: "Tap the chord progression to move it up or down by semitones while you play. Transposition changes the current view and resets when you leave the song; it does not rewrite the source file.",
+        },
+        {
+          title: "Keep the session moving",
+          body: "Move back through songs opened during the current session or skip to another random song without returning to the library.",
+        },
+        {
+          title: "Matching progressions",
+          body: "Songs with the same normalized chord progression appear together, making it easier to find transitions, medleys, and mashups.",
+        },
+        {
+          title: "Play history",
+          body: "Mark a song as played to update its play count and last-played date. These values are stored in the song file and can be used to sort the library.",
+        },
+      ],
+    },
+    addingSongs: {
+      title: "Add and import songs",
+      paragraphs: [
+        "Create a song by entering its title, artist, lyrics, and optional chord progression and tags. The app creates the artist folder and Markdown file for you.",
+        "You can also paste a lyrics or tab URL, share a supported webpage to chordlist, or start from the track currently playing in Apple Music. Always review imported material before saving and make sure you have the right to use it.",
+      ],
+    },
+    fileFormat: {
+      title: "File and folder format",
+      introduction: `${siteConfig.name} reads Markdown files one level below the selected songs folder. The artist comes from the folder name and the song title comes from the filename.`,
+      fileTreeLabel: "Example folder structure",
+      fileTree: "Songs/\n├── The Beatles/\n│   └── Let It Be.md\n└── Tracy Chapman/\n    └── Fast Car.md",
+      markdownLabel: "Example song file",
+      markdown:
+        "---\nchords: C G Am F\ntags:\n  - ballad\n  - piano\n---\n\n[Verse]\nC              G\nLyrics go here…",
+      notes: [
+        "Only .md files inside an artist folder are treated as songs.",
+        "The Markdown body contains the lyrics and any inline chord notation you want to display.",
+        "chords and tags are optional YAML frontmatter fields used by the app.",
+        "playCount and lastPlay are maintained by chordlist when you mark a song as played.",
+        "Other YAML frontmatter is preserved when chordlist edits the file, so metadata added by another tool can live alongside the app's fields.",
+      ],
+    },
+    otherApps: {
+      title: "Manage files with other apps",
+      introduction:
+        "Because the library is made of folders and text files, chordlist is not the only way to work with it. Close or leave the song editor before changing the same file elsewhere, then refresh the library when you return.",
+      options: [
+        {
+          title: "Files and Finder",
+          body: "Rename, move, duplicate, share, or back up songs with Apple's Files app or Finder. Remember that moving a file changes its title or artist when its filename or parent folder changes.",
+        },
+        {
+          title: "Markdown editors",
+          body: "Open a song in any editor that can write plain Markdown. Keep the Artist/Song.md structure intact and use UTF-8 text for the most predictable results.",
+        },
+        {
+          title: "Backups and version control",
+          body: "Copy the complete songs folder to another drive or backup service. On a computer, you can also use Git to keep a version history of every text change.",
+        },
+      ],
+    },
+    obsidian: {
+      title: `Use ${siteConfig.name} with Obsidian`,
+      introduction:
+        "An Obsidian vault is also a folder of Markdown files, so the same folder can serve as both an Obsidian vault and a chordlist library.",
+      steps: [
+        "On iPhone or iPad, create an Obsidian vault with Store in iCloud enabled. Obsidian's mobile documentation requires iCloud vaults to live under iCloud Drive/Obsidian/[Vault Name].",
+        `In ${siteConfig.name}, open Settings → Songs Folder and select that vault folder.`,
+        "Inside the vault, create one folder per artist and keep each song as Artist/Song Title.md. Obsidian's hidden .obsidian settings folder is ignored by chordlist.",
+        "Edit lyrics and frontmatter in either app. Return to chordlist and pull down on the library if an external edit has not appeared yet.",
+      ],
+      note: "On macOS, Obsidian can open an existing chordlist folder directly as a vault. On iPhone and iPad, the vault must be inside Obsidian's designated iCloud Drive folder, so it is usually easiest to create or move the vault there first and then select it in chordlist.",
+      helpLink: "Read Obsidian's iCloud setup guide",
+    },
+    offline: {
+      title: "Keep an iCloud folder available offline",
+      introduction:
+        "An iCloud Drive folder can be visible in Files while some of its contents are stored only in the cloud. Mark the songs folder as downloaded before a rehearsal, trip, or performance where you may not have a connection.",
+      steps: [
+        "Open the Files app on the iPhone or iPad you will use.",
+        "Choose Browse, then open iCloud Drive.",
+        "Find the songs folder—or the Obsidian vault folder if you use Obsidian—and touch and hold it.",
+        "Choose Keep Downloaded. Files downloads the folder's contents and keeps them available on that device.",
+        "Wait for any cloud download indicators to disappear before going offline, then open chordlist once to confirm the library is available.",
+      ],
+      notes: [
+        "Repeat this on every iPhone or iPad that needs offline access; the setting is device-specific.",
+        "If Keep Downloaded is not shown, the item may already be stored on the device.",
+        "Changes made offline sync back to iCloud after the device reconnects. Avoid editing the same song on two offline devices at once, because the file provider may create a conflict.",
+        "Keep Downloaded improves availability but is not a backup. Keep a separate copy of important libraries.",
+      ],
+      appleLink: "Read Apple's Keep Downloaded instructions",
+    },
   },
 } as const
 
