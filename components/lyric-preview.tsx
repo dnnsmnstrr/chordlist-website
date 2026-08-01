@@ -59,8 +59,6 @@ export async function LyricPreview() {
           {body}
         </pre>
       </div>
-
-      <p className="mt-4 text-sm text-muted-foreground">Plain markdown, yours to keep.</p>
     </section>
   )
 }
