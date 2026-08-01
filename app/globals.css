@@ -167,3 +167,25 @@
     @apply font-sans;
   }
 }
+
+.system-theme-dark {
+  display: none;
+}
+
+.dark .system-theme-light {
+  display: none;
+}
+
+.dark .system-theme-dark {
+  display: flex;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) .system-theme-light {
+    display: none;
+  }
+
+  :root:not(.light) .system-theme-dark {
+    display: flex;
+  }
+}

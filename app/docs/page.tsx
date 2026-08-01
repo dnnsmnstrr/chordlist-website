@@ -90,7 +90,7 @@ export default function DocsPage() {
 
 function DocsSection({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
   return (
-    <section id={id} className="scroll-mt-8">
+    <section id={id} className="scroll-mt-24 lg:scroll-mt-8">
       <h2 className="text-balance text-2xl font-semibold tracking-tight">{title}</h2>
       <div className="mt-5 flex flex-col gap-5 leading-relaxed text-muted-foreground">{children}</div>
     </section>

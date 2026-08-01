@@ -3,15 +3,18 @@ import { homeCopy } from "@/locales/en"
 
 const screenshots: readonly Screenshot[] = [
   {
-    src: "/app-screenshots/light/01-Song-List---4-Chord-Library.png",
+    lightSrc: "/app-screenshots/light/01-Song-List---4-Chord-Library.png",
+    darkSrc: "/app-screenshots/dark/01-Song-List---4-Chord-Library.png",
     ...homeCopy.showcase.screenshots[0],
   },
   {
-    src: "/app-screenshots/light/02-Song-Detail---Matching-Suggestions.png",
+    lightSrc: "/app-screenshots/light/02-Song-Detail---Matching-Suggestions.png",
+    darkSrc: "/app-screenshots/dark/02-Song-Detail---Matching-Suggestions.png",
     ...homeCopy.showcase.screenshots[1],
   },
   {
-    src: "/app-screenshots/light/03-Creation-Flow---New-Song.png",
+    lightSrc: "/app-screenshots/light/03-Creation-Flow---New-Song.png",
+    darkSrc: "/app-screenshots/dark/03-Creation-Flow---New-Song.png",
     ...homeCopy.showcase.screenshots[2],
   },
 ]

@@ -1,13 +1,14 @@
 "use client"
 
 import { useCallback, useEffect, useRef, useState } from "react"
-import Image from "next/image"
+import Image, { getImageProps } from "next/image"
 import { ChevronLeft, ChevronRight, Download, X } from "lucide-react"
 
 import { screenshotGalleryCopy } from "@/locales/en"
 
 export type Screenshot = {
-  src: string
+  lightSrc: string
+  darkSrc: string
   title: string
   description: string
 }
@@ -77,7 +78,7 @@ export function ScreenshotGallery({ screenshots, variant = "press" }: Screenshot
         }
       >
         {screenshots.map((screenshot, index) => (
-          <li key={screenshot.src} className={isShowcase ? "min-w-0" : "flex flex-col gap-3"}>
+          <li key={screenshot.lightSrc} className={isShowcase ? "min-w-0" : "flex flex-col gap-3"}>
             <button
               type="button"
               onClick={(event) => {
@@ -91,11 +92,8 @@ export function ScreenshotGallery({ screenshots, variant = "press" }: Screenshot
                   : "block w-full cursor-zoom-in overflow-hidden rounded-xl border border-border bg-muted transition-colors hover:border-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               }
             >
-              <Image
-                src={screenshot.src}
-                alt={screenshot.title}
-                width={1170}
-                height={2532}
+              <ThemeScreenshot
+                screenshot={screenshot}
                 sizes={isShowcase ? "(max-width: 640px) 30vw, 300px" : "(max-width: 640px) 45vw, 220px"}
                 className="h-auto w-full"
               />
@@ -118,9 +116,17 @@ export function ScreenshotGallery({ screenshots, variant = "press" }: Screenshot
             </p>
             <div className="flex items-center gap-2">
               <a
-                href={active.src}
+                href={active.lightSrc}
                 download
-                className="flex size-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="system-theme-light flex size-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                aria-label={screenshotGalleryCopy.download(active.title)}
+              >
+                <Download className="size-4" aria-hidden="true" />
+              </a>
+              <a
+                href={active.darkSrc}
+                download
+                className="system-theme-dark size-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 aria-label={screenshotGalleryCopy.download(active.title)}
               >
                 <Download className="size-4" aria-hidden="true" />
@@ -144,11 +150,8 @@ export function ScreenshotGallery({ screenshots, variant = "press" }: Screenshot
               onClick={() => step(-1)}
               disabled={count < 2}
             />
-            <Image
-              src={active.src}
-              alt={active.title}
-              width={1170}
-              height={2532}
+            <ThemeScreenshot
+              screenshot={active}
               sizes="(max-width: 640px) 75vw, 420px"
               className="max-h-full min-h-0 w-auto max-w-full rounded-xl border border-border object-contain"
             />
@@ -171,6 +174,38 @@ export function ScreenshotGallery({ screenshots, variant = "press" }: Screenshot
         </div>
       ) : null}
     </>
+  )
+}
+
+function ThemeScreenshot({
+  screenshot,
+  sizes,
+  className,
+}: {
+  screenshot: Screenshot
+  sizes: string
+  className: string
+}) {
+  const { props: darkImageProps } = getImageProps({
+    src: screenshot.darkSrc,
+    alt: screenshot.title,
+    width: 1170,
+    height: 2532,
+    sizes,
+  })
+
+  return (
+    <picture className="contents">
+      <source media="(prefers-color-scheme: dark)" srcSet={darkImageProps.srcSet} sizes={darkImageProps.sizes} />
+      <Image
+        src={screenshot.lightSrc}
+        alt={screenshot.title}
+        width={1170}
+        height={2532}
+        sizes={sizes}
+        className={className}
+      />
+    </picture>
   )
 }
 

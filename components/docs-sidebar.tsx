@@ -1,6 +1,7 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
+import { ChevronDown } from "lucide-react"
 
 type DocsSidebarItem = {
   href: string
@@ -14,6 +15,8 @@ type DocsSidebarProps = {
 
 export function DocsSidebar({ title, items }: DocsSidebarProps) {
   const [activeHref, setActiveHref] = useState(items[0]?.href ?? "")
+  const mobileDetailsRef = useRef<HTMLDetailsElement>(null)
+  const activeItem = items.find((item) => item.href === activeHref) ?? items[0]
 
   useEffect(() => {
     const sections = items
@@ -61,38 +64,87 @@ export function DocsSidebar({ title, items }: DocsSidebarProps) {
     }
   }, [items])
 
+  function selectItem(href: string, collapseMobile = false) {
+    setActiveHref(href)
+
+    if (collapseMobile && mobileDetailsRef.current) {
+      mobileDetailsRef.current.open = false
+    }
+  }
+
   return (
-    <aside className="lg:sticky lg:top-8">
+    <aside className="sticky top-2 z-30 self-start lg:top-8">
+      <details
+        ref={mobileDetailsRef}
+        className="group overflow-hidden rounded-xl border border-border bg-background/95 shadow-sm backdrop-blur-sm lg:hidden"
+      >
+        <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-4 py-3 marker:content-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring [&::-webkit-details-marker]:hidden">
+          <span className="min-w-0">
+            <span className="block font-mono text-[0.65rem] uppercase tracking-widest text-muted-foreground">
+              {title}
+            </span>
+            <span className="mt-0.5 block truncate text-sm font-medium text-foreground">{activeItem?.label}</span>
+          </span>
+          <ChevronDown
+            aria-hidden="true"
+            className="size-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180"
+          />
+        </summary>
+        <nav aria-label={title} className="max-h-[min(70vh,32rem)] overflow-y-auto border-t border-border p-2">
+          <DocsSidebarLinks
+            items={items}
+            activeHref={activeHref}
+            onSelect={(href) => selectItem(href, true)}
+          />
+        </nav>
+      </details>
+
       <nav
         aria-labelledby="docs-contents-title"
-        className="rounded-xl border border-border bg-muted/40 p-5 lg:rounded-none lg:border-0 lg:border-l lg:bg-transparent lg:py-1 lg:pr-0 lg:pl-5"
+        className="hidden border-l border-border py-1 pl-5 lg:block"
       >
         <h2 id="docs-contents-title" className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
           {title}
         </h2>
-        <ol className="mt-4 grid gap-x-6 gap-y-1 text-sm sm:grid-cols-2 lg:grid-cols-1">
-          {items.map((item) => {
-            const isActive = activeHref === item.href
-
-            return (
-              <li key={item.href}>
-                <a
-                  href={item.href}
-                  aria-current={isActive ? "location" : undefined}
-                  onClick={() => setActiveHref(item.href)}
-                  className={`block rounded-md px-2 py-1.5 leading-snug underline-offset-4 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
-                    isActive
-                      ? "bg-background font-medium text-foreground shadow-sm ring-1 ring-border"
-                      : "text-muted-foreground hover:text-foreground hover:underline"
-                  }`}
-                >
-                  {item.label}
-                </a>
-              </li>
-            )
-          })}
-        </ol>
+        <DocsSidebarLinks items={items} activeHref={activeHref} onSelect={selectItem} className="mt-4" />
       </nav>
     </aside>
+  )
+}
+
+function DocsSidebarLinks({
+  items,
+  activeHref,
+  onSelect,
+  className = "",
+}: {
+  items: readonly DocsSidebarItem[]
+  activeHref: string
+  onSelect: (href: string) => void
+  className?: string
+}) {
+  return (
+    <ol className={`${className} grid gap-1 text-sm`}>
+      {items.map((item) => {
+        const isActive = activeHref === item.href
+
+        return (
+          <li key={item.href}>
+            <a
+              href={item.href}
+              aria-current={isActive ? "location" : undefined}
+              onClick={() => onSelect(item.href)}
+              className={`block rounded-md px-2 py-1.5 leading-snug underline-offset-4 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+                isActive
+                  ? "bg-muted font-medium text-foreground ring-1 ring-border"
+                  : "text-muted-foreground hover:text-foreground hover:underline"
+              }`}
+            >
+              {item.label}
+            </a>
+          </li>
+        )
+      })}
+    </ol>
   )
 }

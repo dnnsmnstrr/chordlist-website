@@ -17,9 +17,9 @@ export function SiteFooter({ compact = false }: { compact?: boolean }) {
         aria-label={commonCopy.navigation.footerLabel}
         className="flex flex-wrap items-center justify-center gap-x-5 gap-y-3"
       >
-        <Link href="/docs" className="transition-colors hover:text-foreground">
-          {commonCopy.navigation.docs}
-        </Link>
+        <a href={`mailto:${siteConfig.contact.support}`} className="transition-colors hover:text-foreground">
+          {commonCopy.navigation.support}
+        </a>
         <Link href="/faq" className="transition-colors hover:text-foreground">
           {commonCopy.navigation.faq}
         </Link>
@@ -30,30 +30,54 @@ export function SiteFooter({ compact = false }: { compact?: boolean }) {
           {commonCopy.navigation.privacy}
         </Link>
         <a
-          href={siteConfig.links.terms}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="transition-colors hover:text-foreground"
-        >
-          {commonCopy.navigation.terms}
-        </a>
-        <a
           href={siteConfig.social.x.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="transition-colors hover:text-foreground"
+          aria-label={commonCopy.navigation.x}
+          className="flex size-8 items-center justify-center rounded-md transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
-          {commonCopy.navigation.x}
+          <XIcon className="size-4" />
         </a>
         <a
           href={siteConfig.social.instagram.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="transition-colors hover:text-foreground"
+          aria-label={commonCopy.navigation.instagram}
+          className="flex size-8 items-center justify-center rounded-md transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
-          {commonCopy.navigation.instagram}
+          <InstagramIcon className="size-4" />
         </a>
       </nav>
     </footer>
+  )
+}
+
+function XIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" className={className}>
+      <path
+        fill="currentColor"
+        d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"
+      />
+    </svg>
+  )
+}
+
+function InstagramIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      className={className}
+    >
+      <rect x="3" y="3" width="18" height="18" rx="5" />
+      <circle cx="12" cy="12" r="4" />
+      <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
+    </svg>
   )
 }
