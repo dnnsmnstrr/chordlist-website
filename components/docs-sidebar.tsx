@@ -15,7 +15,9 @@ type DocsSidebarProps = {
 
 export function DocsSidebar({ title, items }: DocsSidebarProps) {
   const [activeHref, setActiveHref] = useState(items[0]?.href ?? "")
-  const mobileDetailsRef = useRef<HTMLDetailsElement>(null)
+  const [isMobileOpen, setIsMobileOpen] = useState(true)
+  const sidebarRef = useRef<HTMLElement>(null)
+  const hasAutoCollapsed = useRef(false)
   const activeItem = items.find((item) => item.href === activeHref) ?? items[0]
 
   useEffect(() => {
@@ -29,6 +31,16 @@ export function DocsSidebar({ title, items }: DocsSidebarProps) {
 
     function updateActiveSection() {
       animationFrame = 0
+
+      if (
+        !hasAutoCollapsed.current &&
+        window.matchMedia("(max-width: 1023px)").matches &&
+        window.scrollY > 0 &&
+        (sidebarRef.current?.getBoundingClientRect().top ?? Number.POSITIVE_INFINITY) <= 8.5
+      ) {
+        hasAutoCollapsed.current = true
+        setIsMobileOpen(false)
+      }
 
       const isAtPageEnd = window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 2
       let activeSection = isAtPageEnd ? sections.at(-1) : sections[0]
@@ -67,18 +79,21 @@ export function DocsSidebar({ title, items }: DocsSidebarProps) {
   function selectItem(href: string, collapseMobile = false) {
     setActiveHref(href)
 
-    if (collapseMobile && mobileDetailsRef.current) {
-      mobileDetailsRef.current.open = false
+    if (collapseMobile) {
+      setIsMobileOpen(false)
     }
   }
 
   return (
-    <aside className="sticky top-2 z-30 self-start lg:top-8">
-      <details
-        ref={mobileDetailsRef}
-        className="group overflow-hidden rounded-xl border border-border bg-background/95 shadow-sm backdrop-blur-sm lg:hidden"
-      >
-        <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-4 py-3 marker:content-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring [&::-webkit-details-marker]:hidden">
+    <aside ref={sidebarRef} className="sticky top-2 z-30 self-start lg:top-8">
+      <div className="overflow-hidden rounded-xl border border-border bg-background/95 shadow-sm backdrop-blur-sm lg:hidden">
+        <button
+          type="button"
+          aria-expanded={isMobileOpen}
+          aria-controls="docs-mobile-navigation"
+          onClick={() => setIsMobileOpen((isOpen) => !isOpen)}
+          className="flex w-full cursor-pointer items-center justify-between gap-4 px-4 py-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
+        >
           <span className="min-w-0">
             <span className="block font-mono text-[0.65rem] uppercase tracking-widest text-muted-foreground">
               {title}
@@ -87,17 +102,35 @@ export function DocsSidebar({ title, items }: DocsSidebarProps) {
           </span>
           <ChevronDown
             aria-hidden="true"
-            className="size-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180"
+            className={`size-4 shrink-0 text-muted-foreground transition-transform duration-300 motion-reduce:transition-none ${
+              isMobileOpen ? "rotate-180" : ""
+            }`}
           />
-        </summary>
-        <nav aria-label={title} className="max-h-[min(70vh,32rem)] overflow-y-auto border-t border-border p-2">
-          <DocsSidebarLinks
-            items={items}
-            activeHref={activeHref}
-            onSelect={(href) => selectItem(href, true)}
-          />
-        </nav>
-      </details>
+        </button>
+        <div
+          id="docs-mobile-navigation"
+          aria-hidden={!isMobileOpen}
+          inert={isMobileOpen ? undefined : true}
+          className={`grid transition-[grid-template-rows] duration-300 ease-out motion-reduce:transition-none ${
+            isMobileOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+          }`}
+        >
+          <div className="min-h-0 overflow-hidden">
+            <nav
+              aria-label={title}
+              className={`max-h-[min(70vh,32rem)] overflow-y-auto border-t border-border p-2 transition-opacity duration-200 motion-reduce:transition-none ${
+                isMobileOpen ? "opacity-100" : "opacity-0"
+              }`}
+            >
+              <DocsSidebarLinks
+                items={items}
+                activeHref={activeHref}
+                onSelect={(href) => selectItem(href, true)}
+              />
+            </nav>
+          </div>
+        </div>
+      </div>
 
       <nav
         aria-labelledby="docs-contents-title"
