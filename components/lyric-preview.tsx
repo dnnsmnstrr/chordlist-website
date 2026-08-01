@@ -1,6 +1,6 @@
 import { readFile } from "node:fs/promises"
 import path from "node:path"
-import { Download } from "lucide-react"
+import { Download, HelpCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 /** Single source of truth: the same file visitors download. */
@@ -49,9 +49,16 @@ export async function LyricPreview() {
 
         {frontmatter ? (
           <div className="border-b border-border bg-muted/40 px-6 py-4">
-            <pre className="overflow-x-auto font-mono text-xs leading-relaxed text-muted-foreground">
-              {`---\n${frontmatter}\n---`}
-            </pre>
+            <div className="flex items-start justify-between gap-3">
+              <pre className="overflow-x-auto font-mono text-xs leading-relaxed text-muted-foreground">
+                {frontmatter}
+              </pre>
+              <HelpCircle
+                className="mt-0.5 size-4 shrink-0 text-muted-foreground"
+                aria-hidden="true"
+                title="Frontmatter: metadata about the song stored at the top of the file. Used by the app to track chord progressions and other song details."
+              />
+            </div>
           </div>
         ) : null}
 
