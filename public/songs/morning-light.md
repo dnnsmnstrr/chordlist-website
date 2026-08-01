@@ -1,24 +1,36 @@
-# Morning Light
+---
+chords: G D Em C, C G D Em, C G D G
+---
 
-> Key of G · 92 BPM
+[Verse]
 
-## Verse
+G            D
+Coffee on the counter going cold
+Em               C
+Radio is humming something old
+G                 D
+Curtains hold the dust up in the room
+Em           C
+Morning came around a little soon
 
-[G]Coffee on the [D]counter going cold
-[Em]Radio is [C]humming something old
-[G]Curtains hold the [D]dust up in the room
-[Em]Morning came a[C]round a little soon
+[Chorus]
 
-## Chorus
+C                G
+Hold the morning light
+D            Em
+Slow it down awhile
+C               G
+Nothing left to prove
+D               G
+Nothing left to do
 
-[C]Hold the morning [G]light
-[D]Slow it down a[Em]while
-[C]Nothing left to [G]prove
-[D]Nothing left to [G]do
+[Verse]
 
-## Verse
-
-[G]Every song I [D]keep is in a file
-[Em]Plain enough to [C]read it in a while
-[G]No one else to [D]ask me for the key
-[Em]Folder on a [C]phone, and it's all mine
+G            D
+Every song I keep is in a file
+Em              C
+Plain enough to read it in a while
+G              D
+No one else to ask me for the key
+Em          C
+Folder on a phone, and it's all mine
