@@ -1,33 +1,19 @@
 import { ArrowRightLeft, FileText, FolderHeart, HardDrive } from "lucide-react"
 
+import { homeCopy } from "@/locales/en"
+
 const FEATURES = [
-  {
-    icon: FileText,
-    title: "Plain markdown",
-    body: "Every song is a readable .md file. Write lyrics and chords with nothing but text you already understand.",
-  },
-  {
-    icon: HardDrive,
-    title: "Works offline",
-    body: "Browse, edit, search, and transpose your existing library without a connection. Online import runs only when you request it.",
-  },
-  {
-    icon: FolderHeart,
-    title: "Your files stay yours",
-    body: "Chordlist does not upload your song library. Choose where the files live and share them only when you decide to.",
-  },
-  {
-    icon: ArrowRightLeft,
-    title: "No lock-in",
-    body: "Export and move your files anytime. Open them in any editor — the data always belongs to you.",
-  },
-]
+  { ...homeCopy.features.items[0], icon: FileText },
+  { ...homeCopy.features.items[1], icon: HardDrive },
+  { ...homeCopy.features.items[2], icon: FolderHeart },
+  { ...homeCopy.features.items[3], icon: ArrowRightLeft },
+] as const
 
 export function Features() {
   return (
     <section id="features" className="mx-auto w-full max-w-5xl px-6 py-20">
       <h2 className="text-balance text-2xl font-semibold tracking-tight sm:text-3xl">
-        Built around files you own.
+        {homeCopy.features.title}
       </h2>
       <div className="mt-10 grid grid-cols-1 gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-2">
         {FEATURES.map((f) => (

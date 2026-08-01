@@ -4,6 +4,8 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import Image from "next/image"
 import { ChevronLeft, ChevronRight, Download, X } from "lucide-react"
 
+import { screenshotGalleryCopy } from "@/locales/en"
+
 export type Screenshot = {
   src: string
   title: string
@@ -82,7 +84,7 @@ export function ScreenshotGallery({ screenshots, variant = "press" }: Screenshot
                 triggerRef.current = event.currentTarget
                 setActiveIndex(index)
               }}
-              aria-label={`View ${screenshot.title} full screen`}
+              aria-label={screenshotGalleryCopy.viewFullscreen(screenshot.title)}
               className={
                 isShowcase
                   ? "block w-full cursor-zoom-in overflow-hidden rounded-[1.25rem] border border-border bg-muted shadow-2xl shadow-foreground/5 transition-colors hover:border-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:rounded-[2rem]"
@@ -119,7 +121,7 @@ export function ScreenshotGallery({ screenshots, variant = "press" }: Screenshot
                 href={active.src}
                 download
                 className="flex size-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                aria-label={`Download ${active.title}`}
+                aria-label={screenshotGalleryCopy.download(active.title)}
               >
                 <Download className="size-4" aria-hidden="true" />
               </a>
@@ -127,7 +129,7 @@ export function ScreenshotGallery({ screenshots, variant = "press" }: Screenshot
                 ref={closeButtonRef}
                 type="button"
                 onClick={close}
-                aria-label="Close full screen view"
+                aria-label={screenshotGalleryCopy.close}
                 className="flex size-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 <X className="size-4" aria-hidden="true" />
@@ -136,7 +138,12 @@ export function ScreenshotGallery({ screenshots, variant = "press" }: Screenshot
           </div>
 
           <div className="flex min-h-0 flex-1 items-center justify-center gap-2 px-2 py-4 sm:gap-6 sm:px-6">
-            <GalleryNavButton direction="previous" onClick={() => step(-1)} disabled={count < 2} />
+            <GalleryNavButton
+              label={screenshotGalleryCopy.previous}
+              direction="previous"
+              onClick={() => step(-1)}
+              disabled={count < 2}
+            />
             <Image
               src={active.src}
               alt={active.title}
@@ -145,7 +152,12 @@ export function ScreenshotGallery({ screenshots, variant = "press" }: Screenshot
               sizes="(max-width: 640px) 75vw, 420px"
               className="max-h-full min-h-0 w-auto max-w-full rounded-xl border border-border object-contain"
             />
-            <GalleryNavButton direction="next" onClick={() => step(1)} disabled={count < 2} />
+            <GalleryNavButton
+              label={screenshotGalleryCopy.next}
+              direction="next"
+              onClick={() => step(1)}
+              disabled={count < 2}
+            />
           </div>
 
           <div className="border-t border-border px-4 py-5 sm:px-6">
@@ -164,10 +176,12 @@ export function ScreenshotGallery({ screenshots, variant = "press" }: Screenshot
 
 function GalleryNavButton({
   direction,
+  label,
   onClick,
   disabled,
 }: {
   direction: "previous" | "next"
+  label: string
   onClick: () => void
   disabled: boolean
 }) {
@@ -178,7 +192,7 @@ function GalleryNavButton({
       type="button"
       onClick={onClick}
       disabled={disabled}
-      aria-label={`${direction === "previous" ? "Previous" : "Next"} screenshot`}
+      aria-label={label}
       className="flex size-10 shrink-0 items-center justify-center rounded-full border border-border text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-0"
     >
       <Icon className="size-5" aria-hidden="true" />

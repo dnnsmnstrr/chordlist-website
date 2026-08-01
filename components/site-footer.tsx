@@ -1,6 +1,7 @@
 import Link from "next/link"
 
 import { siteConfig } from "@/lib/site-config"
+import { commonCopy } from "@/locales/en"
 
 export function SiteFooter({ compact = false }: { compact?: boolean }) {
   return (
@@ -12,15 +13,18 @@ export function SiteFooter({ compact = false }: { compact?: boolean }) {
       <Link href="/" className="font-mono transition-colors hover:text-foreground">
         {siteConfig.name}
       </Link>
-      <nav aria-label="Footer" className="flex flex-wrap items-center justify-center gap-x-5 gap-y-3">
+      <nav
+        aria-label={commonCopy.navigation.footerLabel}
+        className="flex flex-wrap items-center justify-center gap-x-5 gap-y-3"
+      >
         <Link href="/faq" className="transition-colors hover:text-foreground">
-          FAQ
+          {commonCopy.navigation.faq}
         </Link>
         <Link href="/press" className="transition-colors hover:text-foreground">
-          Press
+          {commonCopy.navigation.press}
         </Link>
         <Link href="/privacy" className="transition-colors hover:text-foreground">
-          Privacy
+          {commonCopy.navigation.privacy}
         </Link>
         <a
           href={siteConfig.links.terms}
@@ -28,7 +32,7 @@ export function SiteFooter({ compact = false }: { compact?: boolean }) {
           rel="noopener noreferrer"
           className="transition-colors hover:text-foreground"
         >
-          Terms
+          {commonCopy.navigation.terms}
         </a>
         <a
           href={siteConfig.social.x.url}
@@ -36,7 +40,7 @@ export function SiteFooter({ compact = false }: { compact?: boolean }) {
           rel="noopener noreferrer"
           className="transition-colors hover:text-foreground"
         >
-          X
+          {commonCopy.navigation.x}
         </a>
         <a
           href={siteConfig.social.instagram.url}
@@ -44,10 +48,9 @@ export function SiteFooter({ compact = false }: { compact?: boolean }) {
           rel="noopener noreferrer"
           className="transition-colors hover:text-foreground"
         >
-          Instagram
+          {commonCopy.navigation.instagram}
         </a>
       </nav>
     </footer>
   )
 }
-

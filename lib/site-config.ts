@@ -3,11 +3,8 @@ export const siteConfig = {
   name: "chordlist",
   operator: "makerer studio",
   url: "https://chordlist.app",
-  tagline: "Your lyrics and chords, as files in your pocket.",
-  description:
-    "A local-first songbook for iPhone and iPad that keeps lyrics and chords in portable Markdown files you control.",
-  launchDate: "30 August 2026",
-  minimumOS: "iOS or iPadOS 18 or later",
+  launchDate: "2026-08-30",
+  minimumOSVersion: 18,
   freeSongLimit: 10,
   contact: {
     support: "support@chordlist.app",
@@ -35,9 +32,3 @@ export const siteConfig = {
 } as const
 
 export const primaryAppLink = siteConfig.links.appStore ?? siteConfig.links.preorder
-
-export const primaryAppLinkLabel = siteConfig.links.appStore
-  ? "Download"
-  : siteConfig.links.preorder
-    ? "Pre-order"
-    : "Coming soon"

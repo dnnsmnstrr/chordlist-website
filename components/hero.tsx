@@ -1,22 +1,27 @@
 import { AppCTA } from "@/components/app-cta"
 import { Button } from "@/components/ui/button"
-import { siteConfig } from "@/lib/site-config"
+import { commonCopy, homeCopy } from "@/locales/en"
 
 export function Hero() {
   return (
     <section className="mx-auto w-full max-w-5xl px-6 pt-12 pb-20 text-center sm:pt-20">
       <span className="inline-block rounded-full border border-border px-3 py-1 font-mono text-xs text-muted-foreground">
-        Local-first songbook for iOS
+        {homeCopy.hero.eyebrow}
       </span>
       <h1 className="mx-auto mt-6 max-w-3xl text-balance text-4xl font-semibold tracking-tight sm:text-6xl">
-        {siteConfig.tagline}
+        {commonCopy.tagline}
       </h1>
       <p className="mx-auto mt-6 max-w-xl text-pretty leading-relaxed text-muted-foreground">
-        {siteConfig.name} keeps every song as a Markdown file in a folder you choose. No logins or cloud sync. Your files remain portable, readable, and under your control.
+        {homeCopy.hero.description}
       </p>
       <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
         <AppCTA large />
-        <Button size="lg" variant="outline" nativeButton={false} render={<a href="#preview">See the format</a>} />
+        <Button
+          size="lg"
+          variant="outline"
+          nativeButton={false}
+          render={<a href="#preview">{homeCopy.hero.formatLink}</a>}
+        />
       </div>
     </section>
   )

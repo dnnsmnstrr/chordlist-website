@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 
 import { siteConfig } from "@/lib/site-config"
+import { commonCopy, locale, metadataCopy } from "@/locales/en"
 
 import "./globals.css"
 
@@ -13,30 +14,30 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   applicationName: siteConfig.name,
   title: {
-    default: `${siteConfig.name} — Local-first songbook for lyrics and chords`,
-    template: `%s — ${siteConfig.name}`,
+    default: metadataCopy.defaultTitle,
+    template: metadataCopy.titleTemplate,
   },
-  description: siteConfig.description,
-  category: "Music",
+  description: commonCopy.appDescription,
+  category: metadataCopy.category,
   creator: siteConfig.operator,
   publisher: siteConfig.operator,
-  keywords: ["songbook", "lyrics", "chords", "Markdown", "iPhone", "iPad", "local-first"],
+  keywords: [...metadataCopy.keywords],
   alternates: { canonical: "/" },
   openGraph: {
     type: "website",
-    locale: "en_US",
+    locale: locale.openGraph,
     url: siteConfig.url,
     siteName: siteConfig.name,
-    title: `${siteConfig.name} — ${siteConfig.tagline}`,
-    description: siteConfig.description,
-    images: [{ url: "/og.png", width: 1200, height: 630, alt: `${siteConfig.name}: ${siteConfig.tagline}` }],
+    title: metadataCopy.socialTitle,
+    description: commonCopy.appDescription,
+    images: [{ url: "/og.png", width: 1200, height: 630, alt: metadataCopy.socialImageAlt }],
   },
   twitter: {
     card: "summary_large_image",
     site: siteConfig.social.x.handle,
     creator: siteConfig.social.x.handle,
-    title: `${siteConfig.name} — ${siteConfig.tagline}`,
-    description: siteConfig.description,
+    title: metadataCopy.socialTitle,
+    description: commonCopy.appDescription,
     images: ["/og.png"],
   },
   icons: {
@@ -59,7 +60,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} bg-background`}>
+    <html lang={locale.htmlLang} className={`${geistSans.variable} ${geistMono.variable} bg-background`}>
       <body className="font-sans antialiased">
         {children}
         {process.env.NODE_ENV === "production" ? <Analytics /> : null}

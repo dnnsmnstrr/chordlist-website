@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises"
 import path from "node:path"
 import { Download, HelpCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { homeCopy } from "@/locales/en"
 
 /** Single source of truth: the same file visitors download. */
 const SAMPLE_SONG_FILE = "morning-light.md"
@@ -26,10 +27,11 @@ export async function LyricPreview() {
 
   return (
     <section id="preview" className="mx-auto w-full max-w-5xl px-6 py-20">
-      <h2 className="text-balance text-2xl font-semibold tracking-tight sm:text-3xl">One song, one file.</h2>
+      <h2 className="text-balance text-2xl font-semibold tracking-tight sm:text-3xl">
+        {homeCopy.lyricPreview.title}
+      </h2>
       <p className="mt-3 max-w-xl text-pretty leading-relaxed text-muted-foreground">
-        Chords sit right above the words, so you can read and play at a glance. This is a real file — download it and
-        open it anywhere.
+        {homeCopy.lyricPreview.description}
       </p>
 
       <div className="mt-8 overflow-hidden rounded-xl border border-border">
@@ -45,9 +47,13 @@ export async function LyricPreview() {
             variant="outline"
             nativeButton={false}
             render={
-              <a href={SAMPLE_SONG_URL} download={SAMPLE_SONG_FILE} aria-label="Download sample song">
+              <a
+                href={SAMPLE_SONG_URL}
+                download={SAMPLE_SONG_FILE}
+                aria-label={homeCopy.lyricPreview.downloadLabel}
+              >
                 <Download aria-hidden="true" />
-                <span className="hidden sm:inline">Download</span>
+                <span className="hidden sm:inline">{homeCopy.lyricPreview.download}</span>
               </a>
             }
           />
@@ -59,9 +65,7 @@ export async function LyricPreview() {
               <pre className="overflow-x-auto font-mono text-xs leading-relaxed text-muted-foreground">
                 {frontmatter}
               </pre>
-              <span
-                title="Frontmatter: metadata about the song stored at the top of the file. Used by the app to track chord progressions and other song details."
-              >
+              <span title={homeCopy.lyricPreview.frontmatterHelp}>
                 <HelpCircle className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
               </span>
             </div>

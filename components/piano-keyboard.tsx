@@ -2,6 +2,8 @@
 
 import { useCallback, useRef, useState } from "react"
 
+import { pianoCopy } from "@/locales/en"
+
 type Key = {
   id: string
   note: string
@@ -140,7 +142,7 @@ export function PianoKeyboard() {
             <button
               key={k.id}
               type="button"
-              aria-label={`Play note ${k.note}`}
+              aria-label={pianoCopy.playNote(k.note)}
               tabIndex={-1}
               onPointerDown={() => press(k)}
               onPointerEnter={() => {
@@ -164,7 +166,7 @@ export function PianoKeyboard() {
             <button
               key={k.id}
               type="button"
-              aria-label={`Play note ${k.note}`}
+              aria-label={pianoCopy.playNote(k.note)}
               tabIndex={-1}
               onPointerDown={() => press(k)}
               onPointerEnter={() => {
