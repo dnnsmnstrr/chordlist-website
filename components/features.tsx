@@ -1,4 +1,4 @@
-import { FileText, HardDrive, Lock, ArrowRightLeft } from "lucide-react"
+import { ArrowRightLeft, FileText, FolderHeart, HardDrive } from "lucide-react"
 
 const FEATURES = [
   {
@@ -8,13 +8,13 @@ const FEATURES = [
   },
   {
     icon: HardDrive,
-    title: "Fully local",
-    body: "Songs live on your device. Chordlist works completely offline with no servers in between.",
+    title: "Works offline",
+    body: "Browse, edit, search, and transpose your existing library without a connection. Online import runs only when you request it.",
   },
   {
-    icon: Lock,
-    title: "Never shared",
-    body: "No accounts, no tracking, no syncing behind your back. Your songbook stays private by default.",
+    icon: FolderHeart,
+    title: "Your files stay yours",
+    body: "Chordlist does not upload your song library. Choose where the files live and share them only when you decide to.",
   },
   {
     icon: ArrowRightLeft,

@@ -1,5 +1,6 @@
+import { AppCTA } from "@/components/app-cta"
 import { Button } from "@/components/ui/button"
-import { Apple } from "lucide-react"
+import { siteConfig } from "@/lib/site-config"
 
 export function Hero() {
   return (
@@ -8,17 +9,14 @@ export function Hero() {
         Local-first songbook for iOS
       </span>
       <h1 className="mx-auto mt-6 max-w-3xl text-balance text-4xl font-semibold tracking-tight sm:text-6xl">
-        Your lyrics and chords, as files in your pocket.
+        {siteConfig.tagline}
       </h1>
       <p className="mx-auto mt-6 max-w-xl text-pretty leading-relaxed text-muted-foreground">
-        chordlist keeps every song as a simple markdown file on your device. No accounts, no cloud, no lock-in. The data
-        is yours and is never shared (unless you share it).
+        {siteConfig.name} keeps every song as a Markdown file in a folder you choose. The app does not upload or sync
+        your library. Your files remain portable, readable, and under your control.
       </p>
       <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-        <Button size="lg" className="gap-2">
-          <Apple className="size-4" aria-hidden="true" />
-          Download on iOS
-        </Button>
+        <AppCTA large />
         <Button size="lg" variant="outline" nativeButton={false} render={<a href="#preview">See the format</a>} />
       </div>
     </section>

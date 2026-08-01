@@ -54,8 +54,12 @@ export function PianoKeyboard() {
   const getCtx = useCallback(() => {
     if (typeof window === "undefined") return null
     if (!audioRef.current) {
-      const Ctx = window.AudioContext || (window as any).webkitAudioContext
-      audioRef.current = new Ctx()
+      const audioContextConstructor =
+        window.AudioContext ??
+        (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
+
+      if (!audioContextConstructor) return null
+      audioRef.current = new audioContextConstructor()
     }
     if (audioRef.current.state === "suspended") {
       void audioRef.current.resume()
