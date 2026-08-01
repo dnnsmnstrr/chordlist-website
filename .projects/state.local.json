@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "project": {
+    "catalog": "prod",
+    "initializedAt": "2026-08-01T20:36:56.563Z",
+    "merchantDisplayName": "muensterer.tech",
+    "merchantId": "acct_1PsATdFkjI8HkJwh",
+    "projectId": "project_61V97bkQxhPU72jT216R1YQzK6AXUtMmpLPD3LLNIEhs",
+    "projectName": "."
+  },
+  "providers": {
+    "revenuecat": {
+      "accountRequestId": "fprvcnn_61V97WY0l4UhSYHEv16R1YQzK6AXUtMmpLPD3LLNI0Qy",
+      "configuration": {},
+      "linkedAt": "2026-08-01T20:31:34.914Z",
+      "providerId": "prvdr_61UvIBCNECigaYpha53zM",
+      "providerName": "RevenueCat",
+      "redirectUrl": null,
+      "requestedAt": "2026-08-01T20:31:34.914Z",
+      "status": "complete"
+    }
+  },
+  "resources": {
+    "revenuecat-app": {
+      "configuration": {},
+      "createdAt": "2026-08-01T20:37:43.084Z",
+      "lastRevealedAt": "2026-08-01T20:37:43.436Z",
+      "lastStatus": "complete",
+      "name": "revenuecat-app",
+      "providerId": "prvdr_61UvIBCNECigaYpha53zM",
+      "providerName": "RevenueCat",
+      "resourceId": "fres_61V97cS0Zm6kU6iwQ16R1YQzK6AXUtMmpLPD3LLNI5gu",
+      "serviceId": "app"
+    }
+  }
+}
