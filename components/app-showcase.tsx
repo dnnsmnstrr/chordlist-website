@@ -1,19 +1,22 @@
-import Image from "next/image"
+import { ScreenshotGallery, type Screenshot } from "@/components/screenshot-gallery"
 
-const screenshots = [
+const screenshots: readonly Screenshot[] = [
   {
     src: "/app-screenshots/light/01-Song-List---4-Chord-Library.png",
-    alt: "Song library in chordlist, grouped by artist with chord and tag filters",
+    title: "Song library",
+    description: "Browse a song library grouped by artist, with chord progressions and tags visible at a glance.",
   },
   {
     src: "/app-screenshots/light/02-Song-Detail---Matching-Suggestions.png",
-    alt: "Song detail in chordlist with lyrics, chords, and matching song suggestions",
+    title: "Song detail",
+    description: "Read lyrics and chords, transpose while playing, and find suggestions with matching progressions.",
   },
   {
     src: "/app-screenshots/light/03-Creation-Flow---New-Song.png",
-    alt: "New song editor in chordlist with title, artist, chord progression, tags, and lyrics fields",
+    title: "Song editor",
+    description: "Create a portable song file with title, artist, chord progression, tags, and lyrics.",
   },
-] as const
+]
 
 export function AppShowcase() {
   return (
@@ -29,26 +32,9 @@ export function AppShowcase() {
         </p>
       </div>
 
-      <div className="mt-10 grid grid-cols-3 items-end gap-3 sm:gap-8">
-        {screenshots.map((screenshot, index) => (
-          <div
-            key={screenshot.src}
-            className={`overflow-hidden rounded-[1.25rem] border border-border bg-muted shadow-2xl shadow-foreground/5 sm:rounded-[2rem] ${
-              index === 1 ? "-translate-y-4" : ""
-            }`}
-          >
-            <Image
-              src={screenshot.src}
-              alt={screenshot.alt}
-              width={1170}
-              height={2532}
-              sizes="(max-width: 640px) 30vw, 300px"
-              className="h-auto w-full"
-            />
-          </div>
-        ))}
+      <div className="mt-10">
+        <ScreenshotGallery screenshots={screenshots} variant="showcase" />
       </div>
     </section>
   )
 }
-

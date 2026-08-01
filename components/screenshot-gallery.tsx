@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react"
 import Image from "next/image"
-import { ChevronLeft, ChevronRight, Download, Expand, X } from "lucide-react"
+import { ChevronLeft, ChevronRight, Download, X } from "lucide-react"
 
 export type Screenshot = {
   src: string
@@ -10,12 +10,18 @@ export type Screenshot = {
   description: string
 }
 
-export function ScreenshotGallery({ screenshots }: { screenshots: readonly Screenshot[] }) {
+type ScreenshotGalleryProps = {
+  screenshots: readonly Screenshot[]
+  variant?: "press" | "showcase"
+}
+
+export function ScreenshotGallery({ screenshots, variant = "press" }: ScreenshotGalleryProps) {
   const [activeIndex, setActiveIndex] = useState<number | null>(null)
   const closeButtonRef = useRef<HTMLButtonElement>(null)
   const triggerRef = useRef<HTMLButtonElement | null>(null)
   const count = screenshots.length
   const active = activeIndex === null ? undefined : screenshots[activeIndex]
+  const isShowcase = variant === "showcase"
 
   const close = useCallback(() => setActiveIndex(null), [])
 
@@ -61,9 +67,15 @@ export function ScreenshotGallery({ screenshots }: { screenshots: readonly Scree
 
   return (
     <>
-      <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+      <ul
+        className={
+          isShowcase
+            ? "grid grid-cols-3 items-end gap-3 sm:gap-8"
+            : "grid grid-cols-2 items-start gap-4 sm:grid-cols-3"
+        }
+      >
         {screenshots.map((screenshot, index) => (
-          <li key={screenshot.src} className="flex flex-col gap-3">
+          <li key={screenshot.src} className={isShowcase ? "min-w-0" : "flex flex-col gap-3"}>
             <button
               type="button"
               onClick={(event) => {
@@ -71,21 +83,22 @@ export function ScreenshotGallery({ screenshots }: { screenshots: readonly Scree
                 setActiveIndex(index)
               }}
               aria-label={`View ${screenshot.title} full screen`}
-              className="group relative overflow-hidden rounded-xl border border-border bg-muted transition-colors hover:border-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className={
+                isShowcase
+                  ? "block w-full cursor-zoom-in overflow-hidden rounded-[1.25rem] border border-border bg-muted shadow-2xl shadow-foreground/5 transition-colors hover:border-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:rounded-[2rem]"
+                  : "block w-full cursor-zoom-in overflow-hidden rounded-xl border border-border bg-muted transition-colors hover:border-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              }
             >
               <Image
                 src={screenshot.src}
                 alt={screenshot.title}
                 width={1170}
                 height={2532}
-                sizes="(max-width: 640px) 45vw, 220px"
+                sizes={isShowcase ? "(max-width: 640px) 30vw, 300px" : "(max-width: 640px) 45vw, 220px"}
                 className="h-auto w-full"
               />
-              <span className="absolute inset-0 flex items-center justify-center bg-background/70 opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
-                <Expand className="size-5 text-foreground" aria-hidden="true" />
-              </span>
             </button>
-            <p className="text-sm font-medium leading-snug">{screenshot.title}</p>
+            {isShowcase ? null : <p className="text-sm font-medium leading-snug">{screenshot.title}</p>}
           </li>
         ))}
       </ul>

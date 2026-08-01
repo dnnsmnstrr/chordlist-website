@@ -12,8 +12,7 @@ export function Hero() {
         {siteConfig.tagline}
       </h1>
       <p className="mx-auto mt-6 max-w-xl text-pretty leading-relaxed text-muted-foreground">
-        {siteConfig.name} keeps every song as a Markdown file in a folder you choose. The app does not upload or sync
-        your library. Your files remain portable, readable, and under your control.
+        {siteConfig.name} keeps every song as a Markdown file in a folder you choose. No logins or cloud sync. Your files remain portable, readable, and under your control.
       </p>
       <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
         <AppCTA large />
