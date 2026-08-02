@@ -1,12 +1,13 @@
 "use client"
 
-import { useCallback, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 
 import { pianoCopy } from "@/locales/en"
 
 type Key = {
   id: string
   note: string
+  midi: number
   freq: number
   type: "white" | "black"
 }
@@ -29,6 +30,10 @@ const NOTES: { note: string; type: "white" | "black" }[] = [
 
 const START_OCTAVE = 2
 const OCTAVE_COUNT = 5
+const CHORD_OCTAVE_MIDI = 60
+const ACTIVATION_WINDOW_MS = 900
+const ACTIVE_KEY_DURATION_MS = 220
+const CHORD_ROOTS = new Set(["A", "B", "C", "D", "E", "F", "G"])
 
 function buildKeys(): Key[] {
   const keys: Key[] = []
@@ -40,18 +45,44 @@ function buildKeys(): Key[] {
       // MIDI-style: C0 = 12. note number = (octave + 1) * 12 + semitoneIndex
       const midi = (octave + 1) * 12 + semitoneIndex
       const freq = 440 * Math.pow(2, (midi - 69) / 12)
-      keys.push({ id: `${n.note}${octave}`, note: n.note, freq, type: n.type })
+      keys.push({ id: `${n.note}${octave}`, note: n.note, midi, freq, type: n.type })
     }
   }
   return keys
 }
 
 const KEYS = buildKeys()
+const KEYS_BY_MIDI = new Map(KEYS.map((key) => [key.midi, key]))
+
+function getRootKey(note: string) {
+  const semitone = NOTES.findIndex((candidate) => candidate.note === note)
+  return semitone < 0 ? undefined : KEYS_BY_MIDI.get(CHORD_OCTAVE_MIDI + semitone)
+}
+
+function getChordKeys(root: string, isMinor: boolean) {
+  const rootKey = getRootKey(root)
+  if (!rootKey) return []
+
+  const intervals = isMinor ? [0, 3, 7] : [0, 4, 7]
+  return intervals
+    .map((interval) => KEYS_BY_MIDI.get(rootKey.midi + interval))
+    .filter((key): key is Key => key !== undefined)
+}
+
+function isEditableTarget(target: EventTarget | null) {
+  return (
+    target instanceof HTMLElement &&
+    (target.isContentEditable || target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement)
+  )
+}
 
 export function PianoKeyboard() {
   const audioRef = useRef<AudioContext | null>(null)
   const [active, setActive] = useState<Set<string>>(new Set())
+  const [isChordMode, setIsChordMode] = useState(false)
   const draggingRef = useRef(false)
+  const activationTimesRef = useRef<number[]>([])
+  const activeTimersRef = useRef(new Map<string, number>())
 
   const getCtx = useCallback(() => {
     if (typeof window === "undefined") return null
@@ -69,43 +100,108 @@ export function PianoKeyboard() {
     return audioRef.current
   }, [])
 
-  const playNote = useCallback(
-    (freq: number) => {
+  const playFrequencies = useCallback(
+    (frequencies: readonly number[]) => {
       const ctx = getCtx()
-      if (!ctx) return
-      const osc = ctx.createOscillator()
+      if (!ctx || frequencies.length === 0) return
+
       const gain = ctx.createGain()
-      osc.type = "triangle"
-      osc.frequency.value = freq
       const now = ctx.currentTime
+      const peakVolume = frequencies.length > 1 ? 0.11 : 0.24
+
       gain.gain.setValueAtTime(0.0001, now)
-      gain.gain.exponentialRampToValueAtTime(0.24, now + 0.01)
+      gain.gain.exponentialRampToValueAtTime(peakVolume, now + 0.01)
       gain.gain.exponentialRampToValueAtTime(0.0001, now + 1.2)
-      osc.connect(gain).connect(ctx.destination)
-      osc.start(now)
-      osc.stop(now + 1.3)
+      gain.connect(ctx.destination)
+
+      for (const frequency of frequencies) {
+        const oscillator = ctx.createOscillator()
+        oscillator.type = "triangle"
+        oscillator.frequency.value = frequency
+        oscillator.connect(gain)
+        oscillator.start(now)
+        oscillator.stop(now + 1.3)
+      }
     },
     [getCtx],
   )
 
-  const press = useCallback(
-    (key: Key) => {
-      playNote(key.freq)
+  const pressKeys = useCallback(
+    (keys: readonly Key[]) => {
+      playFrequencies(keys.map((key) => key.freq))
       setActive((prev) => {
         const next = new Set(prev)
-        next.add(key.id)
+        for (const key of keys) next.add(key.id)
         return next
       })
-      window.setTimeout(() => {
-        setActive((prev) => {
-          const next = new Set(prev)
-          next.delete(key.id)
-          return next
-        })
-      }, 160)
+
+      for (const key of keys) {
+        const existingTimer = activeTimersRef.current.get(key.id)
+        if (existingTimer) window.clearTimeout(existingTimer)
+
+        const timer = window.setTimeout(() => {
+          activeTimersRef.current.delete(key.id)
+          setActive((prev) => {
+            const next = new Set(prev)
+            next.delete(key.id)
+            return next
+          })
+        }, ACTIVE_KEY_DURATION_MS)
+
+        activeTimersRef.current.set(key.id, timer)
+      }
     },
-    [playNote],
+    [playFrequencies],
   )
+
+  const press = useCallback((key: Key) => pressKeys([key]), [pressKeys])
+
+  useEffect(() => {
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape" && isChordMode) {
+        setIsChordMode(false)
+        activationTimesRef.current = []
+        return
+      }
+
+      if (event.repeat || event.metaKey || event.ctrlKey || event.altKey || isEditableTarget(event.target)) return
+
+      const root = event.key.toUpperCase()
+      if (!CHORD_ROOTS.has(root)) return
+
+      if (isChordMode) {
+        event.preventDefault()
+        pressKeys(getChordKeys(root, event.shiftKey))
+        return
+      }
+
+      const rootKey = getRootKey(root)
+      if (rootKey) pressKeys([rootKey])
+
+      const now = performance.now()
+      const recentPresses = activationTimesRef.current.filter((time) => now - time <= ACTIVATION_WINDOW_MS)
+      recentPresses.push(now)
+      activationTimesRef.current = recentPresses
+
+      if (recentPresses.length >= 3) {
+        activationTimesRef.current = []
+        setIsChordMode(true)
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [isChordMode, pressKeys])
+
+  useEffect(() => {
+    const timers = activeTimersRef.current
+
+    return () => {
+      for (const timer of timers.values()) window.clearTimeout(timer)
+      const audioContext = audioRef.current
+      if (audioContext) void audioContext.close()
+    }
+  }, [])
 
   const whiteKeys = KEYS.filter((k) => k.type === "white")
   const whiteWidth = 100 / whiteKeys.length
@@ -134,6 +230,18 @@ export function PianoKeyboard() {
         draggingRef.current = false
       }}
     >
+      <div
+        role="status"
+        aria-live="polite"
+        className={`pointer-events-none absolute bottom-2 left-1/2 z-20 hidden -translate-x-1/2 items-center rounded-full border px-3 py-1.5 font-mono text-[0.65rem] shadow-sm backdrop-blur-sm md:flex ${
+          isChordMode
+            ? "border-foreground/20 bg-foreground text-background"
+            : "border-border bg-background/90 text-muted-foreground"
+        }`}
+      >
+        {isChordMode ? pianoCopy.chordModeActive : pianoCopy.chordModeHint}
+      </div>
+
       {/* White keys */}
       <div className="absolute inset-0 flex">
         {whiteKeys.map((k) => {

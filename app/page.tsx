@@ -5,6 +5,7 @@ import { Features } from "@/components/features"
 import { LyricPreview } from "@/components/lyric-preview"
 import { PianoKeyboard } from "@/components/piano-keyboard"
 import { SiteFooter } from "@/components/site-footer"
+import { pianoCopy } from "@/locales/en"
 
 export default function Page() {
   return (
@@ -17,7 +18,7 @@ export default function Page() {
 
       <SiteFooter />
 
-      <section aria-hidden="true" className="w-full border-t border-border">
+      <section aria-label={pianoCopy.label} className="w-full border-t border-border">
         <PianoKeyboard />
       </section>
     </main>

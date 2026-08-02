@@ -463,5 +463,8 @@ export const screenshotGalleryCopy = {
 } as const
 
 export const pianoCopy = {
+  label: "Interactive piano keyboard",
   playNote: (note: string) => `Play note ${note}`,
+  chordModeHint: "Press A–G three times quickly to enter chord mode",
+  chordModeActive: "Chord mode · Shift for minor · Esc to exit",
 } as const
