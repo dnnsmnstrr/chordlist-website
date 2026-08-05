@@ -50,7 +50,7 @@ export const metadataCopy = {
 export const homeCopy = {
   hero: {
     eyebrow: "Local-first songbook for iOS",
-    description: `${siteConfig.name} keeps every song as a Markdown file in a folder you choose. No logins or cloud sync. Your files remain portable, readable, and under your control.`,
+    description: `${siteConfig.name} keeps every song as a Markdown file in a folder you choose. \nNo logins or cloud sync. Your files remain portable and under your control.`,
     formatLink: "See the format",
   },
   showcase: {

@@ -11,7 +11,7 @@ export function Hero() {
       <h1 className="mx-auto mt-6 max-w-3xl text-balance text-4xl font-semibold tracking-tight sm:text-6xl">
         {commonCopy.tagline}
       </h1>
-      <p className="mx-auto mt-6 max-w-xl text-pretty leading-relaxed text-muted-foreground">
+      <p className="mx-auto mt-6 max-w-xl text-pretty leading-relaxed text-muted-foreground whitespace-pre">
         {homeCopy.hero.description}
       </p>
       <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
