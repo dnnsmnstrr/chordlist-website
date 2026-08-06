@@ -22,6 +22,8 @@ export const siteConfig = {
     },
   },
   links: {
+    // Add the public TestFlight URL here to use the TestFlight CTA.
+    testFlight: "https://testflight.apple.com/join/HS4DNEH8" as string | null,
     // Add the public App Store URL here once the listing is live.
     appStore: null as string | null,
     // Add a pre-order URL here to turn every app CTA into a pre-order link.
@@ -31,4 +33,4 @@ export const siteConfig = {
   },
 } as const
 
-export const primaryAppLink = siteConfig.links.appStore ?? siteConfig.links.preorder
+export const primaryAppLink = siteConfig.links.testFlight ?? siteConfig.links.appStore ?? siteConfig.links.preorder

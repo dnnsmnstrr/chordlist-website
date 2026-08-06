@@ -9,17 +9,20 @@ type AppCTAProps = {
 }
 
 export function AppCTA({ large = false }: AppCTAProps) {
-  const primaryLabel = siteConfig.links.appStore
-    ? commonCopy.appCta.download
-    : siteConfig.links.preorder
-      ? commonCopy.appCta.preorder
-      : commonCopy.appCta.comingSoon
+  const primaryLabel = siteConfig.links.testFlight
+    ? commonCopy.appCta.testFlight
+    : siteConfig.links.appStore
+      ? commonCopy.appCta.download
+      : siteConfig.links.preorder
+        ? commonCopy.appCta.preorder
+        : commonCopy.appCta.comingSoon
   const label = large && primaryAppLink ? `${primaryLabel} ${commonCopy.appCta.largeSuffix}` : primaryLabel
+  const icon = large ? <Apple aria-hidden="true" /> : null
 
   if (!primaryAppLink) {
     return (
       <Button size={large ? "lg" : "default"} className="gap-2" disabled>
-        <Apple aria-hidden="true" />
+        {icon}
         {label}
       </Button>
     )
@@ -32,7 +35,7 @@ export function AppCTA({ large = false }: AppCTAProps) {
       nativeButton={false}
       render={
         <a href={primaryAppLink}>
-          <Apple aria-hidden="true" />
+          {icon}
           {label}
         </a>
       }

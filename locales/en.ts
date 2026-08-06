@@ -32,6 +32,7 @@ export const commonCopy = {
   },
   appCta: {
     download: "Download",
+    testFlight: "Join TestFlight",
     preorder: "Pre-order",
     comingSoon: "Coming soon",
     largeSuffix: "on iOS",
