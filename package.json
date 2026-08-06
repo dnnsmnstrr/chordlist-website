@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "sync:assets": "node scripts/sync-app-assets.mjs",
+    "build:icons": "node scripts/build-icons.mjs",
     "build:og": "node scripts/build-og-image.mjs",
     "predev": "pnpm sync:assets",
     "dev": "next dev",

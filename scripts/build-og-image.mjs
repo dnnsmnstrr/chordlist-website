@@ -19,6 +19,8 @@ import { fileURLToPath } from "node:url"
 import { createElement as h } from "react"
 import { ImageResponse } from "next/og.js"
 
+import { markSvg, svgDataUri } from "./lib/chordlist-mark.mjs"
+
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..")
 
 /* ─────────────────────────────── CONFIG ─────────────────────────────── */
@@ -69,66 +71,6 @@ const CONFIG = {
 }
 
 /* ───────────────────────────── END CONFIG ───────────────────────────── */
-
-/**
- * The chordlist mark, kept identical to components/chordlist-icon.tsx.
- * Two rounded key bars, each with a thin descending stem.
- */
-const GLYPH = {
-  width: 270,
-  height: 613,
-  rects: [
-    { x: 0, y: 0, width: 76, height: 375, rx: 10 },
-    { x: 35.5, y: 307, width: 5, height: 306, rx: 0 },
-    { x: 194, y: 0, width: 76, height: 375, rx: 10 },
-    { x: 229.5, y: 307, width: 5, height: 306, rx: 0 },
-  ],
-}
-
-/**
- * Traces a superellipse (|x/r|^n + |y/r|^n = 1) as an SVG path. This is the
- * "squircle" shape iOS uses to mask home screen icons.
- */
-function squirclePath(size, exponent, steps = 240) {
-  const r = size / 2
-  const k = 2 / exponent
-  const points = []
-
-  for (let i = 0; i < steps; i += 1) {
-    const t = (i / steps) * Math.PI * 2
-    const cos = Math.cos(t)
-    const sin = Math.sin(t)
-    const x = r + Math.sign(cos) * Math.abs(cos) ** k * r
-    const y = r + Math.sign(sin) * Math.abs(sin) ** k * r
-    points.push(`${x.toFixed(2)},${y.toFixed(2)}`)
-  }
-
-  return `M${points.join("L")}Z`
-}
-
-/** The app icon — glyph on a squircle tile — as a standalone SVG string. */
-function appIconSvg({ size, exponent, glyphInset, tileColor, glyphColor }) {
-  const scale = (size * (1 - glyphInset * 2)) / GLYPH.height
-  const offsetX = (size - GLYPH.width * scale) / 2
-  const offsetY = size * glyphInset
-
-  const rects = GLYPH.rects
-    .map((r) => `<rect x="${r.x}" y="${r.y}" width="${r.width}" height="${r.height}" rx="${r.rx}"/>`)
-    .join("")
-
-  return [
-    `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">`,
-    `<path d="${squirclePath(size, exponent)}" fill="${tileColor}"/>`,
-    `<g transform="translate(${offsetX.toFixed(3)},${offsetY.toFixed(3)}) scale(${scale.toFixed(6)})" fill="${glyphColor}">`,
-    rects,
-    `</g>`,
-    `</svg>`,
-  ].join("")
-}
-
-function dataUri(svg) {
-  return `data:image/svg+xml;base64,${Buffer.from(svg).toString("base64")}`
-}
 
 function buildElement(iconUri) {
   const { copy, colors, layout } = CONFIG
@@ -233,8 +175,8 @@ async function main() {
     })),
   )
 
-  const iconUri = dataUri(
-    appIconSvg({
+  const iconUri = svgDataUri(
+    markSvg({
       size: layout.iconSize,
       exponent: layout.squircleExponent,
       glyphInset: layout.glyphInset,
