@@ -69,6 +69,13 @@ export default function PrivacyPage() {
               </PolicyLink>
               .
             </p>
+            <p>
+              {sections.purchases.revenueCatLinkPrefix}{" "}
+              <PolicyLink href="https://www.revenuecat.com/privacy/">
+                {sections.purchases.revenueCatLinkLabel}
+              </PolicyLink>
+              .
+            </p>
           </PolicySection>
 
           <PolicySection title={sections.support.title}>

@@ -363,7 +363,7 @@ export const privacyCopy = {
     description: `How ${siteConfig.name} handles song files, optional analytics, imports, purchases, and website visits.`,
   },
   title: "Privacy Policy",
-  lastUpdated: "Last updated: 1 August 2026",
+  lastUpdated: "Last updated: 7 August 2026",
   sections: {
     shortVersion: {
       title: "The short version",
@@ -409,9 +409,12 @@ export const privacyCopy = {
       title: "Purchases",
       paragraphs: [
         `The optional unlimited-song unlock is processed by Apple through StoreKit. Apple handles the App Store account and payment method. The app receives product and transaction information needed to determine whether the unlock is available; ${siteConfig.operator} does not receive your payment-card or bank-account details.`,
+        `${siteConfig.name} uses RevenueCat to manage purchases and verify entitlements. RevenueCat processes an anonymous app user identifier it generates, purchase and receipt information from Apple, and device or app metadata such as platform, app version, and country. It does not receive your payment-card or bank-account details, and ${siteConfig.name} does not send it your song library.`,
       ],
       linkPrefix: "Apple's handling of App Store data is covered by the",
       linkLabel: "App Store privacy information",
+      revenueCatLinkPrefix: "RevenueCat's handling of that data is described in its",
+      revenueCatLinkLabel: "privacy policy",
     },
     support: {
       title: "Support and feedback",
