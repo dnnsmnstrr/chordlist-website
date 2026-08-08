@@ -78,6 +78,21 @@ function readDate(record: Record<string, unknown>, field: string, slug: string) 
   return fail(slug, `"${field}" must be a YYYY-MM-DD date`)
 }
 
+/**
+ * `draft` must be a real boolean.
+ *
+ * YAML 1.2's core schema only treats `true`/`false` as booleans, so `draft: yes`,
+ * `draft: on`, `draft: 1`, and `draft: "true"` all parse as a string or number. Reading
+ * those loosely would silently publish a post that its author marked as a draft, which is
+ * the one failure this flag exists to prevent — so reject them instead.
+ */
+function readDraft(record: Record<string, unknown>, slug: string) {
+  const value = record.draft
+  if (value === undefined || value === null) return false
+  if (typeof value === "boolean") return value
+  return fail(slug, `"draft" must be true or false, not ${JSON.stringify(value)}`)
+}
+
 function readTags(record: Record<string, unknown>, slug: string): readonly BlogTag[] {
   const value = record.tags
   if (!Array.isArray(value) || value.length === 0) fail(slug, `"tags" must list at least one tag`)
@@ -121,7 +136,7 @@ function parsePost(slug: string, source: string): { meta: PostMeta; body: string
       tags: readTags(record, slug),
       cover,
       coverAlt,
-      draft: record.draft === true,
+      draft: readDraft(record, slug),
       readingMinutes: Math.max(1, Math.round(wordCount / WORDS_PER_MINUTE)),
     },
   }
