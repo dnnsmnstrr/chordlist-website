@@ -133,12 +133,43 @@ function readTags(record: Record<string, unknown>, slug: string): readonly BlogT
   const value = record.tags
   if (!Array.isArray(value) || value.length === 0) fail(slug, `"tags" must list at least one tag`)
 
-  return value.map((tag) => {
+  const tags = value.map((tag) => {
     if (typeof tag !== "string" || !blogTags.includes(tag as BlogTag)) {
       fail(slug, `"${String(tag)}" is not a known tag. Known tags: ${blogTags.join(", ")}`)
     }
     return tag as BlogTag
   })
+
+  // A repeated tag would count twice in the filter chips, inflate related-post
+  // scoring, and render two chips sharing a React key.
+  const duplicate = tags.find((tag, index) => tags.indexOf(tag) !== index)
+  if (duplicate !== undefined) fail(slug, `"tags" lists "${duplicate}" twice`)
+
+  return tags
+}
+
+/**
+ * `cover` and `coverAlt` are set together or not at all.
+ *
+ * Reading them loosely lets two bad states through: alt text with no image, which
+ * then describes the generated card instead of a cover, and `cover: ""`, which is
+ * a string so it passes a null check but survives `post.cover ?? fallback` to
+ * become an empty og:image URL.
+ */
+function readCover(record: Record<string, unknown>, slug: string) {
+  const hasCover = record.cover !== undefined && record.cover !== null
+  const hasAlt = record.coverAlt !== undefined && record.coverAlt !== null
+
+  if (!hasCover && !hasAlt) return { cover: null, coverAlt: null }
+  if (!hasCover || !hasAlt) fail(slug, `"cover" and "coverAlt" must be set together`)
+
+  const cover = typeof record.cover === "string" ? record.cover.trim() : ""
+  const coverAlt = typeof record.coverAlt === "string" ? record.coverAlt.trim() : ""
+
+  if (cover === "") fail(slug, `"cover" must be a non-empty path`)
+  if (coverAlt === "") fail(slug, `"coverAlt" must be a non-empty description`)
+
+  return { cover, coverAlt }
 }
 
 function parsePost(slug: string, source: string): { meta: ParsedMeta; body: string } {
@@ -151,10 +182,7 @@ function parsePost(slug: string, source: string): { meta: ParsedMeta; body: stri
   }
   const record = parsed as Record<string, unknown>
 
-  const cover = typeof record.cover === "string" ? record.cover.trim() : null
-  const coverAlt = typeof record.coverAlt === "string" ? record.coverAlt.trim() : null
-  if (cover !== null && coverAlt === null) fail(slug, `"cover" also requires "coverAlt"`)
-
+  const { cover, coverAlt } = readCover(record, slug)
   const published = readDate(record, "published", slug)
   const wordCount = body.split(/\s+/).filter(Boolean).length
 
