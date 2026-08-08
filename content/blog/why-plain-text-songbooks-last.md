@@ -15,6 +15,18 @@ principle. Getting them out was somebody else's decision.
 That is the problem chordlist starts from. Every song is a Markdown file in a folder you pick, and
 nothing about that arrangement depends on the app continuing to exist.
 
+## File over app
+
+The idea has a name. Steph Ango, who makes Obsidian, wrote an essay called
+[File over app](https://stephango.com/file-over-app) arguing that if you want the things you make to
+outlast the software you made them in, they have to be files you control, in formats that stay easy
+to read. The app is temporary. The file is the thing you keep.
+
+That essay is the direct influence on how chordlist stores songs. It would have been easier to build
+a database and an export button — that is what most apps do, and the export button is usually where
+the trouble starts. Storing the songs as files from the beginning means there is nothing to export,
+because there was never a proprietary version to convert from.
+
 ## A song is a file
 
 Here is a complete song file. There is no database, no proprietary container, and no export step:
