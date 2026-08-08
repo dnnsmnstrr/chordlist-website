@@ -495,6 +495,12 @@ export const blogCopy = {
   card: {
     readingTime: (minutes: number) => `${minutes} min read`,
   },
+  // Only ever rendered on a preview deployment or the dev server, where posts that
+  // are not public yet are shown so they can be reviewed.
+  status: {
+    draft: "Draft",
+    scheduled: (date: string) => `Scheduled for ${date}`,
+  },
   post: {
     back: "All posts",
     related: "Related posts",

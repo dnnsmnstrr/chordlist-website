@@ -175,12 +175,20 @@ Frontmatter is `title`, `description`, `created`, `published`, `tags`, and the o
 filename in the message, so a bad date, a `cover` without a `coverAlt`, or an unknown tag fails
 `pnpm build` rather than shipping broken.
 
-**Scheduling.** A post whose `published` date is in the future is hidden from the index, the sitemap,
-the RSS feed, and its own URL (which 404s). `/blog`, `/blog/[slug]`, `app/sitemap.ts`, and
-`app/blog/rss.xml` all export `revalidate = 3600`, so a scheduled post goes live within about an hour
-of its date with no redeploy. `generateStaticParams` prerenders only visible slugs; a future URL
-renders on demand, hits `notFound()`, and starts resolving once the date passes. Keep the four
-`revalidate` values in step.
+**Scheduling.** In production, a post whose `published` date is in the future — or that carries
+`draft: true` — is hidden from the index, the sitemap, the RSS feed, and its own URL (which 404s).
+`/blog`, `/blog/[slug]`, `app/sitemap.ts`, and `app/blog/rss.xml` all export `revalidate = 3600`, so a
+scheduled post goes live within about an hour of its date with no redeploy. `generateStaticParams`
+prerenders only visible slugs; a future URL renders on demand, hits `notFound()`, and starts resolving
+once the date passes. Keep the four `revalidate` values in step.
+
+**Previews show unreleased posts.** `showsUnreleasedPosts()` in `lib/blog.ts` reads `VERCEL_ENV`, so
+branch previews and the dev server list drafts and future-dated posts while production hides them.
+Each one renders a "Draft" or "Scheduled for …" badge (`PostStatusBadge`), so a preview is never
+mistaken for the live site, and `PostMeta.isPublic` carries the flag to the client. The check fails
+closed: with no `VERCEL_ENV`, only `NODE_ENV !== "production"` reveals them, so `pnpm build &&
+pnpm start` reproduces production exactly and an unfamiliar host hides drafts by default. This is why
+nobody should edit `published` just to preview a post.
 
 `blogTags` in `lib/blog.ts` is a closed vocabulary. Adding a tag means adding it there **and** adding
 its label to `blogCopy.tags` — the label map is typed against the list, so a missing label is a

@@ -60,10 +60,16 @@ coverAlt: An Obsidian vault open beside chordlist on an iPhone.
 | `cover` / `coverAlt` | no | Required together — one without the other fails the build. |
 | `draft` | no | `true` hides the post regardless of date. |
 
-**Scheduling.** A post whose `published` date is in the future is hidden everywhere: the index, the
-sitemap, the RSS feed, and its own URL, which returns 404. The blog routes revalidate hourly, so it
-appears within about an hour of that date with no redeploy and no commit. Set `published` to today to
-go live on merge.
+**Scheduling.** In production, a post whose `published` date is in the future is hidden everywhere:
+the index, the sitemap, the RSS feed, and its own URL, which returns 404. The blog routes revalidate
+hourly, so it appears within about an hour of that date with no redeploy and no commit. Set
+`published` to today to go live on merge.
+
+`draft: true` hides a post in production regardless of its date. It must be a real boolean — `yes`,
+`on`, `1`, and `"true"` are rejected by the build rather than quietly treated as false.
+
+Both drafts and scheduled posts **are** shown on branch previews and the dev server, badged, so you
+can review them before they go public.
 
 # Tags
 
@@ -178,8 +184,14 @@ Then `pnpm dev` and confirm:
 
 - `/blog` shows the card, and the post is found by both the search box and its tag chip.
 - `/blog/<slug>` renders, every internal link resolves, and images load in light and dark mode.
-- To preview a scheduled post, temporarily set `published` to today — then **set it back before
-  committing**.
+
+Drafts and scheduled posts are **visible on the dev server and on branch preview deployments**, and
+hidden in production. They carry a "Draft" or "Scheduled for …" badge wherever they are shown, so
+push the branch and read the post on its Vercel preview URL. Never edit `published` just to preview
+a post — you no longer have to, and forgetting to set it back publishes the post early.
+
+To check what production will actually show, run `pnpm build && pnpm start`: a local production
+build applies the production rules.
 
 # Do not
 

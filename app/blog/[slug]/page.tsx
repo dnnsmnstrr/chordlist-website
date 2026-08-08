@@ -6,7 +6,7 @@ import { ArrowLeft } from "lucide-react"
 
 import { AppCTA } from "@/components/app-cta"
 import { BlogMarkdown } from "@/components/blog-markdown"
-import { PostCard } from "@/components/post-card"
+import { PostCard, PostStatusBadge } from "@/components/post-card"
 import { SiteFooter } from "@/components/site-footer"
 import { SiteHeader } from "@/components/site-header"
 import { getPost, getPublishedSlugs, getRelatedPosts } from "@/lib/blog"
@@ -89,6 +89,11 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         </Link>
 
         <header className="mt-8 border-b border-border pb-8">
+          {post.isPublic ? null : (
+            <div className="mb-4">
+              <PostStatusBadge post={post} />
+            </div>
+          )}
           <p className="font-mono text-sm text-muted-foreground">
             <time dateTime={post.publishedISO}>{post.publishedLabel}</time>
             {" · "}

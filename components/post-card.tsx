@@ -4,6 +4,19 @@ import Link from "next/link"
 import type { PostMeta } from "@/lib/blog"
 import { blogCopy } from "@/locales/en"
 
+/**
+ * Marks a post that the public cannot see yet. Rendered only where unreleased
+ * posts are shown at all — a preview deployment or the dev server — so a preview
+ * is never mistaken for the live site.
+ */
+export function PostStatusBadge({ post }: { post: PostMeta }) {
+  return (
+    <span className="w-fit rounded-full border border-dashed border-border px-2.5 py-0.5 font-mono text-xs text-muted-foreground">
+      {post.draft ? blogCopy.status.draft : blogCopy.status.scheduled(post.publishedLabel)}
+    </span>
+  )
+}
+
 type PostCardProps = {
   post: PostMeta
   /** Drops the cover image, for the denser related-posts grid. */
@@ -23,6 +36,8 @@ export function PostCard({ post, compact = false }: PostCardProps) {
           className="w-full rounded-lg border border-border object-cover"
         />
       ) : null}
+
+      {post.isPublic ? null : <PostStatusBadge post={post} />}
 
       <p className="font-mono text-xs text-muted-foreground">
         <time dateTime={post.publishedISO}>{post.publishedLabel}</time>
