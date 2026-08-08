@@ -467,6 +467,9 @@ export const blogCopy = {
     feedTitle: `${siteConfig.name} blog`,
   },
   title: "Blog",
+  // Shown when nothing has been published yet — distinct from the filter empty
+  // state, which is about a search that matched nothing.
+  noPosts: "No posts yet. The first one goes live soon.",
   introduction:
     "Notes on keeping a songbook in plain text, working with the files outside the app, and what is changing in " +
     `${siteConfig.name}.`,

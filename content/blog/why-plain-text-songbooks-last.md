@@ -2,7 +2,7 @@
 title: Why a songbook should be plain text
 description: Apps close down and export tools break. A folder of Markdown files outlives both.
 created: 2026-08-01
-published: 2026-08-01
+published: 2026-08-14
 tags:
   - markdown
   - workflow

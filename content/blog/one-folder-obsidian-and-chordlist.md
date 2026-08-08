@@ -2,7 +2,7 @@
 title: One folder, Obsidian and chordlist
 description: An Obsidian vault is a folder of Markdown files. So is a chordlist library. They can be the same folder.
 created: 2026-08-04
-published: 2026-08-04
+published: 2026-09-18
 tags:
   - obsidian
   - workflow

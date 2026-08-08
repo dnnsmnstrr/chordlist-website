@@ -2,7 +2,7 @@
 title: Finding the chords in a song
 description: How to work out a progression by ear when there is no chart, or the chart you found is wrong.
 created: 2026-08-08
-published: 2026-08-18
+published: 2026-08-21
 tags:
   - chords
   - workflow

@@ -2,7 +2,7 @@
 title: Finding songs that share a progression
 description: Four chords cover a startling amount of the songbook. chordlist groups the songs that match.
 created: 2026-08-08
-published: 2026-08-25
+published: 2026-09-11
 tags:
   - chords
   - workflow

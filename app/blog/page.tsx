@@ -59,22 +59,30 @@ export default async function BlogPage() {
         </header>
 
         <div className="mt-10">
-          {/*
-            BlogPostList reads the URL with useSearchParams, which requires a Suspense
-            boundary in a prerendered route. The fallback is the unfiltered grid, so the
-            page is useful before hydration and nothing shifts when it arrives.
-          */}
-          <Suspense
-            fallback={
-              <div className="grid gap-5 sm:grid-cols-2">
-                {posts.map((post) => (
-                  <PostCard key={post.slug} post={post} />
-                ))}
-              </div>
-            }
-          >
-            <BlogPostList posts={posts} tags={tags} />
-          </Suspense>
+          {posts.length === 0 ? (
+            // Before the first post goes live there is nothing to search or filter,
+            // so the whole control row would be furniture above an empty list.
+            <p className="rounded-xl border border-border bg-muted/40 p-8 text-center text-sm text-muted-foreground">
+              {blogCopy.noPosts}
+            </p>
+          ) : (
+            /*
+              BlogPostList reads the URL with useSearchParams, which requires a Suspense
+              boundary in a prerendered route. The fallback is the unfiltered grid, so the
+              page is useful before hydration and nothing shifts when it arrives.
+            */
+            <Suspense
+              fallback={
+                <div className="grid gap-5 sm:grid-cols-2">
+                  {posts.map((post) => (
+                    <PostCard key={post.slug} post={post} />
+                  ))}
+                </div>
+              }
+            >
+              <BlogPostList posts={posts} tags={tags} />
+            </Suspense>
+          )}
         </div>
       </div>
 

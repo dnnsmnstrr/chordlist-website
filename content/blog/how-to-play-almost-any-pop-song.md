@@ -2,7 +2,7 @@
 title: Learn how to play (almost) any pop song
 description: Four chords, in one order, carry a startling share of popular music. Here is the shape and how to practise it.
 created: 2026-08-08
-published: 2026-08-11
+published: 2026-08-28
 tags:
   - chords
   - workflow
