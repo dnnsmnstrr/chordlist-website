@@ -2,7 +2,7 @@
 title: Three ways to write down a chord progression
 description: Chord symbols, Roman numerals, and Nashville numbers describe the same music. Knowing which to reach for saves a lot of transposing.
 created: 2026-08-08
-published: 2026-08-26
+published: 2026-09-01
 tags:
   - chords
   - markdown
