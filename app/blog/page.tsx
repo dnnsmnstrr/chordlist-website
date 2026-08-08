@@ -7,7 +7,7 @@ import { SiteFooter } from "@/components/site-footer"
 import { SiteHeader } from "@/components/site-header"
 import { getPublishedPosts, getTagCounts } from "@/lib/blog"
 import { siteConfig } from "@/lib/site-config"
-import { blogCopy } from "@/locales/en"
+import { blogCopy, locale, metadataCopy } from "@/locales/en"
 
 /**
  * Hourly revalidation is what makes scheduled posts work: a post whose `published`
@@ -21,6 +21,25 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "/blog",
     types: { "application/rss+xml": "/blog/rss.xml" },
+  },
+  // Page metadata replaces the layout's shallowly rather than merging, so without
+  // these a share of /blog would carry the home page's title, description, and URL.
+  openGraph: {
+    type: "website",
+    url: `${siteConfig.url}/blog`,
+    siteName: siteConfig.name,
+    locale: locale.openGraph,
+    title: blogCopy.metadata.title,
+    description: blogCopy.metadata.description,
+    images: [{ url: "/og.png", width: 1200, height: 630, alt: metadataCopy.socialImageAlt }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    site: siteConfig.social.x.handle,
+    creator: siteConfig.social.x.handle,
+    title: blogCopy.metadata.title,
+    description: blogCopy.metadata.description,
+    images: ["/og.png"],
   },
 }
 

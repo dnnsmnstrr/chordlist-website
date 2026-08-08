@@ -38,6 +38,29 @@ export type PostMeta = {
   coverAlt: string | null
   draft: boolean
   readingMinutes: number
+  /** False for a draft or a post whose published date has not arrived. */
+  isPublic: boolean
+}
+
+/** Everything parsePost can know without being told what "now" is. */
+type ParsedMeta = Omit<PostMeta, "isPublic">
+
+/**
+ * Whether this deployment shows posts the public should not see yet — drafts and
+ * future-dated posts.
+ *
+ * Vercel sets VERCEL_ENV on every deployment ("production" | "preview" |
+ * "development"), so a branch preview shows unreleased posts and production does
+ * not. Off Vercel, the dev server shows them while a production build does not,
+ * which keeps `pnpm build && pnpm start` an honest rehearsal of production.
+ *
+ * The default is strict on purpose: anything that is not clearly a preview hides
+ * unreleased posts, so a host that does not set VERCEL_ENV fails closed.
+ */
+export function showsUnreleasedPosts() {
+  const vercelEnv = process.env.VERCEL_ENV
+  if (vercelEnv !== undefined && vercelEnv !== "") return vercelEnv !== "production"
+  return process.env.NODE_ENV !== "production"
 }
 
 export type Post = PostMeta & { html: string }
@@ -73,9 +96,22 @@ function readString(record: Record<string, unknown>, field: string, slug: string
  */
 function readDate(record: Record<string, unknown>, field: string, slug: string) {
   const value = record[field]
-  if (value instanceof Date) return value.toISOString().slice(0, 10)
-  if (typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value.trim())) return value.trim()
-  return fail(slug, `"${field}" must be a YYYY-MM-DD date`)
+  const text =
+    value instanceof Date ? value.toISOString().slice(0, 10) : typeof value === "string" ? value.trim() : null
+
+  if (text === null || !/^\d{4}-\d{2}-\d{2}$/.test(text)) {
+    return fail(slug, `"${field}" must be a YYYY-MM-DD date`)
+  }
+
+  // The shape being right does not make the date real: 2026-02-29 and 2026-04-31
+  // both roll forward silently, which would publish and label the post a day late.
+  // Requiring the value to survive a round trip rejects them.
+  const parsed = new Date(`${text}T00:00:00Z`)
+  if (Number.isNaN(parsed.getTime()) || parsed.toISOString().slice(0, 10) !== text) {
+    return fail(slug, `"${field}" is not a real calendar date: ${text}`)
+  }
+
+  return text
 }
 
 /**
@@ -105,7 +141,7 @@ function readTags(record: Record<string, unknown>, slug: string): readonly BlogT
   })
 }
 
-function parsePost(slug: string, source: string): { meta: PostMeta; body: string } {
+function parsePost(slug: string, source: string): { meta: ParsedMeta; body: string } {
   const { frontmatter, body } = splitFrontmatter(source)
   if (frontmatter === null) fail(slug, "missing YAML frontmatter")
 
@@ -148,7 +184,7 @@ function parsePost(slug: string, source: string): { meta: PostMeta; body: string
  * Wrapped in React's `cache` so the index page, `generateStaticParams`,
  * `generateMetadata`, the sitemap, and the RSS feed share one directory read.
  */
-const readAllPosts = cache(async (): Promise<{ meta: PostMeta; body: string }[]> => {
+const readAllPosts = cache(async (): Promise<{ meta: ParsedMeta; body: string }[]> => {
   const entries = await readdir(POSTS_DIRECTORY, { withFileTypes: true })
   const files = entries.filter((entry) => entry.isFile() && entry.name.endsWith(".md"))
 
@@ -167,17 +203,26 @@ const readAllPosts = cache(async (): Promise<{ meta: PostMeta; body: string }[]>
 })
 
 /**
- * A post is visible once it is not a draft and its published date has arrived.
+ * A post is public once it is not a draft and its published date has arrived.
  * The blog routes revalidate hourly, so "now" is re-evaluated after each window
  * and a scheduled post goes live without a redeploy.
  */
-function isVisible(meta: PostMeta, now: Date) {
+function isPublic(meta: ParsedMeta, now: Date) {
   return !meta.draft && Date.parse(meta.publishedISO) <= now.getTime()
+}
+
+/** Public posts, plus unreleased ones when this deployment shows them. */
+function selectVisible(posts: readonly { meta: ParsedMeta }[], now: Date): PostMeta[] {
+  const showUnreleased = showsUnreleasedPosts()
+
+  return posts
+    .map((post) => ({ ...post.meta, isPublic: isPublic(post.meta, now) }))
+    .filter((meta) => meta.isPublic || showUnreleased)
 }
 
 export async function getPublishedPosts(now: Date = new Date()): Promise<PostMeta[]> {
   const posts = await readAllPosts()
-  return posts.map((post) => post.meta).filter((meta) => isVisible(meta, now))
+  return selectVisible(posts, now)
 }
 
 export async function getPublishedSlugs(now: Date = new Date()): Promise<string[]> {
@@ -189,9 +234,12 @@ export async function getPost(slug: string, now: Date = new Date()): Promise<Pos
   const posts = await readAllPosts()
   const post = posts.find((candidate) => candidate.meta.slug === slug)
 
-  if (post === undefined || !isVisible(post.meta, now)) return null
+  if (post === undefined) return null
 
-  return { ...post.meta, html: renderMarkdown(post.body) }
+  const meta = { ...post.meta, isPublic: isPublic(post.meta, now) }
+  if (!meta.isPublic && !showsUnreleasedPosts()) return null
+
+  return { ...meta, html: renderMarkdown(post.body) }
 }
 
 export async function getTagCounts(now: Date = new Date()): Promise<TagCount[]> {

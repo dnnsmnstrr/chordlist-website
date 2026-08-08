@@ -1,8 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useMemo, useState } from "react"
-import type { Route } from "next"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useSearchParams } from "next/navigation"
 import { Search, X } from "lucide-react"
 
 import { PostCard } from "@/components/post-card"
@@ -29,7 +28,6 @@ function buildSearch(query: string, tags: readonly BlogTag[]) {
 
 
 export function BlogPostList({ posts, tags }: BlogPostListProps) {
-  const router = useRouter()
   const searchParams = useSearchParams()
 
   // Tags come straight from the URL — no mirrored state, so back and forward work
@@ -56,12 +54,18 @@ export function BlogPostList({ posts, tags }: BlogPostListProps) {
       const search = buildSearch(nextQuery, nextTags)
       if (search === currentSearch) return
 
-      // typedRoutes checks literal routes; the query string is not part of that.
-      const url = (search === "" ? "/blog" : `/blog?${search}`) as Route
-      if (mode === "push") router.push(url, { scroll: false })
-      else router.replace(url, { scroll: false })
+      const url = search === "" ? "/blog" : `/blog?${search}`
+
+      // Native history rather than router.push. Filtering happens entirely on the
+      // client, so there is nothing for the router to fetch, and Next syncs
+      // useSearchParams from these calls. It also has to be this way: /blog is
+      // statically rendered, so the router treats it as the canonical URL and
+      // silently ignores a push that only changes the query — which left every
+      // filter dead on a page opened from a shared link.
+      if (mode === "push") window.history.pushState(null, "", url)
+      else window.history.replaceState(null, "", url)
     },
-    [router, currentSearch],
+    [currentSearch],
   )
 
   // Typing replaces the current entry, so a search does not fill up history. A tag
@@ -86,7 +90,13 @@ export function BlogPostList({ posts, tags }: BlogPostListProps) {
     [selectedTags, query, navigate],
   )
 
-  const clear = useCallback(() => {
+  // The "All" chip lives inside the tag group, so it clears tags only and leaves
+  // the search alone. "Clear filters" below is the one that resets both.
+  const clearTags = useCallback(() => {
+    navigate(query, [], "push")
+  }, [query, navigate])
+
+  const clearAll = useCallback(() => {
     setQuery("")
     navigate("", [], "push")
   }, [navigate])
@@ -129,7 +139,7 @@ export function BlogPostList({ posts, tags }: BlogPostListProps) {
         </div>
 
         <div role="group" aria-label={blogCopy.filters.label} className="flex flex-wrap items-center gap-2">
-          <TagChip label={blogCopy.filters.all} isActive={selectedTags.length === 0} onClick={clear} />
+          <TagChip label={blogCopy.filters.all} isActive={selectedTags.length === 0} onClick={clearTags} />
           {tags.map(({ tag, count }) => (
             <TagChip
               key={tag}
@@ -147,7 +157,7 @@ export function BlogPostList({ posts, tags }: BlogPostListProps) {
           {hasFilters ? (
             <button
               type="button"
-              onClick={clear}
+              onClick={clearAll}
               className="flex items-center gap-1 rounded-md font-mono text-xs text-muted-foreground underline underline-offset-4 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               <X aria-hidden="true" className="size-3" />
