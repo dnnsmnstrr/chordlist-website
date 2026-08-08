@@ -77,6 +77,13 @@ const dateFormatter = new Intl.DateTimeFormat(locale.dateLocale, {
 /** Average adult reading speed, rounded to whole minutes. */
 const WORDS_PER_MINUTE = 200
 
+/**
+ * The filename becomes a URL path segment verbatim, so it has to be safe as one.
+ * A `#` or `?` would turn part of the slug into a fragment or query in every link,
+ * feed item, and sitemap entry, and `rss.xml.md` would collide with the feed route.
+ */
+const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
+
 function fail(slug: string, message: string): never {
   throw new Error(`content/blog/${slug}.md: ${message}`)
 }
@@ -123,10 +130,13 @@ function readDate(record: Record<string, unknown>, field: string, slug: string) 
  * the one failure this flag exists to prevent — so reject them instead.
  */
 function readDraft(record: Record<string, unknown>, slug: string) {
+  // Only an absent key defaults to false. A bare `draft:` parses as null, which
+  // would otherwise publish a post whose author clearly meant to hold it back.
+  if (!("draft" in record)) return false
+
   const value = record.draft
-  if (value === undefined || value === null) return false
   if (typeof value === "boolean") return value
-  return fail(slug, `"draft" must be true or false, not ${JSON.stringify(value)}`)
+  return fail(slug, `"draft" must be true or false, not ${JSON.stringify(value) ?? String(value)}`)
 }
 
 function readTags(record: Record<string, unknown>, slug: string): readonly BlogTag[] {
@@ -218,8 +228,13 @@ const readAllPosts = cache(async (): Promise<{ meta: ParsedMeta; body: string }[
 
   const posts = await Promise.all(
     files.map(async (file) => {
+      const slug = file.name.slice(0, -".md".length)
+      if (!SLUG_PATTERN.test(slug)) {
+        fail(slug, "filename must be lowercase kebab-case, e.g. keep-a-songbook-in-git.md")
+      }
+
       const source = await readFile(path.join(POSTS_DIRECTORY, file.name), "utf8")
-      return parsePost(file.name.slice(0, -".md".length), source)
+      return parsePost(slug, source)
     }),
   )
 
