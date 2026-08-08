@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { useSearchParams } from "next/navigation"
-import { Search, X } from "lucide-react"
+import { Eye, EyeOff, Search, X } from "lucide-react"
 
 import { PostCard } from "@/components/post-card"
 // Values come from lib/blog-tags; lib/blog imports node:fs and is server-only.
@@ -101,18 +101,29 @@ export function BlogPostList({ posts, tags }: BlogPostListProps) {
     navigate("", [], "push")
   }, [navigate])
 
+  // Unreleased posts only reach the client on a preview deployment or the dev
+  // server, so this is the whole condition for the toggle existing: in production
+  // there is nothing to hide and it never renders.
+  const hasUnreleased = posts.some((post) => !post.isPublic)
+
+  // Deliberately local rather than a URL param: ?q= and ?tag= are the shareable
+  // public filters, and a staging-only view switch does not belong in that
+  // namespace. It also keeps toggling instant, with no history entries.
+  const [liveOnly, setLiveOnly] = useState(false)
+
   const visiblePosts = useMemo(() => {
     // Token-AND, so "obsidian vault" still finds "One folder, Obsidian and chordlist".
     const tokens = query.trim().toLocaleLowerCase().split(/\s+/).filter(Boolean)
 
     return posts.filter((post) => {
+      if (liveOnly && !post.isPublic) return false
       if (selectedTags.length > 0 && !post.tags.some((tag) => selectedTags.includes(tag))) return false
       if (tokens.length === 0) return true
 
       const haystack = `${post.title} ${post.description} ${post.tags.join(" ")}`.toLocaleLowerCase()
       return tokens.every((token) => haystack.includes(token))
     })
-  }, [posts, query, selectedTags])
+  }, [posts, query, selectedTags, liveOnly])
 
   const hasFilters = query.trim() !== "" || selectedTags.length > 0
 
@@ -138,16 +149,40 @@ export function BlogPostList({ posts, tags }: BlogPostListProps) {
           />
         </div>
 
-        <div role="group" aria-label={blogCopy.filters.label} className="flex flex-wrap items-center gap-2">
-          <TagChip label={blogCopy.filters.all} isActive={selectedTags.length === 0} onClick={clearTags} />
-          {tags.map(({ tag, count }) => (
-            <TagChip
-              key={tag}
-              label={`${blogCopy.tags[tag]} · ${count}`}
-              isActive={selectedTags.includes(tag)}
-              onClick={() => toggleTag(tag)}
-            />
-          ))}
+        <div className="flex flex-wrap items-center gap-2">
+          <div role="group" aria-label={blogCopy.filters.label} className="flex flex-wrap items-center gap-2">
+            <TagChip label={blogCopy.filters.all} isActive={selectedTags.length === 0} onClick={clearTags} />
+            {tags.map(({ tag, count }) => (
+              <TagChip
+                key={tag}
+                label={`${blogCopy.tags[tag]} · ${count}`}
+                isActive={selectedTags.includes(tag)}
+                onClick={() => toggleTag(tag)}
+              />
+            ))}
+          </div>
+
+          {hasUnreleased ? (
+            <button
+              type="button"
+              aria-pressed={liveOnly}
+              title={blogCopy.filters.liveOnlyHint}
+              onClick={() => setLiveOnly((current) => !current)}
+              // Dashed, like the status badge, to read as the same staging-only idea
+              // rather than as another tag.
+              className={cn(
+                "ml-auto flex items-center gap-1.5 rounded-full border border-dashed border-border px-3 py-1 font-mono text-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                liveOnly ? "bg-foreground text-background" : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              {liveOnly ? (
+                <EyeOff aria-hidden="true" className="size-3" />
+              ) : (
+                <Eye aria-hidden="true" className="size-3" />
+              )}
+              {blogCopy.filters.liveOnly}
+            </button>
+          ) : null}
         </div>
 
         <div className="flex items-center gap-3">

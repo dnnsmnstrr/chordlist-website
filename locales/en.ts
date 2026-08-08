@@ -480,6 +480,10 @@ export const blogCopy = {
     all: "All",
     resultCount: (count: number) => (count === 1 ? "1 post" : `${count} posts`),
     empty: "No posts match that search yet.",
+    // Only rendered where unreleased posts are listed — a preview deployment or
+    // the dev server. See blogCopy.status.
+    liveOnly: "Live only",
+    liveOnlyHint: "Hide drafts and scheduled posts to see what production shows",
   },
   // Label for every tag in `blogTags`. Typed against that list, so adding a tag
   // without a label here is a typecheck error.
