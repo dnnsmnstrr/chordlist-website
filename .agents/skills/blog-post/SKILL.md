@@ -1,44 +1,53 @@
 ---
 name: blog-post
-description: Draft, place, and publish a chordlist marketing blog post as Markdown with frontmatter in content/blog.
+description: Draft, edit, review, schedule, or publish chordlist blog posts in content/blog, including frontmatter, editorial standards, product accuracy, internal links, images, social cards, and validation.
 ---
 
 # Blog post
 
-Writes one new post for the chordlist website: a Markdown file in `content/blog/`, plus any images
-in `public/blog/<slug>/`. The `/blog` route, the search, the tag filter, the RSS feed, and the social
-cards already exist and pick the file up automatically.
+Work on chordlist articles in `content/blog/` and their optional images in
+`public/blog/<slug>/`. Let the existing blog routes, search, filters, RSS feed, sitemap, related
+posts, and social metadata discover the Markdown file automatically.
 
-Do **not** edit `lib/blog.ts`, the pages, or the components to accommodate a post. If a post seems to
-need a code change, stop and say so instead.
+Do not change blog application code merely to accommodate one article. If the requested article
+genuinely requires a new renderer feature, tag, or other site capability, identify that separately
+before expanding the implementation scope.
 
-# Workflow
+## Workflow
 
-1. Confirm the topic and the reader. If the request is one word ("Obsidian"), ask what angle before
-   writing.
-2. Read `lib/site-config.ts` for facts, `locales/en.ts` for voice, and the two most recent files in
-   `content/blog/` for tone.
-3. Pick the slug and create `content/blog/<slug>.md`.
-4. Write the frontmatter, then the body.
-5. Add at least two internal links from the table below.
-6. Add images if they help, in `public/blog/<slug>/`.
-7. Run `pnpm build:og` to generate the post's social card.
-8. Run `pnpm check`. It must pass clean.
+1. Read `docs/blog-editorial-guidelines.md` completely before drafting, editing, or reviewing a
+   post.
+2. Establish the post's reader, problem, and single promise from the request and existing material.
+   Ask only when a missing choice would materially change the article.
+3. Read the most relevant existing posts for overlap and contextual links. Read the live product
+   sources under **Accuracy** before making product claims.
+4. For a new post, choose a permanent slug and create `content/blog/<slug>.md`. For an existing
+   post, preserve its filename and publication history unless the user explicitly requests a
+   change.
+5. Draft or edit the frontmatter and body. Keep product explanation proportional to the article's
+   reader value.
+6. Fact-check broad music claims, external facts, and current product behaviour. Prefer primary
+   sources.
+7. Add relevant internal links and images where they improve the article.
+8. Run `pnpm build:og` after adding a post or changing its title, description, or cover. Commit the
+   resulting social card with the post.
+9. Run `pnpm check`. Preview the article at mobile and desktop widths when the change affects layout,
+   images, or complex Markdown.
 
-# Pick the slug
+## Slugs
 
-Kebab-case ASCII, two to five words, describing the topic rather than the format. No date prefix.
+Use lowercase ASCII kebab-case, normally two to five descriptive words, with no date prefix.
 `content/blog/keep-a-songbook-in-git.md` becomes `/blog/keep-a-songbook-in-git`.
 
-**The slug is the permanent URL.** Never rename an existing one — it breaks inbound links, the
-sitemap, and the RSS GUID.
+Treat the slug as a permanent URL. Do not rename an existing post: that breaks inbound links, the
+sitemap entry, and the RSS GUID.
 
-# Frontmatter
+## Frontmatter
 
 ```yaml
 ---
 title: Keep your songbook in Obsidian
-description: One sentence. Shown on the index card, in the meta description, in the social card, and in the RSS item.
+description: Use one folder of Markdown files as both an Obsidian vault and a portable chordlist library.
 created: 2026-08-08
 published: 2026-08-15
 tags:
@@ -46,159 +55,128 @@ tags:
   - workflow
 cover: /blog/keep-your-songbook-in-obsidian/cover.png
 coverAlt: An Obsidian vault open beside chordlist on an iPhone.
+draft: true
 ---
 ```
 
-| Field | Required | Notes |
+| Field | Required | Rules |
 | --- | --- | --- |
-| `title` | yes | No trailing period. Sentence case. |
-| `description` | yes | One sentence, reused in four places, so it must stand alone. |
-| `created` | yes | `YYYY-MM-DD`, the day it was drafted. |
-| `published` | yes | `YYYY-MM-DD`. **The visibility gate.** |
-| `tags` | yes | One to three, from the closed list below. |
-| `cover` / `coverAlt` | no | Required together — one without the other fails the build. |
-| `draft` | no | `true` hides the post regardless of date. |
+| `title` | yes | Sentence case, no trailing period. |
+| `description` | yes | One standalone sentence used for cards, metadata, social images, and RSS. |
+| `created` | yes | Real `YYYY-MM-DD` date on which the draft was created. |
+| `published` | yes | Real `YYYY-MM-DD` date; this controls scheduled visibility. |
+| `tags` | yes | Normally one primary and at most one meaningful secondary tag. |
+| `cover` / `coverAlt` | no | Set both or neither; one without the other fails the build. |
+| `draft` | no | Use the boolean `true` to hide the post regardless of its date. |
 
-**Scheduling.** In production, a post whose `published` date is in the future is hidden everywhere:
-the index, the sitemap, the RSS feed, and its own URL, which returns 404. The blog routes revalidate
-hourly, so it appears within about an hour of that date with no redeploy and no commit. Set
-`published` to today to go live on merge.
+In production, future-dated and draft posts are absent from the index, sitemap, RSS feed, and their
+own URL. Blog routes revalidate hourly, so a scheduled post normally appears within about an hour
+of its publication date without another deployment.
 
-`draft: true` hides a post in production regardless of its date. It must be a real boolean — `yes`,
-`on`, `1`, and `"true"` are rejected by the build rather than quietly treated as false.
+Preview deployments and the development server show unreleased posts with a status badge. Do not
+temporarily change `published` merely to preview an article. Use `pnpm build && pnpm start` when an
+exact rehearsal of production visibility is needed.
 
-Both drafts and scheduled posts **are** shown on branch previews and the dev server, badged, so you
-can review them before they go public.
+## Tags
 
-# Tags
+Read the closed vocabulary from `lib/blog-tags.ts` and its display labels from `blogCopy.tags` in
+`locales/en.ts`. An unknown or repeated tag fails the build.
 
-The vocabulary is closed. It lives in `blogTags` in `lib/blog.ts`:
+Follow the editorial guide's selection rules. Adding a new tag is a site taxonomy change, not a
+routine part of writing one post: update both sources in the same change only when the broader
+content plan justifies it.
 
-`markdown` · `workflow` · `ios` · `obsidian` · `offline` · `chords` · `release`
+## Accuracy
 
-A tag outside that list **fails `pnpm build`** by design. Adding a new one means adding it to
-`blogTags` *and* adding its display label to `blogCopy.tags` in `locales/en.ts` in the same commit —
-the label map is typed against the list, so a missing label is a typecheck error.
+Treat repository sources as authoritative for current chordlist behaviour:
 
-# Voice
+- `lib/site-config.ts` for URLs, launch status, platform version, and numeric configuration;
+- `locales/en.ts` for current product, FAQ, press, and blog-chrome wording;
+- `app/privacy/page.tsx` and its copy in `locales/en.ts` for privacy and data-handling claims;
+- the sibling chordlist iOS repository for detailed app behaviour that the website does not specify;
+  and
+- current official documentation for third-party products such as Apple or Obsidian.
 
-Match the existing site copy, which is plain and concrete.
+Do not copy a possibly stale fact from an older post. Do not invent or embellish pricing,
+availability, usage counts, performance, competitors' behaviour, or security properties. Preserve
+tentative wording such as `planned` when the source remains tentative. If the sources do not support
+a claim, qualify it, research it from a primary source, or omit it.
 
-- Second person, present tense. Short sentences.
-- Open with the reader's problem, not the product.
-- No exclamation marks, no "revolutionary", no "seamless", no "effortless".
-- `chordlist` is always lowercase and always spelled out.
-- 500–900 words. No H1 — the title comes from the frontmatter. Use `##` for structure, `###` sparingly.
-- Prefer a real file, folder, or chord example over an adjective.
-- Being honest about a limitation is better copy than hiding it. The existing posts each end with
-  what you give up.
+Do not hardcode a TestFlight, App Store, or pre-order URL in an article. Every post already renders
+`AppCTA`, whose target and label come from the current site configuration.
 
-# Link into the site
+## Internal links
 
-Every post needs at least two internal links, taken from this table and no other. These anchors are
-verified to exist.
+Choose links for reader value rather than to satisfy a quota. Normally include one relevant docs
+link and one contextual link to another post when a useful next article exists.
+
+Verified site targets:
 
 | Target | Use it for |
 | --- | --- |
 | `/docs#getting-started` | choosing the songs folder, first run, changing it later |
 | `/docs#library` | search, tag filters, sorting, shuffle, Now Playing |
-| `/docs#playing` | autoscroll, transpose, matching progressions, play history |
+| `/docs#playing` | autoscroll, transposition, matching progressions, play history |
 | `/docs#adding-songs` | creating songs, URL and share import, Apple Music |
-| `/docs#file-format` | folder layout, frontmatter fields the app maintains |
-| `/docs#other-apps` | Files and Finder, Markdown editors, Git backups |
+| `/docs#file-format` | folder layout and app-maintained frontmatter |
+| `/docs#other-apps` | Files, Finder, Markdown editors, and Git backups |
 | `/docs#obsidian` | using an Obsidian vault as the library |
-| `/docs#offline` | Keep Downloaded for an iCloud folder |
-| `/#features` | the four-point pitch |
+| `/docs#offline` | keeping an iCloud folder downloaded |
+| `/#features` | the main product features |
 | `/#preview` | the rendered sample song |
 | `/songs/morning-light.md` | the downloadable sample song file |
-| `/faq` | pricing, analytics, device support questions |
-| `/press` · `/privacy` | press kit; data handling |
+| `/faq` | pricing, analytics, and device support |
+| `/press` | the press kit |
+| `/privacy` | data handling |
 
-`/faq` has **no per-question anchors** — `CollapsibleSection` renders a bare `<details>` with no
-`id` — so link to `/faq` as a whole.
+The FAQ currently has no per-question anchors, so link to `/faq` as a whole. Verify links against
+the current routes rather than assuming this table can never change.
 
-**Never write a TestFlight, App Store, or pre-order URL into a post.** Every post renders an
-`<AppCTA />` after the body, which derives its link and label from `siteConfig.links`. A hardcoded
-store URL in prose goes stale the day that changes.
+## Images
 
-# Accuracy rules
-
-Blog posts are marketing copy about a real product. CLAUDE.md forbids inventing, softening, or
-embellishing claims about data handling, pricing, or availability. That applies here.
-
-**You may state as fact:**
-
-- Songs are plain Markdown files in a folder the user chooses through the Files picker.
-- chordlist does not upload or sync the song library. A folder in iCloud Drive is synced by Apple
-  under the user's own settings, not by chordlist.
-- Browsing, editing, searching, transposing, and playing work offline. Importing from a URL needs a
-  connection.
-- Analytics go through TelemetryDeck, are anonymous, and can be turned off in Settings.
-- Contributing chord data is a separate opt-in; lyrics and tags are never included.
-- Free for a library of up to `freeSongLimit` songs, with an optional one-time purchase for
-  unlimited songs. Final pricing will be announced before launch.
-- iPhone and iPad, iOS or iPadOS `minimumOSVersion` or later. No Android version is planned.
-- Currently distributed through TestFlight.
-
-**Never assert:** a specific price or price range; download, user, or review counts; "available on
-the App Store" while `links.appStore` is null; performance benchmarks; what a competing app does;
-security language beyond what `app/privacy/page.tsx` already says — no "encrypted", "private by
-design", or "zero-knowledge".
-
-If a fact is not in `lib/site-config.ts`, `locales/en.ts`, or `app/privacy/page.tsx`, do not assert
-it. Ask.
-
-# Images
-
-Put them in `public/blog/<slug>/` and reference them with ordinary Markdown:
+Put article images in `public/blog/<slug>/` and reference them with Markdown:
 
 ```md
 ![A song file open in a text editor beside chordlist.](/blog/my-slug/editor.png "Same file, two apps")
 ```
 
-- The Markdown **title** becomes a `<figcaption>`; the **alt text** describes the image for screen
-  readers. Do not make them identical.
-- Body images render as a plain lazy-loaded `<img>`, so they bypass `next/image` optimisation. Export
-  at about 1600px wide and compress. For a tall or unusual aspect ratio, hand-write
-  `<img src="…" width="1600" height="900" loading="lazy" decoding="async" alt="…">` — raw HTML passes
-  through.
-- **No remote image URLs.** There is no `images.remotePatterns` config, and they would break.
-- A `cover` is optional. When set, author it at exactly **1200×630** and name it `cover.png`: the same
-  file then serves the index card, the article hero, and the social preview.
-- Without a cover, the post still gets a generated card at `public/blog/og/<slug>.png` from
-  `pnpm build:og`. Run that command after creating the post and commit the PNG.
+The alt text describes the image for screen readers; the Markdown title becomes the visible caption.
+Do not make them identical.
 
-# Check it
+- Use local images, not remote URLs.
+- Export ordinary body images at about 1600px wide and compress them. They render as lazy-loaded
+  `<img>` elements rather than through `next/image`.
+- Author a cover at exactly 1200×630 and normally name it `cover.png`. The same file serves the index
+  card, article hero, and social preview.
+- Without a cover, `pnpm build:og` generates `public/blog/og/<slug>.png`.
+- Remember that raw HTML is trusted and unsanitised. Never paste fetched or user-submitted HTML into
+  a post.
 
-```
-pnpm build:og
+## Validation
+
+Run:
+
+```bash
+pnpm build:og # new post or changed title, description, or cover
 pnpm check
 ```
 
-`pnpm check` runs lint with `--max-warnings=0`, then typecheck, then the production build. The build
-is where a bad date, an unknown tag, a `cover` without `coverAlt`, or a missing `description` will
-fail, with the filename in the message.
+`pnpm check` runs lint, typechecking, and the production build. The build validates dates, slugs,
+tags, required frontmatter, and the `cover`/`coverAlt` pair.
 
-Then `pnpm dev` and confirm:
+When visual review is relevant, confirm that:
 
-- `/blog` shows the card, and the post is found by both the search box and its tag chip.
-- `/blog/<slug>` renders, every internal link resolves, and images load in light and dark mode.
+- `/blog` shows the expected card, search result, and tag filters;
+- `/blog/<slug>` renders every link and image correctly;
+- code blocks, tables, and images work at a narrow mobile width; and
+- draft or scheduled visibility matches the intended release state.
 
-Drafts and scheduled posts are **visible on the dev server and on branch preview deployments**, and
-hidden in production. They carry a "Draft" or "Scheduled for …" badge wherever they are shown, so
-push the branch and read the post on its Vercel preview URL. Never edit `published` just to preview
-a post — you no longer have to, and forgetting to set it back publishes the post early.
+## Guardrails
 
-To check what production will actually show, run `pnpm build && pnpm start`: a local production
-build applies the production rules.
-
-# Do not
-
-- Add a Markdown, date, or search dependency. `marked` and `yaml` are what we have.
-- Put post copy in a `.tsx` file, or blog chrome in a Markdown file.
-- Add an H1 to the body.
-- Rename the slug of an existing post.
-- Special-case a post inside `lib/blog.ts`.
-- Invent a tag without updating `blogTags` and `blogCopy.tags`.
-- Paste untrusted or fetched HTML into a post. The renderer does not sanitise; it passes raw HTML
-  through on purpose, and that is safe only because posts are repo-committed.
+- Keep article copy in Markdown, not `.tsx` files.
+- Keep blog chrome in `locales/en.ts`, not Markdown.
+- Do not add an H1 to the article body.
+- Do not rename an existing slug.
+- Do not special-case one post in `lib/blog.ts`.
+- Do not add Markdown, date, or search dependencies for an article.
+- Do not feed untrusted content to the unsanitised Markdown renderer.

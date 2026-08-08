@@ -166,9 +166,10 @@ lines above the words.
 ## Blog
 
 Posts are Markdown files in `content/blog/<slug>.md`. **The filename is the slug and therefore the
-permanent URL** — never rename one. To write a post, follow `.agents/skills/blog-post/SKILL.md`
-(or run `/blog-post`); it carries the frontmatter reference, the voice guide, the verified list of
-internal link targets, and the accuracy rules.
+permanent URL** — never rename one. `docs/blog-editorial-guidelines.md` is the source of truth for
+voice, structure, accuracy, linking, and editorial review. To draft, edit, or publish a post, follow
+`.agents/skills/blog-post/SKILL.md` (or run `/blog-post`); it carries the operational workflow,
+frontmatter reference, verified site targets, image handling, and validation steps.
 
 Frontmatter is `title`, `description`, `created`, `published`, `tags`, and the optional
 `cover`/`coverAlt` pair and `draft` flag. `lib/blog.ts` validates all of it and throws with the
@@ -190,7 +191,7 @@ closed: with no `VERCEL_ENV`, only `NODE_ENV !== "production"` reveals them, so 
 pnpm start` reproduces production exactly and an unfamiliar host hides drafts by default. This is why
 nobody should edit `published` just to preview a post.
 
-`blogTags` in `lib/blog.ts` is a closed vocabulary. Adding a tag means adding it there **and** adding
+`blogTags` in `lib/blog-tags.ts` is a closed vocabulary. Adding a tag means adding it there **and** adding
 its label to `blogCopy.tags` — the label map is typed against the list, so a missing label is a
 typecheck error.
 

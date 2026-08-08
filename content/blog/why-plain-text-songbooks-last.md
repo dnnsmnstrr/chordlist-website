@@ -2,22 +2,22 @@
 title: Why a songbook should be plain text
 description: Apps close down and export tools break. A folder of Markdown files outlives both.
 created: 2026-08-01
-published: 2026-08-14
+published: 2026-08-01
 tags:
   - markdown
   - workflow
 ---
 
-You have probably lost a songbook before. An app shut down, a subscription lapsed, or a sync service
-quietly stopped supporting the format you had spent two years filling. The songs were still yours in
-principle. Getting them out was somebody else's decision.
+Have you ever lost data that was important to you before? An app shut down, a subscription lapsed, or a sync service
+quietly stopped supporting the format you had spent years working with. The data is yours in
+principle. Getting it out is another matter...
 
 That is the problem chordlist starts from. Every song is a Markdown file in a folder you pick, and
 nothing about that arrangement depends on the app continuing to exist.
 
 ## File over app
 
-The idea has a name. Steph Ango, who makes Obsidian, wrote an essay called
+This idea has a name. Steph Ango, CEO of the note-taking app Obsidian, wrote an essay called
 [File over app](https://stephango.com/file-over-app) arguing that if you want the things you make to
 outlast the software you made them in, they have to be files you control, in formats that stay easy
 to read. The app is temporary. The file is the thing you keep.
@@ -27,7 +27,7 @@ a database and an export button — that is what most apps do, and the export bu
 the trouble starts. Storing the songs as files from the beginning means there is nothing to export,
 because there was never a proprietary version to convert from.
 
-## A song is a file
+## Every song is a file
 
 Here is a complete song file. There is no database, no proprietary container, and no export step:
 
@@ -46,11 +46,13 @@ Em               C
 Radio is humming something old
 ```
 
-The chords sit on the line above the words, which is how chord sheets have been written by hand for
-as long as people have been passing them around. The block at the top is YAML frontmatter — optional
-metadata the app reads for chord progressions and tags. Everything else is the song.
+The chords can sit on the line above the words, which is how chord sheets are traditionally formatted.  
 
-You can read that file in a text editor, print it, email it, or open it on a laptop in twenty years.
+At the top is what's called _frontmatter_ — optional
+metadata the app reads for information like chord progressions and tags. It can also store some stats, such as the number of times a song has been played or when it was last played.
+
+You can read these files in a text editor, print or email them, and they will still open on a laptop in twenty years.
+
 The [sample song on the home page](/#preview) is a real file you can download and try that with.
 
 ## The folder is the structure
