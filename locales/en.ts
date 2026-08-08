@@ -1,3 +1,4 @@
+import type { BlogTag } from "@/lib/blog-tags"
 import { siteConfig } from "@/lib/site-config"
 
 export const locale = {
@@ -23,6 +24,7 @@ export const commonCopy = {
     features: "Features",
     footerLabel: "Footer",
     docs: "Docs",
+    blog: "Blog",
     faq: "FAQ",
     support: "Support",
     press: "Press",
@@ -454,6 +456,51 @@ export const privacyCopy = {
       paragraphs: [
         "This policy may be updated when the app, website, or service providers change. Material changes will be reflected here with a new “Last updated” date.",
       ],
+    },
+  },
+} as const
+
+export const blogCopy = {
+  metadata: {
+    title: "Blog",
+    description: `Notes on plain-text songbooks, chord progressions, and building ${siteConfig.name}.`,
+    feedTitle: `${siteConfig.name} blog`,
+  },
+  title: "Blog",
+  introduction:
+    "Notes on keeping a songbook in plain text, working with the files outside the app, and what is changing in " +
+    `${siteConfig.name}.`,
+  search: {
+    label: "Search posts",
+    placeholder: "Search posts",
+    clear: "Clear filters",
+  },
+  filters: {
+    label: "Filter by tag",
+    all: "All",
+    resultCount: (count: number) => (count === 1 ? "1 post" : `${count} posts`),
+    empty: "No posts match that search yet.",
+  },
+  // Label for every tag in `blogTags`. Typed against that list, so adding a tag
+  // without a label here is a typecheck error.
+  tags: {
+    markdown: "Markdown",
+    workflow: "Workflow",
+    ios: "iOS",
+    obsidian: "Obsidian",
+    offline: "Offline",
+    chords: "Chords",
+    release: "Release",
+  } satisfies Record<BlogTag, string>,
+  card: {
+    readingTime: (minutes: number) => `${minutes} min read`,
+  },
+  post: {
+    back: "All posts",
+    related: "Related posts",
+    cta: {
+      title: `Keep your songs as files you own.`,
+      description: `${siteConfig.name} stores every song as a Markdown file in a folder you choose.`,
     },
   },
 } as const

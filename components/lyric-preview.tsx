@@ -2,24 +2,12 @@ import { readFile } from "node:fs/promises"
 import path from "node:path"
 import { Download, HelpCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { splitFrontmatter } from "@/lib/frontmatter"
 import { homeCopy } from "@/locales/en"
 
 /** Single source of truth: the same file visitors download. */
 const SAMPLE_SONG_FILE = "morning-light.md"
 const SAMPLE_SONG_URL = `/songs/${SAMPLE_SONG_FILE}`
-
-/** Split YAML frontmatter from the song body so each can be styled on its own. */
-function splitFrontmatter(source: string) {
-  const match = source.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/)
-  const frontmatter = match?.[1]
-  const body = match?.[2]
-
-  if (frontmatter === undefined || body === undefined) {
-    return { frontmatter: null, body: source.trim() }
-  }
-
-  return { frontmatter: frontmatter.trim(), body: body.trim() }
-}
 
 export async function LyricPreview() {
   const source = await readFile(path.join(process.cwd(), "public", "songs", SAMPLE_SONG_FILE), "utf8")

@@ -22,6 +22,9 @@ export function SiteHeader() {
         <Link href="/docs" className="transition-colors hover:text-foreground">
           {commonCopy.navigation.docs}
         </Link>
+        <Link href="/blog" className="transition-colors hover:text-foreground">
+          {commonCopy.navigation.blog}
+        </Link>
         <Link href="/#features" className="hidden transition-colors hover:text-foreground sm:inline">
           {commonCopy.navigation.features}
         </Link>

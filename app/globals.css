@@ -168,6 +168,75 @@
   }
 }
 
+/*
+ * Rendered Markdown for blog posts (components/blog-markdown.tsx).
+ *
+ * Every value here is copied from the helper components in app/docs/page.tsx, so
+ * a post and the docs page look identical. There is no `prose` plugin in this
+ * project and we are not adding one — see CLAUDE.md.
+ */
+.post-body {
+  @apply flex flex-col gap-5 leading-relaxed text-muted-foreground;
+}
+.post-body h2 {
+  @apply mt-6 scroll-mt-24 text-balance text-2xl font-semibold tracking-tight text-foreground;
+}
+.post-body h3 {
+  @apply mt-4 scroll-mt-24 text-balance text-xl font-semibold tracking-tight text-foreground;
+}
+.post-body p {
+  @apply text-pretty;
+}
+.post-body strong {
+  @apply font-medium text-foreground;
+}
+.post-body a {
+  @apply font-medium text-foreground underline underline-offset-4 transition-colors hover:text-muted-foreground;
+}
+.post-body ul {
+  @apply flex list-disc flex-col gap-3 pl-5 marker:text-foreground;
+}
+.post-body ol {
+  @apply flex list-decimal flex-col gap-3 pl-5 marker:font-mono marker:text-foreground;
+}
+.post-body li {
+  @apply pl-2;
+}
+.post-body code {
+  @apply rounded-md border border-border bg-muted/50 px-1.5 py-0.5 font-mono text-[0.85em] text-foreground;
+}
+.post-body pre {
+  @apply overflow-x-auto rounded-xl border border-border bg-muted/50 p-5 font-mono text-sm leading-relaxed text-foreground;
+}
+.post-body pre code {
+  @apply border-0 bg-transparent p-0 text-sm;
+}
+.post-body blockquote {
+  @apply rounded-xl border border-border bg-muted/40 p-5 text-sm leading-relaxed;
+}
+.post-body figure {
+  @apply flex flex-col gap-2;
+}
+.post-body img {
+  @apply w-full rounded-xl border border-border;
+}
+.post-body figcaption {
+  @apply font-mono text-xs uppercase tracking-wide;
+}
+.post-body table {
+  @apply w-full border-collapse text-left text-sm;
+}
+.post-body th,
+.post-body td {
+  @apply border-b border-border px-3 py-2 align-top;
+}
+.post-body th {
+  @apply font-medium text-foreground;
+}
+.post-body hr {
+  @apply border-border;
+}
+
 .system-theme-dark {
   display: none;
 }

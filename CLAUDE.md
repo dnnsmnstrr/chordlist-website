@@ -26,7 +26,7 @@ yarn lockfiles).
 | `pnpm check` | `lint && typecheck && build` — **run this before committing** |
 | `pnpm sync:assets` | Copy app screenshots and the press-kit zip from the iOS app repo |
 | `pnpm build:icons` | Regenerate every favicon asset in `public/` |
-| `pnpm build:og` | Regenerate `public/og.png` |
+| `pnpm build:og` | Regenerate `public/og.png` **and** one card per blog post in `public/blog/og/` |
 
 There is no test suite. `pnpm check` is the gate.
 
@@ -37,11 +37,16 @@ app/                 App Router pages (all server components unless noted)
   layout.tsx         Root layout: fonts, metadata, viewport, Vercel Analytics
   page.tsx           Home page — composes the section components
   docs/  faq/  press/  privacy/    One page.tsx each
+  blog/              Index, [slug] post page, and rss.xml route handler
   sitemap.ts  robots.ts            Metadata routes, driven by siteConfig.url
-  globals.css        Tailwind v4 entry + design tokens
+  globals.css        Tailwind v4 entry + design tokens + the .post-body block
 components/          Section and widget components (kebab-case files)
   ui/button.tsx      The only shadcn/base-ui primitive currently vendored
+content/blog/        Blog posts as Markdown + frontmatter — the filename is the URL
 lib/site-config.ts   Single source of truth for facts about the product
+lib/blog.ts          Reads content/blog: validation, visibility, tags, related posts
+lib/markdown.ts      marked configuration — Markdown to HTML
+lib/frontmatter.ts   Splits a YAML frontmatter block from a Markdown body
 lib/utils.ts         `cn()` — clsx + tailwind-merge
 locales/en.ts        Single source of truth for all user-facing copy
 scripts/             Node build scripts (.mjs, run directly, no bundler)
@@ -65,6 +70,15 @@ and read from it.
 
 Copy objects use `as const`, and dynamic values are functions (e.g. `count: (count: number) => …`).
 The file name implies a future i18n split; keep the shape locale-agnostic.
+
+**Blog posts are the one carve-out, and it is about chrome vs. content, not an exception to the
+rule.** `locales/en.ts` owns every string the site renders *around* content — including all the blog
+chrome: the `/blog` heading and intro, the search label and placeholder, tag labels, the result
+count, the empty state, the related-posts heading, the closing CTA. Post titles, descriptions, and
+bodies are authored content and live in `content/blog/*.md`. The test: a string that would be
+*translated* alongside the UI belongs in `locales/`; an article that would be *rewritten* for another
+market belongs in `content/`. What does not relax — no blog string is ever hardcoded in a `.tsx`
+file; blog components read from `blogCopy` or from parsed Markdown.
 
 ### Product facts live in `lib/site-config.ts`
 
@@ -117,7 +131,10 @@ Three categories of files in `public/` are **outputs — edit the generator, not
 
 - **Icons** (`favicon.ico`, `icon.svg`, `icon-{light,dark}-32x32.png`, `apple-icon.png`) —
   `pnpm build:icons`.
-- **`og.png`** — `pnpm build:og`. Both scripts render through Next's bundled `ImageResponse`
+- **`og.png` and the per-post cards in `public/blog/og/`** — `pnpm build:og`, which runs
+  `scripts/build-og-image.mjs` then `scripts/build-blog-og.mjs`. The blog script writes one card per
+  post, including future-dated ones, so a scheduled post already has its card when it goes live. Run
+  it after adding a post and commit the PNG. All scripts render through Next's bundled `ImageResponse`
   (satori + resvg) and read fonts from `assets/fonts/`, so the builds are hermetic and offline.
   Shared logo geometry lives in `scripts/lib/chordlist-mark.mjs` and mirrors
   `components/chordlist-icon.tsx` — change the mark in both, or the header logo and the favicons
@@ -143,8 +160,45 @@ lines above the words.
    sourced from a `<name>Copy.metadata` object in `locales/en.ts`.
 3. Wrap in `<main className="min-h-screen bg-background text-foreground">` with `<SiteHeader />`
    and `<SiteFooter />`.
-4. Add the route to `app/sitemap.ts`, and to `commonCopy.navigation` plus the footer/header nav if
-   it should be linked.
+4. Add the route to `app/sitemap.ts` (now `async` — it derives post URLs from `lib/blog.ts`), and to
+   `commonCopy.navigation` plus the footer/header nav if it should be linked.
+
+## Blog
+
+Posts are Markdown files in `content/blog/<slug>.md`. **The filename is the slug and therefore the
+permanent URL** — never rename one. To write a post, follow `.agents/skills/blog-post/SKILL.md`
+(or run `/blog-post`); it carries the frontmatter reference, the voice guide, the verified list of
+internal link targets, and the accuracy rules.
+
+Frontmatter is `title`, `description`, `created`, `published`, `tags`, and the optional
+`cover`/`coverAlt` pair and `draft` flag. `lib/blog.ts` validates all of it and throws with the
+filename in the message, so a bad date, a `cover` without a `coverAlt`, or an unknown tag fails
+`pnpm build` rather than shipping broken.
+
+**Scheduling.** A post whose `published` date is in the future is hidden from the index, the sitemap,
+the RSS feed, and its own URL (which 404s). `/blog`, `/blog/[slug]`, `app/sitemap.ts`, and
+`app/blog/rss.xml` all export `revalidate = 3600`, so a scheduled post goes live within about an hour
+of its date with no redeploy. `generateStaticParams` prerenders only visible slugs; a future URL
+renders on demand, hits `notFound()`, and starts resolving once the date passes. Keep the four
+`revalidate` values in step.
+
+`blogTags` in `lib/blog.ts` is a closed vocabulary. Adding a tag means adding it there **and** adding
+its label to `blogCopy.tags` — the label map is typed against the list, so a missing label is a
+typecheck error.
+
+`lib/markdown.ts` output goes into `dangerouslySetInnerHTML` and raw HTML in a post is passed through
+on purpose (so an author can hand-write a sized `<img>` or a `<picture>`). That is safe only because
+posts are repo-committed. Never point it at user-submitted or fetched input.
+
+Post typography is the `.post-body` block in `app/globals.css`, whose values are copied from the
+helper components in `app/docs/page.tsx` so posts and docs look identical. There is no `prose` plugin
+and we are not adding one.
+
+Images go in `public/blog/<slug>/` and are referenced with ordinary Markdown; they render as plain
+lazy `<img>` and bypass `next/image`. Only a `cover` goes through `next/image`. `readdir` on
+`content/blog` is invisible to the bundle tracer, which is why `next.config.mjs` carries
+`outputFileTracingIncludes` for the four blog-aware routes — remove it and production breaks on the
+first revalidation.
 
 ## Content accuracy
 
@@ -155,6 +209,9 @@ claims about data handling, pricing, or availability — those strings are legal
 When the privacy policy changes materially, update `privacyCopy.lastUpdated`.
 
 ## Third-party services
+
+Repo skills live in `.agents/skills/<name>/SKILL.md` and are mirrored into `.cursor/rules/<name>.mdc`
+with Cursor's frontmatter dialect. There are two: `stripe-projects-cli` and `blog-post`.
 
 `.projects/state.json` tracks resources provisioned via the Stripe Projects CLI (currently
 RevenueCat). See `AGENTS.md` and `.agents/skills/stripe-projects-cli/` for that workflow.
