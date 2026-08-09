@@ -1,3 +1,4 @@
+import type { BlogTag } from "@/lib/blog-tags"
 import { siteConfig } from "@/lib/site-config"
 
 export const locale = {
@@ -23,6 +24,7 @@ export const commonCopy = {
     features: "Features",
     footerLabel: "Footer",
     docs: "Docs",
+    blog: "Blog",
     faq: "FAQ",
     support: "Support",
     press: "Press",
@@ -458,12 +460,103 @@ export const privacyCopy = {
   },
 } as const
 
+export const blogCopy = {
+  metadata: {
+    title: "Blog",
+    description: `Notes on plain-text songbooks, chord progressions, and building ${siteConfig.name}.`,
+    feedTitle: `${siteConfig.name} blog`,
+  },
+  title: "Blog",
+  // Shown when nothing has been published yet — distinct from the filter empty
+  // state, which is about a search that matched nothing.
+  noPosts: "No posts yet. The first one goes live soon.",
+  introduction:
+    "Notes on keeping a songbook in plain text, working with the files outside the app, and what is changing in " +
+    `${siteConfig.name}.`,
+  search: {
+    label: "Search posts",
+    placeholder: "Search posts",
+    clear: "Clear filters",
+  },
+  filters: {
+    label: "Filter by tag",
+    all: "All",
+    resultCount: (count: number) => (count === 1 ? "1 post" : `${count} posts`),
+    empty: "No posts match that search yet.",
+    // Only rendered where unreleased posts are listed — a preview deployment or
+    // the dev server. See blogCopy.status.
+    liveOnly: "Live only",
+    liveOnlyHint: "Hide drafts and scheduled posts to see what production shows",
+  },
+  // Label for every tag in `blogTags`. Typed against that list, so adding a tag
+  // without a label here is a typecheck error.
+  tags: {
+    markdown: "Markdown",
+    workflow: "Workflow",
+    ios: "iOS",
+    obsidian: "Obsidian",
+    offline: "Offline",
+    chords: "Chords",
+    release: "Release",
+  } satisfies Record<BlogTag, string>,
+  card: {
+    readingTime: (minutes: number) => `${minutes} min read`,
+  },
+  // Only ever rendered on a preview deployment or the dev server, where posts that
+  // are not public yet are shown so they can be reviewed.
+  status: {
+    draft: "Draft",
+    scheduled: (date: string) => `Scheduled for ${date}`,
+  },
+  post: {
+    back: "All posts",
+    related: "Related posts",
+    cta: {
+      title: `Keep your songs as files you own.`,
+      description: `${siteConfig.name} stores every song as a Markdown file in a folder you choose.`,
+    },
+  },
+} as const
+
 export const screenshotGalleryCopy = {
   viewFullscreen: (title: string) => `View ${title} full screen`,
   download: (title: string) => `Download ${title}`,
   close: "Close full screen view",
-  previous: "Previous screenshot",
-  next: "Next screenshot",
+  previous: "Previous image",
+  next: "Next image",
+} as const
+
+export const galleryCopy = {
+  metadata: {
+    title: "Gallery",
+    description: `A hidden collection of black-and-white images made for ${siteConfig.name}.`,
+  },
+  eyebrow: "A hidden corner",
+  title: "Gallery",
+  introduction:
+    "Black-and-white studies made for chordlist. Open any image to view it full screen, then download the original PNG for a wallpaper or screensaver.",
+  images: [
+    {
+      title: "Between paper and screen",
+      description: "A phone resting on an open score, somewhere between a physical songbook and a digital one.",
+      alt: "A black phone resting on an open book of sheet music in soft, grainy light.",
+    },
+    {
+      title: "Finding the changes",
+      description: "A guitarist caught in motion, with the fretting hand and instrument dissolving into stage light.",
+      alt: "A guitarist's fretting hand and instrument blurred by movement under bright stage lights.",
+    },
+    {
+      title: "At the keys",
+      description: "A low, unstable view along a piano keyboard towards an open score.",
+      alt: "A piano keyboard and open sheet music seen through grain, bloom, and shallow focus.",
+    },
+    {
+      title: "Four chords in motion",
+      description: "Piano keys stretched by movement into alternating bands of light and shadow.",
+      alt: "Black-and-white piano keys stretching into soft vertical streaks of motion.",
+    },
+  ],
 } as const
 
 export const pianoCopy = {

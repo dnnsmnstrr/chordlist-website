@@ -1,0 +1,10 @@
+---
+description: Draft, edit, review, schedule, or publish a chordlist blog post.
+alwaysApply: false
+---
+
+# Blog post
+
+Read and follow `.agents/skills/blog-post/SKILL.md` completely before working on a post. That shared
+skill is the operational source of truth for Claude, Codex, and Cursor. Its editorial source of truth
+is `docs/blog-editorial-guidelines.md`.

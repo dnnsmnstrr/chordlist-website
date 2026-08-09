@@ -16,14 +16,20 @@ export function SiteHeader() {
         <span className="flex size-8 items-center justify-center overflow-hidden rounded-md bg-foreground text-background">
           <ChordlistIcon className="h-full w-full" />
         </span>
-        <span className="font-mono text-lg font-semibold tracking-tight">{siteConfig.name}</span>
+        {/* The icon carries the brand on narrow phones; the full row does not fit
+            below sm once Docs, Blog, and the CTA are all present. The link keeps its
+            aria-label, so its accessible name is unchanged. */}
+        <span className="hidden font-mono text-lg font-semibold tracking-tight sm:inline">{siteConfig.name}</span>
       </Link>
       <nav className="flex items-center gap-4 text-sm text-muted-foreground sm:gap-6">
+        <Link href="/#features" className="hidden transition-colors hover:text-foreground sm:inline">
+          {commonCopy.navigation.features}
+        </Link>
         <Link href="/docs" className="transition-colors hover:text-foreground">
           {commonCopy.navigation.docs}
         </Link>
-        <Link href="/#features" className="hidden transition-colors hover:text-foreground sm:inline">
-          {commonCopy.navigation.features}
+        <Link href="/blog" className="transition-colors hover:text-foreground">
+          {commonCopy.navigation.blog}
         </Link>
         <AppCTA />
       </nav>
