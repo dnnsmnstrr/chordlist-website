@@ -162,9 +162,139 @@
   }
   body {
     @apply bg-background text-foreground;
+    isolation: isolate;
   }
   html {
     @apply font-sans;
+  }
+}
+
+.site-content {
+  position: relative;
+  z-index: 1;
+}
+
+/* Route shells used an opaque background before the ambient layer existed. */
+.site-content > main {
+  background-color: transparent;
+}
+
+.ambient-background {
+  --ambient-texture-one: none;
+  --ambient-texture-two: none;
+  --ambient-texture-one-x: 50%;
+  --ambient-texture-one-y: 30%;
+  --ambient-texture-two-x: 50%;
+  --ambient-texture-two-y: 70%;
+  --ambient-texture-one-scale: 1.12;
+  --ambient-texture-two-scale: 1.16;
+  --ambient-texture-one-rotation: 0deg;
+  --ambient-texture-two-rotation: 0deg;
+  --ambient-gradient-one-x: 28%;
+  --ambient-gradient-one-y: 24%;
+  --ambient-gradient-two-x: 72%;
+  --ambient-gradient-two-y: 76%;
+  --ambient-gradient-angle: 165deg;
+  --ambient-pointer-x: 0px;
+  --ambient-pointer-y: 0px;
+  --ambient-scroll-y: 0px;
+  --ambient-counter-x: 0px;
+  --ambient-counter-y: 0px;
+  --ambient-image-opacity: 0.045;
+  --ambient-glow-strong: oklch(0 0 0 / 3.5%);
+  --ambient-glow-soft: oklch(0 0 0 / 2%);
+  --ambient-wash: oklch(0 0 0 / 1.5%);
+  position: fixed;
+  z-index: 0;
+  inset: -8vmax;
+  overflow: hidden;
+  pointer-events: none;
+  contain: strict;
+  opacity: 0;
+  background:
+    radial-gradient(
+      ellipse 46% 38% at var(--ambient-gradient-one-x) var(--ambient-gradient-one-y),
+      var(--ambient-glow-strong),
+      transparent 72%
+    ),
+    radial-gradient(
+      ellipse 42% 46% at var(--ambient-gradient-two-x) var(--ambient-gradient-two-y),
+      var(--ambient-glow-soft),
+      transparent 76%
+    ),
+    linear-gradient(var(--ambient-gradient-angle), transparent 18%, var(--ambient-wash) 52%, transparent 82%);
+  transition: opacity 1200ms ease;
+}
+
+.ambient-background[data-ready="true"] {
+  opacity: 1;
+}
+
+.ambient-background::before,
+.ambient-background::after {
+  position: absolute;
+  inset: -4%;
+  content: "";
+  background-repeat: no-repeat;
+  background-size: cover;
+  filter: grayscale(1) contrast(1.08) blur(2px);
+  mix-blend-mode: multiply;
+  opacity: var(--ambient-image-opacity);
+  will-change: transform;
+  transition: transform 450ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.ambient-background::before {
+  background-image: var(--ambient-texture-one);
+  background-position: var(--ambient-texture-one-x) var(--ambient-texture-one-y);
+  mask-image: radial-gradient(ellipse 66% 72% at 46% 40%, black 0%, rgb(0 0 0 / 86%) 48%, transparent 86%);
+  transform: translate3d(
+      var(--ambient-pointer-x),
+      calc(var(--ambient-pointer-y) + var(--ambient-scroll-y)),
+      0
+    )
+    scale(var(--ambient-texture-one-scale)) rotate(var(--ambient-texture-one-rotation));
+}
+
+.ambient-background::after {
+  background-image: var(--ambient-texture-two);
+  background-position: var(--ambient-texture-two-x) var(--ambient-texture-two-y);
+  mask-image: radial-gradient(ellipse 62% 68% at 56% 62%, black 0%, rgb(0 0 0 / 82%) 44%, transparent 84%);
+  transform: translate3d(var(--ambient-counter-x), var(--ambient-counter-y), 0)
+    scale(var(--ambient-texture-two-scale)) rotate(var(--ambient-texture-two-rotation));
+}
+
+.dark .ambient-background {
+  --ambient-image-opacity: 0.052;
+  --ambient-glow-strong: oklch(1 0 0 / 3.2%);
+  --ambient-glow-soft: oklch(1 0 0 / 1.8%);
+  --ambient-wash: oklch(1 0 0 / 1.2%);
+}
+
+.dark .ambient-background::before,
+.dark .ambient-background::after {
+  mix-blend-mode: screen;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) .ambient-background {
+    --ambient-image-opacity: 0.052;
+    --ambient-glow-strong: oklch(1 0 0 / 3.2%);
+    --ambient-glow-soft: oklch(1 0 0 / 1.8%);
+    --ambient-wash: oklch(1 0 0 / 1.2%);
+  }
+
+  :root:not(.light) .ambient-background::before,
+  :root:not(.light) .ambient-background::after {
+    mix-blend-mode: screen;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ambient-background,
+  .ambient-background::before,
+  .ambient-background::after {
+    transition: none;
   }
 }
 

@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 
+import { AmbientBackground } from "@/components/ambient-background"
 import { siteConfig } from "@/lib/site-config"
 import { commonCopy, locale, metadataCopy } from "@/locales/en"
 
@@ -63,7 +64,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang={locale.htmlLang} className={`${geistSans.variable} ${geistMono.variable} bg-background`}>
       <body className="font-sans antialiased">
-        {children}
+        <AmbientBackground />
+        <div className="site-content">{children}</div>
         {process.env.NODE_ENV === "production" ? <Analytics /> : null}
       </body>
     </html>
