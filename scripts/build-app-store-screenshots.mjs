@@ -20,6 +20,8 @@ const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "
 
 const CONFIG = {
   outputDirectory: "public/app-store-screenshots",
+  photoDirectory: "assets/visual-references/analog-photography",
+  variants: ["classic", "analog"],
   fonts: [
     { file: "assets/fonts/Geist-Regular.ttf", name: "Geist", weight: 400 },
     { file: "assets/fonts/Geist-Bold.ttf", name: "Geist", weight: 700 },
@@ -80,6 +82,10 @@ const CONFIG = {
       appearance: "light",
       gradient: ["#17142B", "#5B3FD6"],
       accent: "#B9ABFF",
+      backgrounds: {
+        iphone: { file: "guitarist-in-motion.png", focus: [0.72, 0.48] },
+        ipad: { file: "guitarist-in-motion.png", focus: [0.58, 0.5] },
+      },
     },
     {
       id: "02-find",
@@ -90,6 +96,10 @@ const CONFIG = {
       appearance: "dark",
       gradient: ["#101A22", "#197D78"],
       accent: "#76E6D3",
+      backgrounds: {
+        iphone: { file: "piano-keys-in-motion.png", focus: [0.56, 0.48] },
+        ipad: { file: "piano-keys-in-motion.png", focus: [0.54, 0.5] },
+      },
     },
     {
       id: "03-song-sheet",
@@ -100,6 +110,10 @@ const CONFIG = {
       appearance: "light",
       gradient: ["#24140F", "#B85F28"],
       accent: "#FFBE78",
+      backgrounds: {
+        iphone: { file: "phone-on-sheet-music.png", focus: [0.64, 0.38] },
+        ipad: { file: "piano-with-sheet-music.png", focus: [0.54, 0.44] },
+      },
     },
     {
       id: "04-stage",
@@ -110,6 +124,10 @@ const CONFIG = {
       appearance: "dark",
       gradient: ["#181818", "#55505E"],
       accent: "#E9DEFF",
+      backgrounds: {
+        iphone: { file: "stage-microphone-in-motion.png", focus: [0.53, 0.48] },
+        ipad: { file: "stage-microphone-in-motion.png", focus: [0.52, 0.5] },
+      },
     },
     {
       id: "05-flow",
@@ -120,6 +138,10 @@ const CONFIG = {
       appearance: "dark",
       gradient: ["#111D18", "#35755C"],
       accent: "#9CE7BE",
+      backgrounds: {
+        iphone: { file: "studio-microphone-in-motion.png", focus: [0.45, 0.34] },
+        ipad: { file: "studio-microphone-in-motion.png", focus: [0.46, 0.44] },
+      },
     },
   ],
 }
@@ -148,53 +170,92 @@ async function main() {
   await rm(destinationRoot, { recursive: true, force: true })
   await mkdir(destinationRoot, { recursive: true })
 
+  const imageCache = new Map()
+  const loadPng = async (relativePath) => {
+    if (!imageCache.has(relativePath)) {
+      const data = await readFile(path.join(projectRoot, relativePath))
+      const [width, height] = pngSize(data)
+      imageCache.set(relativePath, {
+        width,
+        height,
+        uri: `data:image/png;base64,${data.toString("base64")}`,
+      })
+    }
+    return imageCache.get(relativePath)
+  }
+
   const manifest = []
 
-  for (const device of Object.values(CONFIG.devices)) {
-    const destination = path.join(destinationRoot, device.name)
-    await mkdir(destination, { recursive: true })
-
-    for (const [index, slide] of CONFIG.slides.entries()) {
-      const sourcePath = path.join(
-        projectRoot,
-        device.sourceDirectory,
-        slide.appearance,
-        slide.screenshot,
+  for (const variant of CONFIG.variants) {
+    for (const device of Object.values(CONFIG.devices)) {
+      const destination = path.join(
+        destinationRoot,
+        variant === "classic" ? "" : variant,
+        device.name,
       )
-      const source = await readFile(sourcePath).catch(() => {
-        throw new Error(`Missing ${device.label} source screenshot: ${path.relative(projectRoot, sourcePath)}`)
-      })
-      const sourceSize = pngSize(source)
-      if (!sizeIsAccepted(sourceSize, device.acceptedSourceSizes)) {
-        throw new Error(
-          `${path.relative(projectRoot, sourcePath)} is ${sourceSize.join("×")}; expected ` +
-            device.acceptedSourceSizes.map((size) => size.join("×")).join(" or "),
+      await mkdir(destination, { recursive: true })
+
+      for (const [index, slide] of CONFIG.slides.entries()) {
+        const sourcePath = path.join(
+          device.sourceDirectory,
+          slide.appearance,
+          slide.screenshot,
+        )
+        const source = await loadPng(sourcePath).catch(() => {
+          throw new Error(`Missing ${device.label} source screenshot: ${sourcePath}`)
+        })
+        if (!sizeIsAccepted([source.width, source.height], device.acceptedSourceSizes)) {
+          throw new Error(
+            `${sourcePath} is ${source.width}×${source.height}; expected ` +
+              device.acceptedSourceSizes.map((size) => size.join("×")).join(" or "),
+          )
+        }
+
+        let background
+        if (variant === "analog") {
+          const definition = slide.backgrounds[device.name]
+          const photoPath = path.join(CONFIG.photoDirectory, definition.file)
+          background = { ...(await loadPng(photoPath)), focus: definition.focus }
+        }
+
+        const element = appStoreScreenshot({
+          slide,
+          device,
+          screenshot: source.uri,
+          variant,
+          background,
+          seed: (index + 1) * 37 + (device.name === "ipad" ? 11 : 0),
+        })
+        const response = new ImageResponse(element, { width: device.width, height: device.height, fonts })
+        const filename = `${String(index + 1).padStart(2, "0")}-${slide.id.slice(3)}.png`
+        const outputPath = path.join(destination, filename)
+        await writeFile(outputPath, Buffer.from(await response.arrayBuffer()))
+
+        manifest.push({
+          variant,
+          device: device.name,
+          label: device.label,
+          width: device.width,
+          height: device.height,
+          file: path.relative(destinationRoot, outputPath),
+          headline: slide.headline.join(" "),
+          supporting: slide.supporting,
+          source: sourcePath,
+          background:
+            variant === "analog"
+              ? path.join(CONFIG.photoDirectory, slide.backgrounds[device.name].file)
+              : null,
+        })
+        console.log(
+          `  wrote ${path.relative(projectRoot, outputPath)} ` +
+            `(${device.width}×${device.height}, ${variant})`,
         )
       }
-
-      const screenshot = `data:image/png;base64,${source.toString("base64")}`
-      const element = appStoreScreenshot({ slide, device, screenshot })
-      const response = new ImageResponse(element, { width: device.width, height: device.height, fonts })
-      const filename = `${String(index + 1).padStart(2, "0")}-${slide.id.slice(3)}.png`
-      const outputPath = path.join(destination, filename)
-      await writeFile(outputPath, Buffer.from(await response.arrayBuffer()))
-
-      manifest.push({
-        device: device.name,
-        label: device.label,
-        width: device.width,
-        height: device.height,
-        file: path.relative(destinationRoot, outputPath),
-        headline: slide.headline.join(" "),
-        supporting: slide.supporting,
-        source: path.relative(projectRoot, sourcePath),
-      })
-      console.log(`  wrote ${path.relative(projectRoot, outputPath)} (${device.width}×${device.height})`)
     }
   }
 
   await writeFile(path.join(destinationRoot, "manifest.json"), `${JSON.stringify(manifest, null, 2)}\n`)
-  console.log(`Built ${manifest.length} App Store screenshots.`)
+  console.log(`Built ${manifest.length} App Store screenshots across ${CONFIG.variants.length} variants.`)
 }
 
 main().catch((error) => {
