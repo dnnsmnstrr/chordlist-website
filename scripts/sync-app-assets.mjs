@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url"
 const websiteRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..")
 const appRoot = process.env.CHORDLIST_APP_REPO
   ? path.resolve(process.env.CHORDLIST_APP_REPO)
-  : path.resolve(websiteRoot, "..", "progressions-swift-rork")
+  : path.resolve(websiteRoot, "..", "chordlist-app")
 
 const screenshotNames = [
   "01-Song-List---4-Chord-Library.png",
@@ -47,10 +47,19 @@ if (!(await exists(appRoot))) {
 }
 
 const publicScreenshots = path.join(websiteRoot, "public", "app-screenshots")
-const lightCount = await syncScreenshots(path.join(appRoot, "Screenshots"), path.join(publicScreenshots, "light"))
+const rawScreenshots = path.join(appRoot, "press-kit", "raw-screenshots")
+const lightCount = await syncScreenshots(path.join(rawScreenshots, "light"), path.join(publicScreenshots, "light"))
 const darkCount = await syncScreenshots(
-  path.join(appRoot, "Screenshots-Dark"),
+  path.join(rawScreenshots, "dark"),
   path.join(publicScreenshots, "dark"),
+)
+const iPadLightCount = await syncScreenshots(
+  path.join(rawScreenshots, "ipad", "light"),
+  path.join(publicScreenshots, "ipad", "light"),
+)
+const iPadDarkCount = await syncScreenshots(
+  path.join(rawScreenshots, "ipad", "dark"),
+  path.join(publicScreenshots, "ipad", "dark"),
 )
 
 const pressArchiveSource = path.join(appRoot, "build", "press-kit", "chordlist-press-kit.zip")
@@ -60,5 +69,7 @@ if (await exists(pressArchiveSource)) {
   await copyFile(pressArchiveSource, path.join(pressDirectory, "chordlist-press-kit.zip"))
 }
 
-console.log(`Synced ${lightCount} light and ${darkCount} dark app screenshots.`)
-
+console.log(
+  `Synced iPhone (${lightCount} light, ${darkCount} dark) and ` +
+    `iPad (${iPadLightCount} light, ${iPadDarkCount} dark) app screenshots.`,
+)

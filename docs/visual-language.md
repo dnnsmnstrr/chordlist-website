@@ -114,6 +114,17 @@ article a memorable visual anchor. Do not add one simply because a post has none
 - Verify the final artwork at its actual display size, especially when bright highlights sit behind
   interface elements or text.
 
+### Social
+
+Social assets do not crop a master by hand. The `photo` template in
+[Social media system](social-media-system.md) takes a master from this directory, lays a scrim over
+it for contrast, and composites the typography on top at build time — which is how the rule above
+about keeping type outside the generated image is enforced rather than merely stated.
+
+Set `focus` on the definition to steer the crop. The build warns when a master loses 45% or more of
+its area to a format, which is the practical form of "choose or generate a composition for the final
+aspect ratio": a 3:2 master in a 9:16 story loses about 63% and usually wants its own composition.
+
 ## Review checklist
 
 Before publishing a new image, confirm that:
