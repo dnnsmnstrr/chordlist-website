@@ -71,6 +71,8 @@ Use these project-supplied images as visual references when adapting the prompt:
 | `assets/visual-references/analog-photography/phone-on-sheet-music.png` | A quiet contrast between physical and digital media, tactile page detail, and deep negative space around one clear object. |
 | `assets/visual-references/analog-photography/stage-microphone-in-motion.png` | A horizontal live microphone, hard bloom, and smeared stand hardware that create strong directional energy. |
 | `assets/visual-references/analog-photography/studio-microphone-in-motion.png` | A vertical studio microphone emerging from deep shadow, with tactile grille detail and blown stage lights. |
+| `assets/visual-references/analog-photography/sampler-and-keyboard-in-motion.png` | Sampler pads and keyboard sharing the frame, with layered depth, glowing controls, and an unstable portrait crop. |
+| `assets/visual-references/analog-photography/sampler-pads-in-motion.png` | A close crop of the pad grid and sequencer, with shallow focus, a luminous display, and a scratched tactile surface. |
 
 Keep the files in this directory as lossless masters. Make compressed, placement-specific exports
 elsewhere; do not resize or overwrite the masters.
