@@ -13,7 +13,7 @@ export function SiteHeader() {
         aria-label={commonCopy.navigation.homeLabel}
         className="flex items-center gap-2 rounded-md transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
-        <span className="flex size-8 items-center justify-center overflow-hidden rounded-md bg-foreground text-background">
+        <span className="flex size-8 items-center justify-center overflow-hidden rounded-md bg-logo-tile text-logo-glyph shadow-logo">
           <ChordlistIcon className="h-full w-full" />
         </span>
         {/* The icon carries the brand on narrow phones; the full row does not fit
