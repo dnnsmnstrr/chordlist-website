@@ -27,6 +27,7 @@ yarn lockfiles).
 | `pnpm sync:assets` | Copy app screenshots and the press-kit zip from the iOS app repo |
 | `pnpm build:icons` | Regenerate every favicon asset in `public/` |
 | `pnpm build:og` | Regenerate `public/og.png` **and** one card per blog post in `public/blog/og/` |
+| `pnpm build:social` | Regenerate every social asset in `public/social/` from `content/social/` |
 
 There is no test suite. `pnpm check` is the gate.
 
@@ -43,6 +44,7 @@ app/                 App Router pages (all server components unless noted)
 components/          Section and widget components (kebab-case files)
   ui/button.tsx      The only shadcn/base-ui primitive currently vendored
 content/blog/        Blog posts as Markdown + frontmatter — the filename is the URL
+content/social/      Social asset definitions — frontmatter builds the image, body is the caption
 lib/site-config.ts   Single source of truth for facts about the product
 lib/blog.ts          Reads content/blog: validation, visibility, tags, related posts
 lib/markdown.ts      marked configuration — Markdown to HTML
@@ -51,6 +53,7 @@ lib/utils.ts         `cn()` — clsx + tailwind-merge
 locales/en.ts        Single source of truth for all user-facing copy
 scripts/             Node build scripts (.mjs, run directly, no bundler)
   lib/chordlist-mark.mjs   Shared logo geometry for icon + OG builds
+  lib/social-templates.mjs Layouts, shared frame, and type fitting for the social build
 public/              Static assets, incl. generated icons and synced screenshots
 assets/fonts/        Geist TTFs used by the OG/icon image builds (not the web fonts)
 ```
@@ -139,6 +142,13 @@ Three categories of files in `public/` are **outputs — edit the generator, not
   Shared logo geometry lives in `scripts/lib/chordlist-mark.mjs` and mirrors
   `components/chordlist-icon.tsx` — change the mark in both, or the header logo and the favicons
   drift apart. Each script has a `CONFIG` block at the top for copy, colors, and sizing.
+- **Social assets** (`public/social/<slug>/<format>.png` plus `manifest.json`) — `pnpm build:social`,
+  which renders every definition in `content/social/` into the `card`, `post`, and `story` formats it
+  declares. Layouts live in `scripts/lib/social-templates.mjs`; copy, colours, and the format matrix
+  live in the script's `CONFIG` block. It is deliberately separate from `build:og`: that build owns
+  `public/og.png` and the per-post cards, which must not change when a campaign does. Deleting a
+  definition prunes its images on the next run. `docs/social-media-system.md` is the design source of
+  truth and `.agents/skills/social-asset/SKILL.md` carries the workflow.
 - **App screenshots** (`public/app-screenshots/{light,dark}/`) and
   `public/press/chordlist-press-kit.zip` — produced by the iOS app repository's automated
   screenshot tests and copied in by `pnpm sync:assets`, which `predev`/`prebuild` run for you. The
@@ -220,7 +230,8 @@ When the privacy policy changes materially, update `privacyCopy.lastUpdated`.
 ## Third-party services
 
 Repo skills live in `.agents/skills/<name>/SKILL.md` and are mirrored into `.cursor/rules/<name>.mdc`
-with Cursor's frontmatter dialect. There are two: `stripe-projects-cli` and `blog-post`.
+with Cursor's frontmatter dialect. There are three: `stripe-projects-cli`, `blog-post`, and
+`social-asset`.
 
 `.projects/state.json` tracks resources provisioned via the Stripe Projects CLI (currently
 RevenueCat). See `AGENTS.md` and `.agents/skills/stripe-projects-cli/` for that workflow.

@@ -1,0 +1,102 @@
+[
+  {
+    "device": "iphone",
+    "label": "6.5-inch iPhone",
+    "width": 1242,
+    "height": 2688,
+    "file": "iphone/01-library.png",
+    "headline": "Your songs. Ready to play.",
+    "supporting": "Keep lyrics and chords together, beautifully organized.",
+    "source": "public/app-screenshots/light/01-Song-List---4-Chord-Library.png"
+  },
+  {
+    "device": "iphone",
+    "label": "6.5-inch iPhone",
+    "width": 1242,
+    "height": 2688,
+    "file": "iphone/02-find.png",
+    "headline": "Find any song in seconds.",
+    "supporting": "Search your library and filter by the tags that matter.",
+    "source": "public/app-screenshots/dark/05-Tag-Filter---Piano.png"
+  },
+  {
+    "device": "iphone",
+    "label": "6.5-inch iPhone",
+    "width": 1242,
+    "height": 2688,
+    "file": "iphone/03-song-sheet.png",
+    "headline": "Lyrics and chords, side by side.",
+    "supporting": "A focused view designed for rehearsal and performance.",
+    "source": "public/app-screenshots/light/02-Song-Detail---Matching-Suggestions.png"
+  },
+  {
+    "device": "iphone",
+    "label": "6.5-inch iPhone",
+    "width": 1242,
+    "height": 2688,
+    "file": "iphone/04-stage.png",
+    "headline": "Built for the stage.",
+    "supporting": "Readable, distraction-free song sheets when it counts.",
+    "source": "public/app-screenshots/dark/01-Song-List---4-Chord-Library.png"
+  },
+  {
+    "device": "iphone",
+    "label": "6.5-inch iPhone",
+    "width": 1242,
+    "height": 2688,
+    "file": "iphone/05-flow.png",
+    "headline": "Make your set feel effortless.",
+    "supporting": "Organize the songs you love and stay in the flow.",
+    "source": "public/app-screenshots/dark/03-Creation-Flow---New-Song.png"
+  },
+  {
+    "device": "ipad",
+    "label": "13-inch iPad",
+    "width": 2048,
+    "height": 2732,
+    "file": "ipad/01-library.png",
+    "headline": "Your songs. Ready to play.",
+    "supporting": "Keep lyrics and chords together, beautifully organized.",
+    "source": "public/app-screenshots/ipad/light/01-Song-List---4-Chord-Library.png"
+  },
+  {
+    "device": "ipad",
+    "label": "13-inch iPad",
+    "width": 2048,
+    "height": 2732,
+    "file": "ipad/02-find.png",
+    "headline": "Find any song in seconds.",
+    "supporting": "Search your library and filter by the tags that matter.",
+    "source": "public/app-screenshots/ipad/dark/05-Tag-Filter---Piano.png"
+  },
+  {
+    "device": "ipad",
+    "label": "13-inch iPad",
+    "width": 2048,
+    "height": 2732,
+    "file": "ipad/03-song-sheet.png",
+    "headline": "Lyrics and chords, side by side.",
+    "supporting": "A focused view designed for rehearsal and performance.",
+    "source": "public/app-screenshots/ipad/light/02-Song-Detail---Matching-Suggestions.png"
+  },
+  {
+    "device": "ipad",
+    "label": "13-inch iPad",
+    "width": 2048,
+    "height": 2732,
+    "file": "ipad/04-stage.png",
+    "headline": "Built for the stage.",
+    "supporting": "Readable, distraction-free song sheets when it counts.",
+    "source": "public/app-screenshots/ipad/dark/01-Song-List---4-Chord-Library.png"
+  },
+  {
+    "device": "ipad",
+    "label": "13-inch iPad",
+    "width": 2048,
+    "height": 2732,
+    "file": "ipad/05-flow.png",
+    "headline": "Make your set feel effortless.",
+    "supporting": "Organize the songs you love and stay in the flow.",
+    "source": "public/app-screenshots/ipad/dark/03-Creation-Flow---New-Song.png"
+  }
+]
