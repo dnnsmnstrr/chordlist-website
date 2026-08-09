@@ -51,6 +51,47 @@ export function fitSize(base, text, { maxWidth, face = "sans", floor = 0.58 } = 
   return Math.round(Math.max(base * floor, Math.min(base, cap)))
 }
 
+/**
+ * Parses a CSS-like focus string ("60% 40%", "center", "50%") into a pair of
+ * 0–1 fractions describing which part of the picture to keep when it is cropped.
+ */
+function parseFocus(focus) {
+  if (!focus || focus === "center") return { x: 0.5, y: 0.5 }
+
+  const parts = String(focus).trim().split(/\s+/)
+  const toFraction = (value, fallback) => {
+    const parsed = Number.parseFloat(value)
+    if (!Number.isFinite(parsed)) return fallback
+    return Math.min(1, Math.max(0, parsed / 100))
+  }
+
+  const x = toFraction(parts[0], 0.5)
+  return { x, y: parts.length > 1 ? toFraction(parts[1], 0.5) : 0.5 }
+}
+
+/**
+ * The geometry of an image scaled to cover a frame, positioned by `focus`.
+ *
+ * Satori does not implement `background-size: cover` — it paints the image at
+ * its intrinsic size and tiles the remainder, which turns any master that is not
+ * already the frame's aspect ratio into a visible grid. So the cover maths is
+ * done here and handed to a plain absolutely positioned `<img>` with explicit
+ * dimensions, which satori does honour exactly.
+ */
+export function coverBox(source, format, focus) {
+  const factor = Math.max(format.width / source.width, format.height / source.height)
+  const width = Math.ceil(source.width * factor)
+  const height = Math.ceil(source.height * factor)
+  const { x, y } = parseFocus(focus)
+
+  return {
+    width,
+    height,
+    left: Math.round((format.width - width) * x),
+    top: Math.round((format.height - height) * y),
+  }
+}
+
 function textBlock(lines, style) {
   return h(
     "div",
@@ -117,7 +158,7 @@ function lockup({ tokens, scale, iconUri, label }) {
  * own chrome — the profile row and reply bar Instagram draws over a story. They
  * are padding, not a crop: the background still bleeds to the edge.
  */
-export function frame({ tokens, format, scale, padding, iconUri, label, body, footer }) {
+export function frame({ tokens, format, scale, padding, iconUri, label, body, footer, backdrop }) {
   return h(
     "div",
     {
@@ -134,6 +175,9 @@ export function frame({ tokens, format, scale, padding, iconUri, label, body, fo
         background: tokens.colors.background,
       },
     },
+    // Absolutely positioned, so it sits outside the flex flow and behind every
+    // later child — satori paints in document order.
+    ...(backdrop ?? []),
     lockup({ tokens, scale, iconUri, label }),
     h(
       "div",
@@ -342,11 +386,11 @@ function quote({ definition, tokens, scale, inner }) {
  * full width underneath.
  */
 function screenshot({ definition, tokens, scale, inner, assets }) {
-  const source = assets.screenshots[definition.screenshot]
+  const source = assets.screenshots.get(definition.screenshot)
   if (!source) {
     throw new Error(
       `unknown screenshot "${definition.screenshot}" — expected a file in the screenshot directory ` +
-        `(available: ${Object.keys(assets.screenshots).join(", ") || "none"})`,
+        `(available: ${assets.screenshots.names().join(", ") || "none"})`,
     )
   }
 
@@ -399,11 +443,76 @@ function screenshot({ definition, tokens, scale, inner, assets }) {
 }
 
 /**
+ * photo — editorial photography as a full-bleed backdrop, typography over it.
+ *
+ * This is the sanctioned way to put the analog photography from
+ * docs/visual-language.md on a social surface. That document is explicit on two
+ * points this template exists to honour: the photograph is atmosphere rather
+ * than evidence of a product feature, and all typography stays *outside* the
+ * generated image and is composited afterwards — which is exactly what happens
+ * here. Never ask an image generator for a photo with words in it.
+ *
+ * The scrim is not decoration. These masters have blown highlights by design, and
+ * white type over a bloom is unreadable, so the frame is dimmed to buy back the
+ * contrast the copy needs. `visual-language.md` calls this "quiet contrast behind
+ * any separately typeset headline".
+ *
+ * `focus` steers the crop, because a 3:2 master in a 9:16 story loses most of its
+ * width. The runner warns when that loss gets severe: the real fix is a
+ * composition made for the ratio, not a cleverer crop.
+ */
+function photo({ definition, tokens, scale, inner, format, assets }) {
+  const source = assets.photos.get(definition.photo)
+  if (!source) {
+    throw new Error(
+      `unknown photo "${definition.photo}" — expected a file in the photography directory ` +
+        `(available: ${assets.photos.names().join(", ") || "none"})`,
+    )
+  }
+
+  const box = coverBox(source, format, definition.focus)
+
+  const backdrop = [
+    h("img", {
+      key: "photo",
+      src: source.uri,
+      width: box.width,
+      height: box.height,
+      style: { position: "absolute", left: box.left, top: box.top },
+    }),
+    h("div", {
+      key: "scrim",
+      style: {
+        position: "absolute",
+        top: 0,
+        left: 0,
+        width: format.width,
+        height: format.height,
+        background: tokens.colors.scrim,
+      },
+    }),
+  ]
+
+  const body = definition.headline
+    ? textBlock(definition.headline, {
+        fontFamily: "Geist",
+        fontWeight: 700,
+        fontSize: fitSize(tokens.type.headline * scale, definition.headline, { maxWidth: inner.width }),
+        letterSpacing: "-0.025em",
+        lineHeight: 1.14,
+        color: tokens.colors.text,
+      })
+    : h("div", { style: { display: "flex" } })
+
+  return { body, footer: definition.footnote, backdrop }
+}
+
+/**
  * The registry the runner validates `template:` against. Adding a template means
  * adding it here, listing its required fields below, and documenting it in
  * docs/social-media-system.md.
  */
-export const TEMPLATES = { statement, progression, quote, screenshot }
+export const TEMPLATES = { statement, progression, quote, screenshot, photo }
 
 /** Fields each template requires beyond the common ones, checked before rendering. */
 export const TEMPLATE_FIELDS = {
@@ -411,4 +520,5 @@ export const TEMPLATE_FIELDS = {
   progression: ["chords"],
   quote: ["headline"],
   screenshot: ["screenshot"],
+  photo: ["photo"],
 }

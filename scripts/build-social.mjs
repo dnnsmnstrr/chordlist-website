@@ -35,6 +35,18 @@ const CONFIG = {
   source: "content/social",
   outputDirectory: "public/social",
   screenshotDirectory: "public/app-screenshots/dark",
+  // The lossless masters from docs/visual-language.md. Read, never written: this
+  // build makes placement-specific exports and leaves the masters alone.
+  photoDirectory: "assets/visual-references/analog-photography",
+
+  /**
+   * Warn when a master is cropped past this fraction of its area to fill a
+   * format. The photography guide asks for a composition made for the final
+   * aspect ratio rather than one master forced into every placement, and a 3:2
+   * frame in a 9:16 story loses about 62% of the picture — well past the point
+   * where the crop is a design decision rather than a resize.
+   */
+  cropWarningThreshold: 0.45,
 
   /**
    * The format matrix. `scale` multiplies every type size in `type` below, so a
@@ -72,6 +84,12 @@ const CONFIG = {
     // The squircle mirrors the dark-mode header logo: light tile, dark glyph.
     iconTile: "#FAFAFA",
     iconGlyph: "#0A0A0A",
+    // Laid over editorial photography so type stays legible against blown
+    // highlights. Heaviest at the top and bottom, where the lockup and the
+    // footnote sit; lightest across the middle, so the picture still reads.
+    scrim:
+      "linear-gradient(180deg, rgba(10,10,10,0.88) 0%, rgba(10,10,10,0.55) 38%," +
+      " rgba(10,10,10,0.62) 62%, rgba(10,10,10,0.92) 100%)",
   },
 
   /** Base sizes at scale 1. Every template multiplies these by the format scale. */
@@ -148,17 +166,51 @@ function readDefinition(file, data) {
   return { ...data, template, formats, headline }
 }
 
-async function loadScreenshots() {
-  const directory = path.join(projectRoot, CONFIG.screenshotDirectory)
-  const entries = await readdir(directory).catch(() => [])
-  const screenshots = {}
+/**
+ * Lists a directory of PNGs up front but only reads the bytes a definition
+ * actually asks for, caching each one.
+ *
+ * The names are needed eagerly to validate `screenshot:` and `photo:` fields and
+ * to name the alternatives in an error. The bytes are not: the photography
+ * masters are lossless and run to several megabytes each, and base64-encoding
+ * all of them on every build to render one would cost far more memory than the
+ * images themselves.
+ */
+async function imageLoader(directory) {
+  const absolute = path.join(projectRoot, directory)
+  const entries = await readdir(absolute).catch(() => [])
+  const available = entries.filter((entry) => entry.toLowerCase().endsWith(".png")).sort()
+  const cache = new Map()
 
-  for (const name of entries.filter((entry) => entry.endsWith(".png"))) {
-    const data = await readFile(path.join(directory, name))
-    screenshots[name] = `data:image/png;base64,${data.toString("base64")}`
+  return {
+    names: () => available,
+    has: (name) => available.includes(name),
+    /** Data URI for `name`, or undefined if the directory has no such file. */
+    async load(name) {
+      if (!available.includes(name)) return undefined
+      if (!cache.has(name)) {
+        const data = await readFile(path.join(absolute, name))
+        cache.set(name, `data:image/png;base64,${data.toString("base64")}`)
+      }
+      return cache.get(name)
+    },
+    /** Intrinsic pixel size, read straight from the PNG's IHDR chunk. */
+    async size(name) {
+      const data = await readFile(path.join(absolute, name))
+      return { width: data.readUInt32BE(16), height: data.readUInt32BE(20) }
+    },
   }
+}
 
-  return screenshots
+/**
+ * Reports how much of a source image is discarded when it is cropped to fill a
+ * target frame, as a fraction of its area.
+ */
+function cropLoss(source, target) {
+  const sourceRatio = source.width / source.height
+  const targetRatio = target.width / target.height
+  const kept = sourceRatio > targetRatio ? targetRatio / sourceRatio : sourceRatio / targetRatio
+  return 1 - kept
 }
 
 async function main() {
@@ -183,12 +235,82 @@ async function main() {
     }),
   )
 
-  const assets = { screenshots: await loadScreenshots() }
   const tokens = { copy: CONFIG.copy, colors: CONFIG.colors, type: CONFIG.type, layout: CONFIG.layout }
+
+  const screenshots = await imageLoader(CONFIG.screenshotDirectory)
+  const photos = await imageLoader(CONFIG.photoDirectory)
 
   const sourceDirectory = path.join(projectRoot, source)
   const entries = await readdir(sourceDirectory, { withFileTypes: true })
   const files = entries.filter((entry) => entry.isFile() && entry.name.endsWith(".md")).map((entry) => entry.name)
+
+  // First pass: parse and validate everything, and resolve the images that are
+  // actually referenced. Nothing renders until every definition is known good,
+  // so a typo in the last file cannot leave a half-built output directory.
+  const definitions = []
+  const resolved = { screenshots: new Map(), photos: new Map() }
+
+  for (const file of files) {
+    const raw = await readFile(path.join(sourceDirectory, file), "utf8")
+    const split = splitFrontmatter(raw)
+    if (split === null) throw new Error(`${source}/${file}: missing YAML frontmatter`)
+
+    const definition = readDefinition(file, parseYaml(split.frontmatter) ?? {})
+    if (definition.draft === true) {
+      console.log(`  skipped ${file.slice(0, -".md".length)} (draft)`)
+      continue
+    }
+
+    if (definition.screenshot !== undefined) {
+      const name = definition.screenshot
+      if (!screenshots.has(name)) {
+        throw new Error(
+          `${source}/${file}: unknown screenshot "${name}" ` +
+            `(available: ${screenshots.names().join(", ") || "none"})`,
+        )
+      }
+      if (!resolved.screenshots.has(name)) resolved.screenshots.set(name, await screenshots.load(name))
+    }
+
+    if (definition.photo !== undefined) {
+      const name = definition.photo
+      if (!photos.has(name)) {
+        throw new Error(
+          `${source}/${file}: unknown photo "${name}" ` +
+            `(available: ${photos.names().join(", ") || "none"})`,
+        )
+      }
+      // The intrinsic size travels with the data URI: the photo template needs
+      // it to do its own cover maths, since satori will not do it for us.
+      if (!resolved.photos.has(name)) {
+        resolved.photos.set(name, { uri: await photos.load(name), ...(await photos.size(name)) })
+      }
+    }
+
+    // A master made for one shape and forced into another loses real picture.
+    // Warn rather than fail: sometimes the crop is fine, and the author is the
+    // one who can tell. Silence here would read as approval.
+    if (definition.photo) {
+      const intrinsic = resolved.photos.get(definition.photo)
+      for (const name of definition.formats) {
+        const loss = cropLoss(intrinsic, CONFIG.formats[name])
+        if (loss >= CONFIG.cropWarningThreshold) {
+          console.warn(
+            `  ${file}: "${definition.photo}" is ${intrinsic.width}×${intrinsic.height} and loses ` +
+              `${Math.round(loss * 100)}% of its area as a ${name}. Consider a composition made ` +
+              `for that ratio, or set "focus" to steer the crop.`,
+          )
+        }
+      }
+    }
+
+    definitions.push({ slug: file.slice(0, -".md".length), definition, caption: split.body.trim() })
+  }
+
+  const assets = {
+    screenshots: { get: (name) => resolved.screenshots.get(name), names: () => screenshots.names() },
+    photos: { get: (name) => resolved.photos.get(name), names: () => photos.names() },
+  }
 
   const destinationRoot = path.join(projectRoot, outputDirectory)
   await mkdir(destinationRoot, { recursive: true })
@@ -196,18 +318,7 @@ async function main() {
   const manifest = []
   let written = 0
 
-  for (const file of files) {
-    const slug = file.slice(0, -".md".length)
-    const raw = await readFile(path.join(sourceDirectory, file), "utf8")
-    const split = splitFrontmatter(raw)
-    if (split === null) throw new Error(`${source}/${file}: missing YAML frontmatter`)
-
-    const definition = readDefinition(file, parseYaml(split.frontmatter) ?? {})
-    if (definition.draft === true) {
-      console.log(`  skipped ${slug} (draft)`)
-      continue
-    }
-
+  for (const { slug, definition, caption } of definitions) {
     const render = TEMPLATES[definition.template]
     const outputs = []
 
@@ -226,7 +337,7 @@ async function main() {
           format.height - padding * 2 - (format.safeTop ?? 0) - (format.safeBottom ?? 0) - reserved,
       }
 
-      const { body, footer } = render({ definition, tokens, scale, format, inner, assets })
+      const { body, footer, backdrop } = render({ definition, tokens, scale, format, inner, assets })
       const element = frame({
         tokens,
         format,
@@ -236,6 +347,7 @@ async function main() {
         label: definition.eyebrow,
         body,
         footer,
+        backdrop,
       })
 
       const response = new ImageResponse(element, { width: format.width, height: format.height, fonts })
@@ -255,7 +367,7 @@ async function main() {
       slug,
       template: definition.template,
       alt: definition.alt,
-      caption: split.body.trim(),
+      caption,
       scheduled: definition.scheduled ?? null,
       outputs,
     })

@@ -1,5 +1,26 @@
 [
   {
+    "slug": "caught-in-motion",
+    "template": "photo",
+    "alt": "A blurred black-and-white photograph of a guitarist mid chord change under hard stage light, with a chordlist headline over it.",
+    "caption": "Your songbook should get out of the way. Open the folder, hit shuffle, and let autoscroll keep\nyour hands on the strings.\n\nchordlist for iPhone and iPad. chordlist.app",
+    "scheduled": "2026-08-30",
+    "outputs": [
+      {
+        "format": "card",
+        "file": "public/social/caught-in-motion/card.png",
+        "width": 1200,
+        "height": 630
+      },
+      {
+        "format": "story",
+        "file": "public/social/caught-in-motion/story.png",
+        "width": 1080,
+        "height": 1920
+      }
+    ]
+  },
+  {
     "slug": "four-chords",
     "template": "progression",
     "alt": "The chords G, D, E minor and C set large above the Roman numerals one, five, six minor, four.",
@@ -63,6 +84,27 @@
       {
         "format": "post",
         "file": "public/social/matching-progressions/post.png",
+        "width": 1080,
+        "height": 1350
+      }
+    ]
+  },
+  {
+    "slug": "paper-and-glass",
+    "template": "photo",
+    "alt": "A grainy black-and-white photograph of a phone resting on an open page of sheet music, with a chordlist headline over it.",
+    "caption": "Nothing about a plain-text songbook asks you to give up the paper one. Keep the folder, keep the\nbinder, and let the two hold the same songs.\n\nchordlist.app",
+    "scheduled": null,
+    "outputs": [
+      {
+        "format": "card",
+        "file": "public/social/paper-and-glass/card.png",
+        "width": 1200,
+        "height": 630
+      },
+      {
+        "format": "post",
+        "file": "public/social/paper-and-glass/post.png",
         "width": 1080,
         "height": 1350
       }

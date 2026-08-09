@@ -40,6 +40,7 @@ separately before adding a template.
 | `progression` | `chords` | A chord row over Roman numerals. Optional `numerals`, `headline`. |
 | `quote` | `headline` | A line from an article. Optional `attribution`. |
 | `screenshot` | `screenshot` | A device screenshot from `public/app-screenshots/dark/`. |
+| `photo` | `photo` | Editorial photography as a backdrop, typography over it. Optional `focus`. |
 
 Every definition also requires `alt`. `eyebrow`, `footnote`, `formats`, `created`, `scheduled`, and
 `draft` are optional and documented in the system guide.
@@ -54,6 +55,27 @@ Two constraints the build cannot check:
 - Instagram crops a `post` to 3:4 in the profile grid. Keep essential content out of the top and
   bottom eighth.
 - A `story` reserves 190px top and 240px bottom for Instagram's own chrome.
+
+## Photography
+
+Read `docs/visual-language.md` before using the `photo` template. Three rules decide most cases:
+
+- **Never generate a photograph containing text.** The image generator produces the picture only;
+  this template composites the type over it at build time. That is the entire reason the template
+  exists.
+- **Atmosphere, not evidence.** Use `photo` for mood or musical context. If the asset's job is to
+  show what the app does, use `screenshot` — a blurred 35mm frame cannot carry a product claim.
+- **Mind the crop.** `focus` takes a CSS-like string such as `60% 40%`. The build warns when a master
+  loses 45% or more of its area to a format; a 3:2 master in a 9:16 story loses about 63%. Treat the
+  warning as a prompt to generate a composition for that ratio, using the reusable prompt in the
+  visual language guide, rather than as noise.
+
+To add a new master, follow that guide: generate it from its prompt, keep the lossless file in
+`assets/visual-references/analog-photography/`, and do not resize or overwrite it. This build reads
+the masters and writes only into `public/social/`.
+
+A `photo` asset is roughly forty times the file size of a typographic one, because grain is close to
+the worst case for PNG. Use the template deliberately rather than as default dressing.
 
 ## Copy
 

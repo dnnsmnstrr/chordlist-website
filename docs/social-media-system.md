@@ -20,10 +20,16 @@ written in.
 ```
 content/social/<slug>.md      Definition: frontmatter for the image, body for the caption
 scripts/build-social.mjs      Runner: validation, fonts, formats, output, manifest
-scripts/lib/social-templates.mjs   Layouts, shared frame, and type fitting
+scripts/lib/social-templates.mjs   Layouts, shared frame, type fitting, cover maths
 public/social/<slug>/<format>.png  Output — regenerate, never hand-edit
 public/social/manifest.json   Every built asset with its alt text and caption
+
+assets/visual-references/analog-photography/   Photography masters, read only
+public/app-screenshots/dark/                   App screenshots, read only
 ```
+
+The two source directories are inputs the build reads and never writes. The photography masters stay
+lossless where `visual-language.md` requires; this build makes placement-specific exports from them.
 
 The build renders through Next's bundled `ImageResponse` (satori + resvg) and reads its fonts from
 `assets/fonts/`, so it is hermetic and offline, exactly like `build-og-image.mjs` and
@@ -73,6 +79,52 @@ footnote so the asset stays self-sourcing when it is screenshotted onward. Requi
 short line. The screenshot is never tinted, cropped, or perspective-tilted: it is evidence of what
 the app does. Requires `screenshot`, naming a file in that directory.
 
+**`photo`** — editorial photography as a full-bleed backdrop with typography over it. Requires
+`photo`, naming a master in `assets/visual-references/analog-photography/`. See
+[Using the photography](#using-the-photography) below, which has rules the other templates do not.
+
+## Using the photography
+
+[Visual language](visual-language.md) governs the analog photography, and this template is the
+sanctioned way to put it on a social surface. Two of that document's rules are the reason the
+template works the way it does.
+
+**Typography stays outside the photograph.** The guide is explicit that a generated image must never
+contain text, logos, or borders, and that any headline is typeset separately over it. That is exactly
+what happens here: the master is a backdrop and the copy is composited on top at build time. Never
+ask an image generator for a photo with words in it — generate the picture from the reusable prompt
+in the guide, then let this template set the type.
+
+**The photograph is atmosphere, not evidence.** Use `photo` when an asset needs mood or musical
+context. When the asset's job is to show what the app does, use `screenshot`: the guide keeps that
+class of image sharp and literal, and a blurred 35mm frame cannot carry a product claim.
+
+The masters have blown highlights by design, so the template lays a scrim over them to buy back the
+contrast the copy needs — the guide's "quiet contrast behind any separately typeset headline". The
+scrim is tuned in the script's `CONFIG.colors.scrim`.
+
+### Cropping
+
+The guide asks for a composition made for the final aspect ratio rather than one master forced into
+every placement, and the current masters make that concrete: three are 3:2 landscape and
+`phone-on-sheet-music.png` is 4:5, which is natively the `post` format.
+
+`focus` steers the crop, taking a CSS-like string — `focus: 60% 40%` keeps the point 60% across and
+40% down. It defaults to centre.
+
+The build warns when a master loses 45% or more of its area to a format, naming the file, the format,
+and the percentage. A 3:2 master in a 9:16 story loses about 63%. The warning does not fail the
+build, because sometimes the crop is genuinely fine and only the author can tell — but treat it as a
+prompt to generate a composition for that ratio rather than as noise.
+
+### Weight
+
+A grainy monochrome photograph is close to the worst case for PNG, and `ImageResponse` emits nothing
+else, so a `photo` story lands around 2 MB against roughly 50 kB for a typographic one. The networks
+re-encode on upload, so this costs repository weight rather than delivery speed. It is a reason to
+use the template deliberately — for launches and atmosphere — rather than as the default dressing on
+every asset.
+
 ## Writing a definition
 
 ```yaml
@@ -107,6 +159,8 @@ whoever posts it is not rewriting copy that was already reviewed.
 | `chords` / `numerals` | `progression` | `chords` is a list. `numerals` is one string. |
 | `attribution` | `quote` | Normally the post title the line came from. |
 | `screenshot` | `screenshot` | A filename in `public/app-screenshots/dark/`. |
+| `photo` | `photo` | A master filename in `assets/visual-references/analog-photography/`. |
+| `focus` | no | `photo` only. Steers the crop, e.g. `60% 40%`. Defaults to centre. |
 | `created` | no | The date the definition was written. |
 | `scheduled` | no | Planning only. The build does not act on it. |
 | `draft` | no | `true` skips the definition entirely. |
@@ -152,5 +206,8 @@ Before committing a new or changed asset, confirm that:
 - product claims match `lib/site-config.ts` and the current app, and no store URL is printed into
   the image;
 - a `screenshot` asset uses a current file from `public/app-screenshots/dark/`;
+- a `photo` asset carries mood rather than a product claim, keeps its copy legible against the
+  brightest part of the frame, and either survives its crop or has been given a composition made for
+  that ratio;
 - the PNGs were regenerated and committed alongside the definition; and
 - the asset has been looked at, not just built — at the size it will actually appear.
