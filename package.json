@@ -6,6 +6,7 @@
     "sync:assets": "node scripts/sync-app-assets.mjs",
     "build:icons": "node scripts/build-icons.mjs",
     "build:og": "node scripts/build-og-image.mjs && node scripts/build-blog-og.mjs",
+    "build:social": "node scripts/build-social.mjs",
     "predev": "pnpm sync:assets",
     "dev": "next dev",
     "prebuild": "pnpm sync:assets",
