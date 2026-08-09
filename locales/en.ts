@@ -559,6 +559,41 @@ export const galleryCopy = {
   ],
 } as const
 
+export const screensCopy = {
+  metadata: {
+    title: "App screenshots",
+    description: `Every generated App Store screenshot for ${siteConfig.name}, in light and dark mode.`,
+  },
+  eyebrow: "Reference",
+  title: "App screenshots",
+  introduction:
+    "The current App Store screenshots, produced by the app's automated screenshot tests. Open one to view it full screen and download the original PNG, or take the whole set as a zip.",
+  downloadAll: "Download all",
+  downloadAllHint: (count: number) => `${count} images, light and dark`,
+  screenshots: [
+    {
+      title: "Song library",
+      description: "The song list grouped by artist, with chord progressions and tags visible at a glance.",
+    },
+    {
+      title: "Song detail",
+      description: "A song with its lyrics, chords, playback controls, and matching-progression suggestions.",
+    },
+    {
+      title: "Song editor",
+      description: "Creating a song file with title, artist, chord progression, tags, and lyrics.",
+    },
+    {
+      title: "Search results",
+      description: "Searching the library and filtering the results down to a single tag.",
+    },
+    {
+      title: "Tag filter",
+      description: "The library narrowed to one tag, showing how filters combine with the current sort.",
+    },
+  ],
+} as const
+
 export const pianoCopy = {
   label: "Interactive piano keyboard",
   playNote: (note: string) => `Play note ${note}`,

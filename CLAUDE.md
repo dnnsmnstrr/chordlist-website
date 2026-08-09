@@ -28,6 +28,7 @@ yarn lockfiles).
 | `pnpm build:icons` | Regenerate every favicon asset in `public/` |
 | `pnpm build:og` | Regenerate `public/og.png` **and** one card per blog post in `public/blog/og/` |
 | `pnpm build:social` | Regenerate every social asset in `public/social/` from `content/social/` |
+| `pnpm build:screens` | Rebuild the `/screens` download archive from `public/app-screenshots/` |
 
 There is no test suite. `pnpm check` is the gate.
 
@@ -38,6 +39,7 @@ app/                 App Router pages (all server components unless noted)
   layout.tsx         Root layout: fonts, metadata, viewport, Vercel Analytics
   page.tsx           Home page — composes the section components
   docs/  faq/  press/  privacy/    One page.tsx each
+  gallery/  screens/         Unlisted reference pages (noindex, not in nav or sitemap)
   blog/              Index, [slug] post page, and rss.xml route handler
   sitemap.ts  robots.ts            Metadata routes, driven by siteConfig.url
   globals.css        Tailwind v4 entry + design tokens + the .post-body block
@@ -130,7 +132,7 @@ enabled in `next.config.mjs`, so `<Link href>` values are checked against real r
 
 ## Generated and synced assets
 
-Three categories of files in `public/` are **outputs — edit the generator, not the file**:
+Five categories of files in `public/` are **outputs — edit the generator, not the file**:
 
 - **Icons** (`favicon.ico`, `icon.svg`, `icon-{light,dark}-32x32.png`, `apple-icon.png`) —
   `pnpm build:icons`.
@@ -149,6 +151,12 @@ Three categories of files in `public/` are **outputs — edit the generator, not
   `public/og.png` and the per-post cards, which must not change when a campaign does. Deleting a
   definition prunes its images on the next run. `docs/social-media-system.md` is the design source of
   truth and `.agents/skills/social-asset/SKILL.md` carries the workflow.
+- **`public/app-screenshots/chordlist-app-screenshots.zip`** — `pnpm build:screens`, the
+  "Download all" archive on `/screens`. `scripts/build-screens-zip.mjs` writes the zip by hand
+  (STORE method, no deflate — the PNGs are already compressed) so there is no zip dependency, and
+  a static file under `public/` is CDN-served, which a route handler reading the filesystem at
+  request time would not be. Rerun it after `pnpm sync:assets` brings in new screenshots, and
+  verify with `unzip -t`.
 - **App screenshots** (`public/app-screenshots/{light,dark}/`) and
   `public/press/chordlist-press-kit.zip` — produced by the iOS app repository's automated
   screenshot tests and copied in by `pnpm sync:assets`, which `predev`/`prebuild` run for you. The
