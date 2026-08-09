@@ -22,14 +22,14 @@ export function SiteHeader() {
         <span className="hidden font-mono text-lg font-semibold tracking-tight sm:inline">{siteConfig.name}</span>
       </Link>
       <nav className="flex items-center gap-4 text-sm text-muted-foreground sm:gap-6">
+        <Link href="/#features" className="hidden transition-colors hover:text-foreground sm:inline">
+          {commonCopy.navigation.features}
+        </Link>
         <Link href="/docs" className="transition-colors hover:text-foreground">
           {commonCopy.navigation.docs}
         </Link>
         <Link href="/blog" className="transition-colors hover:text-foreground">
           {commonCopy.navigation.blog}
-        </Link>
-        <Link href="/#features" className="hidden transition-colors hover:text-foreground sm:inline">
-          {commonCopy.navigation.features}
         </Link>
         <AppCTA />
       </nav>
