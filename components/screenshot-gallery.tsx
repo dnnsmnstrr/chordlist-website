@@ -11,11 +11,14 @@ export type Screenshot = {
   darkSrc: string
   title: string
   description: string
+  alt?: string
+  width?: number
+  height?: number
 }
 
 type ScreenshotGalleryProps = {
   screenshots: readonly Screenshot[]
-  variant?: "press" | "showcase"
+  variant?: "gallery" | "press" | "showcase"
 }
 
 export function ScreenshotGallery({ screenshots, variant = "press" }: ScreenshotGalleryProps) {
@@ -25,6 +28,7 @@ export function ScreenshotGallery({ screenshots, variant = "press" }: Screenshot
   const count = screenshots.length
   const active = activeIndex === null ? undefined : screenshots[activeIndex]
   const isShowcase = variant === "showcase"
+  const isGallery = variant === "gallery"
 
   const close = useCallback(() => setActiveIndex(null), [])
 
@@ -74,11 +78,22 @@ export function ScreenshotGallery({ screenshots, variant = "press" }: Screenshot
         className={
           isShowcase
             ? "grid grid-cols-3 items-end gap-3 sm:gap-8"
-            : "grid grid-cols-2 items-start gap-4 sm:grid-cols-3"
+            : isGallery
+              ? "columns-1 gap-6 sm:columns-2"
+              : "grid grid-cols-2 items-start gap-4 sm:grid-cols-3"
         }
       >
         {screenshots.map((screenshot, index) => (
-          <li key={screenshot.lightSrc} className={isShowcase ? "min-w-0" : "flex flex-col gap-3"}>
+          <li
+            key={screenshot.lightSrc}
+            className={
+              isShowcase
+                ? "min-w-0"
+                : isGallery
+                  ? "mb-6 inline-flex w-full break-inside-avoid flex-col gap-3"
+                  : "flex flex-col gap-3"
+            }
+          >
             <button
               type="button"
               onClick={(event) => {
@@ -94,7 +109,13 @@ export function ScreenshotGallery({ screenshots, variant = "press" }: Screenshot
             >
               <ThemeScreenshot
                 screenshot={screenshot}
-                sizes={isShowcase ? "(max-width: 640px) 30vw, 300px" : "(max-width: 640px) 45vw, 220px"}
+                sizes={
+                  isShowcase
+                    ? "(max-width: 640px) 30vw, 300px"
+                    : isGallery
+                      ? "(max-width: 640px) calc(100vw - 3rem), 480px"
+                      : "(max-width: 640px) 45vw, 220px"
+                }
                 className="h-auto w-full"
               />
             </button>
@@ -152,7 +173,7 @@ export function ScreenshotGallery({ screenshots, variant = "press" }: Screenshot
             />
             <ThemeScreenshot
               screenshot={active}
-              sizes="(max-width: 640px) 75vw, 420px"
+              sizes={isGallery ? "(max-width: 640px) 75vw, 80vw" : "(max-width: 640px) 75vw, 420px"}
               className="max-h-full min-h-0 w-auto max-w-full rounded-xl border border-border object-contain"
             />
             <GalleryNavButton
@@ -188,9 +209,9 @@ function ThemeScreenshot({
 }) {
   const { props: darkImageProps } = getImageProps({
     src: screenshot.darkSrc,
-    alt: screenshot.title,
-    width: 1170,
-    height: 2532,
+    alt: screenshot.alt ?? screenshot.title,
+    width: screenshot.width ?? 1170,
+    height: screenshot.height ?? 2532,
     sizes,
   })
 
@@ -199,9 +220,9 @@ function ThemeScreenshot({
       <source media="(prefers-color-scheme: dark)" srcSet={darkImageProps.srcSet} sizes={darkImageProps.sizes} />
       <Image
         src={screenshot.lightSrc}
-        alt={screenshot.title}
-        width={1170}
-        height={2532}
+        alt={screenshot.alt ?? screenshot.title}
+        width={screenshot.width ?? 1170}
+        height={screenshot.height ?? 2532}
         sizes={sizes}
         className={className}
       />

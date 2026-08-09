@@ -522,8 +522,41 @@ export const screenshotGalleryCopy = {
   viewFullscreen: (title: string) => `View ${title} full screen`,
   download: (title: string) => `Download ${title}`,
   close: "Close full screen view",
-  previous: "Previous screenshot",
-  next: "Next screenshot",
+  previous: "Previous image",
+  next: "Next image",
+} as const
+
+export const galleryCopy = {
+  metadata: {
+    title: "Gallery",
+    description: `A hidden collection of black-and-white images made for ${siteConfig.name}.`,
+  },
+  eyebrow: "A hidden corner",
+  title: "Gallery",
+  introduction:
+    "Black-and-white studies made for chordlist. Open any image to view it full screen, then download the original PNG for a wallpaper or screensaver.",
+  images: [
+    {
+      title: "Between paper and screen",
+      description: "A phone resting on an open score, somewhere between a physical songbook and a digital one.",
+      alt: "A black phone resting on an open book of sheet music in soft, grainy light.",
+    },
+    {
+      title: "Finding the changes",
+      description: "A guitarist caught in motion, with the fretting hand and instrument dissolving into stage light.",
+      alt: "A guitarist's fretting hand and instrument blurred by movement under bright stage lights.",
+    },
+    {
+      title: "At the keys",
+      description: "A low, unstable view along a piano keyboard towards an open score.",
+      alt: "A piano keyboard and open sheet music seen through grain, bloom, and shallow focus.",
+    },
+    {
+      title: "Four chords in motion",
+      description: "Piano keys stretched by movement into alternating bands of light and shadow.",
+      alt: "Black-and-white piano keys stretching into soft vertical streaks of motion.",
+    },
+  ],
 } as const
 
 export const pianoCopy = {
