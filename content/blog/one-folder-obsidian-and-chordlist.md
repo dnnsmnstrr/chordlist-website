@@ -1,67 +1,95 @@
 ---
-title: One folder, Obsidian and chordlist
-description: An Obsidian vault is a folder of Markdown files. So is a chordlist library. They can be the same folder.
+title: Use one folder for Obsidian and chordlist
+description: Set up one iCloud-backed folder as both an Obsidian vault and a chordlist library without duplicating songs or metadata.
 created: 2026-08-04
 published: 2026-09-18
 tags:
   - obsidian
   - workflow
-  - markdown
 ---
 
-If you already keep notes in Obsidian, you have the infrastructure for a songbook: a folder of
-Markdown files that syncs to your phone. chordlist reads that same folder, so you do not have to
-choose between writing about music in one app and playing from it in another.
+If you already keep music notes in an iCloud-backed Obsidian vault, you do not need a second copy of
+the same songs for chordlist. Both apps can work with one folder of Markdown files: write and
+organise in Obsidian, then open the same files in chordlist when you play.
 
-## Why this works at all
+The setup matters on iPhone and iPad because Obsidian expects an iCloud vault to live in its own
+folder. Create the vault there first, then select it from chordlist.
 
-An Obsidian vault is not a special format. It is a directory with Markdown files in it and a hidden
-`.obsidian` folder holding the app's own settings. chordlist ignores that hidden folder and reads
-everything one level down, treating each subfolder as an artist and each `.md` file as a song.
+## Why the same folder works
 
-Neither app owns the files. Both are readers of the same directory.
+An Obsidian vault is a directory of ordinary files plus a hidden `.obsidian` folder for the app's
+configuration. chordlist ignores hidden items. With the usual chordlist layout, each visible
+subfolder is an artist and each Markdown file inside it is a song:
 
-## Setting it up
+```
+My Songbook/
+├── .obsidian/
+├── Nina Simone/
+│   └── Feeling Good.md
+└── Radiohead/
+    └── Creep.md
+```
 
-The order matters on iPhone and iPad, because Obsidian requires iCloud vaults to live in a specific
-place:
+Obsidian sees notes and folders. chordlist sees artists and songs. Neither app needs a converted or
+exported copy. That is the practical benefit of keeping a
+[plain-text songbook](/blog/why-plain-text-songbooks-last).
 
-1. On the device, create an Obsidian vault with **Store in iCloud** enabled. Obsidian puts it under
-   `iCloud Drive/Obsidian/[Vault Name]`.
-2. In chordlist, open **Settings → Songs Folder** and select that vault folder.
-3. Inside the vault, make one folder per artist and keep each song as `Artist/Song Title.md`.
-4. Edit in either app. If a change made elsewhere has not appeared yet, pull down on the chordlist
-   library to rescan.
+## Set it up on iPhone or iPad
 
-On macOS it is easier — Obsidian can open an existing chordlist folder directly as a vault. The
-[Obsidian section of the docs](/docs#obsidian) has the full walkthrough and Obsidian's own iCloud
-setup guide.
+1. In Obsidian, create a vault with **Store in iCloud** enabled.
+2. Confirm in Files that it lives at `iCloud Drive/Obsidian/[Vault Name]`.
+3. In chordlist, open **Settings → Songs Folder** and select the vault folder.
+4. Inside the vault, create one folder per artist and keep each song as
+   `Artist/Song Title.md`.
+5. Edit a song in either app. If an external change has not appeared in chordlist, pull down on the
+   library to rescan it.
 
-## Frontmatter that survives both apps
+The location is important: [Obsidian's iCloud instructions](https://obsidian.md/help/sync-notes#iCloud)
+say that mobile vaults should sit inside the `Obsidian` folder in iCloud Drive. On macOS, you can
+instead open an existing chordlist folder directly as a vault. The
+[chordlist Obsidian guide](/docs#obsidian) covers both routes.
 
-This is the part people worry about, and it is worth being precise. chordlist maintains a few YAML
-frontmatter fields — `chords`, `tags`, and the `playCount` and `lastPlay` values it updates when you
-mark a song as played. Other frontmatter is preserved when chordlist edits a file.
+## Keep both kinds of metadata
 
-So Obsidian properties, Dataview fields, and anything else you have added at the top of a note stay
-where they are. A song can be a note in your vault and a playable chord sheet at the same time,
-without either app clobbering the other's metadata.
+At the top of a song, YAML frontmatter can hold properties for both apps:
 
-## Before a gig without signal
+```
+---
+chords: G D Em C
+tags:
+  - rehearsal
+status: learning
+source: personal chart
+---
+```
 
-An iCloud Drive folder can appear in Files while its contents live only in the cloud, which is a bad
-surprise on stage. Touch and hold the vault folder in Files and choose **Keep Downloaded** before you
-go. Do it on every device that needs it — the setting is per-device.
+chordlist recognises its own fields, including `title`, `artist`, `chords`, `tags`, `playCount`, and
+`lastPlay`, and may rewrite those when you edit or mark a song as played. Other frontmatter lines are
+preserved when chordlist saves the file, so properties such as `status` and `source` can remain for
+Obsidian or Dataview.
 
-The [offline section](/docs#offline) covers this properly, including why Keep Downloaded is not a
-substitute for a backup.
+Avoid giving one property two different jobs. In particular, `tags` is an app-maintained field in
+chordlist, so use another property name for Obsidian-only classifications that should not appear as
+song tags.
 
-## The honest limitation
+## Prepare the vault for offline use
 
-Two apps writing to one file is still two apps writing to one file. Close or leave the chordlist song
-editor before you edit the same song in Obsidian, and avoid editing the same song on two offline
-devices at once — the file provider may create a conflict copy, and resolving that is between you and
-iCloud.
+Seeing a folder in Files does not guarantee that every file is stored on the device. Before a
+rehearsal or gig without reliable signal, find the vault in Files, touch and hold it, and choose
+**Keep Downloaded**. Repeat this on every device that needs an offline copy.
 
-In practice this is a small price. Your songs sit in the same place as the rest of your notes, in the
-same format, readable by both.
+[Apple's Files guide](https://support.apple.com/guide/iphone/transfer-files-iphone-a-storage-device-server-iphe9aff429a/ios)
+documents the command and notes that a missing **Keep Downloaded** option can mean the item is
+already stored locally. The [offline guide](/docs#offline) also explains why a downloaded copy is
+not the same as a backup.
+
+## Avoid editing the same file twice
+
+Two apps can share a file, but they should not edit it at the same moment. Leave the chordlist song
+editor before changing that song in Obsidian, and allow iCloud to finish syncing before editing the
+same file on another device. Concurrent offline changes may produce a conflict copy that you have
+to reconcile manually.
+
+For a quick check, edit one harmless line in Obsidian, return to chordlist, pull down to refresh, and
+confirm the change before moving the rest of your songbook. Once that round trip works, the vault can
+remain one library: one set of files, two useful views, and no export step between them.

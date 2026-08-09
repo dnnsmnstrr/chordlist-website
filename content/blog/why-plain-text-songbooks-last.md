@@ -1,35 +1,34 @@
 ---
 title: Why a songbook should be plain text
-description: Apps close down and export tools break. A folder of Markdown files outlives both.
+description: A folder of readable Markdown files keeps your songbook portable and under your control when apps, subscriptions, and export tools change.
 created: 2026-08-01
 published: 2026-08-01
 tags:
   - markdown
-  - workflow
 ---
 
-Have you ever lost data that was important to you before? An app shut down, a subscription lapsed, or a sync service
-quietly stopped supporting the format you had spent years working with. The data is yours in
-principle. Getting it out is another matter...
+Your songbook should outlast the app you use to manage it. If the songs live only inside a service,
+an expired subscription, a discontinued app, or a broken export can turn years of work into a
+migration problem.
 
-That is the problem chordlist starts from. Every song is a Markdown file in a folder you pick, and
-nothing about that arrangement depends on the app continuing to exist.
+chordlist starts from the file instead. Every song is a Markdown file in a folder you choose, so the
+library remains useful without depending on the app continuing to exist.
 
 ## File over app
 
-This idea has a name. Steph Ango, CEO of the note-taking app Obsidian, wrote an essay called
-[File over app](https://stephango.com/file-over-app) arguing that if you want the things you make to
-outlast the software you made them in, they have to be files you control, in formats that stay easy
-to read. The app is temporary. The file is the thing you keep.
+Steph Ango, who helps make Obsidian, calls this idea
+[File over app](https://stephango.com/file-over-app): if you want a digital artefact to last, keep it
+as a file you control in a format that remains easy to retrieve and read. The software is temporary;
+the file is the part you keep.
 
-That essay is the direct influence on how chordlist stores songs. It would have been easier to build
-a database and an export button — that is what most apps do, and the export button is usually where
-the trouble starts. Storing the songs as files from the beginning means there is nothing to export,
-because there was never a proprietary version to convert from.
+That essay influenced how chordlist stores songs. A private database with an export button would
+have been a familiar design, but the export is then a second version of your data that has to keep
+working. When the songs are ordinary files from the beginning, there is no proprietary format to
+convert before another tool can read them.
 
 ## Every song is a file
 
-Here is a complete song file. There is no database, no proprietary container, and no export step:
+Here is a complete song file:
 
 ```
 ---
@@ -46,19 +45,17 @@ Em               C
 Radio is humming something old
 ```
 
-The chords can sit on the line above the words, which is how chord sheets are traditionally formatted.  
+The chords sit above the words, as they do on an ordinary chord sheet. The block at the top is YAML
+frontmatter: optional metadata that chordlist reads for details such as the progression and tags. It
+can also hold the play history the app records when you mark a song as played.
 
-At the top is what's called _frontmatter_ — optional
-metadata the app reads for information like chord progressions and tags. It can also store some stats, such as the number of times a song has been played or when it was last played.
-
-You can read these files in a text editor, print or email them, and they will still open on a laptop in twenty years.
-
-The [sample song on the home page](/#preview) is a real file you can download and try that with.
+Nothing there requires chordlist to decode it. You can open the file in a text editor, print it, send
+it to someone, or move it into another Markdown app. The [sample song on the home page](/#preview) is
+a real file you can download and inspect yourself.
 
 ## The folder is the structure
 
-chordlist reads Markdown files one level below the folder you choose. The artist comes from the
-folder name and the title comes from the filename:
+In the usual layout, each artist is a folder and each song title is a filename:
 
 ```
 Songs/
@@ -68,26 +65,26 @@ Songs/
     └── Fast Car.md
 ```
 
-That is the entire schema. Renaming a file renames the song; dragging it to another folder changes
-the artist. The [file and folder format](/docs#file-format) page covers the details, including which
-frontmatter fields the app maintains for you.
+Renaming a file renames the song. Moving it to another artist folder changes the artist. The
+[file and folder format](/docs#file-format) documents the fields chordlist maintains and how files
+at the root of the library are handled.
 
 ## Other tools still work
 
-Because the library is just folders and text, chordlist is not the only way to work with it. You can
-tidy filenames in Finder, edit lyrics in any Markdown editor, or keep the whole folder in Git and get
-a version history of every change you have ever made to a chord sheet.
+Because the library is folders and text, chordlist does not have to be the only way you work with
+it. You can tidy filenames in Finder, edit lyrics in a Markdown editor, or keep the folder in Git to
+record a history of your changes.
 
-The [managing files with other apps](/docs#other-apps) section goes through the practical cases,
-including the one rule worth remembering: leave the song editor before you change the same file
-somewhere else, then pull down on the library to refresh.
+Try that with the sample song: download it, open it in a text editor, change a line, and open it
+again. You do not need an export command or a conversion tool at any point. The
+[guide to working with other apps](/docs#other-apps) covers the practical details.
 
-## What you give up
+## Files still need care
 
-Honesty matters more than a clean pitch here. Plain files mean no server-side search across devices,
-and no automatic conflict resolution — if you edit the same song on two offline devices, whichever
-file provider you use will resolve that its own way. Storing your library in iCloud Drive means
-Apple's sync rules apply, not ours.
+Plain text improves portability; it does not prevent deletion or resolve sync conflicts. If the
+folder is in iCloud Drive, Apple decides when it syncs and how conflicting edits are handled.
+chordlist does not add a separate account or server-side copy behind it.
 
-What you get in exchange is that nothing in this arrangement can be taken away from you. The files
-are on your device, in a folder you named, in a format you can read without us.
+Keep a backup of any library you would be upset to lose, and avoid editing the same song in two apps
+or on two offline devices at once. The useful promise is not that a file is indestructible. It is
+that you can read, copy, and move your songbook without asking chordlist for permission.

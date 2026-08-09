@@ -1,24 +1,29 @@
 ---
 title: Three ways to write down a chord progression
-description: Chord symbols, Roman numerals, and Nashville numbers describe the same music. Knowing which to reach for saves a lot of transposing.
+description: Compare chord symbols, Roman numerals, and Nashville numbers, then choose the notation that fits playing, analysis, or a movable chart.
 created: 2026-08-08
 published: 2026-09-04
 tags:
   - chords
-  - markdown
 ---
 
-You write `C G Am F`. A friend writes `I V vi IV`. The person depping on keys writes
-`1 5 6 4` on the back of a setlist. All three describe the same four chords, and the
-difference between them is what they choose to leave out.
+You write `C G Am F`. A friend writes `I V vi IV`. A keys player writes `1 5 6 4` on the back of a
+setlist. The three lines describe the same chord roots in one context, but each is useful for a
+different job.
 
-## Chord symbols say what to play
+The choice is not about which system is correct. It is about what the person reading the chart needs
+to know.
 
-`C G Am F` is absolute. Each symbol names a specific chord, and you can play it without
-knowing anything else about the song.
+## Chord symbols name the chords
 
-That is the notation almost every chart uses, and it is what chordlist stores in a song's
-`chords` field:
+`C G Am F` gives you specific chord names. If you know those shapes or voicings, you can begin
+playing without first being told the key.
+
+What it does not tell you is equally important: there is no rhythm, duration, inversion, register,
+or capo position in that line. Chord symbols name the harmony, not the complete arrangement.
+
+They are also tied to a concert key. Move the progression and every symbol changes. In chordlist,
+this is the notation that belongs in a song's `chords` field:
 
 ```
 ---
@@ -26,46 +31,52 @@ chords: C G Am F
 ---
 ```
 
-The cost of being absolute is that the notation is tied to one key. Move the song and every
-symbol has to change.
+## Roman numerals show relationships
 
-## Roman numerals say what it means
+`I V vi IV` numbers each chord by the scale degree on which it is built. In a major key, uppercase
+usually marks a major chord and lowercase a minor chord. You need the key before the numbers become
+specific notes.
 
-`I V vi IV` numbers each chord by its position in the scale, uppercase for major and
-lowercase for minor. It tells you nothing about which notes to press until you know the key,
-and everything about what the progression is doing.
+That missing information is also the advantage. `C G Am F` in C major and `G D Em C` in G major are
+both I–V–vi–IV. Roman numerals make their shared structure visible without rewriting the analysis
+for each key.
 
-This is what makes two songs recognisably the same underneath. `C G Am F` and `G D Em C`
-look unrelated as symbols. As numerals they are both I–V–vi–IV, which is why they feel the
-same to play.
+Use them when you are comparing songs, teaching harmony, or moving an idea between keys. If the
+notation is new to you, [practise one four-chord progression](/blog/how-to-play-almost-any-pop-song)
+in two keys and keep the numeral line unchanged.
 
-Numerals are the right tool when you are analysing, teaching, or trying to work out why a
-song reminds you of another one.
+## Nashville numbers make a movable chart
 
-## Nashville numbers say it fast
+Nashville numbers also use scale degrees, written as Arabic numerals: `1 5 6 4`. The system grew out
+of Nashville studio work and developed into more than a row of chord numbers: a full chart can also
+mark rhythm, sections, inversions, holds, and chord qualities. The
+[Nashville Number System introduction](https://nashvillenumbersystem.com/introduction/) explains its
+session-work origins and notation.
 
-Nashville numbers do the same job with Arabic numerals: `1 5 6 4`. The system came out of
-session work, where the key might be decided in the room and a chart needs to survive being
-transposed a minor third with no rewriting.
+Its practical strength is that a band can change key without rewriting the chart. The musicians
+translate the numbers into the chosen key while reading. Conventions for minor and altered chords
+can vary, so agree on them when you share a chart outside a group that already uses the system.
 
-It is the same idea as Roman numerals, optimised for reading at speed under stage lighting
-rather than for analysis on paper. Minor chords are usually marked with a dash or a small
-`m` rather than by case, because case is hard to read quickly.
+## Choose by the job
 
-## What chordlist stores, and what it does not
+- **Chord symbols — `C G Am F`:** best for playing in a known key. They assume familiar chord
+  shapes and leave harmonic function and timing unspecified.
+- **Roman numerals — `I V vi IV`:** best for analysis and teaching. They need a key and shared
+  numeral conventions before they become specific notes or voicings.
+- **Nashville numbers — `1 5 6 4`:** best for a movable performance chart. They need a key and
+  shared chart conventions before the players turn them into specific chords.
 
-The `chords` field takes chord symbols — the absolute kind. The app does not interpret
-Roman numerals or Nashville numbers in that field, so keep it as symbols.
+These are not competing descriptions. A rehearsal note can contain all three if different readers
+need them.
 
-Two things soften the cost of that. Tapping the progression transposes it up or down while
-you play, so you get the practical benefit of a relative system without maintaining one; the
-change is to the view only and resets when you leave the song. And songs are grouped by
-their normalised progression, so the app can already tell that `C G Am F` and `G D Em C` are
-the same shape, which is most of what numerals were going to tell you. The
-[playing section](/docs#playing) covers both.
+## Keep chord symbols in chordlist
 
-If you want numerals anyway, the body of the file is ordinary text. Nothing stops you
-keeping a number chart alongside the lyrics:
+The `chords` field expects chord symbols. chordlist does not interpret Roman numerals or Nashville
+numbers there, so store `C G Am F` rather than `I V vi IV` or `1 5 6 4`.
+
+The displayed chord symbols can still be transposed while you play, and chordlist can compare the
+shape with songs entered in other keys. The [playing guide](/docs#playing) covers those controls.
+If you want a number chart as well, put it in the Markdown body alongside the lyrics:
 
 ```
 [Verse]   1 5 6 4
@@ -74,18 +85,15 @@ C              G
 Lyrics go here…
 ```
 
-Because the songs are plain Markdown files, that habit costs nothing and no feature has to
-support it. The [file format docs](/docs#file-format) describe which fields the app
-maintains and confirms that other content is left alone.
+The [file format guide](/docs#file-format) explains which frontmatter fields chordlist maintains;
+other body text remains part of the song file.
 
-## Pick by what you are doing
+## Try all three
 
-Use chord symbols to play tonight. Use numerals to understand why a song works or to move it
-between keys. Use Nashville numbers if you play with people who already do.
+Write G–D–Em–C as I–V–vi–IV and `1 5 6 4`. Then move the song to C major. Only the chord-symbol line
+has to become C–G–Am–F.
 
-The honest limitation of both number systems is that they need a key to mean anything, and
-they get awkward exactly where songs get interesting. A modulation, a borrowed chord from
-the parallel minor, a modal progression with no strong tonic — all of these need footnotes
-that a plain chord symbol would have expressed directly. That is the trade: numerals tell
-you what a progression means, symbols tell you what to play, and neither is a complete
-description on its own.
+Number systems can represent borrowed chords, chromatic alterations, and modulations, but those
+details require additional symbols and a clearly marked key change. Chord symbols have their own
+gaps because they do not describe timing or function. Use the smallest notation that gives the next
+musician the information they actually need.
