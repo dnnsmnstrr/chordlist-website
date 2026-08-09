@@ -69,6 +69,8 @@ Use these project-supplied images as visual references when adapting the prompt:
 | `assets/visual-references/analog-photography/piano-keys-in-motion.png` | Extreme close crop, severe motion blur, and keys dissolving into alternating bands of light and shadow. |
 | `assets/visual-references/analog-photography/piano-with-sheet-music.png` | Shallow focus, a low unstable viewpoint, blooming highlights, and notation that remains suggestive rather than readable. |
 | `assets/visual-references/analog-photography/phone-on-sheet-music.png` | A quiet contrast between physical and digital media, tactile page detail, and deep negative space around one clear object. |
+| `assets/visual-references/analog-photography/stage-microphone-in-motion.png` | A horizontal live microphone, hard bloom, and smeared stand hardware that create strong directional energy. |
+| `assets/visual-references/analog-photography/studio-microphone-in-motion.png` | A vertical studio microphone emerging from deep shadow, with tactile grille detail and blown stage lights. |
 
 Keep the files in this directory as lossless masters. Make compressed, placement-specific exports
 elsewhere; do not resize or overwrite the masters.
