@@ -1,0 +1,10 @@
+---
+description: Create, edit, or rebuild a chordlist social media asset in content/social.
+alwaysApply: false
+---
+
+# Social asset
+
+Read and follow `.agents/skills/social-asset/SKILL.md` completely before working on an asset. That
+shared skill is the operational source of truth for Claude, Codex, and Cursor. Its design source of
+truth is `docs/social-media-system.md`.

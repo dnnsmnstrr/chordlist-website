@@ -1,0 +1,92 @@
+[
+  {
+    "slug": "four-chords",
+    "template": "progression",
+    "alt": "The chords G, D, E minor and C set large above the Roman numerals one, five, six minor, four.",
+    "caption": "G–D–Em–C turns up everywhere once you know to listen for it. Learn the shape once and you can\nsit in on a lot of songs you have never played.\n\nRead the full post: chordlist.app/blog/how-to-play-almost-any-pop-song",
+    "scheduled": null,
+    "outputs": [
+      {
+        "format": "card",
+        "file": "public/social/four-chords/card.png",
+        "width": 1200,
+        "height": 630
+      },
+      {
+        "format": "post",
+        "file": "public/social/four-chords/post.png",
+        "width": 1080,
+        "height": 1350
+      }
+    ]
+  },
+  {
+    "slug": "local-first-songbook",
+    "template": "statement",
+    "alt": "A dark chordlist card reading \"Your lyrics and chords, as files in your pocket.\"",
+    "caption": "Every song you save is a plain Markdown file in a folder you choose. No account, no export\nbutton, no lock-in — open the same folder in any editor on any device.\n\nchordlist for iPhone and iPad. chordlist.app",
+    "scheduled": "2026-08-30",
+    "outputs": [
+      {
+        "format": "card",
+        "file": "public/social/local-first-songbook/card.png",
+        "width": 1200,
+        "height": 630
+      },
+      {
+        "format": "post",
+        "file": "public/social/local-first-songbook/post.png",
+        "width": 1080,
+        "height": 1350
+      },
+      {
+        "format": "story",
+        "file": "public/social/local-first-songbook/story.png",
+        "width": 1080,
+        "height": 1920
+      }
+    ]
+  },
+  {
+    "slug": "matching-progressions",
+    "template": "screenshot",
+    "alt": "A chordlist song detail screen on iPhone listing other songs that share the same chord progression.",
+    "caption": "Open a song and chordlist shows you which other songs in your library use the same progression —\nthe starting point for a mashup, or just an easy second song to play in the same shape.\n\nchordlist.app/docs#playing",
+    "scheduled": null,
+    "outputs": [
+      {
+        "format": "card",
+        "file": "public/social/matching-progressions/card.png",
+        "width": 1200,
+        "height": 630
+      },
+      {
+        "format": "post",
+        "file": "public/social/matching-progressions/post.png",
+        "width": 1080,
+        "height": 1350
+      }
+    ]
+  },
+  {
+    "slug": "plain-text-lasts",
+    "template": "quote",
+    "alt": "A pull quote reading \"A songbook you can still open in ten years is worth more than one that syncs faster.\"",
+    "caption": "Formats outlive apps. That is the whole argument for keeping a songbook in plain text.\n\nRead the full post: chordlist.app/blog/why-plain-text-songbooks-last",
+    "scheduled": null,
+    "outputs": [
+      {
+        "format": "card",
+        "file": "public/social/plain-text-lasts/card.png",
+        "width": 1200,
+        "height": 630
+      },
+      {
+        "format": "post",
+        "file": "public/social/plain-text-lasts/post.png",
+        "width": 1080,
+        "height": 1350
+      }
+    ]
+  }
+]
