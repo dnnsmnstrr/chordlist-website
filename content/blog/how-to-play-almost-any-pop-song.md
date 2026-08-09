@@ -15,6 +15,8 @@ in other keys, tempos, and arrangements.
 The progression is I–V–vi–IV. It is common enough to be worth learning and simple enough to practise
 without turning the exercise into a theory lesson.
 
+![Black-and-white piano keys stretching into soft vertical streaks of motion.](/blog/how-to-play-almost-any-pop-song/piano-keys-in-motion.webp "Repeat the movement until the pattern feels familiar")
+
 ## Learn the four roles
 
 Roman numerals name a chord by its position in the key. Uppercase numerals usually indicate major

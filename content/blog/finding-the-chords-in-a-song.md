@@ -15,6 +15,8 @@ Working out the chords by ear is not a single flash of recognition. It is a seri
 find a likely home note, follow the bass, try the common chords around it, and revisit the bar that
 still sounds wrong.
 
+![A guitarist's fretting hand and instrument blurred by movement under bright stage lights.](/blog/finding-the-chords-in-a-song/guitarist-in-motion.webp "Listen through the movement for the harmony underneath")
+
 ## Find a candidate for home
 
 Listen for a note that feels settled rather than tense. It often appears at the end of a phrase,

@@ -14,6 +14,8 @@ migration problem.
 chordlist starts from the file instead. Every song is a Markdown file in a folder you choose, so the
 library remains useful without depending on the app continuing to exist.
 
+![A black phone resting on an open book of sheet music in soft, grainy light.](/blog/why-plain-text-songbooks-last/phone-on-sheet-music.webp "A songbook that survives its software")
+
 ## File over app
 
 Steph Ango, who helps make Obsidian, calls this idea

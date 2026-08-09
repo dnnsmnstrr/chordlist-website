@@ -115,6 +115,8 @@ through an intermediate page when the external source is what they need.
 ## Images, examples, and copyright
 
 - Add a screenshot when it makes a workflow easier to understand, not as decoration.
+- When atmospheric editorial photography adds value, follow the reusable prompt, references, and
+  placement rules in [Visual language](visual-language.md).
 - Use a table or diagram when comparing three or more exact mappings.
 - Write original example lyrics or use material that is clearly in the public domain. Do not
   reproduce copyrighted lyrics simply because they are easy to find online.

@@ -14,6 +14,8 @@ different job.
 The choice is not about which system is correct. It is about what the person reading the chart needs
 to know.
 
+![A piano keyboard and open sheet music seen through grain, bloom, and shallow focus.](/blog/chord-notation-styles/piano-with-sheet-music.webp "The chart is one way into the music")
+
 ## Chord symbols name the chords
 
 `C G Am F` gives you specific chord names. If you know those shapes or voicings, you can begin
