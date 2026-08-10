@@ -10,9 +10,10 @@ const appRoot = process.env.CHORDLIST_APP_REPO
 const screenshotNames = [
   "01-Song-List---4-Chord-Library.png",
   "02-Song-Detail---Matching-Suggestions.png",
-  "03-Creation-Flow---New-Song.png",
+  "03-Creation-Flow---Chord-Keyboard.png",
   "04-Search---Piano-Results.png",
   "05-Tag-Filter---Piano.png",
+  "06-Settings---Appearance.png",
 ]
 
 async function exists(filePath) {
