@@ -21,6 +21,9 @@ type ScreenshotGalleryProps = {
   variant?: "gallery" | "press" | "showcase"
 }
 
+/** Shorter than this is a tap, or a finger that moved while lifting. */
+const SWIPE_THRESHOLD_PX = 48
+
 export function ScreenshotGallery({ screenshots, variant = "press" }: ScreenshotGalleryProps) {
   const [activeIndex, setActiveIndex] = useState<number | null>(null)
   const closeButtonRef = useRef<HTMLButtonElement>(null)
@@ -72,12 +75,49 @@ export function ScreenshotGallery({ screenshots, variant = "press" }: Screenshot
     triggerRef.current = null
   }, [active])
 
+  /*
+    Swiping between images, which is how anyone holding a phone expects to move
+    through a full-screen gallery — the arrow buttons are small and the arrow keys
+    are not there. A pinch (more than one finger) cancels the gesture rather than
+    counting as a swipe on the way out.
+  */
+  const swipeOrigin = useRef<{ x: number; y: number } | null>(null)
+
+  const onTouchStart = useCallback((event: React.TouchEvent) => {
+    const touch = event.touches[0]
+    swipeOrigin.current = touch && event.touches.length === 1 ? { x: touch.clientX, y: touch.clientY } : null
+  }, [])
+
+  const onTouchEnd = useCallback(
+    (event: React.TouchEvent) => {
+      const origin = swipeOrigin.current
+      const touch = event.changedTouches[0]
+      swipeOrigin.current = null
+
+      if (!origin || !touch) return
+
+      const deltaX = touch.clientX - origin.x
+      const deltaY = touch.clientY - origin.y
+
+      // A mostly vertical drag is someone dismissing the keyboard or steadying the
+      // phone, not a swipe. Left moves forward, matching the reading direction.
+      if (Math.abs(deltaX) < SWIPE_THRESHOLD_PX || Math.abs(deltaX) <= Math.abs(deltaY)) return
+
+      step(deltaX < 0 ? 1 : -1)
+    },
+    [step],
+  )
+
   return (
     <>
       <ul
         className={
           isShowcase
-            ? "grid grid-cols-3 items-end gap-3 sm:gap-8"
+            ? // Three phones side by side leave nothing readable on a 375px screen, so
+              // below sm this is a snap carousel instead: full-size cards, the next one
+              // peeking to advertise the swipe. The negative margin lets it scroll to
+              // the viewport edge inside the section's px-6 shell.
+              "-mx-6 flex snap-x snap-mandatory gap-4 overflow-x-auto px-6 pb-4 sm:mx-0 sm:grid sm:grid-cols-3 sm:items-end sm:gap-8 sm:overflow-visible sm:px-0 sm:pb-0"
             : isGallery
               ? "columns-1 gap-6 sm:columns-2"
               : "grid grid-cols-2 items-start gap-4 sm:grid-cols-3"
@@ -88,7 +128,7 @@ export function ScreenshotGallery({ screenshots, variant = "press" }: Screenshot
             key={screenshot.lightSrc}
             className={
               isShowcase
-                ? "min-w-0"
+                ? "w-[62vw] max-w-[17rem] shrink-0 snap-center sm:w-auto sm:min-w-0 sm:max-w-none"
                 : isGallery
                   ? "mb-6 inline-flex w-full break-inside-avoid flex-col gap-3"
                   : "flex flex-col gap-3"
@@ -111,7 +151,7 @@ export function ScreenshotGallery({ screenshots, variant = "press" }: Screenshot
                 screenshot={screenshot}
                 sizes={
                   isShowcase
-                    ? "(max-width: 640px) 30vw, 300px"
+                    ? "(max-width: 640px) 62vw, 300px"
                     : isGallery
                       ? "(max-width: 640px) calc(100vw - 3rem), 480px"
                       : "(max-width: 640px) 45vw, 220px"
@@ -164,7 +204,14 @@ export function ScreenshotGallery({ screenshots, variant = "press" }: Screenshot
             </div>
           </div>
 
-          <div className="flex min-h-0 flex-1 items-center justify-center gap-2 px-2 py-4 sm:gap-6 sm:px-6">
+          <div
+            onTouchStart={onTouchStart}
+            onTouchEnd={onTouchEnd}
+            // Vertical panning and pinch-zoom stay with the browser — zooming into a
+            // screenshot is the point of this view — while horizontal movement is
+            // claimed for the swipe above.
+            className="flex min-h-0 flex-1 touch-pan-y touch-pinch-zoom items-center justify-center gap-2 px-2 py-4 sm:gap-6 sm:px-6"
+          >
             <GalleryNavButton
               label={screenshotGalleryCopy.previous}
               direction="previous"

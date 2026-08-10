@@ -22,7 +22,6 @@ export const metadata: Metadata = {
   category: metadataCopy.category,
   creator: siteConfig.operator,
   publisher: siteConfig.operator,
-  keywords: [...metadataCopy.keywords],
   alternates: { canonical: "/" },
   openGraph: {
     type: "website",
@@ -64,6 +63,14 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang={locale.htmlLang} className={`${geistSans.variable} ${geistMono.variable} bg-background`}>
       <body className="font-sans antialiased">
+        {/* First thing in the tab order on every page: one Tab, one Enter, past the
+            header nav and into the content. Invisible until it takes focus. */}
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:border focus:border-border focus:bg-background focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+        >
+          {commonCopy.skipToContent}
+        </a>
         <AmbientBackground />
         <div className="site-content">{children}</div>
         {process.env.NODE_ENV === "production" ? <Analytics /> : null}

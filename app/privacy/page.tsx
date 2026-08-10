@@ -2,20 +2,21 @@ import type { Metadata } from "next"
 
 import { SiteFooter } from "@/components/site-footer"
 import { SiteHeader } from "@/components/site-header"
+import { pageMetadata } from "@/lib/page-metadata"
 import { siteConfig } from "@/lib/site-config"
 import { privacyCopy } from "@/locales/en"
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
+  path: "/privacy",
   title: privacyCopy.metadata.title,
   description: privacyCopy.metadata.description,
-  alternates: { canonical: "/privacy" },
-}
+})
 
 export default function PrivacyPage() {
   const sections = privacyCopy.sections
 
   return (
-    <main className="min-h-screen bg-background text-foreground">
+    <main id="main-content" tabIndex={-1} className="min-h-screen bg-background text-foreground">
       <SiteHeader />
 
       <article className="mx-auto w-full max-w-3xl px-6 py-16">

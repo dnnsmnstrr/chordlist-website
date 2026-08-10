@@ -39,14 +39,22 @@ export const commonCopy = {
     preorder: "Pre-order",
     comingSoon: "Coming soon",
     largeSuffix: "on iOS",
+    // One note per CTA state, so the line under the button always describes the
+    // link that is actually configured. See components/app-cta.tsx.
+    note: {
+      testFlight: `Free public beta for iPhone and iPad. Needs Apple's TestFlight app and iOS ${siteConfig.minimumOSVersion} or later.`,
+      download: `Free download for iPhone and iPad. Needs iOS ${siteConfig.minimumOSVersion} or later.`,
+      preorder: `Pre-order for iPhone and iPad. Needs iOS ${siteConfig.minimumOSVersion} or later.`,
+      comingSoon: `Coming to iPhone and iPad, for iOS ${siteConfig.minimumOSVersion} or later.`,
+    },
   },
+  skipToContent: "Skip to content",
 } as const
 
 export const metadataCopy = {
   defaultTitle: `${siteConfig.name} — Local-first songbook for lyrics and chords`,
   titleTemplate: `%s — ${siteConfig.name}`,
   category: "Music",
-  keywords: ["songbook", "lyrics", "chords", "Markdown", "iPhone", "iPad", "local-first"],
   socialTitle: `${siteConfig.name} — ${commonCopy.tagline}`,
   socialImageAlt: `${siteConfig.name}: ${commonCopy.tagline}`,
 } as const
@@ -54,6 +62,9 @@ export const metadataCopy = {
 export const homeCopy = {
   hero: {
     eyebrow: "Local-first songbook for iOS",
+    // Says plainly what the product is, so the tagline above it does not have to
+    // carry that job on its own.
+    subheadline: "An offline songbook for musicians who want portable charts on iPhone and iPad.",
     description: `${siteConfig.name} keeps every song as a Markdown file in a folder you choose. \nNo logins or cloud sync. Your files remain portable and under your control.`,
     formatLink: "See the format",
   },
@@ -107,6 +118,10 @@ export const homeCopy = {
     downloadLabel: "Download sample song",
     frontmatterHelp:
       "Frontmatter: metadata about the song stored at the top of the file. Used by the app to track chord progressions and other song details.",
+  },
+  closingCta: {
+    title: "Start your songbook tonight.",
+    description: `Point ${siteConfig.name} at a folder and your first song is already a file you own — readable, portable, and yours to move anywhere.`,
   },
 } as const
 

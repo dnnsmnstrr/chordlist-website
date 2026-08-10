@@ -76,7 +76,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const related = await getRelatedPosts(post)
 
   return (
-    <main className="min-h-screen bg-background text-foreground">
+    <main id="main-content" tabIndex={-1} className="min-h-screen bg-background text-foreground">
       <SiteHeader />
 
       <article className="mx-auto w-full max-w-3xl px-6 py-16">

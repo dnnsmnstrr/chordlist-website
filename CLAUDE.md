@@ -26,7 +26,7 @@ yarn lockfiles).
 | `pnpm check` | `lint && typecheck && build` — **run this before committing** |
 | `pnpm sync:assets` | Copy app screenshots and the press-kit zip from the iOS app repo |
 | `pnpm build:icons` | Regenerate every favicon asset in `public/` |
-| `pnpm build:og` | Regenerate `public/og.png` **and** one card per blog post in `public/blog/og/` |
+| `pnpm build:og` | Regenerate `public/og.png`, one card per static page in `public/og/`, **and** one per blog post in `public/blog/og/` |
 | `pnpm build:social` | Regenerate every social asset in `public/social/` from `content/social/` |
 
 There is no test suite. `pnpm check` is the gate.
@@ -48,6 +48,7 @@ content/social/      Social asset definitions — frontmatter builds the image, 
 lib/site-config.ts   Single source of truth for facts about the product
 lib/blog.ts          Reads content/blog: validation, visibility, tags, related posts
 lib/markdown.ts      marked configuration — Markdown to HTML
+lib/page-metadata.ts Per-page canonical, Open Graph, and Twitter metadata
 lib/frontmatter.ts   Splits a YAML frontmatter block from a Markdown body
 lib/utils.ts         `cn()` — clsx + tailwind-merge
 locales/en.ts        Single source of truth for all user-facing copy
@@ -130,14 +131,16 @@ enabled in `next.config.mjs`, so `<Link href>` values are checked against real r
 
 ## Generated and synced assets
 
-Three categories of files in `public/` are **outputs — edit the generator, not the file**:
+Four categories of files in `public/` are **outputs — edit the generator, not the file**:
 
 - **Icons** (`favicon.ico`, `icon.svg`, `icon-{light,dark}-32x32.png`, `apple-icon.png`) —
   `pnpm build:icons`.
-- **`og.png` and the per-post cards in `public/blog/og/`** — `pnpm build:og`, which runs
-  `scripts/build-og-image.mjs` then `scripts/build-blog-og.mjs`. The blog script writes one card per
-  post, including future-dated ones, so a scheduled post already has its card when it goes live. Run
-  it after adding a post and commit the PNG. All scripts render through Next's bundled `ImageResponse`
+- **`og.png`, the page cards in `public/og/`, and the per-post cards in `public/blog/og/`** —
+  `pnpm build:og`, which runs `scripts/build-og-image.mjs`, then `scripts/build-page-og.mjs`, then
+  `scripts/build-blog-og.mjs`. The page script writes one card per route listed in its `CONFIG.pages`,
+  which is what `lib/page-metadata.ts` points each route's `og:image` at. The blog script writes one
+  card per post, including future-dated ones, so a scheduled post already has its card when it goes
+  live. Run it after adding a post or a page and commit the PNG. All scripts render through Next's bundled `ImageResponse`
   (satori + resvg) and read fonts from `assets/fonts/`, so the builds are hermetic and offline.
   Shared logo geometry lives in `scripts/lib/chordlist-mark.mjs` and mirrors
   `components/chordlist-icon.tsx` — change the mark in both, or the header logo and the favicons
@@ -146,7 +149,7 @@ Three categories of files in `public/` are **outputs — edit the generator, not
   which renders every definition in `content/social/` into the `card`, `post`, and `story` formats it
   declares. Layouts live in `scripts/lib/social-templates.mjs`; copy, colours, and the format matrix
   live in the script's `CONFIG` block. It is deliberately separate from `build:og`: that build owns
-  `public/og.png` and the per-post cards, which must not change when a campaign does. Deleting a
+  `public/og.png` and the page and post cards, which must not change when a campaign does. Deleting a
   definition prunes its images on the next run. `docs/social-media-system.md` is the design source of
   truth and `.agents/skills/social-asset/SKILL.md` carries the workflow.
 - **App screenshots** (`public/app-screenshots/{light,dark}/`) and
@@ -166,10 +169,15 @@ lines above the words.
 ## Adding a page
 
 1. Create `app/<route>/page.tsx` as a server component.
-2. Export `metadata` with `title`, `description`, and `alternates: { canonical: "/<route>" }`,
-   sourced from a `<name>Copy.metadata` object in `locales/en.ts`.
-3. Wrap in `<main className="min-h-screen bg-background text-foreground">` with `<SiteHeader />`
-   and `<SiteFooter />`.
+2. Export `metadata` from `pageMetadata()` in `lib/page-metadata.ts`, passing the route path plus a
+   title and description from a `<name>Copy.metadata` object in `locales/en.ts`. It writes the
+   canonical URL and the Open Graph and Twitter blocks, which Next replaces rather than merges — a
+   page that declares them by hand ends up advertising the home page's `og:url`. Add the route to
+   `CONFIG.pages` in `scripts/build-page-og.mjs` and run `pnpm build:og` so it has its own card,
+   or pass `image` to point at an existing one.
+3. Wrap in `<main id="main-content" tabIndex={-1} className="min-h-screen bg-background
+   text-foreground">` — the root layout's skip link targets that id — with `<SiteHeader />` and
+   `<SiteFooter />`.
 4. Add the route to `app/sitemap.ts` (now `async` — it derives post URLs from `lib/blog.ts`), and to
    `commonCopy.navigation` plus the footer/header nav if it should be linked.
 

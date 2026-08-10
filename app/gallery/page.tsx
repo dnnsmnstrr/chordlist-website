@@ -3,13 +3,18 @@ import type { Metadata } from "next"
 import { ScreenshotGallery, type Screenshot } from "@/components/screenshot-gallery"
 import { SiteFooter } from "@/components/site-footer"
 import { SiteHeader } from "@/components/site-header"
+import { pageMetadata } from "@/lib/page-metadata"
 import { galleryCopy } from "@/locales/en"
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
+  path: "/gallery",
   title: galleryCopy.metadata.title,
   description: galleryCopy.metadata.description,
-  robots: { index: false, follow: false },
-}
+  // Unlisted, so it gets no generated card of its own — a shared link falls back
+  // to the site card.
+  image: "/og.png",
+  extra: { robots: { index: false, follow: false } },
+})
 
 const images: readonly Screenshot[] = [
   {
@@ -44,7 +49,7 @@ const images: readonly Screenshot[] = [
 
 export default function GalleryPage() {
   return (
-    <main className="min-h-screen bg-background text-foreground">
+    <main id="main-content" tabIndex={-1} className="min-h-screen bg-background text-foreground">
       <SiteHeader />
 
       <article className="mx-auto w-full max-w-5xl px-6 py-16">

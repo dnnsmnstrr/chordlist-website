@@ -510,7 +510,11 @@ export function SocialPostEditor() {
         </div>
       </header>
 
-      <main className="mx-auto grid max-w-[1500px] lg:grid-cols-[390px_minmax(0,1fr)]">
+      <main
+        id="main-content"
+        tabIndex={-1}
+        className="mx-auto grid max-w-[1500px] lg:grid-cols-[390px_minmax(0,1fr)]"
+      >
         <aside className="border-b border-border px-5 py-6 lg:border-r lg:border-b-0 lg:px-6">
           <Section title="Layout">
             <div className="grid grid-cols-2 gap-2">

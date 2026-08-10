@@ -3,14 +3,15 @@ import type { Metadata } from "next"
 import { DocsSidebar } from "@/components/docs-sidebar"
 import { SiteFooter } from "@/components/site-footer"
 import { SiteHeader } from "@/components/site-header"
+import { pageMetadata } from "@/lib/page-metadata"
 import { siteConfig } from "@/lib/site-config"
 import { docsCopy } from "@/locales/en"
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
+  path: "/docs",
   title: docsCopy.metadata.title,
   description: docsCopy.metadata.description,
-  alternates: { canonical: "/docs" },
-}
+})
 
 const externalLinks = {
   appleKeepDownloaded:
@@ -22,7 +23,7 @@ export default function DocsPage() {
   const sections = docsCopy.sections
 
   return (
-    <main className="min-h-screen bg-background text-foreground">
+    <main id="main-content" tabIndex={-1} className="min-h-screen bg-background text-foreground">
       <SiteHeader />
 
       <article className="mx-auto w-full max-w-5xl px-6 py-16">
