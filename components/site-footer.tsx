@@ -26,8 +26,8 @@ export function SiteFooter({ compact = false }: { compact?: boolean }) {
         <Link href="/press" className="transition-colors hover:text-foreground">
           {commonCopy.navigation.press}
         </Link>
-        <Link href="/social-editor" className="transition-colors hover:text-foreground">
-          {commonCopy.navigation.socialEditor}
+        <Link href="/social/posts" className="transition-colors hover:text-foreground">
+          {commonCopy.navigation.socialPosts}
         </Link>
         <Link href="/privacy" className="transition-colors hover:text-foreground">
           {commonCopy.navigation.privacy}

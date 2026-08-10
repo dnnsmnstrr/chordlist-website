@@ -466,6 +466,7 @@ async function main() {
       template: definition.template,
       alt: definition.alt,
       caption,
+      created: definition.created ?? null,
       scheduled: definition.scheduled ?? null,
       outputs,
     })

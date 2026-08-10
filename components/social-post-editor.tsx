@@ -1,10 +1,11 @@
 "use client"
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { Check, ClipboardPaste, Copy, Download, ImagePlus, RotateCcw, X } from "lucide-react"
+import Link from "next/link"
+import { Check, ClipboardPaste, Copy, Download, Images, ImagePlus, RotateCcw, X } from "lucide-react"
 import { parse as parseYaml } from "yaml"
 
-import { Button } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
 
 type FormatName = "card" | "post" | "story"
 type TemplateName = "statement" | "progression" | "quote" | "screenshot" | "photo"
@@ -839,6 +840,9 @@ export function SocialPostEditor() {
             <h1 className="text-base font-semibold tracking-tight">Social post editor</h1>
           </div>
           <div className="flex flex-wrap items-center justify-end gap-2">
+            <Link href="/social/posts" className={buttonVariants({ variant: "outline", size: "lg" })}>
+              <Images /> Posts
+            </Link>
             <Button
               variant="outline"
               size="lg"

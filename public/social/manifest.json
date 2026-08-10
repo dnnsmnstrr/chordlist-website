@@ -4,6 +4,7 @@
     "template": "photo",
     "alt": "A blurred black-and-white photograph of a guitarist mid chord change under hard stage light, with a chordlist headline over it.",
     "caption": "Your songbook should get out of the way. Open the folder, hit shuffle, and let autoscroll keep\nyour hands on the strings.\n\nchordlist for iPhone and iPad. chordlist.app",
+    "created": "2026-08-09",
     "scheduled": "2026-08-30",
     "outputs": [
       {
@@ -25,6 +26,7 @@
     "template": "statement",
     "alt": "A black-and-white photograph of a smartphone resting on open sheet music, overlaid with the words “Coming soon to an iPhone near you.”",
     "caption": "It's been a long time coming...\n\nAfter many years of development and multiple iterations, chordlist is finally ready to be shared with the public.\n\nStay tuned!",
+    "created": "2026-08-10",
     "scheduled": "2026-08-10",
     "outputs": [
       {
@@ -46,6 +48,7 @@
     "template": "progression",
     "alt": "The chords G, D, E minor and C set large above the Roman numerals one, five, six minor, four.",
     "caption": "G–D–Em–C turns up everywhere once you know to listen for it. Learn the shape once and you can\nsit in on a lot of songs you have never played.\n\nRead the full post: chordlist.app/blog/how-to-play-almost-any-pop-song",
+    "created": "2026-08-09",
     "scheduled": null,
     "outputs": [
       {
@@ -67,6 +70,7 @@
     "template": "statement",
     "alt": "A dark chordlist card reading \"Your lyrics and chords, as files in your pocket.\"",
     "caption": "Every song you save is a plain Markdown file in a folder you choose. No account, no export\nbutton, no lock-in — open the same folder in any editor on any device.\n\nchordlist for iPhone and iPad. chordlist.app",
+    "created": "2026-08-09",
     "scheduled": "2026-08-30",
     "outputs": [
       {
@@ -94,6 +98,7 @@
     "template": "screenshot",
     "alt": "A chordlist song detail screen on iPhone listing other songs that share the same chord progression.",
     "caption": "Open a song and chordlist shows you which other songs in your library use the same progression —\nthe starting point for a mashup, or just an easy second song to play in the same shape.\n\nchordlist.app/docs#playing",
+    "created": "2026-08-09",
     "scheduled": null,
     "outputs": [
       {
@@ -115,6 +120,7 @@
     "template": "photo",
     "alt": "A grainy black-and-white photograph of a phone resting on an open page of sheet music, with a chordlist headline over it.",
     "caption": "Nothing about a plain-text songbook asks you to give up the paper one. Keep the folder, keep the\nbinder, and let the two hold the same songs.\n\nchordlist.app",
+    "created": "2026-08-09",
     "scheduled": null,
     "outputs": [
       {
@@ -136,6 +142,7 @@
     "template": "quote",
     "alt": "A pull quote reading \"A songbook you can still open in ten years is worth more than one that syncs faster.\"",
     "caption": "Formats outlive apps. That is the whole argument for keeping a songbook in plain text.\n\nRead the full post: chordlist.app/blog/why-plain-text-songbooks-last",
+    "created": "2026-08-09",
     "scheduled": null,
     "outputs": [
       {

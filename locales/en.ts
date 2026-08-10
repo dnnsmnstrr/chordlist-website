@@ -28,7 +28,7 @@ export const commonCopy = {
     faq: "FAQ",
     support: "Support",
     press: "Press",
-    socialEditor: "Social studio",
+    socialPosts: "Social posts",
     privacy: "Privacy",
     x: "X",
     instagram: "Instagram",
