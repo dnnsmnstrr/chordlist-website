@@ -102,12 +102,15 @@
 
   /*
    * The tile is only a few levels lighter than the ambient-tinted page in light
-   * mode, so it needs its own edge. The hairline spread ring is what draws all
-   * four sides — a plain drop shadow would only settle under the bottom one —
-   * and the soft offset shadow below it does the lifting. Both are black at low
-   * alpha, so they disappear against the dark background rather than haloing.
+   * mode, so it needs help holding its silhouette. Neither layer carries spread:
+   * a spread ring lands as an even, hard-edged outline, which reads as a drawn
+   * border rather than a shadow. Blur alone puts the darkest point at the edge
+   * and fades it out over several pixels. The wide unoffset layer is what wraps
+   * the top and sides; the tighter offset one weights it downward so the tile
+   * still looks lit from above. Both are black at low alpha, so against the dark
+   * background they land within a couple of levels of the page — no halo.
    */
-  --logo-shadow: 0 0 0 1px oklch(0 0 0 / 8%), 0 1px 3px oklch(0 0 0 / 10%);
+  --logo-shadow: 0 0 12px oklch(0 0 0 / 9%), 0 2px 6px oklch(0 0 0 / 7%);
 }
 
 .dark {
