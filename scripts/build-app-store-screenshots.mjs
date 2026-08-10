@@ -15,6 +15,7 @@ import { fileURLToPath } from "node:url"
 import { ImageResponse } from "next/og.js"
 
 import { appStoreScreenshot } from "./lib/app-store-screenshot-template.mjs"
+import { zipArchive } from "./lib/zip-archive.mjs"
 
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..")
 
@@ -134,7 +135,7 @@ const CONFIG = {
       eyebrow: "Stay in the flow",
       headline: ["Make your set", "feel effortless."],
       supporting: "Organize the songs you love and stay in the flow.",
-      screenshot: "03-Creation-Flow---New-Song.png",
+      screenshot: "03-Creation-Flow---Chord-Keyboard.png",
       appearance: "dark",
       gradient: ["#111D18", "#35755C"],
       accent: "#9CE7BE",
@@ -241,6 +242,7 @@ async function main() {
           headline: slide.headline.join(" "),
           supporting: slide.supporting,
           source: sourcePath,
+          archive: `downloads/chordlist-${variant}-${device.name}.zip`,
           background:
             variant === "analog"
               ? path.join(CONFIG.photoDirectory, slide.backgrounds[device.name].file)
@@ -252,6 +254,25 @@ async function main() {
         )
       }
     }
+  }
+
+  const archiveGroups = new Map()
+  for (const entry of manifest) {
+    const entries = archiveGroups.get(entry.archive) ?? []
+    entries.push(entry)
+    archiveGroups.set(entry.archive, entries)
+  }
+  for (const [archivePath, entries] of archiveGroups) {
+    const archiveEntries = await Promise.all(
+      entries.map(async (entry) => ({
+        name: path.basename(entry.file),
+        data: await readFile(path.join(destinationRoot, entry.file)),
+      })),
+    )
+    const outputPath = path.join(destinationRoot, archivePath)
+    await mkdir(path.dirname(outputPath), { recursive: true })
+    await writeFile(outputPath, zipArchive(archiveEntries))
+    console.log(`  wrote ${path.relative(projectRoot, outputPath)} (${archiveEntries.length} PNGs)`)
   }
 
   await writeFile(path.join(destinationRoot, "manifest.json"), `${JSON.stringify(manifest, null, 2)}\n`)

@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import Link from "next/link"
 import { Download } from "lucide-react"
 
 import { CollapsibleSection } from "@/components/collapsible-section"
@@ -28,9 +29,24 @@ const screenshots: readonly Screenshot[] = [
     ...pressCopy.screenshots.items[1],
   },
   {
-    lightSrc: "/app-screenshots/light/03-Creation-Flow---New-Song.png",
-    darkSrc: "/app-screenshots/dark/03-Creation-Flow---New-Song.png",
+    lightSrc: "/app-screenshots/light/03-Creation-Flow---Chord-Keyboard.png",
+    darkSrc: "/app-screenshots/dark/03-Creation-Flow---Chord-Keyboard.png",
     ...pressCopy.screenshots.items[2],
+  },
+  {
+    lightSrc: "/app-screenshots/light/04-Search---Piano-Results.png",
+    darkSrc: "/app-screenshots/dark/04-Search---Piano-Results.png",
+    ...pressCopy.screenshots.items[3],
+  },
+  {
+    lightSrc: "/app-screenshots/light/05-Tag-Filter---Piano.png",
+    darkSrc: "/app-screenshots/dark/05-Tag-Filter---Piano.png",
+    ...pressCopy.screenshots.items[4],
+  },
+  {
+    lightSrc: "/app-screenshots/light/06-Settings---Appearance.png",
+    darkSrc: "/app-screenshots/dark/06-Settings---Appearance.png",
+    ...pressCopy.screenshots.items[5],
   },
 ]
 
@@ -82,7 +98,14 @@ export default function PressPage() {
           >
             <div className="flex flex-col gap-6">
               <p className="text-sm leading-relaxed text-muted-foreground">
-                {pressCopy.screenshots.introduction}
+                {pressCopy.screenshots.introductionBeforeLink}
+                <Link
+                  href="/screens"
+                  className="font-medium text-foreground underline underline-offset-4 transition-colors hover:text-muted-foreground"
+                >
+                  {pressCopy.screenshots.screensLink}
+                </Link>
+                {pressCopy.screenshots.introductionAfterLink}
               </p>
               <ScreenshotGallery screenshots={screenshots} />
             </div>

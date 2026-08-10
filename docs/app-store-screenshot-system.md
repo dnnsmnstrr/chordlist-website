@@ -9,6 +9,7 @@ scripts/sync-app-assets.mjs                Copies iPhone and iPad inputs into th
 scripts/build-app-store-screenshots.mjs    Validates, renders, and writes the upload set
 scripts/lib/app-store-screenshot-template.mjs   Shared composition and device frames
 public/app-store-screenshots/              Generated PNGs and manifest
+app/screens/page.tsx                       Website gallery and download page
 ```
 
 Run:
@@ -28,6 +29,10 @@ The build produces two treatments with identical copy and product screenshots:
 Each treatment contains five 1242×2688 PNGs for the 6.5-inch iPhone slot and five 2048×2732 PNGs for the 13-inch
 iPad slot. Both are App Store Connect-supported portrait sizes. The iPhone frame adds the Dynamic Island because the
 raw simulator capture contains only the status bar; iPad images deliberately do not.
+
+The build also writes one ZIP archive per treatment and device to
+`public/app-store-screenshots/downloads/`. The public `/screens` page reads the manifest to display the four sets and
+offers both complete ZIP downloads and the original individual PNGs.
 
 The analog template follows `docs/visual-language.md`: sharp interface screenshots sit over atmospheric rehearsal
 photography with crushed blacks, blooming highlights, deterministic grain, dust, scratches, and a heavy vignette.

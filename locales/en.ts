@@ -28,6 +28,7 @@ export const commonCopy = {
     faq: "FAQ",
     support: "Support",
     press: "Press",
+    screens: "Screens",
     socialPosts: "Social posts",
     privacy: "Privacy",
     x: "X",
@@ -329,8 +330,10 @@ export const pressCopy = {
   screenshots: {
     sectionTitle: "Screenshots",
     count: (count: number) => `${count} images`,
-    introduction:
-      "These images come from the app's automated screenshot tests. Select one to inspect or download the full-resolution PNG.",
+    introductionBeforeLink:
+      "These images come from the app's automated screenshot tests. Select one to inspect or download the full-resolution PNG. For composed, upload-ready artwork, browse the ",
+    screensLink: "App Store screenshots",
+    introductionAfterLink: ".",
     items: [
       {
         title: "Song library",
@@ -342,8 +345,20 @@ export const pressCopy = {
         description: "A distraction-free song view with playback controls and suggestions based on matching chords.",
       },
       {
-        title: "Song editor",
-        description: "Create a portable song file with title, artist, chord progression, tags, and lyrics.",
+        title: "Chord keyboard",
+        description: "Enter a song's chord progression quickly with a purpose-built musical keyboard.",
+      },
+      {
+        title: "Search results",
+        description: "Search across songs, artists, and tags while keeping the matching library in view.",
+      },
+      {
+        title: "Tag filter",
+        description: "Narrow the library to the songs that share a selected tag.",
+      },
+      {
+        title: "Appearance settings",
+        description: "Choose the app's accent colour and preferred light, dark, or system appearance.",
       },
     ],
   },
@@ -374,6 +389,35 @@ export const pressCopy = {
       "Musicians can search and filter songs, transpose chords, use automatic scrolling, and find songs with matching chord progressions. The app does not upload or sync the song library, and the files remain readable outside the app.",
     ],
   },
+} as const
+
+export const screensCopy = {
+  metadata: {
+    title: "App Store Screenshots",
+    description: `View and download the current App Store screenshot sets for ${siteConfig.name}.`,
+  },
+  eyebrow: "App Store assets",
+  title: "App Store screenshot sets",
+  introduction:
+    "Review every current iPhone and iPad image at a glance. Download an individual full-resolution PNG or take a complete, upload-ready set as a ZIP archive.",
+  variants: {
+    classic: {
+      title: "Classic",
+      description: "Product screenshots framed by chordlist's coloured gradient treatment.",
+    },
+    analog: {
+      title: "Analog",
+      description: "The same product story set against atmospheric black-and-white rehearsal photography.",
+    },
+  },
+  setTitle: (variant: string, device: string) => `${variant} · ${device}`,
+  setMeta: (count: number, width: number, height: number) => `${count} PNGs · ${width} × ${height}`,
+  screenshotTitle: (index: number, headline: string) => `${String(index).padStart(2, "0")} · ${headline}`,
+  screenshotAlt: (title: string, variant: string, device: string) =>
+    `${title}, from the ${variant.toLowerCase()} ${device} App Store screenshot set.`,
+  viewFullSize: (title: string) => `View ${title} at full size`,
+  downloadSet: "Download set (.zip)",
+  downloadPng: "Download PNG",
 } as const
 
 export const privacyCopy = {

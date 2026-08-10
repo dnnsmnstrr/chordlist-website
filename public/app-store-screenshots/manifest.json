@@ -9,6 +9,7 @@
     "headline": "Your songs. Ready to play.",
     "supporting": "Keep lyrics and chords together, beautifully organized.",
     "source": "public/app-screenshots/light/01-Song-List---4-Chord-Library.png",
+    "archive": "downloads/chordlist-classic-iphone.zip",
     "background": null
   },
   {
@@ -21,6 +22,7 @@
     "headline": "Find any song in seconds.",
     "supporting": "Search your library and filter by the tags that matter.",
     "source": "public/app-screenshots/dark/05-Tag-Filter---Piano.png",
+    "archive": "downloads/chordlist-classic-iphone.zip",
     "background": null
   },
   {
@@ -33,6 +35,7 @@
     "headline": "Lyrics and chords, side by side.",
     "supporting": "A focused view designed for rehearsal and performance.",
     "source": "public/app-screenshots/light/02-Song-Detail---Matching-Suggestions.png",
+    "archive": "downloads/chordlist-classic-iphone.zip",
     "background": null
   },
   {
@@ -45,6 +48,7 @@
     "headline": "Built for the stage.",
     "supporting": "Readable, distraction-free song sheets when it counts.",
     "source": "public/app-screenshots/dark/01-Song-List---4-Chord-Library.png",
+    "archive": "downloads/chordlist-classic-iphone.zip",
     "background": null
   },
   {
@@ -56,7 +60,8 @@
     "file": "iphone/05-flow.png",
     "headline": "Make your set feel effortless.",
     "supporting": "Organize the songs you love and stay in the flow.",
-    "source": "public/app-screenshots/dark/03-Creation-Flow---New-Song.png",
+    "source": "public/app-screenshots/dark/03-Creation-Flow---Chord-Keyboard.png",
+    "archive": "downloads/chordlist-classic-iphone.zip",
     "background": null
   },
   {
@@ -69,6 +74,7 @@
     "headline": "Your songs. Ready to play.",
     "supporting": "Keep lyrics and chords together, beautifully organized.",
     "source": "public/app-screenshots/ipad/light/01-Song-List---4-Chord-Library.png",
+    "archive": "downloads/chordlist-classic-ipad.zip",
     "background": null
   },
   {
@@ -81,6 +87,7 @@
     "headline": "Find any song in seconds.",
     "supporting": "Search your library and filter by the tags that matter.",
     "source": "public/app-screenshots/ipad/dark/05-Tag-Filter---Piano.png",
+    "archive": "downloads/chordlist-classic-ipad.zip",
     "background": null
   },
   {
@@ -93,6 +100,7 @@
     "headline": "Lyrics and chords, side by side.",
     "supporting": "A focused view designed for rehearsal and performance.",
     "source": "public/app-screenshots/ipad/light/02-Song-Detail---Matching-Suggestions.png",
+    "archive": "downloads/chordlist-classic-ipad.zip",
     "background": null
   },
   {
@@ -105,6 +113,7 @@
     "headline": "Built for the stage.",
     "supporting": "Readable, distraction-free song sheets when it counts.",
     "source": "public/app-screenshots/ipad/dark/01-Song-List---4-Chord-Library.png",
+    "archive": "downloads/chordlist-classic-ipad.zip",
     "background": null
   },
   {
@@ -116,7 +125,8 @@
     "file": "ipad/05-flow.png",
     "headline": "Make your set feel effortless.",
     "supporting": "Organize the songs you love and stay in the flow.",
-    "source": "public/app-screenshots/ipad/dark/03-Creation-Flow---New-Song.png",
+    "source": "public/app-screenshots/ipad/dark/03-Creation-Flow---Chord-Keyboard.png",
+    "archive": "downloads/chordlist-classic-ipad.zip",
     "background": null
   },
   {
@@ -129,6 +139,7 @@
     "headline": "Your songs. Ready to play.",
     "supporting": "Keep lyrics and chords together, beautifully organized.",
     "source": "public/app-screenshots/light/01-Song-List---4-Chord-Library.png",
+    "archive": "downloads/chordlist-analog-iphone.zip",
     "background": "assets/visual-references/analog-photography/guitarist-in-motion.png"
   },
   {
@@ -141,6 +152,7 @@
     "headline": "Find any song in seconds.",
     "supporting": "Search your library and filter by the tags that matter.",
     "source": "public/app-screenshots/dark/05-Tag-Filter---Piano.png",
+    "archive": "downloads/chordlist-analog-iphone.zip",
     "background": "assets/visual-references/analog-photography/piano-keys-in-motion.png"
   },
   {
@@ -153,6 +165,7 @@
     "headline": "Lyrics and chords, side by side.",
     "supporting": "A focused view designed for rehearsal and performance.",
     "source": "public/app-screenshots/light/02-Song-Detail---Matching-Suggestions.png",
+    "archive": "downloads/chordlist-analog-iphone.zip",
     "background": "assets/visual-references/analog-photography/phone-on-sheet-music.png"
   },
   {
@@ -165,6 +178,7 @@
     "headline": "Built for the stage.",
     "supporting": "Readable, distraction-free song sheets when it counts.",
     "source": "public/app-screenshots/dark/01-Song-List---4-Chord-Library.png",
+    "archive": "downloads/chordlist-analog-iphone.zip",
     "background": "assets/visual-references/analog-photography/stage-microphone-in-motion.png"
   },
   {
@@ -176,7 +190,8 @@
     "file": "analog/iphone/05-flow.png",
     "headline": "Make your set feel effortless.",
     "supporting": "Organize the songs you love and stay in the flow.",
-    "source": "public/app-screenshots/dark/03-Creation-Flow---New-Song.png",
+    "source": "public/app-screenshots/dark/03-Creation-Flow---Chord-Keyboard.png",
+    "archive": "downloads/chordlist-analog-iphone.zip",
     "background": "assets/visual-references/analog-photography/studio-microphone-in-motion.png"
   },
   {
@@ -189,6 +204,7 @@
     "headline": "Your songs. Ready to play.",
     "supporting": "Keep lyrics and chords together, beautifully organized.",
     "source": "public/app-screenshots/ipad/light/01-Song-List---4-Chord-Library.png",
+    "archive": "downloads/chordlist-analog-ipad.zip",
     "background": "assets/visual-references/analog-photography/guitarist-in-motion.png"
   },
   {
@@ -201,6 +217,7 @@
     "headline": "Find any song in seconds.",
     "supporting": "Search your library and filter by the tags that matter.",
     "source": "public/app-screenshots/ipad/dark/05-Tag-Filter---Piano.png",
+    "archive": "downloads/chordlist-analog-ipad.zip",
     "background": "assets/visual-references/analog-photography/piano-keys-in-motion.png"
   },
   {
@@ -213,6 +230,7 @@
     "headline": "Lyrics and chords, side by side.",
     "supporting": "A focused view designed for rehearsal and performance.",
     "source": "public/app-screenshots/ipad/light/02-Song-Detail---Matching-Suggestions.png",
+    "archive": "downloads/chordlist-analog-ipad.zip",
     "background": "assets/visual-references/analog-photography/piano-with-sheet-music.png"
   },
   {
@@ -225,6 +243,7 @@
     "headline": "Built for the stage.",
     "supporting": "Readable, distraction-free song sheets when it counts.",
     "source": "public/app-screenshots/ipad/dark/01-Song-List---4-Chord-Library.png",
+    "archive": "downloads/chordlist-analog-ipad.zip",
     "background": "assets/visual-references/analog-photography/stage-microphone-in-motion.png"
   },
   {
@@ -236,7 +255,8 @@
     "file": "analog/ipad/05-flow.png",
     "headline": "Make your set feel effortless.",
     "supporting": "Organize the songs you love and stay in the flow.",
-    "source": "public/app-screenshots/ipad/dark/03-Creation-Flow---New-Song.png",
+    "source": "public/app-screenshots/ipad/dark/03-Creation-Flow---Chord-Keyboard.png",
+    "archive": "downloads/chordlist-analog-ipad.zip",
     "background": "assets/visual-references/analog-photography/studio-microphone-in-motion.png"
   }
 ]

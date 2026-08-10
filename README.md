@@ -102,7 +102,8 @@ pnpm build:app-store
 
 This syncs the raw app captures first, validates them, and writes the generated upload sets and
 manifest to `public/app-store-screenshots/`. Copy, screenshot selection, colours, and layout geometry
-are configured in `scripts/build-app-store-screenshots.mjs`.
+are configured in `scripts/build-app-store-screenshots.mjs`. The generated sets can be reviewed and
+downloaded from `/screens`; each device and treatment also gets a ZIP archive.
 
 See [App Store screenshot system](docs/app-store-screenshot-system.md) for supported sizes,
 treatments, and the full pipeline.

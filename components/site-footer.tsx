@@ -26,9 +26,12 @@ export function SiteFooter({ compact = false }: { compact?: boolean }) {
         <Link href="/press" className="transition-colors hover:text-foreground">
           {commonCopy.navigation.press}
         </Link>
+        {/* <Link href="/screens" className="transition-colors hover:text-foreground">
+          {commonCopy.navigation.screens}
+        </Link>
         <Link href="/social/posts" className="transition-colors hover:text-foreground">
           {commonCopy.navigation.socialPosts}
-        </Link>
+        </Link> */}
         <Link href="/privacy" className="transition-colors hover:text-foreground">
           {commonCopy.navigation.privacy}
         </Link>
