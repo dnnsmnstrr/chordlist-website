@@ -92,6 +92,27 @@ const CONFIG = {
       " rgba(10,10,10,0.62) 62%, rgba(10,10,10,0.92) 100%)",
   },
 
+  /** Optional per-definition colour systems. `ink` preserves the original. */
+  themes: {
+    ink: {},
+    paper: {
+      background: "#F3F0E8",
+      text: "#171717",
+      muted: "#67635B",
+      rule: "#C8C1B4",
+      iconTile: "#171717",
+      iconGlyph: "#F3F0E8",
+    },
+    blueprint: {
+      background: "#102131",
+      text: "#F7F9FB",
+      muted: "#A7B5C1",
+      rule: "#395064",
+      iconTile: "#F7F9FB",
+      iconGlyph: "#102131",
+    },
+  },
+
   /** Base sizes at scale 1. Every template multiplies these by the format scale. */
   type: {
     wordmark: 34,
@@ -151,6 +172,11 @@ function readDefinition(file, data) {
     fail(`"alt" is required — every published asset needs alt text`)
   }
 
+  const theme = data.theme ?? "ink"
+  if (typeof theme !== "string" || !(theme in CONFIG.themes)) {
+    fail(`unknown theme "${theme}" (expected one of ${Object.keys(CONFIG.themes).join(", ")})`)
+  }
+
   const formats = data.formats ?? CONFIG.defaultFormats
   if (!Array.isArray(formats) || formats.length === 0) fail(`"formats" must be a non-empty list`)
   for (const name of formats) {
@@ -163,7 +189,7 @@ function readDefinition(file, data) {
   // stay an editorial decision rather than a side effect of the type size.
   const headline = data.headline === undefined ? undefined : [data.headline].flat().map(String)
 
-  return { ...data, template, formats, headline }
+  return { ...data, template, theme, formats, headline }
 }
 
 /**
@@ -223,16 +249,6 @@ async function main() {
       style: "normal",
       data: await readFile(path.join(projectRoot, file)),
     })),
-  )
-
-  const iconUri = svgDataUri(
-    markSvg({
-      size: CONFIG.type.lockupMark * 4,
-      exponent: CONFIG.layout.squircleExponent,
-      glyphInset: CONFIG.layout.glyphInset,
-      tileColor: CONFIG.colors.iconTile,
-      glyphColor: CONFIG.colors.iconGlyph,
-    }),
   )
 
   const tokens = { copy: CONFIG.copy, colors: CONFIG.colors, type: CONFIG.type, layout: CONFIG.layout }
@@ -321,6 +337,17 @@ async function main() {
   for (const { slug, definition, caption } of definitions) {
     const render = TEMPLATES[definition.template]
     const outputs = []
+    const colors = { ...CONFIG.colors, ...CONFIG.themes[definition.theme] }
+    const definitionTokens = { ...tokens, colors }
+    const iconUri = svgDataUri(
+      markSvg({
+        size: CONFIG.type.lockupMark * 4,
+        exponent: CONFIG.layout.squircleExponent,
+        glyphInset: CONFIG.layout.glyphInset,
+        tileColor: colors.iconTile,
+        glyphColor: colors.iconGlyph,
+      }),
+    )
 
     for (const name of definition.formats) {
       const format = { name, ...CONFIG.formats[name] }
@@ -337,9 +364,16 @@ async function main() {
           format.height - padding * 2 - (format.safeTop ?? 0) - (format.safeBottom ?? 0) - reserved,
       }
 
-      const { body, footer, backdrop } = render({ definition, tokens, scale, format, inner, assets })
+      const { body, footer, backdrop } = render({
+        definition,
+        tokens: definitionTokens,
+        scale,
+        format,
+        inner,
+        assets,
+      })
       const element = frame({
-        tokens,
+        tokens: definitionTokens,
         format,
         scale,
         padding,

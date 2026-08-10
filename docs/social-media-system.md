@@ -130,6 +130,7 @@ every asset.
 ```yaml
 ---
 template: statement
+theme: ink
 eyebrow: Launch
 formats:
   - card
@@ -161,6 +162,7 @@ whoever posts it is not rewriting copy that was already reviewed.
 | `screenshot` | `screenshot` | A filename in `public/app-screenshots/dark/`. |
 | `photo` | `photo` | A master filename in `assets/visual-references/analog-photography/`. |
 | `focus` | no | `photo` only. Steers the crop, e.g. `60% 40%`. Defaults to centre. |
+| `theme` | no | Colour system: `ink` (default), `paper`, or `blueprint`. Photo assets normally keep `ink` for white overlay type. |
 | `created` | no | The date the definition was written. |
 | `scheduled` | no | Planning only. The build does not act on it. |
 | `draft` | no | `true` skips the definition entirely. |
