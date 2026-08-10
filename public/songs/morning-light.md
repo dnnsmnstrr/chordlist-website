@@ -1,5 +1,5 @@
 ---
-chords: G D Em C, C G D Em, C G D G
+chords: G D Em C, C G D Em
 ---
 
 [Verse]
@@ -21,16 +21,5 @@ D            Em
 Slow it down awhile
 C               G
 Nothing left to prove
-D               G
+D               Em
 Nothing left to do
-
-[Verse]
-
-G            D
-Every song I keep is in a file
-Em              C
-Plain enough to read it in a while
-G              D
-No one else to ask me for the key
-Em          C
-Folder on a phone, and it's all mine
