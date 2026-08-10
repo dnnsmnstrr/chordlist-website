@@ -1,7 +1,8 @@
 "use client"
 
-import { useEffect, useMemo, useRef, useState } from "react"
-import { Check, Copy, Download, ImagePlus, RotateCcw } from "lucide-react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { Check, ClipboardPaste, Copy, Download, ImagePlus, RotateCcw, X } from "lucide-react"
+import { parse as parseYaml } from "yaml"
 
 import { Button } from "@/components/ui/button"
 
@@ -33,6 +34,9 @@ type EditorConfig = {
   focusY: number
   alt: string
   caption: string
+  created: string
+  scheduled: string
+  draft: boolean
 }
 
 const formats = {
@@ -125,6 +129,9 @@ const initialConfig: EditorConfig = {
   focusY: 50,
   alt: "A chordlist social card reading “Your lyrics and chords, as files in your pocket.”",
   caption: "Your songbook should feel like yours. chordlist keeps lyrics and chords in plain Markdown files you control.",
+  created: new Date().toISOString().slice(0, 10),
+  scheduled: "",
+  draft: false,
 }
 
 const inputClass =
@@ -500,6 +507,113 @@ function activeFormatRatio<Value>(format: FormatName, values: Record<FormatName,
   return values[format]
 }
 
+function importedSource(source: string) {
+  return source.trim().replace(/^```(?:yaml|yml|markdown|md)?\s*/i, "").replace(/\s*```$/, "")
+}
+
+function looksLikeConfig(source: string) {
+  const cleaned = importedSource(source)
+  return cleaned.startsWith("---") && /\n\s*template:\s*/.test(cleaned)
+}
+
+function importedString(value: unknown, fallback = "") {
+  if (value instanceof Date) return value.toISOString().slice(0, 10)
+  return typeof value === "string" || typeof value === "number" ? String(value) : fallback
+}
+
+function importedLines(value: unknown) {
+  if (Array.isArray(value)) return value.map((line) => String(line)).join("\n")
+  return importedString(value)
+}
+
+function importedFocus(value: unknown) {
+  const parts = importedString(value, "50% 50%").trim().split(/\s+/)
+  const coordinate = (part: string | undefined, fallback: number) => {
+    const parsed = Number.parseFloat(part ?? "")
+    return Number.isFinite(parsed) ? Math.min(100, Math.max(0, parsed)) : fallback
+  }
+  return { x: coordinate(parts[0], 50), y: coordinate(parts[1], 50) }
+}
+
+function importedSlug(headline: string) {
+  const slug = headline
+    .replace(/\n/g, " ")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "")
+  return slug || "imported-social-post"
+}
+
+function parseImportedConfig(source: string): EditorConfig {
+  const cleaned = importedSource(source)
+  const split = cleaned.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/)
+  if (!split) throw new Error("Paste a complete config with opening and closing --- lines.")
+
+  const parsed = parseYaml(split[1] ?? "")
+  if (parsed === null || typeof parsed !== "object" || Array.isArray(parsed)) {
+    throw new Error("The YAML frontmatter could not be read.")
+  }
+  const data = parsed as Record<string, unknown>
+
+  const template = importedString(data.template) as TemplateName
+  if (!templates.some((item) => item.name === template)) {
+    throw new Error(`Unknown template “${template || "missing"}”.`)
+  }
+
+  const importedFormats = Array.isArray(data.formats)
+    ? data.formats.filter(
+        (format): format is FormatName =>
+          typeof format === "string" && ["card", "post", "story"].includes(format),
+      )
+    : []
+  const themeName = importedString(data.theme, "ink")
+  const theme: ThemeName = Object.hasOwn(themes, themeName) ? (themeName as ThemeName) : "ink"
+  const textureName = importedString(data.texture, "studio")
+  const texture: TextureName = textureOptions.some((item) => item.name === textureName)
+    ? (textureName as TextureName)
+    : "studio"
+  const backgroundImage = importedString(data.backgroundImage)
+  const templatePhoto = importedString(data.photo)
+  const photo = template === "photo"
+    ? templatePhoto || initialConfig.photo
+    : backgroundImage || initialConfig.photo
+  const backgroundMode: BackgroundMode = template === "photo" || backgroundImage
+    ? "image"
+    : data.texture !== undefined
+      ? "texture"
+      : "plain"
+  const focus = importedFocus(data.focus)
+  const headline = importedLines(data.headline)
+  const screenshotMode = importedString(data.screenshotMode, "full")
+
+  return {
+    ...initialConfig,
+    slug: importedSlug(headline),
+    template,
+    theme,
+    backgroundMode,
+    texture,
+    formats: importedFormats.length ? importedFormats : ["card", "post"],
+    eyebrow: importedString(data.eyebrow),
+    headline,
+    footnote: importedString(data.footnote),
+    chords: Array.isArray(data.chords) ? data.chords.map(String).join(" ") : importedString(data.chords),
+    numerals: importedString(data.numerals),
+    attribution: importedString(data.attribution),
+    screenshot: importedString(data.screenshot, initialConfig.screenshot),
+    screenshotMode: screenshotMode === "detail" ? "detail" : "full",
+    deviceFrame: data.deviceFrame === true,
+    photo,
+    focusX: focus.x,
+    focusY: focus.y,
+    alt: importedString(data.alt),
+    caption: (split[2] ?? "").trim(),
+    created: importedString(data.created, new Date().toISOString().slice(0, 10)),
+    scheduled: importedString(data.scheduled),
+    draft: data.draft === true,
+  }
+}
+
 function yamlString(value: string) {
   return JSON.stringify(value)
 }
@@ -540,7 +654,10 @@ function configMarkdown(config: EditorConfig) {
   }
   if (config.footnote.trim()) output.push(`footnote: ${yamlString(config.footnote.trim())}`)
   output.push(`alt: ${yamlString(config.alt.trim())}`)
-  output.push(`created: ${new Date().toISOString().slice(0, 10)}`, "---", "", config.caption.trim(), "")
+  output.push(`created: ${config.created}`)
+  if (config.scheduled) output.push(`scheduled: ${config.scheduled}`)
+  if (config.draft) output.push("draft: true")
+  output.push("---", "", config.caption.trim(), "")
   return output.join("\n")
 }
 
@@ -569,7 +686,10 @@ export function SocialPostEditor() {
   const [config, setConfig] = useState(initialConfig)
   const [activeFormat, setActiveFormat] = useState<FormatName>("post")
   const [customPhoto, setCustomPhoto] = useState<{ name: string; src: string } | null>(null)
-  const [status, setStatus] = useState<"idle" | "copied" | "exported">("idle")
+  const [status, setStatus] = useState<"idle" | "copied" | "exported" | "imported">("idle")
+  const [importOpen, setImportOpen] = useState(false)
+  const [importText, setImportText] = useState("")
+  const [importError, setImportError] = useState("")
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
   const photoSrc = useMemo(() => {
@@ -600,6 +720,53 @@ export function SocialPostEditor() {
   useEffect(() => () => {
     if (customPhoto) URL.revokeObjectURL(customPhoto.src)
   }, [customPhoto])
+
+  const applyImport = useCallback((source: string) => {
+    try {
+      const imported = parseImportedConfig(source)
+      setConfig(imported)
+      setActiveFormat(imported.formats[0] ?? "post")
+      setCustomPhoto(null)
+      setImportError("")
+      setImportOpen(false)
+      setStatus("imported")
+      return true
+    } catch (error) {
+      setImportText(source)
+      setImportError(error instanceof Error ? error.message : "The config could not be imported.")
+      setImportOpen(true)
+      return false
+    }
+  }, [])
+
+  useEffect(() => {
+    const handlePaste = (event: ClipboardEvent) => {
+      const target = event.target
+      if (
+        target instanceof HTMLElement &&
+        (target.matches("input, textarea, select") || target.isContentEditable)
+      ) {
+        return
+      }
+
+      const source = event.clipboardData?.getData("text/plain") ?? ""
+      if (!looksLikeConfig(source)) return
+      event.preventDefault()
+      applyImport(source)
+    }
+
+    window.addEventListener("paste", handlePaste)
+    return () => window.removeEventListener("paste", handlePaste)
+  }, [applyImport])
+
+  useEffect(() => {
+    if (!importOpen) return
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setImportOpen(false)
+    }
+    window.addEventListener("keydown", handleEscape)
+    return () => window.removeEventListener("keydown", handleEscape)
+  }, [importOpen])
 
   const update = <Key extends keyof EditorConfig>(key: Key, value: EditorConfig[Key]) => {
     setConfig((current) => ({ ...current, [key]: value }))
@@ -646,7 +813,19 @@ export function SocialPostEditor() {
             <p className="font-mono text-xs text-muted-foreground">chordlist / studio</p>
             <h1 className="text-base font-semibold tracking-tight">Social post editor</h1>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center justify-end gap-2">
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={() => {
+                setImportText("")
+                setImportError("")
+                setImportOpen(true)
+              }}
+            >
+              {status === "imported" ? <Check /> : <ClipboardPaste />}
+              {status === "imported" ? "Imported" : "Import config"}
+            </Button>
             <Button variant="outline" size="lg" onClick={() => setConfig(initialConfig)}>
               <RotateCcw /> Reset
             </Button>
@@ -987,6 +1166,66 @@ export function SocialPostEditor() {
           </div>
         </section>
       </main>
+
+      {importOpen ? (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/65 p-4 backdrop-blur-sm"
+          role="presentation"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) setImportOpen(false)
+          }}
+        >
+          <section
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="import-config-title"
+            aria-describedby="import-config-description"
+            className="w-full max-w-2xl rounded-2xl border border-border bg-background p-5 shadow-2xl sm:p-6"
+          >
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h2 id="import-config-title" className="text-lg font-semibold tracking-tight">Import config</h2>
+                <p id="import-config-description" className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                  Paste the complete Markdown definition, including both frontmatter markers and the caption.
+                </p>
+              </div>
+              <Button variant="ghost" size="icon" aria-label="Close import dialog" onClick={() => setImportOpen(false)}>
+                <X />
+              </Button>
+            </div>
+
+            <textarea
+              autoFocus
+              value={importText}
+              onChange={(event) => {
+                setImportText(event.target.value)
+                if (importError) setImportError("")
+              }}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" && (event.metaKey || event.ctrlKey)) applyImport(importText)
+              }}
+              spellCheck={false}
+              placeholder={'---\ntemplate: statement\nformats:\n  - card\nheadline:\n  - "Your headline"\nalt: "Description"\n---\n\nYour caption.'}
+              className="mt-5 min-h-80 w-full resize-y rounded-xl border border-border bg-muted/45 p-4 font-mono text-xs leading-relaxed text-foreground outline-none transition focus:border-foreground/40 focus:ring-2 focus:ring-ring/30"
+            />
+
+            {importError ? (
+              <p role="alert" className="mt-3 text-sm text-destructive">{importError}</p>
+            ) : (
+              <p className="mt-3 text-xs text-muted-foreground">
+                You can also paste a config anywhere on this page while no text field is focused.
+              </p>
+            )}
+
+            <div className="mt-5 flex justify-end gap-2">
+              <Button variant="outline" size="lg" onClick={() => setImportOpen(false)}>Cancel</Button>
+              <Button size="lg" disabled={!importText.trim()} onClick={() => applyImport(importText)}>
+                <ClipboardPaste /> Import config
+              </Button>
+            </div>
+          </section>
+        </div>
+      ) : null}
     </div>
   )
 }
