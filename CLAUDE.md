@@ -20,6 +20,7 @@ yarn lockfiles).
 | --- | --- |
 | `pnpm dev` | Dev server on http://localhost:3000 (runs `sync:assets` first via `predev`) |
 | `pnpm build` | Production build (runs `sync:assets` first via `prebuild`) |
+| `pnpm build:all` | Sync app inputs, regenerate all visual assets and App Store sets, then build the site |
 | `pnpm start` | Serve the production build |
 | `pnpm lint` | ESLint, `--max-warnings=0` — warnings fail |
 | `pnpm typecheck` | `tsc --noEmit` |

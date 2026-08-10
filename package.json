@@ -13,6 +13,7 @@
     "dev": "next dev",
     "prebuild": "pnpm sync:assets",
     "build": "next build",
+    "build:all": "pnpm sync:assets && pnpm build:icons && pnpm build:og && pnpm build:social && pnpm build:app-store && pnpm build",
     "start": "next start",
     "lint": "eslint . --max-warnings=0",
     "typecheck": "tsc --noEmit",
