@@ -175,9 +175,11 @@ lines above the words.
    page that declares them by hand ends up advertising the home page's `og:url`. Add the route to
    `CONFIG.pages` in `scripts/build-page-og.mjs` and run `pnpm build:og` so it has its own card,
    or pass `image` to point at an existing one.
-3. Wrap in `<main id="main-content" tabIndex={-1} className="min-h-screen bg-background
-   text-foreground">` — the root layout's skip link targets that id — with `<SiteHeader />` and
-   `<SiteFooter />`.
+3. Wrap in `<main className="min-h-screen bg-background text-foreground">` with `<SiteHeader />`
+   and `<SiteFooter />`. Put `id="main-content" tabIndex={-1}` on the content element **after**
+   `<SiteHeader />` — the `<article>` or listing wrapper — not on `<main>`, which contains the
+   header: the root layout's skip link targets that id, and landing on `<main>` would leave the
+   nav in front of the first Tab and of sequential reading.
 4. Add the route to `app/sitemap.ts` (now `async` — it derives post URLs from `lib/blog.ts`), and to
    `commonCopy.navigation` plus the footer/header nav if it should be linked.
 

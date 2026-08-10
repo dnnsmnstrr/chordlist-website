@@ -11,14 +11,20 @@ import { pianoCopy } from "@/locales/en"
 
 export default function Page() {
   return (
-    <main id="main-content" tabIndex={-1} className="min-h-screen bg-background text-foreground">
+    <main className="min-h-screen bg-background text-foreground">
       <StructuredData />
       <SiteHeader />
-      <Hero />
-      <AppShowcase />
-      <Features />
-      <LyricPreview />
-      <ClosingCTA />
+
+      {/* The skip link's target sits after the header — landing on <main> would put the
+          nav back in front of the first Tab and of sequential reading, which is the one
+          thing the link exists to avoid. */}
+      <div id="main-content" tabIndex={-1}>
+        <Hero />
+        <AppShowcase />
+        <Features />
+        <LyricPreview />
+        <ClosingCTA />
+      </div>
 
       <SiteFooter />
 

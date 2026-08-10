@@ -16,10 +16,10 @@ export default function PrivacyPage() {
   const sections = privacyCopy.sections
 
   return (
-    <main id="main-content" tabIndex={-1} className="min-h-screen bg-background text-foreground">
+    <main className="min-h-screen bg-background text-foreground">
       <SiteHeader />
 
-      <article className="mx-auto w-full max-w-3xl px-6 py-16">
+      <article id="main-content" tabIndex={-1} className="mx-auto w-full max-w-3xl px-6 py-16">
         <header className="border-b border-border pb-8">
           <p className="font-mono text-sm text-muted-foreground">{siteConfig.name}</p>
           <h1 className="mt-3 text-balance text-4xl font-semibold tracking-tight sm:text-5xl">{privacyCopy.title}</h1>
