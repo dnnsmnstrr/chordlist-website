@@ -1,7 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useMemo, useState } from "react"
-import { useSearchParams } from "next/navigation"
+import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from "react"
 import { Eye, EyeOff, Search, X } from "lucide-react"
 
 import { PostCard } from "@/components/post-card"
@@ -26,9 +25,47 @@ function buildSearch(query: string, tags: readonly BlogTag[]) {
   return params.toString()
 }
 
+/*
+  The query string as a subscribable store, rather than useSearchParams.
+
+  Filtering happens entirely on the client and navigates with the History API
+  (see navigate() below), so useSearchParams would buy nothing — and reading it
+  opts the route out of prerendering, which is where /blog's
+  BAILOUT_TO_CLIENT_SIDE_RENDERING came from: the static HTML held only the
+  Suspense fallback. Reading location ourselves keeps the whole list, controls
+  included, in the prerendered markup for the first paint and for crawlers.
+*/
+const listeners = new Set<() => void>()
+
+function notify() {
+  for (const listener of listeners) listener()
+}
+
+function subscribeToSearch(onStoreChange: () => void) {
+  listeners.add(onStoreChange)
+  // Back and forward fire popstate. Our own pushState/replaceState calls do not,
+  // so navigate() notifies by hand.
+  window.addEventListener("popstate", notify)
+
+  return () => {
+    listeners.delete(onStoreChange)
+    if (listeners.size === 0) window.removeEventListener("popstate", notify)
+  }
+}
+
+/** A string snapshot compares by value, so re-reading on every render cannot loop. */
+function readSearch() {
+  return window.location.search
+}
+
+/** There is no location while prerendering: the server snapshot is the unfiltered list. */
+function readServerSearch() {
+  return ""
+}
 
 export function BlogPostList({ posts, tags }: BlogPostListProps) {
-  const searchParams = useSearchParams()
+  const search = useSyncExternalStore(subscribeToSearch, readSearch, readServerSearch)
+  const searchParams = useMemo(() => new URLSearchParams(search), [search])
 
   // Tags come straight from the URL — no mirrored state, so back and forward work
   // by themselves. Toggling one navigates, which re-renders with the new value.
@@ -57,13 +94,15 @@ export function BlogPostList({ posts, tags }: BlogPostListProps) {
       const url = search === "" ? "/blog" : `/blog?${search}`
 
       // Native history rather than router.push. Filtering happens entirely on the
-      // client, so there is nothing for the router to fetch, and Next syncs
-      // useSearchParams from these calls. It also has to be this way: /blog is
-      // statically rendered, so the router treats it as the canonical URL and
-      // silently ignores a push that only changes the query — which left every
-      // filter dead on a page opened from a shared link.
+      // client, so there is nothing for the router to fetch. It also has to be this
+      // way: /blog is statically rendered, so the router treats it as the canonical
+      // URL and silently ignores a push that only changes the query — which left
+      // every filter dead on a page opened from a shared link.
       if (mode === "push") window.history.pushState(null, "", url)
       else window.history.replaceState(null, "", url)
+
+      // Neither call fires popstate, so the store has to be told.
+      notify()
     },
     [currentSearch],
   )

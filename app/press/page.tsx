@@ -6,14 +6,15 @@ import { ScreenshotGallery, type Screenshot } from "@/components/screenshot-gall
 import { SiteFooter } from "@/components/site-footer"
 import { SiteHeader } from "@/components/site-header"
 import { Button } from "@/components/ui/button"
+import { pageMetadata } from "@/lib/page-metadata"
 import { siteConfig } from "@/lib/site-config"
 import { pressCopy } from "@/locales/en"
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
+  path: "/press",
   title: pressCopy.metadata.title,
   description: pressCopy.metadata.description,
-  alternates: { canonical: "/press" },
-}
+})
 
 const screenshots: readonly Screenshot[] = [
   {
@@ -38,7 +39,7 @@ export default function PressPage() {
     <main className="min-h-screen bg-background text-foreground">
       <SiteHeader />
 
-      <article className="mx-auto w-full max-w-3xl px-6 py-16">
+      <article id="main-content" tabIndex={-1} className="mx-auto w-full max-w-3xl px-6 py-16">
         <header className="border-b border-border pb-8">
           <p className="font-mono text-sm text-muted-foreground">{siteConfig.name}</p>
           <h1 className="mt-3 text-balance text-4xl font-semibold tracking-tight sm:text-5xl">{pressCopy.title}</h1>
