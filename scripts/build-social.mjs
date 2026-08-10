@@ -118,6 +118,9 @@ const CONFIG = {
     studio: "studio-microphone-in-motion.png",
     stage: "stage-microphone-in-motion.png",
     sampler: "sampler-and-keyboard-in-motion.png",
+    guitar: "guitarist-in-motion.png",
+    "piano-keys": "piano-keys-in-motion.png",
+    "piano-score": "piano-with-sheet-music.png",
   },
 
   /** Base sizes at scale 1. Every template multiplies these by the format scale. */
@@ -192,6 +195,13 @@ function readDefinition(file, data) {
   }
   if (data.backgroundImage !== undefined && typeof data.backgroundImage !== "string") {
     fail(`"backgroundImage" must be a photography filename`)
+  }
+  if (data.backgroundScale !== undefined) {
+    const parsed = Number.parseFloat(String(data.backgroundScale))
+    const percent = parsed <= 2 ? parsed * 100 : parsed
+    if (!Number.isFinite(percent) || percent < 100 || percent > 200) {
+      fail(`"backgroundScale" must be between 100% and 200%`)
+    }
   }
   if (
     data.screenshotMode !== undefined &&
@@ -414,6 +424,7 @@ async function main() {
           source: assets.photos.get(definition.backgroundImage),
           format,
           focus: definition.focus,
+          backgroundScale: definition.backgroundScale,
           tokens: definitionTokens,
         })
       } else if (!backdrop && definition.texture) {

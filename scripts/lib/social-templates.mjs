@@ -78,8 +78,11 @@ function parseFocus(focus) {
  * done here and handed to a plain absolutely positioned `<img>` with explicit
  * dimensions, which satori does honour exactly.
  */
-export function coverBox(source, format, focus) {
-  const factor = Math.max(format.width / source.width, format.height / source.height)
+export function coverBox(source, format, focus, backgroundScale = 100) {
+  const parsedScale = Number.parseFloat(String(backgroundScale))
+  const percent = Number.isFinite(parsedScale) ? (parsedScale <= 2 ? parsedScale * 100 : parsedScale) : 100
+  const zoom = Math.min(200, Math.max(100, percent)) / 100
+  const factor = Math.max(format.width / source.width, format.height / source.height) * zoom
   const width = Math.ceil(source.width * factor)
   const height = Math.ceil(source.height * factor)
   const { x, y } = parseFocus(focus)
@@ -98,8 +101,8 @@ export function coverBox(source, format, focus) {
  * as the photo template; textures stay deliberately faint, echoing the
  * website's ambient photography without turning into a second subject.
  */
-export function backgroundBackdrop({ source, format, focus, tokens, texture = false }) {
-  const box = coverBox(source, format, focus)
+export function backgroundBackdrop({ source, format, focus, backgroundScale, tokens, texture = false }) {
+  const box = coverBox(source, format, focus, backgroundScale)
   const image = h("img", {
     key: "background-image",
     src: source.uri,
@@ -580,7 +583,7 @@ function photo({ definition, tokens, scale, inner, format, assets }) {
     )
   }
 
-  const box = coverBox(source, format, definition.focus)
+  const box = coverBox(source, format, definition.focus, definition.backgroundScale)
 
   const backdrop = [
     h("img", {

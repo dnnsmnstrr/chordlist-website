@@ -10,7 +10,7 @@ type FormatName = "card" | "post" | "story"
 type TemplateName = "statement" | "progression" | "quote" | "screenshot" | "photo"
 type ThemeName = "ink" | "paper" | "blueprint"
 type BackgroundMode = "plain" | "texture" | "image"
-type TextureName = "studio" | "stage" | "sampler"
+type TextureName = "studio" | "stage" | "sampler" | "guitar" | "piano-keys" | "piano-score"
 type ScreenshotMode = "full" | "detail"
 
 type EditorConfig = {
@@ -32,6 +32,7 @@ type EditorConfig = {
   photo: string
   focusX: number
   focusY: number
+  backgroundScale: number
   alt: string
   caption: string
   created: string
@@ -98,6 +99,9 @@ const textureOptions: { name: TextureName; label: string; src: string }[] = [
   { name: "studio", label: "Studio haze", src: "/textures/studio-microphone.webp" },
   { name: "stage", label: "Stage bloom", src: "/textures/stage-microphone.webp" },
   { name: "sampler", label: "Sampler grain", src: "/textures/sampler-and-keyboard.webp" },
+  { name: "guitar", label: "Guitar motion", src: "/gallery/guitarist-in-motion.png" },
+  { name: "piano-keys", label: "Piano keys", src: "/gallery/piano-keys-in-motion.png" },
+  { name: "piano-score", label: "Piano score", src: "/gallery/piano-with-sheet-music.png" },
 ]
 
 const screenshots = [
@@ -127,6 +131,7 @@ const initialConfig: EditorConfig = {
   photo: photos[0].name,
   focusX: 60,
   focusY: 50,
+  backgroundScale: 100,
   alt: "A chordlist social card reading “Your lyrics and chords, as files in your pocket.”",
   caption: "Your songbook should feel like yours. chordlist keeps lyrics and chords in plain Markdown files you control.",
   created: new Date().toISOString().slice(0, 10),
@@ -221,8 +226,10 @@ function drawCover(
   height: number,
   focusX: number,
   focusY: number,
+  backgroundScale = 100,
 ) {
-  const factor = Math.max(width / image.naturalWidth, height / image.naturalHeight)
+  const zoom = Math.min(200, Math.max(100, backgroundScale)) / 100
+  const factor = Math.max(width / image.naturalWidth, height / image.naturalHeight) * zoom
   const drawWidth = image.naturalWidth * factor
   const drawHeight = image.naturalHeight * factor
   const x = (width - drawWidth) * (focusX / 100)
@@ -353,7 +360,15 @@ async function renderPost(
   const usesFullImage = config.template === "photo" || config.backgroundMode === "image"
   if (usesFullImage && photoSrc) {
     const image = await loadImage(photoSrc)
-    drawCover(context, image, format.width, format.height, config.focusX, config.focusY)
+    drawCover(
+      context,
+      image,
+      format.width,
+      format.height,
+      config.focusX,
+      config.focusY,
+      config.backgroundScale,
+    )
     const gradient = context.createLinearGradient(0, 0, 0, format.height)
     gradient.addColorStop(0, "rgba(10,10,10,.88)")
     gradient.addColorStop(0.38, "rgba(10,10,10,.55)")
@@ -535,6 +550,13 @@ function importedFocus(value: unknown) {
   return { x: coordinate(parts[0], 50), y: coordinate(parts[1], 50) }
 }
 
+function importedBackgroundScale(value: unknown) {
+  const parsed = Number.parseFloat(importedString(value, "100"))
+  if (!Number.isFinite(parsed)) return 100
+  const percent = parsed <= 2 ? parsed * 100 : parsed
+  return Math.round(Math.min(200, Math.max(100, percent)))
+}
+
 function importedSlug(headline: string) {
   const slug = headline
     .replace(/\n/g, " ")
@@ -606,6 +628,7 @@ function parseImportedConfig(source: string): EditorConfig {
     photo,
     focusX: focus.x,
     focusY: focus.y,
+    backgroundScale: importedBackgroundScale(data.backgroundScale),
     alt: importedString(data.alt),
     caption: (split[2] ?? "").trim(),
     created: importedString(data.created, new Date().toISOString().slice(0, 10)),
@@ -630,6 +653,7 @@ function configMarkdown(config: EditorConfig) {
   if (config.template !== "photo" && config.backgroundMode === "image") {
     output.push(`backgroundImage: ${yamlString(config.photo)}`)
     output.push(`focus: ${config.focusX}% ${config.focusY}%`)
+    if (config.backgroundScale !== 100) output.push(`backgroundScale: ${config.backgroundScale}%`)
   }
   if (config.eyebrow.trim()) output.push(`eyebrow: ${yamlString(config.eyebrow.trim())}`)
   output.push("formats:", ...config.formats.map((format) => `  - ${format}`))
@@ -642,6 +666,7 @@ function configMarkdown(config: EditorConfig) {
   if (config.template === "photo") {
     output.push(`photo: ${yamlString(config.photo)}`)
     output.push(`focus: ${config.focusX}% ${config.focusY}%`)
+    if (config.backgroundScale !== 100) output.push(`backgroundScale: ${config.backgroundScale}%`)
   }
   if (config.template === "progression") {
     output.push("chords:", ...config.chords.split(/\s+/).filter(Boolean).map((chord) => `  - ${yamlString(chord)}`))
@@ -1019,6 +1044,17 @@ export function SocialPostEditor() {
                   <input className="mt-3 w-full accent-foreground" type="range" min="0" max="100" value={config.focusY} onChange={(event) => update("focusY", Number(event.target.value))} />
                 </Field>
               </div>
+              <Field label="Image scale" hint={`${config.backgroundScale}%`}>
+                <input
+                  className="mt-3 w-full accent-foreground"
+                  type="range"
+                  min="100"
+                  max="200"
+                  step="1"
+                  value={config.backgroundScale}
+                  onChange={(event) => update("backgroundScale", Number(event.target.value))}
+                />
+              </Field>
               </>
             ) : null}
           </Section>

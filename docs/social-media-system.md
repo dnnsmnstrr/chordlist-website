@@ -165,8 +165,9 @@ whoever posts it is not rewriting copy that was already reviewed.
 | `deviceFrame` | no | `true` adds a dark hardware shell and camera island around a screenshot. Defaults to `false`. |
 | `photo` | `photo` | A master filename in `assets/visual-references/analog-photography/`. |
 | `focus` | no | Steers the crop for `photo` and `backgroundImage`, e.g. `60% 40%`. Defaults to centre. |
+| `backgroundScale` | no | Zooms `photo` or `backgroundImage` from `100%` to `200%` before applying focus. Defaults to `100%`. |
 | `theme` | no | Colour system: `ink` (default), `paper`, or `blueprint`. Photo assets normally keep `ink` for white overlay type. |
-| `texture` | no | A subtle website-derived background: `studio`, `stage`, or `sampler`. Available on every template except `photo`. |
+| `texture` | no | A subtle website-derived background: `studio`, `stage`, `sampler`, `guitar`, `piano-keys`, or `piano-score`. Available on every template except `photo`. |
 | `backgroundImage` | no | A full-bleed master filename for any non-`photo` template. Uses `focus` and the standard photo scrim. |
 | `created` | no | The date the definition was written. |
 | `scheduled` | no | Planning only. The build does not act on it. |
