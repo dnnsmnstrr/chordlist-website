@@ -92,6 +92,45 @@ export function coverBox(source, format, focus) {
   }
 }
 
+/**
+ * A reusable background treatment for layouts whose subject is still the
+ * typography or product screenshot. Full images get the same legibility scrim
+ * as the photo template; textures stay deliberately faint, echoing the
+ * website's ambient photography without turning into a second subject.
+ */
+export function backgroundBackdrop({ source, format, focus, tokens, texture = false }) {
+  const box = coverBox(source, format, focus)
+  const image = h("img", {
+    key: "background-image",
+    src: source.uri,
+    width: box.width,
+    height: box.height,
+    style: {
+      position: "absolute",
+      left: box.left,
+      top: box.top,
+      opacity: texture ? 0.14 : 1,
+    },
+  })
+
+  return [
+    image,
+    h("div", {
+      key: "background-overlay",
+      style: {
+        position: "absolute",
+        top: 0,
+        left: 0,
+        width: format.width,
+        height: format.height,
+        background: texture
+          ? `linear-gradient(155deg, transparent 12%, ${tokens.colors.background} 76%)`
+          : tokens.colors.scrim,
+      },
+    }),
+  ]
+}
+
 function textBlock(lines, style) {
   return h(
     "div",
@@ -379,13 +418,12 @@ function quote({ definition, tokens, scale, inner }) {
 /**
  * screenshot — a real device screenshot beside or above a short line.
  *
- * The screenshot is never tinted, cropped, or perspective-tilted: it is evidence
- * of what the app does, and docs/visual-language.md keeps that class of image
- * literal and sharp. The card sets it side by side because the frame is wide and
- * short; the taller formats put the copy on top and let the device run to the
- * full width underneath.
+ * The screenshot stays sharp and literal. It is deliberately oversized and
+ * allowed to run beyond the right edge, leaving a stable left column for copy.
+ * `detail` enlarges the interface with a top-aligned crop; `full` preserves the
+ * complete screen. An optional device shell is drawn outside either treatment.
  */
-function screenshot({ definition, tokens, scale, inner, assets }) {
+function screenshot({ definition, tokens, scale, inner, format, assets }) {
   const source = assets.screenshots.get(definition.screenshot)
   if (!source) {
     throw new Error(
@@ -394,27 +432,97 @@ function screenshot({ definition, tokens, scale, inner, assets }) {
     )
   }
 
-  const side = inner.width > inner.height
+  const detail = definition.screenshotMode === "detail"
+  const deviceFrame = definition.deviceFrame === true
+  const ratios = {
+    card: { height: 0.78, detail: 0.76, visible: 1, copy: 0.58 },
+    post: { height: 0.87, detail: 0.62, visible: 0.73, copy: 0.48 },
+    story: { height: 0.8, detail: 0.58, visible: 0.68, copy: 0.45 },
+  }[format.name]
+  const screenshotRatio = 1242 / 2688
+  const shotHeight = Math.round(format.height * ratios.height)
+  const shotWidth = Math.round(shotHeight * (detail ? ratios.detail : screenshotRatio))
+  const outerPadding = (format.width - inner.width) / 2
+  const deviceBorder = Math.max(2, Math.round(2 * scale))
+  const cardFrameInset = format.name === "card" && deviceFrame ? deviceBorder * 2 : 0
+  const shotRight = -Math.round(outerPadding + shotWidth * (1 - ratios.visible)) + cardFrameInset
+  const shotTop = -Math.round(16 * scale)
+  const copyWidth = Math.round(inner.width * ratios.copy)
+  const copySize = definition.headline
+    ? fitSize(tokens.type.subhead * scale, definition.headline, { maxWidth: copyWidth })
+    : 0
+  const imageFit = detail ? "cover" : "contain"
+  const imagePosition = detail ? "top" : "center"
 
-  // Side by side, the device takes the full inner height and the copy takes the
-  // rest of the width. Stacked, it is sized off the height so a tall screenshot
-  // cannot push the copy out of the frame.
-  const shot = h("img", {
-    src: source,
-    style: side
-      ? // Fill the row the frame gives us, so the device grows with the format
-        // instead of tracking a hand-tuned fraction of the canvas.
-        { height: "100%", objectFit: "contain", flexShrink: 0 }
-      : { height: Math.round(inner.height * 0.68), objectFit: "contain", flexShrink: 0 },
-  })
+  let shot
+  if (deviceFrame) {
+    const framePadding = Math.round(Math.max(7 * scale, Math.min(shotWidth, shotHeight) * 0.022))
+    const frameRadius = Math.round(Math.min(shotWidth * 0.13, 52 * scale))
+    const screenRadius = Math.max(8, frameRadius - framePadding)
+    const islandWidth = Math.round(Math.min((shotWidth - framePadding * 2) * 0.24, 112 * scale))
+    const islandHeight = Math.round(Math.max(8 * scale, framePadding * 0.72))
+
+    shot = h(
+      "div",
+      {
+        style: {
+          position: "absolute",
+          display: "flex",
+          right: shotRight,
+          top: shotTop,
+          width: shotWidth,
+          height: shotHeight,
+          background: "#050505",
+          border: `${deviceBorder}px solid #3F3F46`,
+          borderRadius: frameRadius,
+        },
+      },
+      h("img", {
+        src: source,
+        style: {
+          position: "absolute",
+          left: framePadding,
+          top: framePadding,
+          width: shotWidth - framePadding * 2,
+          height: shotHeight - framePadding * 2,
+          objectFit: imageFit,
+          objectPosition: imagePosition,
+          borderRadius: screenRadius,
+        },
+      }),
+      h("div", {
+        style: {
+          position: "absolute",
+          left: Math.round((shotWidth - islandWidth) / 2),
+          top: Math.round(framePadding * 1.45),
+          width: islandWidth,
+          height: islandHeight,
+          background: "#050505",
+          borderRadius: islandHeight,
+        },
+      }),
+    )
+  } else {
+    shot = h("img", {
+      src: source,
+      style: {
+        position: "absolute",
+        right: shotRight,
+        top: shotTop,
+        width: shotWidth,
+        height: shotHeight,
+        objectFit: imageFit,
+        objectPosition: imagePosition,
+        borderRadius: detail ? Math.round(22 * scale) : 0,
+      },
+    })
+  }
 
   const copy = definition.headline
     ? textBlock(definition.headline, {
         fontFamily: "Geist",
         fontWeight: 700,
-        fontSize: fitSize(tokens.type.subhead * scale, definition.headline, {
-          maxWidth: side ? inner.width * 0.52 : inner.width,
-        }),
+        fontSize: copySize,
         letterSpacing: "-0.02em",
         lineHeight: 1.18,
         color: tokens.colors.text,
@@ -426,17 +534,19 @@ function screenshot({ definition, tokens, scale, inner, assets }) {
       "div",
       {
         style: {
+          position: "relative",
           display: "flex",
-          flexDirection: side ? "row" : "column",
-          alignItems: side ? "center" : "flex-start",
-          justifyContent: "space-between",
-          gap: Math.round(tokens.layout.padding * scale * 0.75),
+          flexDirection: "column",
+          alignItems: "flex-start",
+          justifyContent: "center",
           width: "100%",
           height: "100%",
         },
       },
-      ...(copy ? [copy] : []),
       shot,
+      ...(copy
+        ? [h("div", { style: { display: "flex", position: "relative", width: copyWidth } }, copy)]
+        : []),
     ),
     footer: definition.footnote,
   }

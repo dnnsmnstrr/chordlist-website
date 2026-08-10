@@ -8,11 +8,16 @@ import { Button } from "@/components/ui/button"
 type FormatName = "card" | "post" | "story"
 type TemplateName = "statement" | "progression" | "quote" | "screenshot" | "photo"
 type ThemeName = "ink" | "paper" | "blueprint"
+type BackgroundMode = "plain" | "texture" | "image"
+type TextureName = "studio" | "stage" | "sampler"
+type ScreenshotMode = "full" | "detail"
 
 type EditorConfig = {
   slug: string
   template: TemplateName
   theme: ThemeName
+  backgroundMode: BackgroundMode
+  texture: TextureName
   formats: FormatName[]
   eyebrow: string
   headline: string
@@ -21,6 +26,8 @@ type EditorConfig = {
   numerals: string
   attribution: string
   screenshot: string
+  screenshotMode: ScreenshotMode
+  deviceFrame: boolean
   photo: string
   focusX: number
   focusY: number
@@ -83,6 +90,12 @@ const photos = [
   { name: "sampler-pads-in-motion.png", label: "Sampler", src: "/textures/sampler-pads.webp" },
 ] as const
 
+const textureOptions: { name: TextureName; label: string; src: string }[] = [
+  { name: "studio", label: "Studio haze", src: "/textures/studio-microphone.webp" },
+  { name: "stage", label: "Stage bloom", src: "/textures/stage-microphone.webp" },
+  { name: "sampler", label: "Sampler grain", src: "/textures/sampler-and-keyboard.webp" },
+]
+
 const screenshots = [
   "01-Song-List---4-Chord-Library.png",
   "02-Song-Detail---Matching-Suggestions.png",
@@ -95,6 +108,8 @@ const initialConfig: EditorConfig = {
   slug: "files-in-your-pocket",
   template: "statement",
   theme: "ink",
+  backgroundMode: "plain",
+  texture: "studio",
   formats: ["card", "post"],
   eyebrow: "Feature",
   headline: "Your lyrics and chords,\nas files in your pocket.",
@@ -103,6 +118,8 @@ const initialConfig: EditorConfig = {
   numerals: "I · V · vi · IV",
   attribution: "Why plain-text songbooks last",
   screenshot: screenshots[1],
+  screenshotMode: "detail",
+  deviceFrame: false,
   photo: photos[0].name,
   focusX: 60,
   focusY: 50,
@@ -206,11 +223,103 @@ function drawCover(
   context.drawImage(image, x, y, drawWidth, drawHeight)
 }
 
+function drawImageDetail(
+  context: CanvasRenderingContext2D,
+  image: HTMLImageElement,
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  radius: number,
+) {
+  const factor = Math.max(width / image.naturalWidth, height / image.naturalHeight)
+  const sourceWidth = width / factor
+  const sourceHeight = height / factor
+  const sourceX = (image.naturalWidth - sourceWidth) / 2
+
+  context.save()
+  context.beginPath()
+  context.roundRect(x, y, width, height, radius)
+  context.clip()
+  context.drawImage(image, sourceX, 0, sourceWidth, sourceHeight, x, y, width, height)
+  context.restore()
+}
+
+function drawImageContained(
+  context: CanvasRenderingContext2D,
+  image: HTMLImageElement,
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+) {
+  const factor = Math.min(width / image.naturalWidth, height / image.naturalHeight)
+  const drawWidth = image.naturalWidth * factor
+  const drawHeight = image.naturalHeight * factor
+  context.drawImage(image, x + (width - drawWidth) / 2, y + (height - drawHeight) / 2, drawWidth, drawHeight)
+}
+
+function drawScreenshot(
+  context: CanvasRenderingContext2D,
+  image: HTMLImageElement,
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  scale: number,
+  detail: boolean,
+  deviceFrame: boolean,
+) {
+  if (!deviceFrame) {
+    if (detail) {
+      drawImageDetail(context, image, x, y, width, height, 22 * scale)
+    } else {
+      drawImageContained(context, image, x, y, width, height)
+    }
+    return
+  }
+
+  const padding = Math.max(7 * scale, Math.min(width, height) * 0.022)
+  const radius = Math.min(width * 0.13, 52 * scale)
+  const screenX = x + padding
+  const screenY = y + padding
+  const screenWidth = width - padding * 2
+  const screenHeight = height - padding * 2
+
+  context.fillStyle = "#050505"
+  context.beginPath()
+  context.roundRect(x, y, width, height, radius)
+  context.fill()
+  context.strokeStyle = "#3F3F46"
+  context.lineWidth = Math.max(2, 2 * scale)
+  context.stroke()
+
+  if (detail) {
+    drawImageDetail(context, image, screenX, screenY, screenWidth, screenHeight, Math.max(8, radius - padding))
+  } else {
+    drawImageContained(context, image, screenX, screenY, screenWidth, screenHeight)
+  }
+
+  const islandWidth = Math.min(screenWidth * 0.24, 112 * scale)
+  const islandHeight = Math.max(8 * scale, padding * 0.72)
+  context.fillStyle = "#050505"
+  context.beginPath()
+  context.roundRect(
+    x + (width - islandWidth) / 2,
+    screenY + padding * 0.45,
+    islandWidth,
+    islandHeight,
+    islandHeight / 2,
+  )
+  context.fill()
+}
+
 async function renderPost(
   canvas: HTMLCanvasElement,
   config: EditorConfig,
   formatName: FormatName,
   photoSrc: string,
+  textureSrc: string,
 ) {
   const format = formats[formatName]
   canvas.width = format.width
@@ -234,7 +343,8 @@ async function renderPost(
   context.fillStyle = theme.background
   context.fillRect(0, 0, format.width, format.height)
 
-  if (config.template === "photo" && photoSrc) {
+  const usesFullImage = config.template === "photo" || config.backgroundMode === "image"
+  if (usesFullImage && photoSrc) {
     const image = await loadImage(photoSrc)
     drawCover(context, image, format.width, format.height, config.focusX, config.focusY)
     const gradient = context.createLinearGradient(0, 0, 0, format.height)
@@ -244,9 +354,21 @@ async function renderPost(
     gradient.addColorStop(1, "rgba(10,10,10,.92)")
     context.fillStyle = gradient
     context.fillRect(0, 0, format.width, format.height)
+  } else if (config.backgroundMode === "texture" && textureSrc) {
+    const image = await loadImage(textureSrc)
+    context.save()
+    context.globalAlpha = 0.14
+    drawCover(context, image, format.width, format.height, 50, 50)
+    context.restore()
+
+    const wash = context.createLinearGradient(0, 0, format.width, format.height)
+    wash.addColorStop(0, "rgba(10,10,10,0)")
+    wash.addColorStop(0.72, theme.background)
+    context.fillStyle = wash
+    context.fillRect(0, 0, format.width, format.height)
   }
 
-  const activeTheme = config.template === "photo" ? themes.ink : theme
+  const activeTheme = usesFullImage ? themes.ink : theme
   const markSize = Math.round(56 * scale)
   drawMark(context, padding, top, markSize, activeTheme.tile, activeTheme.glyph)
   context.fillStyle = activeTheme.text
@@ -344,25 +466,38 @@ async function renderPost(
 
   if (config.template === "screenshot") {
     const image = await loadImage(`/app-screenshots/dark/${config.screenshot}`)
-    const sideBySide = innerWidth > bodyHeight
-    if (sideBySide) {
-      const shotHeight = bodyHeight
-      const shotWidth = (image.naturalWidth / image.naturalHeight) * shotHeight
-      const copyWidth = innerWidth - shotWidth - 60 * scale
-      const size = fitFont(context, headline, 52 * scale, copyWidth, 700, sans)
-      const copyHeight = headline.length * size * 1.18
-      drawTextLines(context, headline, padding, bodyTop + (bodyHeight - copyHeight) / 2, size, 1.18, activeTheme.text, 700, sans)
-      context.drawImage(image, format.width - padding - shotWidth, bodyTop, shotWidth, shotHeight)
-    } else {
-      const copySize = fitFont(context, headline, 52 * scale, innerWidth, 700, sans)
-      const copyHeight = headline.length * copySize * 1.18
-      drawTextLines(context, headline, padding, bodyTop, copySize, 1.18, activeTheme.text, 700, sans)
-      const availableHeight = Math.max(0, bodyHeight - copyHeight - 50 * scale)
-      const shotHeight = Math.min(availableHeight, bodyHeight * 0.68)
-      const shotWidth = (image.naturalWidth / image.naturalHeight) * shotHeight
-      context.drawImage(image, padding, bodyBottom - shotHeight, shotWidth, shotHeight)
-    }
+    const detail = config.screenshotMode === "detail"
+    const screenshotRatio = image.naturalWidth / image.naturalHeight
+    const detailRatio = activeFormatRatio(formatName, { card: 0.76, post: 0.62, story: 0.58 })
+    const visibleRatio = activeFormatRatio(formatName, { card: 1, post: 0.73, story: 0.68 })
+    const copyRatio = activeFormatRatio(formatName, { card: 0.58, post: 0.48, story: 0.45 })
+    const shotY = top + markSize * 0.7
+    const shotHeight = format.height - shotY - activeFormatRatio(formatName, { card: 18, post: 24, story: 28 }) * scale
+    const shotWidth = shotHeight * (detail ? detailRatio : screenshotRatio)
+    const cardFrameInset = formatName === "card" && config.deviceFrame ? Math.max(2, 2 * scale) * 50  : 0
+    const shotX = format.width - shotWidth * visibleRatio - cardFrameInset
+    const copyWidth = innerWidth * copyRatio
+    const copySize = fitFont(context, headline, 52 * scale, copyWidth, 700, sans)
+    const copyHeight = headline.length * copySize * 1.18
+    const copyY = bodyTop + (bodyHeight - copyHeight) / 2
+
+    drawScreenshot(
+      context,
+      image,
+      shotX,
+      shotY,
+      shotWidth,
+      shotHeight,
+      scale,
+      detail,
+      config.deviceFrame,
+    )
+    drawTextLines(context, headline, padding, copyY, copySize, 1.18, activeTheme.text, 700, sans)
   }
+}
+
+function activeFormatRatio<Value>(format: FormatName, values: Record<FormatName, Value>) {
+  return values[format]
 }
 
 function yamlString(value: string) {
@@ -371,11 +506,25 @@ function yamlString(value: string) {
 
 function configMarkdown(config: EditorConfig) {
   const output = ["---", `template: ${config.template}`]
-  if (config.template !== "photo" && config.theme !== "ink") output.push(`theme: ${config.theme}`)
+  const usesFullImage = config.template === "photo" || config.backgroundMode === "image"
+  if (!usesFullImage && config.backgroundMode !== "texture" && config.theme !== "ink") {
+    output.push(`theme: ${config.theme}`)
+  }
+  if (config.template !== "photo" && config.backgroundMode === "texture") {
+    output.push(`texture: ${config.texture}`)
+  }
+  if (config.template !== "photo" && config.backgroundMode === "image") {
+    output.push(`backgroundImage: ${yamlString(config.photo)}`)
+    output.push(`focus: ${config.focusX}% ${config.focusY}%`)
+  }
   if (config.eyebrow.trim()) output.push(`eyebrow: ${yamlString(config.eyebrow.trim())}`)
   output.push("formats:", ...config.formats.map((format) => `  - ${format}`))
 
-  if (config.template === "screenshot") output.push(`screenshot: ${yamlString(config.screenshot)}`)
+  if (config.template === "screenshot") {
+    output.push(`screenshot: ${yamlString(config.screenshot)}`)
+    output.push(`screenshotMode: ${config.screenshotMode}`)
+    if (config.deviceFrame) output.push("deviceFrame: true")
+  }
   if (config.template === "photo") {
     output.push(`photo: ${yamlString(config.photo)}`)
     output.push(`focus: ${config.focusX}% ${config.focusY}%`)
@@ -428,16 +577,19 @@ export function SocialPostEditor() {
     return photos.find((photo) => photo.name === config.photo)?.src ?? photos[0].src
   }, [config.photo, customPhoto])
 
+  const textureSrc =
+    textureOptions.find((texture) => texture.name === config.texture)?.src ?? "/textures/studio-microphone.webp"
+
   useEffect(() => {
     if (!canvasRef.current) return
     let current = true
-    renderPost(canvasRef.current, config, activeFormat, photoSrc).catch(() => {
+    renderPost(canvasRef.current, config, activeFormat, photoSrc, textureSrc).catch(() => {
       if (current) setStatus("idle")
     })
     return () => {
       current = false
     }
-  }, [activeFormat, config, photoSrc])
+  }, [activeFormat, config, photoSrc, textureSrc])
 
   useEffect(() => {
     if (status === "idle") return
@@ -472,7 +624,7 @@ export function SocialPostEditor() {
   const exportImage = async () => {
     const canvas = canvasRef.current
     if (!canvas) return
-    await renderPost(canvas, config, activeFormat, photoSrc)
+    await renderPost(canvas, config, activeFormat, photoSrc, textureSrc)
     canvas.toBlob((blob) => {
       if (!blob) return
       const link = document.createElement("a")
@@ -518,7 +670,13 @@ export function SocialPostEditor() {
                 <button
                   key={template.name}
                   type="button"
-                  onClick={() => update("template", template.name)}
+                  onClick={() => {
+                    setConfig((current) => ({
+                      ...current,
+                      template: template.name,
+                      backgroundMode: template.name === "photo" ? "image" : current.backgroundMode,
+                    }))
+                  }}
                   className={`rounded-xl border p-3 text-left transition ${
                     config.template === template.name
                       ? "border-foreground bg-foreground text-background"
@@ -569,8 +727,35 @@ export function SocialPostEditor() {
             </Field>
           </Section>
 
-          {config.template !== "photo" && config.template !== "screenshot" ? (
-            <Section title="Background">
+          <Section title="Background">
+            {config.template !== "photo" ? (
+              <div className="grid grid-cols-3 rounded-xl bg-muted p-1">
+                {(["plain", "texture", "image"] as BackgroundMode[]).map((mode) => (
+                  <button
+                    key={mode}
+                    type="button"
+                    onClick={() => {
+                      setConfig((current) => ({
+                        ...current,
+                        backgroundMode: mode,
+                        theme: mode === "texture" ? "ink" : current.theme,
+                      }))
+                    }}
+                    className={`rounded-lg px-3 py-2 text-xs font-medium capitalize transition ${
+                      config.backgroundMode === mode ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    {mode}
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <p className="text-xs leading-relaxed text-muted-foreground">
+                The photo layout always uses a full-bleed image. Choose the crop below.
+              </p>
+            )}
+
+            {config.template !== "photo" && config.backgroundMode === "plain" ? (
               <div className="grid grid-cols-3 gap-2">
                 {(Object.keys(themes) as ThemeName[]).map((name) => {
                   const theme = themes[name]
@@ -588,11 +773,30 @@ export function SocialPostEditor() {
                   )
                 })}
               </div>
-            </Section>
-          ) : null}
+            ) : null}
 
-          {config.template === "photo" ? (
-            <Section title="Photo background">
+            {config.template !== "photo" && config.backgroundMode === "texture" ? (
+              <div className="grid grid-cols-3 gap-2">
+                {textureOptions.map((texture) => (
+                  <button
+                    key={texture.name}
+                    type="button"
+                    onClick={() => update("texture", texture.name)}
+                    aria-pressed={config.texture === texture.name}
+                    className={`rounded-xl border p-2 text-left text-xs transition ${config.texture === texture.name ? "border-foreground" : "border-border"}`}
+                  >
+                    <span
+                      className="mb-2 block aspect-[1.8] rounded-md border border-white/10 bg-[#0a0a0a] bg-cover bg-center bg-blend-screen"
+                      style={{ backgroundImage: `linear-gradient(rgba(10,10,10,.78), rgba(10,10,10,.92)), url(${texture.src})` }}
+                    />
+                    {texture.label}
+                  </button>
+                ))}
+              </div>
+            ) : null}
+
+            {config.template === "photo" || config.backgroundMode === "image" ? (
+              <>
               <div className="grid grid-cols-4 gap-2">
                 {photos.map((photo) => (
                   <button
@@ -636,11 +840,52 @@ export function SocialPostEditor() {
                   <input className="mt-3 w-full accent-foreground" type="range" min="0" max="100" value={config.focusY} onChange={(event) => update("focusY", Number(event.target.value))} />
                 </Field>
               </div>
-            </Section>
-          ) : null}
+              </>
+            ) : null}
+          </Section>
 
           {config.template === "screenshot" ? (
             <Section title="App screenshot">
+              <div className="grid grid-cols-2 rounded-xl bg-muted p-1">
+                {([
+                  { name: "detail", label: "Detail crop" },
+                  { name: "full", label: "Full screen" },
+                ] as { name: ScreenshotMode; label: string }[]).map((mode) => (
+                  <button
+                    key={mode.name}
+                    type="button"
+                    onClick={() => update("screenshotMode", mode.name)}
+                    aria-pressed={config.screenshotMode === mode.name}
+                    className={`rounded-lg px-3 py-2 text-xs font-medium transition ${
+                      config.screenshotMode === mode.name
+                        ? "bg-background text-foreground shadow-sm"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    {mode.label}
+                  </button>
+                ))}
+              </div>
+              <button
+                type="button"
+                onClick={() => update("deviceFrame", !config.deviceFrame)}
+                aria-pressed={config.deviceFrame}
+                className={`flex w-full items-center justify-between rounded-xl border px-3 py-2.5 text-left text-sm transition ${
+                  config.deviceFrame
+                    ? "border-foreground bg-foreground text-background"
+                    : "border-border bg-card hover:border-foreground/30"
+                }`}
+              >
+                <span>
+                  <span className="block font-medium">Device frame</span>
+                  <span className={`mt-0.5 block text-xs ${config.deviceFrame ? "text-background/65" : "text-muted-foreground"}`}>
+                    Add a dark hardware shell and camera island
+                  </span>
+                </span>
+                <span className={`flex size-6 items-center justify-center rounded-md border ${config.deviceFrame ? "border-background/25" : "border-border"}`}>
+                  {config.deviceFrame ? <Check className="size-3.5" /> : null}
+                </span>
+              </button>
               <div className="grid grid-cols-5 gap-2">
                 {screenshots.map((screenshot, index) => (
                   <button
@@ -705,9 +950,28 @@ export function SocialPostEditor() {
 
         <section className="relative min-h-[70vh] bg-muted/35 p-4 sm:p-8 lg:p-12">
           <div className="sticky top-28 mx-auto flex max-w-4xl flex-col items-center">
-            <div className="mb-4 flex w-full items-center justify-between gap-4 text-xs text-muted-foreground">
-              <span className="font-mono uppercase tracking-[0.14em]">Live preview</span>
-              <span>{selectedFormat.width} × {selectedFormat.height} px</span>
+            <div className="mb-4 flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <span className="block font-mono text-xs uppercase tracking-[0.14em] text-muted-foreground">Live preview</span>
+                <span className="mt-1 block text-xs text-muted-foreground">{selectedFormat.width} × {selectedFormat.height} px</span>
+              </div>
+              <div className="grid grid-cols-3 rounded-xl border border-border bg-background/80 p-1 shadow-sm" role="group" aria-label="Preview format">
+                {(Object.keys(formats) as FormatName[]).map((name) => (
+                  <button
+                    key={name}
+                    type="button"
+                    onClick={() => setActiveFormat(name)}
+                    aria-pressed={activeFormat === name}
+                    className={`rounded-lg px-4 py-2 text-xs font-medium transition ${
+                      activeFormat === name
+                        ? "bg-foreground text-background"
+                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                    }`}
+                  >
+                    {formats[name].label}
+                  </button>
+                ))}
+              </div>
             </div>
             <div className="relative flex max-h-[calc(100vh-12rem)] w-full items-center justify-center overflow-hidden rounded-2xl border border-border bg-background/70 p-3 shadow-sm sm:p-6">
               <canvas

@@ -75,9 +75,10 @@ chordlist. Requires `chords`; `numerals` and `headline` are optional.
 footnote so the asset stays self-sourcing when it is screenshotted onward. Requires `headline`;
 `attribution` is optional.
 
-**`screenshot`** — a real device screenshot from `public/app-screenshots/dark/` beside or above a
-short line. The screenshot is never tinted, cropped, or perspective-tilted: it is evidence of what
-the app does. Requires `screenshot`, naming a file in that directory.
+**`screenshot`** — a real device screenshot from `public/app-screenshots/dark/` running large off
+the right edge beside a short line. `full` keeps the complete screen visible; `detail` uses a larger
+top-aligned crop when the interface needs to read at timeline size. Screenshots are never tinted or
+perspective-tilted. Requires `screenshot`, naming a file in that directory.
 
 **`photo`** — editorial photography as a full-bleed backdrop with typography over it. Requires
 `photo`, naming a master in `assets/visual-references/analog-photography/`. See
@@ -160,9 +161,13 @@ whoever posts it is not rewriting copy that was already reviewed.
 | `chords` / `numerals` | `progression` | `chords` is a list. `numerals` is one string. |
 | `attribution` | `quote` | Normally the post title the line came from. |
 | `screenshot` | `screenshot` | A filename in `public/app-screenshots/dark/`. |
+| `screenshotMode` | no | Screenshot framing: `full` keeps the complete screen visible; `detail` uses a larger top-aligned crop. Defaults to `full`. |
+| `deviceFrame` | no | `true` adds a dark hardware shell and camera island around a screenshot. Defaults to `false`. |
 | `photo` | `photo` | A master filename in `assets/visual-references/analog-photography/`. |
-| `focus` | no | `photo` only. Steers the crop, e.g. `60% 40%`. Defaults to centre. |
+| `focus` | no | Steers the crop for `photo` and `backgroundImage`, e.g. `60% 40%`. Defaults to centre. |
 | `theme` | no | Colour system: `ink` (default), `paper`, or `blueprint`. Photo assets normally keep `ink` for white overlay type. |
+| `texture` | no | A subtle website-derived background: `studio`, `stage`, or `sampler`. Available on every template except `photo`. |
+| `backgroundImage` | no | A full-bleed master filename for any non-`photo` template. Uses `focus` and the standard photo scrim. |
 | `created` | no | The date the definition was written. |
 | `scheduled` | no | Planning only. The build does not act on it. |
 | `draft` | no | `true` skips the definition entirely. |

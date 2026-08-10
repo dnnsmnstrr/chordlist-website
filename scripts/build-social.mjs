@@ -25,7 +25,7 @@ import { ImageResponse } from "next/og.js"
 import { parse as parseYaml } from "yaml"
 
 import { markSvg, svgDataUri } from "./lib/chordlist-mark.mjs"
-import { TEMPLATES, TEMPLATE_FIELDS, frame } from "./lib/social-templates.mjs"
+import { TEMPLATES, TEMPLATE_FIELDS, backgroundBackdrop, frame } from "./lib/social-templates.mjs"
 
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..")
 
@@ -113,6 +113,13 @@ const CONFIG = {
     },
   },
 
+  /** The same quiet analog textures used by the website's ambient layer. */
+  textures: {
+    studio: "studio-microphone-in-motion.png",
+    stage: "stage-microphone-in-motion.png",
+    sampler: "sampler-and-keyboard-in-motion.png",
+  },
+
   /** Base sizes at scale 1. Every template multiplies these by the format scale. */
   type: {
     wordmark: 34,
@@ -175,6 +182,28 @@ function readDefinition(file, data) {
   const theme = data.theme ?? "ink"
   if (typeof theme !== "string" || !(theme in CONFIG.themes)) {
     fail(`unknown theme "${theme}" (expected one of ${Object.keys(CONFIG.themes).join(", ")})`)
+  }
+
+  if (
+    data.texture !== undefined &&
+    (typeof data.texture !== "string" || !(data.texture in CONFIG.textures))
+  ) {
+    fail(`unknown texture "${data.texture}" (expected one of ${Object.keys(CONFIG.textures).join(", ")})`)
+  }
+  if (data.backgroundImage !== undefined && typeof data.backgroundImage !== "string") {
+    fail(`"backgroundImage" must be a photography filename`)
+  }
+  if (
+    data.screenshotMode !== undefined &&
+    !["full", "detail"].includes(data.screenshotMode)
+  ) {
+    fail(`"screenshotMode" must be "full" or "detail"`)
+  }
+  if (data.deviceFrame !== undefined && typeof data.deviceFrame !== "boolean") {
+    fail(`"deviceFrame" must be true or false`)
+  }
+  if (data.texture !== undefined && data.backgroundImage !== undefined) {
+    fail(`"texture" and "backgroundImage" cannot be used together`)
   }
 
   const formats = data.formats ?? CONFIG.defaultFormats
@@ -288,8 +317,13 @@ async function main() {
       if (!resolved.screenshots.has(name)) resolved.screenshots.set(name, await screenshots.load(name))
     }
 
-    if (definition.photo !== undefined) {
-      const name = definition.photo
+    const requestedPhotos = [
+      definition.photo,
+      definition.backgroundImage,
+      definition.texture ? CONFIG.textures[definition.texture] : undefined,
+    ].filter(Boolean)
+
+    for (const name of requestedPhotos) {
       if (!photos.has(name)) {
         throw new Error(
           `${source}/${file}: unknown photo "${name}" ` +
@@ -306,13 +340,14 @@ async function main() {
     // A master made for one shape and forced into another loses real picture.
     // Warn rather than fail: sometimes the crop is fine, and the author is the
     // one who can tell. Silence here would read as approval.
-    if (definition.photo) {
-      const intrinsic = resolved.photos.get(definition.photo)
+    const fullBleedImage = definition.photo ?? definition.backgroundImage
+    if (fullBleedImage) {
+      const intrinsic = resolved.photos.get(fullBleedImage)
       for (const name of definition.formats) {
         const loss = cropLoss(intrinsic, CONFIG.formats[name])
         if (loss >= CONFIG.cropWarningThreshold) {
           console.warn(
-            `  ${file}: "${definition.photo}" is ${intrinsic.width}×${intrinsic.height} and loses ` +
+            `  ${file}: "${fullBleedImage}" is ${intrinsic.width}×${intrinsic.height} and loses ` +
               `${Math.round(loss * 100)}% of its area as a ${name}. Consider a composition made ` +
               `for that ratio, or set "focus" to steer the crop.`,
           )
@@ -337,7 +372,8 @@ async function main() {
   for (const { slug, definition, caption } of definitions) {
     const render = TEMPLATES[definition.template]
     const outputs = []
-    const colors = { ...CONFIG.colors, ...CONFIG.themes[definition.theme] }
+    const usesFullImage = definition.template === "photo" || definition.backgroundImage
+    const colors = { ...CONFIG.colors, ...CONFIG.themes[usesFullImage ? "ink" : definition.theme] }
     const definitionTokens = { ...tokens, colors }
     const iconUri = svgDataUri(
       markSvg({
@@ -364,7 +400,7 @@ async function main() {
           format.height - padding * 2 - (format.safeTop ?? 0) - (format.safeBottom ?? 0) - reserved,
       }
 
-      const { body, footer, backdrop } = render({
+      const rendered = render({
         definition,
         tokens: definitionTokens,
         scale,
@@ -372,6 +408,23 @@ async function main() {
         inner,
         assets,
       })
+      let { backdrop } = rendered
+      if (!backdrop && definition.backgroundImage) {
+        backdrop = backgroundBackdrop({
+          source: assets.photos.get(definition.backgroundImage),
+          format,
+          focus: definition.focus,
+          tokens: definitionTokens,
+        })
+      } else if (!backdrop && definition.texture) {
+        backdrop = backgroundBackdrop({
+          source: assets.photos.get(CONFIG.textures[definition.texture]),
+          format,
+          focus: "center",
+          tokens: definitionTokens,
+          texture: true,
+        })
+      }
       const element = frame({
         tokens: definitionTokens,
         format,
@@ -379,8 +432,8 @@ async function main() {
         padding,
         iconUri,
         label: definition.eyebrow,
-        body,
-        footer,
+        body: rendered.body,
+        footer: rendered.footer,
         backdrop,
       })
 
