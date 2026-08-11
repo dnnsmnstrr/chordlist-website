@@ -18,10 +18,8 @@ export const RemotionRoot: React.FC = () => {
       })}
       defaultProps={{
         appearance: 'light',
+        copyVariant: 'play-more', // 'open-tabs' | 'play-more' | 'ownership'
         accentColor: '#FAFAFA',
-        openingHook: 'Your songs deserve better than 37 open tabs.',
-        endLine: 'Your lyrics. Your chords. Your files.',
-        releaseLine: 'chordlist — coming August 30',
         mediaPadding: 28,
         showShotLabels: false,
         musicFile: '',
@@ -32,21 +30,20 @@ export const RemotionRoot: React.FC = () => {
         manualClipSeconds: 3,
         scenes: [
           {
+            id: 'collect',
             enabled: true,
-            eyebrow: 'Collect',
-            headline: 'One personal songbook',
             clipTitles: [
               'Song library',
               'Link import',
               'Imported song draft',
               'Chord keyboard',
             ],
+            startOffsetSeconds: 0.5,
             maxSecondsPerClip: 2.8,
           },
           {
+            id: 'find',
             enabled: true,
-            eyebrow: 'Find',
-            headline: 'Search. Match. Keep playing.',
             clipTitles: [
               'Shuffle',
               'Search',
@@ -54,34 +51,32 @@ export const RemotionRoot: React.FC = () => {
               'Matching song selected',
               'Next song',
             ],
+            startOffsetSeconds: 0.5,
             maxSecondsPerClip: 2.6,
           },
           {
+            id: 'pace',
             enabled: true,
-            eyebrow: 'Adapt',
-            headline: 'Transpose in a tap',
-            clipTitles: [
-              'Transpose control',
-              'Transposed up a semitone',
-            ],
-            maxSecondsPerClip: 3.2,
-          },
-          {
-            enabled: true,
-            eyebrow: 'Set the pace',
-            headline: 'Scroll at your speed',
             clipTitles: [
               'Autoscroll starts',
               'Speed control',
               'Speed raised to maximum',
             ],
+            startOffsetSeconds: 0.5,
             maxSecondsPerClip: 3.2,
           },
           {
+            id: 'adapt',
             enabled: true,
-            eyebrow: 'Hands free',
-            headline: 'Lyrics that move with you',
+            clipTitles: ['Transposed up a semitone'],
+            startOffsetSeconds: 1.1,
+            maxSecondsPerClip: 3.2,
+          },
+          {
+            id: 'hands-free',
+            enabled: true,
             clipTitles: ['Hands-free autoscroll'],
+            startOffsetSeconds: 0.5,
             maxSecondsPerClip: 8,
           },
         ],

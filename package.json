@@ -45,7 +45,6 @@
     "@remotion/cli": "4.0.508",
     "@remotion/google-fonts": "4.0.508",
     "@remotion/transitions": "4.0.508",
-    "@remotion/zod-types": "4.0.508",
     "@tailwindcss/postcss": "^4.2.0",
     "@types/node": "^24",
     "@types/react": "^19",

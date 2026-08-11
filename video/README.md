@@ -71,12 +71,14 @@ The Props panel exposes:
 
 - `appearance` — switches every scene between the light and dark take while the surrounding
   website-branded canvas stays dark;
+- `copyVariant` — switches the complete campaign copy between `open-tabs`, `play-more`, and
+  `ownership` with one dropdown;
 - `accentColor` — controls headings, progress marks, and the end-card button; the website-matched
   default is off-white;
-- `openingHook`, `endLine`, and `releaseLine` — the public-facing copy;
 - `mediaPadding` — one consistent inset around every video;
 - `showShotLabels` — useful while choosing clips, normally off for the public render;
 - `scenes` — switches scenes on or off and edits headings, clip order, and maximum clip length;
+- `startOffsetSeconds` inside each scene — skips the opening portion of its source clips;
 - `musicFile` and `voiceoverFile` — optional filenames from `public/audio/`;
 - `manualClipFile` — the optional Files/Markdown MP4 from `public/manual/`.
 
@@ -102,6 +104,7 @@ JSON files only override `appearance`, so the rest of the defaults stay shared.
 ## Files and responsibilities
 
 - `src/Root.tsx` — editable defaults and canonical five-scene grouping
+- `src/copy.ts` — complete named copy packs selected by the single `copyVariant` prop
 - `src/ChordlistDemo.tsx` — layout and animation system
 - `src/video-schema.ts` — controls shown in the Props panel
 - `../scripts/sync-video-assets.mjs` — joins app-generated chapter clips to the template by title

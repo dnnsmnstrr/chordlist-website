@@ -24,6 +24,7 @@ import {
   type ResolvedClip,
   type ResolvedScene,
 } from './timeline';
+import {getCopy} from './copy';
 import type {VideoProps} from './video-schema';
 
 type Palette = {
@@ -488,11 +489,12 @@ const transition = (key: string, durationInFrames = TRANSITION_FRAMES): ReactNod
 
 export const ChordlistDemo: React.FC<VideoProps> = (props) => {
   const scenes = resolveScenes(props);
+  const copy = getCopy(props.copyVariant);
   const palette = paletteFor();
   const timeline: ReactNode[] = [
     <TransitionSeries.Sequence key="hook" name="Opening hook" durationInFrames={HOOK_FRAMES}>
       <HookCard
-        text={props.openingHook}
+        text={copy.openingHook}
         palette={palette}
         accentColor={props.accentColor}
       />
@@ -526,8 +528,8 @@ export const ChordlistDemo: React.FC<VideoProps> = (props) => {
   timeline.push(
     <TransitionSeries.Sequence key="end" name="End card" durationInFrames={END_FRAMES}>
       <EndCard
-        endLine={props.endLine}
-        releaseLine={props.releaseLine}
+        endLine={copy.endLine}
+        releaseLine={copy.releaseLine}
         palette={palette}
         accentColor={props.accentColor}
       />

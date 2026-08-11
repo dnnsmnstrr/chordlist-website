@@ -1,4 +1,5 @@
 import manifestJson from './generated/asset-manifest.json';
+import {getCopy, type SceneId} from './copy';
 import type {VideoProps} from './video-schema';
 
 export const FPS = 30;
@@ -23,7 +24,10 @@ export type ResolvedClip = ClipAsset & {
   trimBeforeInFrames: number;
 };
 
-export type ResolvedScene = VideoProps['scenes'][number] & {
+export type ResolvedScene = Omit<VideoProps['scenes'][number], 'id'> & {
+  id: SceneId;
+  eyebrow: string;
+  headline: string;
   clips: ResolvedClip[];
   durationInFrames: number;
 };
@@ -31,6 +35,7 @@ export type ResolvedScene = VideoProps['scenes'][number] & {
 const manifest = manifestJson as Record<'light' | 'dark', ClipAsset[]>;
 
 export const resolveScenes = (props: VideoProps): ResolvedScene[] => {
+  const copy = getCopy(props.copyVariant);
   const clipsByTitle = new Map(
     manifest[props.appearance].map((clip) => [clip.title, clip]),
   );
@@ -47,13 +52,13 @@ export const resolveScenes = (props: VideoProps): ResolvedScene[] => {
 
         const sourceDurationInFrames = Math.max(1, Math.round(clip.durationInSeconds * FPS));
         const isOpeningClip = sceneIndex === 0 && title === firstAvailableTitle;
-        const settleFrames = isOpeningClip
+        const startOffsetFrames = isOpeningClip
           ? 0
           : Math.min(
-              Math.round(0.5 * FPS),
+              Math.round(scene.startOffsetSeconds * FPS),
               Math.max(0, sourceDurationInFrames - Math.round(0.5 * FPS)),
             );
-        const settledDurationInFrames = sourceDurationInFrames - settleFrames;
+        const settledDurationInFrames = sourceDurationInFrames - startOffsetFrames;
         const durationInFrames = Math.max(
             1,
             Math.min(settledDurationInFrames, Math.round(scene.maxSecondsPerClip * FPS)),
@@ -68,6 +73,7 @@ export const resolveScenes = (props: VideoProps): ResolvedScene[] => {
 
       return {
         ...scene,
+        ...copy.scenes[scene.id],
         clips,
         durationInFrames:
           clips.length > 0
@@ -85,9 +91,10 @@ export const resolveScenes = (props: VideoProps): ResolvedScene[] => {
     ...automatedScenes,
     {
       enabled: true,
-      eyebrow: 'Yours',
-      headline: 'Readable Markdown files',
+      id: 'files',
+      ...copy.scenes.files,
       clipTitles: ['Files / Markdown reveal'],
+      startOffsetSeconds: 0,
       maxSecondsPerClip: props.manualClipSeconds,
       clips: [
         {
