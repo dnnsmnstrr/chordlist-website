@@ -15,6 +15,15 @@ node_modules
 *.tsbuildinfo
 .DS_Store
 
+# Remotion editor inputs and outputs
+video/out/
+video/public/generated/*
+!video/public/generated/.gitkeep
+video/public/audio/*
+!video/public/audio/README.md
+video/public/manual/*
+!video/public/manual/README.md
+
 .projects/cache
 .projects/vault
 .projects/state.test.json

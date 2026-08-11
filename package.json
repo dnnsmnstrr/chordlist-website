@@ -3,10 +3,17 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "sync:assets": "node scripts/sync-app-assets.mjs",
+    "sync:app": "node scripts/sync-app-assets.mjs",
+    "sync:video": "node scripts/sync-video-assets.mjs",
+    "sync:all": "pnpm sync:app && pnpm sync:video",
+    "sync:assets": "pnpm sync:app",
     "build:icons": "node scripts/build-icons.mjs",
     "build:og": "node scripts/build-og-image.mjs && node scripts/build-page-og.mjs && node scripts/build-blog-og.mjs",
     "build:social": "node scripts/build-social.mjs",
+    "video:studio": "pnpm sync:video && remotion studio video/src/index.ts --public-dir=video/public",
+    "video:render:light": "pnpm sync:video && remotion render video/src/index.ts ChordlistDemo video/out/chordlist-demo-remotion-light.mp4 --props=video/render-props/light.json --public-dir=video/public",
+    "video:render:dark": "pnpm sync:video && remotion render video/src/index.ts ChordlistDemo video/out/chordlist-demo-remotion-dark.mp4 --props=video/render-props/dark.json --public-dir=video/public",
+    "video:render:both": "pnpm video:render:light && pnpm video:render:dark",
     "prebuild:app-store": "pnpm sync:assets",
     "build:app-store": "node scripts/build-app-store-screenshots.mjs",
     "predev": "pnpm sync:assets",
@@ -35,6 +42,10 @@
     "yaml": "^2.9.0"
   },
   "devDependencies": {
+    "@remotion/cli": "4.0.508",
+    "@remotion/google-fonts": "4.0.508",
+    "@remotion/transitions": "4.0.508",
+    "@remotion/zod-types": "4.0.508",
     "@tailwindcss/postcss": "^4.2.0",
     "@types/node": "^24",
     "@types/react": "^19",
@@ -42,7 +53,9 @@
     "eslint": "^9.39.2",
     "eslint-config-next": "16.2.6",
     "postcss": "^8.5",
+    "remotion": "4.0.508",
     "tailwindcss": "^4.2.0",
-    "typescript": "5.7.3"
+    "typescript": "5.7.3",
+    "zod": "4.4.3"
   }
 }

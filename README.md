@@ -27,11 +27,16 @@ elsewhere, set `CHORDLIST_APP_REPO` to its absolute path.
 | `pnpm start` | Serve an existing production build locally. |
 | `pnpm lint` | Run ESLint with warnings treated as failures. |
 | `pnpm typecheck` | Run TypeScript without emitting files. |
-| `pnpm sync:assets` | Copy current iPhone/iPad screenshots and the available press-kit archive from the app repository. |
+| `pnpm sync:app` | Copy current iPhone/iPad screenshots and the available press-kit archive from the app repository. |
+| `pnpm sync:video` | Copy prepared demo clips and rebuild the Remotion asset manifest. |
+| `pnpm sync:all` | Run both app-asset syncs. |
+| `pnpm sync:assets` | Backward-compatible alias for `sync:app`, used by website dev and builds. |
 | `pnpm build:icons` | Regenerate the favicon, app icon, and related icon assets in `public/`. |
 | `pnpm build:og` | Regenerate the site, page, and blog Open Graph images. |
 | `pnpm build:social` | Render social images and their manifest from `content/social/`. |
 | `pnpm build:app-store` | Sync app captures, then generate the iPhone and iPad App Store upload sets. |
+| `pnpm video:studio` | Sync current demo clips and open the interactive Remotion editor. |
+| `pnpm video:render:both` | Render the light and dark vertical demo masters. |
 
 There is currently no separate test suite; `pnpm check` is the project gate.
 
@@ -94,6 +99,29 @@ the website can compile for production.
 See [Social media system](docs/social-media-system.md) and
 [Visual language](docs/visual-language.md) for formats and review rules.
 
+### Edit and render demo videos
+
+The iOS repository owns recording and chapter extraction; this repository owns video composition,
+branding, copy, animation, and final exports. Prepare the footage in `chordlist-app` first:
+
+```bash
+scripts/capture-video.sh --no-open
+scripts/prepare-video-editor-assets.sh
+```
+
+Then work from this repository:
+
+```bash
+pnpm video:studio
+pnpm video:render:both
+```
+
+Both commands run `sync:video` before opening or rendering. With the standard sibling checkout,
+the app repository is found automatically; otherwise set `CHORDLIST_APP_REPO` to its absolute path.
+Use `pnpm sync:all` when screenshots, the downloadable press archive, and video footage should all
+be refreshed together. See [the Remotion editor guide](video/README.md) for timeline controls,
+audio, manual shots, and repeatable render presets.
+
 ### Build App Store screenshots
 
 ```bash
@@ -133,6 +161,7 @@ lib/                 Site configuration, content parsing, and shared utilities
 locales/en.ts        User-facing website copy
 scripts/             Asset sync and image-generation scripts
 public/              Static, generated, and synced assets
+video/               Remotion demo editor, render presets, and disposable local media
 ```
 
 ## Deployment

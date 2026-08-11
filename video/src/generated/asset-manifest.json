@@ -1,0 +1,132 @@
+{
+  "light": [
+    {
+      "title": "Song library",
+      "summary": "The library grouped by artist. Every row carries its chord progression and tags.",
+      "durationInSeconds": 1.51,
+      "file": "generated/light/01-song-library.mp4",
+      "poster": "generated/light/01-song-library-poster.png"
+    },
+    {
+      "title": "Search",
+      "summary": "Searching for “piano”, which matches tags as well as titles and artists. The library narrows to two songs.",
+      "durationInSeconds": 7.884,
+      "file": "generated/light/02-search.mp4",
+      "poster": "generated/light/02-search-poster.png"
+    },
+    {
+      "title": "Song opens",
+      "summary": "Let It Be opens: the chord chart in the body, the progression and the playback controls pinned to the bottom bar.",
+      "durationInSeconds": 7.445,
+      "file": "generated/light/03-song-opens.mp4",
+      "poster": "generated/light/03-song-opens-poster.png"
+    },
+    {
+      "title": "Transpose control",
+      "summary": "Tapping the chord capsules opens the transpose stepper.",
+      "durationInSeconds": 2.736,
+      "file": "generated/light/04-transpose-control.mp4",
+      "poster": "generated/light/04-transpose-control-poster.png"
+    },
+    {
+      "title": "Transposed up a semitone",
+      "summary": "One semitone up. The progression rewrites itself from C G Am F to C# G# A#m F#.",
+      "durationInSeconds": 3.313,
+      "file": "generated/light/05-transposed-up-a-semitone.mp4",
+      "poster": "generated/light/05-transposed-up-a-semitone-poster.png"
+    },
+    {
+      "title": "Autoscroll starts",
+      "summary": "Play is pressed. The chart starts moving on its own and the button becomes pause.",
+      "durationInSeconds": 0.814,
+      "file": "generated/light/06-autoscroll-starts.mp4",
+      "poster": "generated/light/06-autoscroll-starts-poster.png"
+    },
+    {
+      "title": "Speed control",
+      "summary": "The speed dial opens over the running scroll, without interrupting it.",
+      "durationInSeconds": 4.556,
+      "file": "generated/light/07-speed-control.mp4",
+      "poster": "generated/light/07-speed-control-poster.png"
+    },
+    {
+      "title": "Speed raised to maximum",
+      "summary": "The slider is dragged from the middle to the top and the chart picks up pace.",
+      "durationInSeconds": 2.69,
+      "file": "generated/light/08-speed-raised-to-maximum.mp4",
+      "poster": "generated/light/08-speed-raised-to-maximum-poster.png"
+    },
+    {
+      "title": "Hands-free autoscroll",
+      "summary": "The longest shot in the cut. Nothing is touched: the chart keeps travelling by itself, hands free. This is what the video exists to show.",
+      "durationInSeconds": 12.61,
+      "file": "generated/light/09-hands-free-autoscroll.mp4",
+      "poster": "generated/light/09-hands-free-autoscroll-poster.png"
+    }
+  ],
+  "dark": [
+    {
+      "title": "Song library",
+      "summary": "The library grouped by artist. Every row carries its chord progression and tags.",
+      "durationInSeconds": 1.51,
+      "file": "generated/dark/01-song-library.mp4",
+      "poster": "generated/dark/01-song-library-poster.png"
+    },
+    {
+      "title": "Search",
+      "summary": "Searching for “piano”, which matches tags as well as titles and artists. The library narrows to two songs.",
+      "durationInSeconds": 6.904,
+      "file": "generated/dark/02-search.mp4",
+      "poster": "generated/dark/02-search-poster.png"
+    },
+    {
+      "title": "Song opens",
+      "summary": "Let It Be opens: the chord chart in the body, the progression and the playback controls pinned to the bottom bar.",
+      "durationInSeconds": 6.626,
+      "file": "generated/dark/03-song-opens.mp4",
+      "poster": "generated/dark/03-song-opens-poster.png"
+    },
+    {
+      "title": "Transpose control",
+      "summary": "Tapping the chord capsules opens the transpose stepper.",
+      "durationInSeconds": 2.114,
+      "file": "generated/dark/04-transpose-control.mp4",
+      "poster": "generated/dark/04-transpose-control-poster.png"
+    },
+    {
+      "title": "Transposed up a semitone",
+      "summary": "One semitone up. The progression rewrites itself from C G Am F to C# G# A#m F#.",
+      "durationInSeconds": 3.234,
+      "file": "generated/dark/05-transposed-up-a-semitone.mp4",
+      "poster": "generated/dark/05-transposed-up-a-semitone-poster.png"
+    },
+    {
+      "title": "Autoscroll starts",
+      "summary": "Play is pressed. The chart starts moving on its own and the button becomes pause.",
+      "durationInSeconds": 0.788,
+      "file": "generated/dark/06-autoscroll-starts.mp4",
+      "poster": "generated/dark/06-autoscroll-starts-poster.png"
+    },
+    {
+      "title": "Speed control",
+      "summary": "The speed dial opens over the running scroll, without interrupting it.",
+      "durationInSeconds": 4.21,
+      "file": "generated/dark/07-speed-control.mp4",
+      "poster": "generated/dark/07-speed-control-poster.png"
+    },
+    {
+      "title": "Speed raised to maximum",
+      "summary": "The slider is dragged from the middle to the top and the chart picks up pace.",
+      "durationInSeconds": 2.912,
+      "file": "generated/dark/08-speed-raised-to-maximum.mp4",
+      "poster": "generated/dark/08-speed-raised-to-maximum-poster.png"
+    },
+    {
+      "title": "Hands-free autoscroll",
+      "summary": "The longest shot in the cut. Nothing is touched: the chart keeps travelling by itself, hands free. This is what the video exists to show.",
+      "durationInSeconds": 12.201,
+      "file": "generated/dark/09-hands-free-autoscroll.mp4",
+      "poster": "generated/dark/09-hands-free-autoscroll-poster.png"
+    }
+  ]
+}
