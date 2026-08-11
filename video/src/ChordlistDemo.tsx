@@ -19,6 +19,7 @@ import {
   FPS,
   HOOK_FRAMES,
   TRANSITION_FRAMES,
+  getSceneTransitionFrames,
   resolveScenes,
   type ResolvedClip,
   type ResolvedScene,
@@ -192,19 +193,28 @@ const Clip: React.FC<{
   palette: Palette;
   padding: number;
   showLabel: boolean;
-}> = ({clip, palette, padding, showLabel}) => {
+  slideIn: boolean;
+}> = ({clip, palette, padding, showLabel, slideIn}) => {
+  const frame = useCurrentFrame();
   const {height} = useVideoConfig();
   const availableHeight = height - 430;
   const videoHeight = Math.min(1390, availableHeight - padding * 2);
   const videoWidth = videoHeight * (1242 / 2688);
+  const entrance = slideIn
+    ? spring({
+        frame,
+        fps: FPS,
+        durationInFrames: 28,
+        config: {damping: 20, stiffness: 110, mass: 0.9},
+      })
+    : 1;
 
   return (
     <AbsoluteFill
       style={{
         display: 'flex',
-        alignItems: 'flex-end',
+        alignItems: 'center',
         justifyContent: 'center',
-        paddingBottom: 65,
       }}
     >
       <div
@@ -218,6 +228,8 @@ const Clip: React.FC<{
           backgroundColor: palette.panel,
           border: `2px solid ${palette.border}`,
           boxShadow: `0 28px 70px ${palette.shadow}`,
+          opacity: interpolate(entrance, [0, 1], [0.35, 1]),
+          transform: `translateX(${interpolate(entrance, [0, 1], [520, 0])}px)`,
         }}
       >
         <div
@@ -296,19 +308,30 @@ const ProductScene: React.FC<{
   showShotLabels,
 }) => {
   const frame = useCurrentFrame();
+  const headingDelay = index === 1 ? 8 : 0;
   const enter = spring({
-    frame,
+    frame: Math.max(0, frame - headingDelay),
     fps: FPS,
     durationInFrames: 20,
     config: {damping: 20, stiffness: 150},
   });
+  const headingExit =
+    index === 0
+      ? interpolate(
+          frame,
+          [scene.durationInFrames - 18, scene.durationInFrames - 10],
+          [1, 0],
+          {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'},
+        )
+      : 1;
+  const headingOpacity = enter * headingExit;
 
   return (
     <AbsoluteFill>
       <Background palette={palette} />
       {scene.clips.length > 0 ? (
         <Series>
-          {scene.clips.map((clip) => (
+          {scene.clips.map((clip, clipIndex) => (
             <Series.Sequence
               key={clip.file}
               name={clip.title}
@@ -319,6 +342,7 @@ const ProductScene: React.FC<{
                 palette={palette}
                 padding={mediaPadding}
                 showLabel={showShotLabels}
+                slideIn={index === 0 && clipIndex === 0}
               />
             </Series.Sequence>
           ))}
@@ -333,7 +357,7 @@ const ProductScene: React.FC<{
           left: 72,
           right: 72,
           fontFamily: baseFont,
-          opacity: enter,
+          opacity: headingOpacity,
           transform: `translateY(${interpolate(enter, [0, 1], [28, 0])}px)`,
         }}
       >
@@ -371,6 +395,7 @@ const ProductScene: React.FC<{
           right: 72,
           display: 'flex',
           gap: 10,
+          opacity: headingOpacity,
         }}
       >
         {Array.from({length: total}).map((_, dotIndex) => (
@@ -453,10 +478,10 @@ const EndCard: React.FC<{
   );
 };
 
-const transition = (key: string): ReactNode => (
+const transition = (key: string, durationInFrames = TRANSITION_FRAMES): ReactNode => (
   <TransitionSeries.Transition
     key={key}
-    timing={linearTiming({durationInFrames: TRANSITION_FRAMES})}
+    timing={linearTiming({durationInFrames})}
     presentation={fade()}
   />
 );
@@ -475,7 +500,9 @@ export const ChordlistDemo: React.FC<VideoProps> = (props) => {
   ];
 
   scenes.forEach((scene, index) => {
-    timeline.push(transition(`transition-scene-${index}`));
+    timeline.push(
+      transition(`transition-scene-${index}`, getSceneTransitionFrames(index)),
+    );
     timeline.push(
       <TransitionSeries.Sequence
         key={`scene-${scene.eyebrow}`}

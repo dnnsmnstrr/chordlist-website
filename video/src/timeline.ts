@@ -5,6 +5,10 @@ export const FPS = 30;
 export const HOOK_FRAMES = 72;
 export const END_FRAMES = 90;
 export const TRANSITION_FRAMES = 8;
+export const FIRST_SCENE_BLEND_FRAMES = 18;
+
+export const getSceneTransitionFrames = (sceneIndex: number): number =>
+  sceneIndex === 1 ? FIRST_SCENE_BLEND_FRAMES : TRANSITION_FRAMES;
 
 export type ClipAsset = {
   title: string;
@@ -33,7 +37,8 @@ export const resolveScenes = (props: VideoProps): ResolvedScene[] => {
 
   const automatedScenes = props.scenes
     .filter((scene) => scene.enabled)
-    .map((scene) => {
+    .map((scene, sceneIndex) => {
+      const firstAvailableTitle = scene.clipTitles.find((title) => clipsByTitle.has(title));
       const clips = scene.clipTitles.flatMap((title) => {
         const clip = clipsByTitle.get(title);
         if (!clip) {
@@ -41,10 +46,13 @@ export const resolveScenes = (props: VideoProps): ResolvedScene[] => {
         }
 
         const sourceDurationInFrames = Math.max(1, Math.round(clip.durationInSeconds * FPS));
-        const settleFrames = Math.min(
-          Math.round(0.5 * FPS),
-          Math.max(0, sourceDurationInFrames - Math.round(0.5 * FPS)),
-        );
+        const isOpeningClip = sceneIndex === 0 && title === firstAvailableTitle;
+        const settleFrames = isOpeningClip
+          ? 0
+          : Math.min(
+              Math.round(0.5 * FPS),
+              Math.max(0, sourceDurationInFrames - Math.round(0.5 * FPS)),
+            );
         const settledDurationInFrames = sourceDurationInFrames - settleFrames;
         const durationInFrames = Math.max(
             1,
@@ -61,10 +69,10 @@ export const resolveScenes = (props: VideoProps): ResolvedScene[] => {
       return {
         ...scene,
         clips,
-        durationInFrames: Math.max(
-          FPS * 2,
-          clips.reduce((total, clip) => total + clip.durationInFrames, 0),
-        ),
+        durationInFrames:
+          clips.length > 0
+            ? clips.reduce((total, clip) => total + clip.durationInFrames, 0)
+            : FPS * 2,
       };
     });
 
@@ -99,11 +107,14 @@ export const resolveScenes = (props: VideoProps): ResolvedScene[] => {
 
 export const getDurationInFrames = (props: VideoProps): number => {
   const scenes = resolveScenes(props);
-  const sequenceCount = scenes.length + 2;
   const contentFrames = scenes.reduce(
     (total, scene) => total + scene.durationInFrames,
     HOOK_FRAMES + END_FRAMES,
   );
+  const sceneTransitionFrames = scenes.reduce(
+    (total, _, sceneIndex) => total + getSceneTransitionFrames(sceneIndex),
+    0,
+  );
 
-  return contentFrames - Math.max(0, sequenceCount - 1) * TRANSITION_FRAMES;
+  return contentFrames - sceneTransitionFrames - TRANSITION_FRAMES;
 };

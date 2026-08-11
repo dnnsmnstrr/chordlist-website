@@ -11,6 +11,7 @@ The template provides:
 - the website's near-black ambient-gradient canvas, Geist typography, monochrome controls, and
   chordlist glyph;
 - animated hook, scene headings, subtle dissolves, progress marks, and an end card;
+- centered recordings, a side-slide entrance for the first shot, and a longer blend into search;
 - one shared `mediaPadding` setting around every app clip, defaulting to 28 pixels;
 - optional voiceover, music, shot labels, and a separately recorded Files/Markdown reveal;
 - scene switches and copy that can be edited from Remotion Studio's Props panel.
