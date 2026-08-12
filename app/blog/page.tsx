@@ -31,8 +31,10 @@ export default async function BlogPage() {
 
       {/* A listing, not an article — the post pages use <article>. */}
       <div id="main-content" tabIndex={-1} className="mx-auto w-full max-w-5xl px-6 py-16">
-        <header className="flex max-w-3xl items-start justify-between gap-6 border-b border-border pb-8">
-          <div>
+        {/* Full width so the feed link lands on the same right edge as the search
+            field below it. The text keeps its own narrower measure. */}
+        <header className="flex items-start justify-between gap-6 border-b border-border pb-8">
+          <div className="max-w-3xl">
             <p className="font-mono text-sm text-muted-foreground">{siteConfig.name}</p>
             <h1 className="mt-3 text-balance text-4xl font-semibold tracking-tight sm:text-5xl">{blogCopy.title}</h1>
             <p className="mt-4 max-w-xl text-pretty leading-relaxed text-muted-foreground">{blogCopy.introduction}</p>
