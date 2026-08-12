@@ -1,5 +1,5 @@
 import manifestJson from './generated/asset-manifest.json';
-import {getCopy, type SceneId} from './copy';
+import {resolveCopy, type SceneId} from './copy';
 import type {VideoProps} from './video-schema';
 
 export const FPS = 30;
@@ -108,7 +108,7 @@ const shortClipTitles: Record<Exclude<SceneId, 'files'>, string[]> = {
 };
 
 export const resolveScenes = (props: VideoProps): ResolvedScene[] => {
-  const copy = getCopy(props.copyVariant);
+  const copy = resolveCopy(props.copyVariant, props.copyMode, props.customCopy);
   const clipsByTitle = new Map(
     manifest[props.appearance].map((clip) => [clip.title, clip]),
   );

@@ -79,14 +79,18 @@ The Props panel exposes:
 - `appearance` — switches every scene between the light and dark take while the surrounding
   website-branded canvas stays dark;
 - `copyVariant` — switches the complete campaign copy between `open-tabs`, `play-more`, and
-  `ownership` with one dropdown;
+  `ownership` with one dropdown while `copyMode` is `preset`;
+- `copyMode` — use `preset` for a named copy pack or `custom` to render the editable text under
+  `customCopy`;
+- `customCopy` — edits the opening hook, every scene eyebrow/headline/explanation, and both lines
+  on the end card. Switch `copyMode` to `custom` to put these values on screen;
 - `accentColor` — controls headings, progress marks, and the end-card button; the website-matched
   default is off-white;
 - `paperSeed` — chooses a different paper pattern while keeping that pattern frozen for the entire
   video, avoiding frame-to-frame texture jumps;
 - `mediaPadding` — one consistent inset around every video;
 - `showShotLabels` — useful while choosing clips, normally off for the public render;
-- `scenes` — switches scenes on or off and edits headings, clip order, and maximum clip length;
+- `scenes` — switches scenes on or off and edits clip order and maximum clip length;
 - `startOffsetSeconds` inside each scene — skips the opening portion of its source clips;
 - `musicFile` and `voiceoverFile` — optional filenames from `public/audio/`;
 - `manualClipFile` — the optional Files/Markdown MP4 from `public/manual/`.

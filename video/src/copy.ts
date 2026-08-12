@@ -2,13 +2,13 @@ export type CopyVariant = 'open-tabs' | 'play-more' | 'ownership';
 
 export type SceneId = 'collect' | 'find' | 'pace' | 'adapt' | 'hands-free' | 'files';
 
-type SceneCopy = {
+export type SceneCopy = {
   eyebrow: string;
   headline: string;
   explanation: string;
 };
 
-type CopyPack = {
+export type CopyPack = {
   openingHook: string;
   endLine: string;
   releaseLine: string;
@@ -130,3 +130,9 @@ export const copyVariants: Record<CopyVariant, CopyPack> = {
 };
 
 export const getCopy = (variant: CopyVariant): CopyPack => copyVariants[variant];
+
+export const resolveCopy = (
+  variant: CopyVariant,
+  mode: 'preset' | 'custom',
+  customCopy: CopyPack,
+): CopyPack => (mode === 'custom' ? customCopy : getCopy(variant));

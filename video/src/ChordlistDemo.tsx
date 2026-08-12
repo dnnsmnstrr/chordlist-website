@@ -24,7 +24,7 @@ import {
   type ResolvedClip,
   type ResolvedScene,
 } from './timeline';
-import {getCopy} from './copy';
+import {resolveCopy} from './copy';
 import type {VideoProps} from './video-schema';
 
 type Palette = {
@@ -528,7 +528,7 @@ const transition = (key: string, durationInFrames: number): ReactNode => (
 
 export const ChordlistDemo: React.FC<VideoProps> = (props) => {
   const scenes = resolveScenes(props);
-  const copy = getCopy(props.copyVariant);
+  const copy = resolveCopy(props.copyVariant, props.copyMode, props.customCopy);
   const palette = paletteFor();
   const timing = getTimingProfile(props.cut);
   const timeline: ReactNode[] = [
