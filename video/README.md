@@ -35,7 +35,8 @@ pnpm video:studio
 
 Select **ChordlistPromoShort**, **ChordlistDemo**, or **ChordlistPromoDocumentary**. Open the right sidebar with the button in the top-right corner or
 Command-J, then choose **Props**. Changes update the preview immediately. The render button uses
-the current values, and the save button can write edited default props back to `src/Root.tsx`.
+the current values, and the save button can write edited default props back to
+`src/ChordlistRoot.tsx`.
 
 The existing masters contain the previous nine-shot flow. The editor skips unavailable chapter
 titles, so they still produce a usable preview. After the next automated capture, the import,
@@ -122,7 +123,7 @@ JSON files only override `appearance`, so the rest of the defaults stay shared.
 
 ## Files and responsibilities
 
-- `src/Root.tsx` — editable defaults and canonical five-scene grouping
+- `src/ChordlistRoot.tsx` — editable defaults and canonical five-scene grouping
 - `src/timeline.ts` — shared short, standard, and documentary timing profiles
 - `src/copy.ts` — complete named copy packs selected by the single `copyVariant` prop
 - `src/ChordlistDemo.tsx` — layout and animation system

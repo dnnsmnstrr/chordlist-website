@@ -7,7 +7,7 @@ const calculateMetadata = ({props}: {props: VideoProps}) => ({
   durationInFrames: getDurationInFrames(props),
 });
 
-export const RemotionRoot: React.FC = () => {
+export const ChordlistRoot: React.FC = () => {
   return (
     <>
       <Composition
@@ -19,74 +19,7 @@ export const RemotionRoot: React.FC = () => {
         height={1920}
         schema={videoSchema}
         calculateMetadata={calculateMetadata}
-        defaultProps={{
-          cut: 'short',
-          appearance: 'light',
-          copyVariant: 'play-more',
-          accentColor: '#FAFAF8',
-          paperSeed: 184,
-          mediaPadding: 28,
-          showShotLabels: false,
-          musicFile: '',
-          musicVolume: 0.18,
-          voiceoverFile: '',
-          voiceoverVolume: 1,
-          manualClipFile: '',
-          manualClipSeconds: 3,
-          scenes: [
-            {
-              id: 'collect',
-              enabled: true,
-              clipTitles: [
-                'Song library',
-                'Link import',
-                'Imported song draft',
-                'Chord keyboard',
-                'Song opens',
-              ],
-              startOffsetSeconds: 0.5,
-              maxSecondsPerClip: 2.8,
-            },
-            {
-              id: 'find',
-              enabled: true,
-              clipTitles: [
-                'Shuffle',
-                'Search',
-                'Matching songs',
-                'Matching song selected',
-                'Next song',
-              ],
-              startOffsetSeconds: 0.5,
-              maxSecondsPerClip: 3.5,
-            },
-            {
-              id: 'pace',
-              enabled: true,
-              clipTitles: [
-                'Autoscroll starts',
-                'Speed control',
-                'Speed raised to maximum',
-              ],
-              startOffsetSeconds: 0.5,
-              maxSecondsPerClip: 3.2,
-            },
-            {
-              id: 'adapt',
-              enabled: true,
-              clipTitles: ['Transpose control', 'Transposed up a semitone'],
-              startOffsetSeconds: 1.1,
-              maxSecondsPerClip: 3.2,
-            },
-            {
-              id: 'hands-free',
-              enabled: true,
-              clipTitles: ['Hands-free autoscroll'],
-              startOffsetSeconds: 0,
-              maxSecondsPerClip: 8,
-            },
-          ],
-        }}
+        defaultProps={{"cut":"short" as const,"appearance":"light" as const,"copyVariant":"play-more" as const,"accentColor":"#FAFAF8","paperSeed":193,"mediaPadding":28,"showShotLabels":false,"musicFile":"","musicVolume":0.18,"voiceoverFile":"","voiceoverVolume":1,"manualClipFile":"","manualClipSeconds":3,"scenes":[{"id":"collect" as const,"enabled":true,"clipTitles":["Song library","Link import","Imported song draft","Chord keyboard","Song opens"],"startOffsetSeconds":0.5,"maxSecondsPerClip":2.8},{"id":"find" as const,"enabled":true,"clipTitles":["Shuffle","Search","Matching songs","Matching song selected","Next song"],"startOffsetSeconds":0.5,"maxSecondsPerClip":3.5},{"id":"pace" as const,"enabled":true,"clipTitles":["Autoscroll starts","Speed control","Speed raised to maximum"],"startOffsetSeconds":0.5,"maxSecondsPerClip":3.2},{"id":"adapt" as const,"enabled":true,"clipTitles":["Transpose control","Transposed up a semitone"],"startOffsetSeconds":1.1,"maxSecondsPerClip":3.2},{"id":"hands-free" as const,"enabled":true,"clipTitles":["Hands-free autoscroll"],"startOffsetSeconds":0,"maxSecondsPerClip":8}]}}
       />
       <Composition
         id="ChordlistDemo"
@@ -102,7 +35,7 @@ export const RemotionRoot: React.FC = () => {
           appearance: 'light',
           copyVariant: 'play-more',
           accentColor: '#FAFAF8',
-          paperSeed: 184,
+          paperSeed: 185,
           mediaPadding: 28,
           showShotLabels: false,
           musicFile: '',
@@ -180,7 +113,7 @@ export const RemotionRoot: React.FC = () => {
           appearance: 'light',
           copyVariant: 'play-more',
           accentColor: '#FAFAF8',
-          paperSeed: 184,
+          paperSeed: 185,
           mediaPadding: 28,
           showShotLabels: false,
           musicFile: '',
