@@ -128,5 +128,14 @@
       "file": "generated/dark/09-hands-free-autoscroll.mp4",
       "poster": "generated/dark/09-hands-free-autoscroll-poster.png"
     }
-  ]
+  ],
+  "featured": {
+    "colorScroll": {
+      "title": "Theme colour autoscroll",
+      "summary": "One continuous hands-free scroll moves through every light accent colour without jumping.",
+      "durationInSeconds": 8,
+      "file": "generated/featured/smooth-color-scroll-light-only.mp4",
+      "poster": null
+    }
+  }
 }

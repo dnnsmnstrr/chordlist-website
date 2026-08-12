@@ -1,5 +1,5 @@
 ---
-title: Why a songbook should be plain text
+title: Why your songbook should be plain text
 description: A folder of readable Markdown files keeps your songbook portable and under your control when apps, subscriptions, and export tools change.
 created: 2026-08-01
 published: 2026-08-01

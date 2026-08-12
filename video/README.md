@@ -6,6 +6,8 @@ preview, timeline, editable Props panel, and render dialog; no Keynote recording
 
 The template provides:
 
+- short (~15 seconds), standard (~30 seconds), and documentary (~45 seconds) compositions from
+  one shared timeline system;
 - the five canonical storyboard scenes, grouped by chapter title rather than fixed timestamps;
 - automatic light/dark clip selection;
 - the website's near-black ambient-gradient canvas, Geist typography, monochrome controls, and
@@ -14,7 +16,8 @@ The template provides:
 - centered recordings, a side-slide entrance for the first shot, and a longer blend into search;
 - one shared `mediaPadding` setting around every app clip, defaulting to 28 pixels;
 - optional voiceover, music, shot labels, and a separately recorded Files/Markdown reveal;
-- scene switches and copy that can be edited from Remotion Studio's Props panel.
+- scene switches and copy that can be edited from Remotion Studio's Props panel;
+- the frame-aligned light theme-colour scroll imported directly from the app press kit.
 
 ## Open the editor
 
@@ -30,7 +33,7 @@ Then open it whenever you want to edit:
 pnpm video:studio
 ```
 
-Select **ChordlistDemo**. Open the right sidebar with the button in the top-right corner or
+Select **ChordlistPromoShort**, **ChordlistDemo**, or **ChordlistPromoDocumentary**. Open the right sidebar with the button in the top-right corner or
 Command-J, then choose **Props**. Changes update the preview immediately. The render button uses
 the current values, and the save button can write edited default props back to `src/Root.tsx`.
 
@@ -57,7 +60,8 @@ pnpm sync:video
 clips from the sibling `chordlist-app` checkout into Remotion's local media folder and rebuilds its
 manifest from each take's WebVTT file. Set `CHORDLIST_APP_REPO` to an absolute path when the app
 repository is not the default sibling. Titles, descriptions, and take-specific durations therefore
-continue to come from the capture pipeline.
+continue to come from the capture pipeline. The sync also copies the finished light colour-scroll
+master to `public/video/` for the website and into Remotion's generated feature assets.
 
 For a complete website-side refresh, including screenshots, the press archive, and video clips:
 
@@ -69,6 +73,8 @@ pnpm sync:all
 
 The Props panel exposes:
 
+- `cut` — switches between the short, standard, and documentary timing profiles; the named
+  compositions set the matching value by default;
 - `appearance` — switches every scene between the light and dark take while the surrounding
   website-branded canvas stays dark;
 - `copyVariant` — switches the complete campaign copy between `open-tabs`, `play-more`, and
@@ -98,12 +104,24 @@ pnpm video:render:light
 pnpm video:render:dark
 ```
 
+For the three light campaign lengths:
+
+```bash
+pnpm video:render:short
+pnpm video:render:standard
+pnpm video:render:documentary
+
+# Render all three
+pnpm video:render:campaign
+```
+
 The MP4 files are written to `video/out/`. `pnpm video:render:both` produces both appearances. The preset
 JSON files only override `appearance`, so the rest of the defaults stay shared.
 
 ## Files and responsibilities
 
 - `src/Root.tsx` — editable defaults and canonical five-scene grouping
+- `src/timeline.ts` — shared short, standard, and documentary timing profiles
 - `src/copy.ts` — complete named copy packs selected by the single `copyVariant` prop
 - `src/ChordlistDemo.tsx` — layout and animation system
 - `src/video-schema.ts` — controls shown in the Props panel

@@ -15,11 +15,9 @@ import {
   useVideoConfig,
 } from 'remotion';
 import {
-  END_FRAMES,
   FPS,
-  HOOK_FRAMES,
-  TRANSITION_FRAMES,
   getSceneTransitionFrames,
+  getTimingProfile,
   resolveScenes,
   type ResolvedClip,
   type ResolvedScene,
@@ -195,7 +193,8 @@ const Clip: React.FC<{
   padding: number;
   showLabel: boolean;
   slideIn: boolean;
-}> = ({clip, palette, padding, showLabel, slideIn}) => {
+  verticalOffset: number;
+}> = ({clip, palette, padding, showLabel, slideIn, verticalOffset}) => {
   const frame = useCurrentFrame();
   const {height} = useVideoConfig();
   const availableHeight = height - 430;
@@ -230,7 +229,7 @@ const Clip: React.FC<{
           border: `2px solid ${palette.border}`,
           boxShadow: `0 28px 70px ${palette.shadow}`,
           opacity: interpolate(entrance, [0, 1], [0.35, 1]),
-          transform: `translateX(${interpolate(entrance, [0, 1], [520, 0])}px)`,
+          transform: `translate(${interpolate(entrance, [0, 1], [520, 0])}px, ${verticalOffset}px)`,
         }}
       >
         <div
@@ -299,6 +298,7 @@ const ProductScene: React.FC<{
   accentColor: string;
   mediaPadding: number;
   showShotLabels: boolean;
+  showExplanation: boolean;
 }> = ({
   scene,
   index,
@@ -307,6 +307,7 @@ const ProductScene: React.FC<{
   accentColor,
   mediaPadding,
   showShotLabels,
+  showExplanation,
 }) => {
   const frame = useCurrentFrame();
   const headingDelay = index === 1 ? 8 : 0;
@@ -344,6 +345,7 @@ const ProductScene: React.FC<{
                 padding={mediaPadding}
                 showLabel={showShotLabels}
                 slideIn={index === 0 && clipIndex === 0}
+                verticalOffset={showExplanation ? 90 : 0}
               />
             </Series.Sequence>
           ))}
@@ -388,6 +390,21 @@ const ProductScene: React.FC<{
         >
           {scene.headline}
         </div>
+        {showExplanation ? (
+          <div
+            style={{
+              color: palette.secondaryText,
+              fontSize: 29,
+              lineHeight: 1.28,
+              fontWeight: 400,
+              letterSpacing: -0.4,
+              marginTop: 18,
+              maxWidth: 790,
+            }}
+          >
+            {scene.explanation}
+          </div>
+        ) : null}
       </div>
       <div
         style={{
@@ -479,7 +496,7 @@ const EndCard: React.FC<{
   );
 };
 
-const transition = (key: string, durationInFrames = TRANSITION_FRAMES): ReactNode => (
+const transition = (key: string, durationInFrames: number): ReactNode => (
   <TransitionSeries.Transition
     key={key}
     timing={linearTiming({durationInFrames})}
@@ -491,8 +508,13 @@ export const ChordlistDemo: React.FC<VideoProps> = (props) => {
   const scenes = resolveScenes(props);
   const copy = getCopy(props.copyVariant);
   const palette = paletteFor();
+  const timing = getTimingProfile(props.cut);
   const timeline: ReactNode[] = [
-    <TransitionSeries.Sequence key="hook" name="Opening hook" durationInFrames={HOOK_FRAMES}>
+    <TransitionSeries.Sequence
+      key="hook"
+      name="Opening hook"
+      durationInFrames={timing.hookFrames}
+    >
       <HookCard
         text={copy.openingHook}
         palette={palette}
@@ -503,7 +525,10 @@ export const ChordlistDemo: React.FC<VideoProps> = (props) => {
 
   scenes.forEach((scene, index) => {
     timeline.push(
-      transition(`transition-scene-${index}`, getSceneTransitionFrames(index)),
+      transition(
+        `transition-scene-${index}`,
+        getSceneTransitionFrames(props.cut, index),
+      ),
     );
     timeline.push(
       <TransitionSeries.Sequence
@@ -519,14 +544,19 @@ export const ChordlistDemo: React.FC<VideoProps> = (props) => {
           accentColor={props.accentColor}
           mediaPadding={props.mediaPadding}
           showShotLabels={props.showShotLabels}
+          showExplanation={props.cut === 'documentary'}
         />
       </TransitionSeries.Sequence>,
     );
   });
 
-  timeline.push(transition('transition-end'));
+  timeline.push(transition('transition-end', timing.transitionFrames));
   timeline.push(
-    <TransitionSeries.Sequence key="end" name="End card" durationInFrames={END_FRAMES}>
+    <TransitionSeries.Sequence
+      key="end"
+      name="End card"
+      durationInFrames={timing.endFrames}
+    >
       <EndCard
         endLine={copy.endLine}
         releaseLine={copy.releaseLine}

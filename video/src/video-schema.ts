@@ -18,6 +18,7 @@ export const sceneSchema = z.object({
 });
 
 export const videoSchema = z.object({
+  cut: z.enum(['short', 'standard', 'documentary']),
   appearance: z.enum(['light', 'dark']),
   copyVariant: copyVariantSchema,
   accentColor: z.string().min(1),

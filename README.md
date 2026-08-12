@@ -36,6 +36,7 @@ elsewhere, set `CHORDLIST_APP_REPO` to its absolute path.
 | `pnpm build:social` | Render social images and their manifest from `content/social/`. |
 | `pnpm build:app-store` | Sync app captures, then generate the iPhone and iPad App Store upload sets. |
 | `pnpm video:studio` | Sync current demo clips and open the interactive Remotion editor. |
+| `pnpm video:render:campaign` | Render the short, standard, and documentary light promo cuts. |
 | `pnpm video:render:both` | Render the light and dark vertical demo masters. |
 
 There is currently no separate test suite; `pnpm check` is the project gate.
@@ -115,6 +116,10 @@ Then work from this repository:
 pnpm video:studio
 pnpm video:render:both
 ```
+
+The Studio exposes three linked compositions: a roughly 15-second short cut, the standard
+roughly 30-second promo, and a roughly 45-second documentary cut with explanatory scene copy.
+Run `pnpm video:render:campaign` to render all three light versions.
 
 Both commands run `sync:video` before opening or rendering. With the standard sibling checkout,
 the app repository is found automatically; otherwise set `CHORDLIST_APP_REPO` to its absolute path.

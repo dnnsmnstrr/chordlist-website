@@ -11,6 +11,12 @@ const generatedDirectory = path.join(appVideoDirectory, 'editor', 'generated');
 const publicDirectory = path.join(websiteRoot, 'video', 'public', 'generated');
 const manifestPath = path.join(websiteRoot, 'video', 'src', 'generated', 'asset-manifest.json');
 const appearances = ['light', 'dark'];
+const colorScrollFilename = 'smooth-color-scroll-light-only.mp4';
+const colorScrollSource = path.join(
+  appVideoDirectory,
+  'theme-colors',
+  colorScrollFilename,
+);
 
 const exists = async (filePath) => {
   try {
@@ -56,7 +62,20 @@ const parseVtt = (contents) =>
       };
     });
 
-const manifest = {light: [], dark: []};
+const manifest = {
+  light: [],
+  dark: [],
+  featured: {
+    colorScroll: {
+      title: 'Theme colour autoscroll',
+      summary:
+        'One continuous hands-free scroll moves through every light accent colour without jumping.',
+      durationInSeconds: 8,
+      file: `generated/featured/${colorScrollFilename}`,
+      poster: null,
+    },
+  },
+};
 
 for (const appearance of appearances) {
   const sourceDirectory = path.join(generatedDirectory, appearance);
@@ -109,8 +128,22 @@ for (const appearance of appearances) {
   }
 }
 
+if (!(await exists(colorScrollSource))) {
+  throw new Error(
+    `Missing ${colorScrollSource}. Run regenerate-color-scroll-videos.sh in the app repository first.`,
+  );
+}
+
+const featuredDirectory = path.join(publicDirectory, 'featured');
+await mkdir(featuredDirectory, {recursive: true});
+await cp(colorScrollSource, path.join(featuredDirectory, colorScrollFilename));
+
+const websiteVideoDirectory = path.join(websiteRoot, 'public', 'video');
+await mkdir(websiteVideoDirectory, {recursive: true});
+await cp(colorScrollSource, path.join(websiteVideoDirectory, colorScrollFilename));
+
 await writeFile(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
 
 console.log(
-  `Synced ${manifest.light.length} light clips and ${manifest.dark.length} dark clips.`,
+  `Synced ${manifest.light.length} light clips, ${manifest.dark.length} dark clips, and the featured colour scroll.`,
 );
