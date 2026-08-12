@@ -205,6 +205,36 @@
   background-color: transparent;
 }
 
+/*
+ * The four values components/ambient-background.tsx writes every frame. Registering
+ * them as lengths lets the engine parse each one once instead of re-parsing the whole
+ * transform string on every write. They inherit because the pseudo-elements below read
+ * values set on the originating element.
+ */
+@property --ambient-shift-x {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --ambient-shift-y {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --ambient-counter-x {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --ambient-counter-y {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
 .ambient-background {
   --ambient-texture-one: none;
   --ambient-texture-two: none;
@@ -221,9 +251,8 @@
   --ambient-gradient-two-x: 72%;
   --ambient-gradient-two-y: 76%;
   --ambient-gradient-angle: 165deg;
-  --ambient-pointer-x: 0px;
-  --ambient-pointer-y: 0px;
-  --ambient-scroll-y: 0px;
+  --ambient-shift-x: 0px;
+  --ambient-shift-y: 0px;
   --ambient-counter-x: 0px;
   --ambient-counter-y: 0px;
   --ambient-image-opacity: 0.045;
@@ -267,18 +296,17 @@
   mix-blend-mode: multiply;
   opacity: var(--ambient-image-opacity);
   will-change: transform;
-  transition: transform 450ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  /*
+   * No transform transition on purpose: the component smooths the movement frame by
+   * frame, and a transition re-targeted every frame reads as jitter rather than easing.
+   */
 }
 
 .ambient-background::before {
   background-image: var(--ambient-texture-one);
   background-position: var(--ambient-texture-one-x) var(--ambient-texture-one-y);
   mask-image: radial-gradient(ellipse 66% 72% at 46% 40%, black 0%, rgb(0 0 0 / 86%) 48%, transparent 86%);
-  transform: translate3d(
-      var(--ambient-pointer-x),
-      calc(var(--ambient-pointer-y) + var(--ambient-scroll-y)),
-      0
-    )
+  transform: translate3d(var(--ambient-shift-x), var(--ambient-shift-y), 0)
     scale(var(--ambient-texture-one-scale)) rotate(var(--ambient-texture-one-rotation));
 }
 
@@ -317,9 +345,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ambient-background,
-  .ambient-background::before,
-  .ambient-background::after {
+  /* The layers no longer transition; only the reveal fade is left to switch off. */
+  .ambient-background {
     transition: none;
   }
 }
