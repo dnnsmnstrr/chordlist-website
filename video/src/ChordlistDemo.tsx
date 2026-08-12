@@ -140,10 +140,11 @@ const BrandMark: React.FC<{
 
 const HookCard: React.FC<{
   text: string;
+  footer: string;
   palette: Palette;
   accentColor: string;
   paperSeed: number;
-}> = ({text, palette, accentColor, paperSeed}) => {
+}> = ({text, footer, palette, accentColor, paperSeed}) => {
   const frame = useCurrentFrame();
   const enter = spring({
     frame,
@@ -205,7 +206,7 @@ const HookCard: React.FC<{
             textTransform: 'uppercase',
           }}
         >
-          From scattered notes to play-ready
+          {normalizeLineBreaks(footer)}
         </div>
       </div>
     </AbsoluteFill>
@@ -592,6 +593,7 @@ export const ChordlistDemo: React.FC<VideoProps> = (props) => {
     >
       <HookCard
         text={copy.openingHook}
+        footer={copy.openingFooter}
         palette={palette}
         accentColor={props.accentColor}
         paperSeed={props.paperSeed}

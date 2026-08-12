@@ -9,6 +9,7 @@ const sceneCopySchema = z.object({
 
 export const copyPackSchema = z.object({
   openingHook: z.string(),
+  openingFooter: z.string(),
   endLine: z.string(),
   releaseLine: z.string(),
   scenes: z.object({

@@ -102,9 +102,10 @@ The Props panel exposes:
 - `musicFile` and `voiceoverFile` — optional filenames from `public/audio/`;
 - `manualClipFile` — the optional Files/Markdown MP4 from `public/manual/`.
 
-The opening hook and end line support both pasted line breaks and `\n` sequences. This makes it
-possible to control their wrapping directly from the Props panel instead of relying on automatic
-line wrapping.
+The opening hook, intro footer, and end line are editable under `customCopy`. The opening hook and
+end line support both pasted line breaks and `\n` sequences, making it possible to control their
+wrapping directly from the Props panel instead of relying on automatic line wrapping. Each copy
+preset supplies its own intro footer when `copyMode` is set to `preset`.
 
 Audio and manual footage are ignored by Git so licensed or work-in-progress media is not committed
 accidentally. App captures remain silent; mix levels are controlled with `musicVolume` and

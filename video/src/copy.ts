@@ -10,6 +10,7 @@ export type SceneCopy = {
 
 export type CopyPack = {
   openingHook: string;
+  openingFooter: string;
   endLine: string;
   releaseLine: string;
   scenes: Record<SceneId, SceneCopy>;
@@ -18,6 +19,7 @@ export type CopyPack = {
 export const copyVariants: Record<CopyVariant, CopyPack> = {
   'open-tabs': {
     openingHook: 'Your songs deserve better than 37 open tabs.',
+    openingFooter: 'Close the tabs. Open your songbook.',
     endLine: 'Your lyrics. Your chords. Your files.',
     releaseLine: 'chordlist — coming August 30',
     scenes: {
@@ -55,6 +57,7 @@ export const copyVariants: Record<CopyVariant, CopyPack> = {
   },
   'play-more': {
     openingHook: 'Spend less time organizing. More time playing.',
+    openingFooter: 'Less organizing. More playing.',
     endLine: 'Less managing. More music.',
     releaseLine: 'chordlist — coming August 30',
     scenes: {
@@ -92,6 +95,7 @@ export const copyVariants: Record<CopyVariant, CopyPack> = {
   },
   ownership: {
     openingHook: 'Your songbook should belong to you.',
+    openingFooter: 'Portable by design. Yours by default.',
     endLine: 'Your music. Your files. Your way.',
     releaseLine: 'chordlist — coming August 30',
     scenes: {
