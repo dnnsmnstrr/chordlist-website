@@ -14,11 +14,11 @@ import { blogCopy } from "@/locales/en"
  */
 export const revalidate = 3600
 
+// The RSS `alternates.types` link is site-wide now, from pageMetadata.
 export const metadata: Metadata = pageMetadata({
   path: "/blog",
   title: blogCopy.metadata.title,
   description: blogCopy.metadata.description,
-  extra: { alternates: { types: { "application/rss+xml": "/blog/rss.xml" } } },
 })
 
 export default async function BlogPage() {

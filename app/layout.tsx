@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 
 import { AmbientBackground } from "@/components/ambient-background"
+import { siteAlternateLanguages, siteAlternateTypes } from "@/lib/page-metadata"
 import { siteConfig } from "@/lib/site-config"
 import { commonCopy, locale, metadataCopy } from "@/locales/en"
 
@@ -18,18 +19,31 @@ export const metadata: Metadata = {
     default: metadataCopy.defaultTitle,
     template: metadataCopy.titleTemplate,
   },
-  description: commonCopy.appDescription,
+  description: metadataCopy.defaultDescription,
+  keywords: [...metadataCopy.keywords],
   category: metadataCopy.category,
+  authors: [{ name: siteConfig.operator, url: siteConfig.url }],
   creator: siteConfig.operator,
   publisher: siteConfig.operator,
-  alternates: { canonical: "/" },
+  // Explicit rather than implied: crawlers default to indexing, but the "large"
+  // image preview and the uncapped snippet are what let a result carry the OG
+  // card and a full sentence instead of a two-line stub.
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1, "max-video-preview": -1 },
+  },
+  // No phone numbers on this site, so Safari's auto-linking only mangles things
+  // like chord positions and version numbers.
+  formatDetection: { telephone: false, address: false, email: false },
+  alternates: { canonical: "/", languages: siteAlternateLanguages("/"), types: siteAlternateTypes },
   openGraph: {
     type: "website",
     locale: locale.openGraph,
     url: siteConfig.url,
     siteName: siteConfig.name,
     title: metadataCopy.socialTitle,
-    description: commonCopy.appDescription,
+    description: metadataCopy.socialDescription,
     images: [{ url: "/og.png", width: 1200, height: 630, alt: metadataCopy.socialImageAlt }],
   },
   twitter: {
@@ -37,8 +51,8 @@ export const metadata: Metadata = {
     site: siteConfig.social.x.handle,
     creator: siteConfig.social.x.handle,
     title: metadataCopy.socialTitle,
-    description: commonCopy.appDescription,
-    images: ["/og.png"],
+    description: metadataCopy.twitterDescription,
+    images: [{ url: "/og.png", alt: metadataCopy.socialImageAlt }],
   },
   icons: {
     icon: [

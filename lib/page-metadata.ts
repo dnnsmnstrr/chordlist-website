@@ -3,6 +3,22 @@ import type { Metadata } from "next"
 import { siteConfig } from "@/lib/site-config"
 import { locale, metadataCopy } from "@/locales/en"
 
+/**
+ * The `hreflang` set for one route.
+ *
+ * The site is English-only, so this is a self-reference plus `x-default`. That is
+ * still worth emitting: it tells a crawler that this URL is the version to serve
+ * every locale, rather than leaving it to guess that a translation exists
+ * somewhere. When a second locale arrives, add its entry here and every page that
+ * goes through this module picks it up.
+ */
+export function siteAlternateLanguages(path: string) {
+  return { [locale.htmlLang]: path, "x-default": path }
+}
+
+/** The blog feed, advertised site-wide so a reader finds it from any page. */
+export const siteAlternateTypes = { "application/rss+xml": "/blog/rss.xml" }
+
 type PageMetadataOptions = {
   /** Route path, leading slash and no trailing slash: "/docs". */
   path: string
@@ -37,7 +53,12 @@ export function pageMetadata({ path, title, description, image, imageAlt, extra 
     title,
     description,
     ...extra,
-    alternates: { canonical: path, ...extra?.alternates },
+    alternates: {
+      canonical: path,
+      languages: siteAlternateLanguages(path),
+      types: siteAlternateTypes,
+      ...extra?.alternates,
+    },
     openGraph: {
       type: "website",
       url,
@@ -53,7 +74,7 @@ export function pageMetadata({ path, title, description, image, imageAlt, extra 
       creator: siteConfig.social.x.handle,
       title,
       description,
-      images: [card],
+      images: [{ url: card, alt }],
     },
   }
 }
