@@ -80,8 +80,9 @@ The Props panel exposes:
   compositions set the matching value by default;
 - `appearance` — switches every scene between the light and dark take while the surrounding
   website-branded canvas stays dark;
-- `copyVariant` — switches the complete campaign copy between `open-tabs`, `play-more`, and
-  `ownership` with one dropdown while `copyMode` is `preset`;
+- `copyVariant` — switches the complete campaign copy between `open-tabs`, `play-more`,
+  `ownership`, `customization`, `songwriting`, `shuffle`, and `chord-matching` with one dropdown
+  while `copyMode` is `preset`;
 - `copyMode` — use `preset` for a named copy pack or `custom` to render the editable text under
   `customCopy`;
 - `customCopy` — edits the opening hook, every scene eyebrow/headline/explanation, and both lines
@@ -134,8 +135,13 @@ pnpm video:render:documentary
 pnpm video:render:campaign
 ```
 
-The MP4 files are written to `video/out/`. `pnpm video:render:both` produces both appearances. The preset
-JSON files only override `appearance`, so the rest of the defaults stay shared.
+Studio renders are written to `public/video/<composition>.<codec>` by `remotion.config.ts`. The
+config specifies the `public/video` directory and Remotion appends the selected composition ID and
+codec. The repeatable commands use descriptive filenames in the same directory, such as
+`public/video/chordlist-promo-short-light.mp4`. Next.js serves these files at `/video/<filename>`,
+and deployed videos are embeddable once their generated files are committed. `pnpm
+video:render:both` produces both appearances. The preset JSON files only override `appearance`, so
+the rest of the defaults stay shared.
 
 ## Files and responsibilities
 
@@ -147,7 +153,8 @@ JSON files only override `appearance`, so the rest of the defaults stay shared.
 - `../scripts/sync-video-assets.mjs` — joins app-generated chapter clips to the template by title
 - `src/generated/asset-manifest.json` — generated clip metadata, refreshed by `sync:video`
 - `render-props/` — repeatable command-line render variants
-- `public/generated/` and `out/` — disposable, ignored output
+- `public/generated/` — disposable, ignored editor input generated from the app captures
+- `../public/video/` — rendered, website-hosted MP4 output
 
 Remotion is free for individuals and teams of up to three under its current license. Recheck the
 [official license and pricing](https://www.remotion.dev/license) if the team or use case changes.

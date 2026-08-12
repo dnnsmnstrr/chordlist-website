@@ -1,6 +1,14 @@
 import {z} from 'zod';
 
-export const copyVariantSchema = z.enum(['open-tabs', 'play-more', 'ownership']);
+export const copyVariantSchema = z.enum([
+  'open-tabs',
+  'play-more',
+  'ownership',
+  'customization',
+  'songwriting',
+  'shuffle',
+  'chord-matching',
+]);
 const sceneCopySchema = z.object({
   eyebrow: z.string(),
   headline: z.string(),

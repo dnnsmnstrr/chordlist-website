@@ -1,4 +1,11 @@
-export type CopyVariant = 'open-tabs' | 'play-more' | 'ownership';
+export type CopyVariant =
+  | 'open-tabs'
+  | 'play-more'
+  | 'ownership'
+  | 'customization'
+  | 'songwriting'
+  | 'shuffle'
+  | 'chord-matching';
 
 export type SceneId = 'collect' | 'find' | 'pace' | 'adapt' | 'hands-free' | 'files';
 
@@ -128,6 +135,182 @@ export const copyVariants: Record<CopyVariant, CopyPack> = {
         eyebrow: 'Open files',
         headline: 'Readable Markdown, always yours',
         explanation: 'No proprietary format stands between you and the songs you have collected.',
+      },
+    },
+  },
+  customization: {
+    openingHook: 'Your songbook should feel\nlike yours.',
+    openingFooter: 'Your colour. Your pace. Your way.',
+    endLine: 'Your colour.\nYour pace.\nYour songbook.',
+    releaseLine: 'chordlist — coming August 30',
+    scenes: {
+      collect: {
+        eyebrow: 'Your library',
+        headline: 'Shape your own songbook',
+        explanation:
+          'Import a link, write from scratch, or point chordlist at the folder you already use.',
+      },
+      find: {
+        eyebrow: 'Your system',
+        headline: 'Find it your way',
+        explanation:
+          'Search by title, artist, tag, or chord progression—whatever comes to mind first.',
+      },
+      pace: {
+        eyebrow: 'Your tempo',
+        headline: 'Dial in the scroll',
+        explanation:
+          'Fine-tune autoscroll in the song, then adjust the overall speed to suit how you play.',
+      },
+      adapt: {
+        eyebrow: 'Your key',
+        headline: 'Make every chart fit',
+        explanation:
+          'Transpose the progression in one tap without changing the song you saved.',
+      },
+      'hands-free': {
+        eyebrow: 'Your colour',
+        headline: 'Choose your accent',
+        explanation:
+          'Pick one of seven app accents, then carry that colour into a hands-free play-through.',
+      },
+      files: {
+        eyebrow: 'Your folder',
+        headline: 'Keep it where you want it',
+        explanation:
+          'Choose the folder and keep each song as readable Markdown you can move or edit elsewhere.',
+      },
+    },
+  },
+  songwriting: {
+    openingHook: 'Give the song in your head\nsomewhere to live.',
+    openingFooter: 'Write it down. Play it through.',
+    endLine: 'Write it.\nShape it.\nPlay it.',
+    releaseLine: 'chordlist — coming August 30',
+    scenes: {
+      collect: {
+        eyebrow: 'Start here',
+        headline: 'Catch the song while it is fresh',
+        explanation:
+          'Add lyrics and tags, then enter the changes quickly with a purpose-built chord keyboard.',
+      },
+      find: {
+        eyebrow: 'Come back',
+        headline: 'Find the idea again',
+        explanation:
+          'Search by title, artist, tag, or the chord progression you remember.',
+      },
+      pace: {
+        eyebrow: 'Play it through',
+        headline: 'Let the words keep pace',
+        explanation:
+          'Autoscroll moves through the chart while you try the song from top to bottom.',
+      },
+      adapt: {
+        eyebrow: 'Try another key',
+        headline: 'Explore without rewriting',
+        explanation:
+          'Transpose the progression in a tap while the song you saved stays unchanged.',
+      },
+      'hands-free': {
+        eyebrow: 'Hear it out',
+        headline: 'Play while the chart moves',
+        explanation:
+          'Hands-free scrolling lets you hear the idea as a song, not just read it on the page.',
+      },
+      files: {
+        eyebrow: 'Keep the work',
+        headline: 'The song stays readable',
+        explanation:
+          'Each song is a Markdown file you can revisit, revise, and keep outside chordlist.',
+      },
+    },
+  },
+  shuffle: {
+    openingHook: "Don't know what to play?\nTap Shuffle.",
+    openingFooter: 'Let your songbook choose.',
+    endLine: 'Less choosing.\nMore playing.',
+    releaseLine: 'chordlist — coming August 30',
+    scenes: {
+      collect: {
+        eyebrow: 'Stack the deck',
+        headline: 'Build a library worth shuffling',
+        explanation:
+          'Add songs from links, write your own, or bring in the files you already keep.',
+      },
+      find: {
+        eyebrow: 'Shuffle',
+        headline: 'One tap. Your next song.',
+        explanation:
+          'Filter the library if you like, then let Shuffle pick at random from the songs in view.',
+      },
+      pace: {
+        eyebrow: 'Press play',
+        headline: 'Get straight into the song',
+        explanation:
+          'Set autoscroll to a comfortable pace and follow wherever the choice takes you.',
+      },
+      adapt: {
+        eyebrow: 'Make it fit',
+        headline: 'Move the pick into your key',
+        explanation:
+          'Shift every chord in a tap without rewriting the source song.',
+      },
+      'hands-free': {
+        eyebrow: 'Stay with it',
+        headline: 'Keep your hands on the instrument',
+        explanation:
+          'The chart moves on its own while you see where the random choice takes you.',
+      },
+      files: {
+        eyebrow: 'Your repertoire',
+        headline: 'Always ready to reshuffle',
+        explanation:
+          'The whole songbook stays portable as readable Markdown files.',
+      },
+    },
+  },
+  'chord-matching': {
+    openingHook: 'Different key.\nSame progression.\nYour next song.',
+    openingFooter: 'See what your songs have in common.',
+    endLine: 'Match the chords.\nFind what comes next.',
+    releaseLine: 'chordlist — coming August 30',
+    scenes: {
+      collect: {
+        eyebrow: 'Map the song',
+        headline: 'Save the progression',
+        explanation:
+          'Keep lyrics, tags, and chord changes together in one readable song file.',
+      },
+      find: {
+        eyebrow: 'Chord match',
+        headline: 'Find songs with the same shape',
+        explanation:
+          'Chordlist recognizes the same progression across different keys and surfaces matches from your library.',
+      },
+      pace: {
+        eyebrow: 'Keep the thread',
+        headline: 'Move straight into the match',
+        explanation:
+          'Open a suggestion and let autoscroll carry the next chart at your pace.',
+      },
+      adapt: {
+        eyebrow: 'Across keys',
+        headline: 'Same changes. New key.',
+        explanation:
+          'Transpose a chart in a tap while its structure—and the source file—stay intact.',
+      },
+      'hands-free': {
+        eyebrow: 'Try the pairing',
+        headline: 'Play them back to back',
+        explanation:
+          'Hands-free scrolling makes it easy to hear how two matching songs connect.',
+      },
+      files: {
+        eyebrow: 'Open by design',
+        headline: 'The chords stay with the song',
+        explanation:
+          'Progressions live in readable Markdown, ready to keep, edit, or use outside the app.',
       },
     },
   },
