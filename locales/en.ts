@@ -71,9 +71,10 @@ export const metadataCopy = {
   socialTitle: `${siteConfig.name} — lyrics and chords`,
   socialDescription: "A local-first songbook for iPhone and iPad, in Markdown.",
   // X shows a longer summary than the Open Graph card does, so it gets its own.
+  // Longer means room for a second sentence, not room for a feature list.
   twitterDescription:
-    `${siteConfig.name} keeps every song as a plain Markdown file in a folder you choose. Search your ` +
-    "library, transpose while you play, and autoscroll lyrics offline on iPhone and iPad.",
+    `A songbook made of files you own. ${siteConfig.name} keeps every song as a plain Markdown file on ` +
+    "iPhone and iPad, so your lyrics and chords stay readable, portable, and available offline.",
   socialImageAlt: `${siteConfig.name}: ${commonCopy.tagline}`,
   // Search engines have ignored meta keywords for years; these are here for the
   // assistants and site auditors that still read them, and for nothing else. Keep
