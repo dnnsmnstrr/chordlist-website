@@ -18,38 +18,48 @@ function JsonLd({ data }: { data: object }) {
 }
 
 /**
+ * Who publishes this site, and the site itself.
+ *
+ * Both nodes are emitted in full on every page that references them, not just on
+ * the home page. A validator reading one post in isolation does not fetch the
+ * home page to resolve `{"@id": …}`, so a bare reference leaves an Article
+ * without the author and publisher it needs. Repeating the node is what makes
+ * each page's graph stand on its own; the stable `@id`s are what let a crawler
+ * that reads several pages collapse them back into one publisher.
+ */
+const organizationNode = {
+  "@type": "Organization",
+  "@id": organizationId,
+  name: siteConfig.operator,
+  url: siteConfig.url,
+  logo: `${siteConfig.url}/apple-icon.png`,
+  email: siteConfig.contact.support,
+  sameAs: [siteConfig.social.x.url, siteConfig.social.instagram.url],
+}
+
+const websiteNode = {
+  "@type": "WebSite",
+  "@id": websiteId,
+  name: siteConfig.name,
+  url: siteConfig.url,
+  description: metadataCopy.defaultDescription,
+  inLanguage: locale.htmlLang,
+  publisher: { "@id": organizationId },
+}
+
+/**
  * schema.org description of the product and who makes it, for search engines and
  * anything else that reads structured data.
  *
  * Every human-readable value comes from siteConfig or locales/en, so this cannot
  * drift from the page around it. The remaining strings are schema.org vocabulary,
  * not copy — the same reason `openGraph.type` lives in app/layout.tsx.
- *
- * The Organization and WebSite nodes carry `@id`s that the other blocks on this
- * site reference, so a crawler reading a blog post or the FAQ resolves the same
- * publisher rather than inventing a second one.
  */
 const structuredData = {
   "@context": "https://schema.org",
   "@graph": [
-    {
-      "@type": "Organization",
-      "@id": organizationId,
-      name: siteConfig.operator,
-      url: siteConfig.url,
-      logo: `${siteConfig.url}/apple-icon.png`,
-      email: siteConfig.contact.support,
-      sameAs: [siteConfig.social.x.url, siteConfig.social.instagram.url],
-    },
-    {
-      "@type": "WebSite",
-      "@id": websiteId,
-      name: siteConfig.name,
-      url: siteConfig.url,
-      description: metadataCopy.defaultDescription,
-      inLanguage: locale.htmlLang,
-      publisher: { "@id": organizationId },
-    },
+    organizationNode,
+    websiteNode,
     {
       "@type": "SoftwareApplication",
       "@id": `${siteConfig.url}#app`,
@@ -82,18 +92,24 @@ export function StructuredData() {
  */
 const faqStructuredData = {
   "@context": "https://schema.org",
-  "@type": "FAQPage",
-  "@id": `${siteConfig.url}/faq#faq`,
-  name: faqCopy.metadata.title,
-  description: faqCopy.metadata.description,
-  inLanguage: locale.htmlLang,
-  isPartOf: { "@id": websiteId },
-  publisher: { "@id": organizationId },
-  mainEntity: faqCopy.questions.map((item) => ({
-    "@type": "Question",
-    name: item.question,
-    acceptedAnswer: { "@type": "Answer", text: item.answer },
-  })),
+  "@graph": [
+    organizationNode,
+    websiteNode,
+    {
+      "@type": "FAQPage",
+      "@id": `${siteConfig.url}/faq#faq`,
+      name: faqCopy.metadata.title,
+      description: faqCopy.metadata.description,
+      inLanguage: locale.htmlLang,
+      isPartOf: { "@id": websiteId },
+      publisher: { "@id": organizationId },
+      mainEntity: faqCopy.questions.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: { "@type": "Answer", text: item.answer },
+      })),
+    },
+  ],
 }
 
 export function FaqStructuredData() {
@@ -106,6 +122,10 @@ export function FaqStructuredData() {
  * `dateModified` is the published date rather than a file timestamp: posts are
  * edited in place before they go live, and a build time would claim a revision
  * that never happened.
+ *
+ * The post does not point `about` at the SoftwareApplication node: that node
+ * belongs to the home page, and repeating app markup on an article would be
+ * describing something other than the page it sits on.
  */
 export function BlogPostStructuredData({ post }: { post: PostMeta }) {
   const url = `${siteConfig.url}${post.href}`
@@ -114,6 +134,8 @@ export function BlogPostStructuredData({ post }: { post: PostMeta }) {
   const data = {
     "@context": "https://schema.org",
     "@graph": [
+      organizationNode,
+      websiteNode,
       {
         "@type": "BlogPosting",
         "@id": `${url}#post`,
@@ -129,7 +151,6 @@ export function BlogPostStructuredData({ post }: { post: PostMeta }) {
         mainEntityOfPage: url,
         author: { "@id": organizationId },
         publisher: { "@id": organizationId },
-        about: { "@id": `${siteConfig.url}#app` },
       },
       {
         "@type": "BreadcrumbList",

@@ -187,8 +187,11 @@ lines above the words.
    `commonCopy.navigation` plus the footer/header nav if it should be linked.
 
 `components/structured-data.tsx` holds every JSON-LD block: `StructuredData` (home — Organization,
-WebSite, SoftwareApplication), `FaqStructuredData`, and `BlogPostStructuredData`. They share the
-`#organization` and `#website` `@id`s, so a crawler resolves one publisher across the site. Every
+WebSite, SoftwareApplication), `FaqStructuredData`, and `BlogPostStructuredData`. Each one emits the
+Organization and WebSite nodes **in full**, because a validator reading a single page does not fetch
+another to resolve a bare `{"@id": …}` — a post whose `author` is only a reference fails Article
+rich-result validation. The `@id`s are stable across the blocks, so a crawler that reads several
+pages still collapses them into one publisher. Keep new blocks self-contained the same way. Every
 human-readable value is read from `siteConfig` or `locales/en.ts` — a block that restates copy can
 drift from the page and turn a rich result into a lie. The same content accuracy rules apply here:
 no `offers` node until pricing is final.
