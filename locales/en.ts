@@ -572,6 +572,13 @@ export const blogCopy = {
     placeholder: "Search posts",
     clear: "Clear filters",
   },
+  feed: {
+    label: "RSS",
+    // The visible label is two letters, so the accessible name says what
+    // subscribing actually gets you. It still contains "RSS", which is what a
+    // voice-control user will say to activate the link.
+    ariaLabel: `Subscribe to the ${siteConfig.name} blog with RSS`,
+  },
   filters: {
     label: "Filter by tag",
     all: "All",
