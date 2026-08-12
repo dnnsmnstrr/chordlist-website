@@ -81,6 +81,8 @@ The Props panel exposes:
   `ownership` with one dropdown;
 - `accentColor` — controls headings, progress marks, and the end-card button; the website-matched
   default is off-white;
+- `paperSeed` — chooses a different paper pattern while keeping that pattern frozen for the entire
+  video, avoiding frame-to-frame texture jumps;
 - `mediaPadding` — one consistent inset around every video;
 - `showShotLabels` — useful while choosing clips, normally off for the public render;
 - `scenes` — switches scenes on or off and edits headings, clip order, and maximum clip length;

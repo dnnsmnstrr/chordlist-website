@@ -47,6 +47,7 @@
   },
   "devDependencies": {
     "@remotion/cli": "4.0.508",
+    "@remotion/effects": "4.0.508",
     "@remotion/google-fonts": "4.0.508",
     "@remotion/transitions": "4.0.508",
     "@tailwindcss/postcss": "^4.2.0",

@@ -22,6 +22,7 @@ export const videoSchema = z.object({
   appearance: z.enum(['light', 'dark']),
   copyVariant: copyVariantSchema,
   accentColor: z.string().min(1),
+  paperSeed: z.number().min(0).max(1000).step(1),
   mediaPadding: z.number().min(0).max(80).step(1),
   showShotLabels: z.boolean(),
   musicFile: z.string(),

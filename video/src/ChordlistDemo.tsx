@@ -2,12 +2,14 @@ import {linearTiming, TransitionSeries} from '@remotion/transitions';
 import {fade} from '@remotion/transitions/fade';
 import {loadFont as loadGeist} from '@remotion/google-fonts/Geist';
 import {loadFont as loadGeistMono} from '@remotion/google-fonts/GeistMono';
+import {paper} from '@remotion/effects/paper';
 import type {ReactNode} from 'react';
 import {
   AbsoluteFill,
   Html5Audio,
   OffthreadVideo,
   Series,
+  Solid,
   interpolate,
   spring,
   staticFile,
@@ -35,12 +37,12 @@ type Palette = {
 };
 
 const paletteFor = (): Palette => ({
-  background: '#070707',
-  panel: '#141414',
-  text: '#FAFAFA',
-  secondaryText: '#9F9F9F',
-  border: 'rgba(255, 255, 255, 0.1)',
-  shadow: 'rgba(0, 0, 0, 0.58)',
+  background: '#161411',
+  panel: '#25221D',
+  text: '#FAFAF8',
+  secondaryText: '#A6A29A',
+  border: 'rgba(255, 255, 255, 0.11)',
+  shadow: 'rgba(0, 0, 0, 0.62)',
 });
 
 const {fontFamily: baseFont} = loadGeist('normal', {
@@ -53,22 +55,38 @@ const {fontFamily: monoFont} = loadGeistMono('normal', {
 });
 
 const Background: React.FC<{
-  palette: Palette;
-}> = ({palette}) => (
-  <AbsoluteFill style={{backgroundColor: palette.background, overflow: 'hidden'}}>
-    <div
-      style={{
-        position: 'absolute',
-        inset: -110,
-        backgroundImage: [
-          'radial-gradient(46% 38% at 79% 48%, rgba(255,255,255,0.032), transparent 72%)',
-          'radial-gradient(42% 46% at 50.3% 74.3%, rgba(255,255,255,0.018), transparent 76%)',
-          'linear-gradient(214.3deg, transparent 18%, rgba(255,255,255,0.012) 52%, transparent 82%)',
-        ].join(', '),
-      }}
-    />
-  </AbsoluteFill>
-);
+  seed: number;
+}> = ({seed}) => {
+  const {height, width} = useVideoConfig();
+
+  return (
+    <AbsoluteFill style={{backgroundColor: '#161411', overflow: 'hidden'}}>
+      <Solid
+        color="#161411"
+        width={width}
+        height={height}
+        effects={[
+          paper({
+            colorFront: '#565149',
+            colorBack: '#13110F',
+            amount: 0.95,
+            contrast: 0.42,
+            roughness: 0.47,
+            fiber: 0.4,
+            fiberSize: 0.29,
+            crumples: 0.4,
+            crumpleSize: 0.43,
+            folds: 0.56,
+            foldCount: 6,
+            drops: 0.19,
+            scale: 0.72,
+            seed,
+          }),
+        ]}
+      />
+    </AbsoluteFill>
+  );
+};
 
 const BrandMark: React.FC<{
   palette: Palette;
@@ -119,7 +137,8 @@ const HookCard: React.FC<{
   text: string;
   palette: Palette;
   accentColor: string;
-}> = ({text, palette, accentColor}) => {
+  paperSeed: number;
+}> = ({text, palette, accentColor, paperSeed}) => {
   const frame = useCurrentFrame();
   const enter = spring({
     frame,
@@ -130,7 +149,7 @@ const HookCard: React.FC<{
 
   return (
     <AbsoluteFill>
-      <Background palette={palette} />
+      <Background seed={paperSeed} />
       <div
         style={{
           position: 'absolute',
@@ -299,6 +318,7 @@ const ProductScene: React.FC<{
   mediaPadding: number;
   showShotLabels: boolean;
   showExplanation: boolean;
+  paperSeed: number;
 }> = ({
   scene,
   index,
@@ -308,6 +328,7 @@ const ProductScene: React.FC<{
   mediaPadding,
   showShotLabels,
   showExplanation,
+  paperSeed,
 }) => {
   const frame = useCurrentFrame();
   const headingDelay = index === 1 ? 8 : 0;
@@ -330,7 +351,7 @@ const ProductScene: React.FC<{
 
   return (
     <AbsoluteFill>
-      <Background palette={palette} />
+      <Background seed={paperSeed} />
       {scene.clips.length > 0 ? (
         <Series>
           {scene.clips.map((clip, clipIndex) => (
@@ -437,7 +458,8 @@ const EndCard: React.FC<{
   releaseLine: string;
   palette: Palette;
   accentColor: string;
-}> = ({endLine, releaseLine, palette, accentColor}) => {
+  paperSeed: number;
+}> = ({endLine, releaseLine, palette, accentColor, paperSeed}) => {
   const frame = useCurrentFrame();
   const enter = spring({
     frame,
@@ -448,7 +470,7 @@ const EndCard: React.FC<{
 
   return (
     <AbsoluteFill>
-      <Background palette={palette} />
+      <Background seed={paperSeed} />
       <div
         style={{
           position: 'absolute',
@@ -519,6 +541,7 @@ export const ChordlistDemo: React.FC<VideoProps> = (props) => {
         text={copy.openingHook}
         palette={palette}
         accentColor={props.accentColor}
+        paperSeed={props.paperSeed}
       />
     </TransitionSeries.Sequence>,
   ];
@@ -545,6 +568,7 @@ export const ChordlistDemo: React.FC<VideoProps> = (props) => {
           mediaPadding={props.mediaPadding}
           showShotLabels={props.showShotLabels}
           showExplanation={props.cut === 'documentary'}
+          paperSeed={props.paperSeed}
         />
       </TransitionSeries.Sequence>,
     );
@@ -562,6 +586,7 @@ export const ChordlistDemo: React.FC<VideoProps> = (props) => {
         releaseLine={copy.releaseLine}
         palette={palette}
         accentColor={props.accentColor}
+        paperSeed={props.paperSeed}
       />
     </TransitionSeries.Sequence>,
   );

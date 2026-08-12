@@ -3,78 +3,6 @@ import {ChordlistDemo} from './ChordlistDemo';
 import {FPS, getDurationInFrames} from './timeline';
 import {videoSchema, type VideoProps} from './video-schema';
 
-const baseDefaultProps: Omit<VideoProps, 'cut'> = {
-  appearance: 'light',
-  copyVariant: 'play-more',
-  accentColor: '#FAFAFA',
-  mediaPadding: 28,
-  showShotLabels: false,
-  musicFile: '',
-  musicVolume: 0.18,
-  voiceoverFile: '',
-  voiceoverVolume: 1,
-  manualClipFile: '',
-  manualClipSeconds: 3,
-  scenes: [
-    {
-      id: 'collect',
-      enabled: true,
-      clipTitles: [
-        'Song library',
-        'Link import',
-        'Imported song draft',
-        'Chord keyboard',
-        'Song opens',
-      ],
-      startOffsetSeconds: 0.5,
-      maxSecondsPerClip: 2.8,
-    },
-    {
-      id: 'find',
-      enabled: true,
-      clipTitles: [
-        'Shuffle',
-        'Search',
-        'Matching songs',
-        'Matching song selected',
-        'Next song',
-      ],
-      startOffsetSeconds: 0.5,
-      maxSecondsPerClip: 3.5,
-    },
-    {
-      id: 'pace',
-      enabled: true,
-      clipTitles: [
-        'Autoscroll starts',
-        'Speed control',
-        'Speed raised to maximum',
-      ],
-      startOffsetSeconds: 0.5,
-      maxSecondsPerClip: 3.2,
-    },
-    {
-      id: 'adapt',
-      enabled: true,
-      clipTitles: ['Transpose control', 'Transposed up a semitone'],
-      startOffsetSeconds: 1.1,
-      maxSecondsPerClip: 3.2,
-    },
-    {
-      id: 'hands-free',
-      enabled: true,
-      clipTitles: ['Hands-free autoscroll'],
-      startOffsetSeconds: 0,
-      maxSecondsPerClip: 8,
-    },
-  ],
-};
-
-const defaultsFor = (cut: VideoProps['cut']): VideoProps => ({
-  ...baseDefaultProps,
-  cut,
-});
-
 const calculateMetadata = ({props}: {props: VideoProps}) => ({
   durationInFrames: getDurationInFrames(props),
 });
@@ -91,7 +19,74 @@ export const RemotionRoot: React.FC = () => {
         height={1920}
         schema={videoSchema}
         calculateMetadata={calculateMetadata}
-        defaultProps={defaultsFor('short')}
+        defaultProps={{
+          cut: 'short',
+          appearance: 'light',
+          copyVariant: 'play-more',
+          accentColor: '#FAFAF8',
+          paperSeed: 184,
+          mediaPadding: 28,
+          showShotLabels: false,
+          musicFile: '',
+          musicVolume: 0.18,
+          voiceoverFile: '',
+          voiceoverVolume: 1,
+          manualClipFile: '',
+          manualClipSeconds: 3,
+          scenes: [
+            {
+              id: 'collect',
+              enabled: true,
+              clipTitles: [
+                'Song library',
+                'Link import',
+                'Imported song draft',
+                'Chord keyboard',
+                'Song opens',
+              ],
+              startOffsetSeconds: 0.5,
+              maxSecondsPerClip: 2.8,
+            },
+            {
+              id: 'find',
+              enabled: true,
+              clipTitles: [
+                'Shuffle',
+                'Search',
+                'Matching songs',
+                'Matching song selected',
+                'Next song',
+              ],
+              startOffsetSeconds: 0.5,
+              maxSecondsPerClip: 3.5,
+            },
+            {
+              id: 'pace',
+              enabled: true,
+              clipTitles: [
+                'Autoscroll starts',
+                'Speed control',
+                'Speed raised to maximum',
+              ],
+              startOffsetSeconds: 0.5,
+              maxSecondsPerClip: 3.2,
+            },
+            {
+              id: 'adapt',
+              enabled: true,
+              clipTitles: ['Transpose control', 'Transposed up a semitone'],
+              startOffsetSeconds: 1.1,
+              maxSecondsPerClip: 3.2,
+            },
+            {
+              id: 'hands-free',
+              enabled: true,
+              clipTitles: ['Hands-free autoscroll'],
+              startOffsetSeconds: 0,
+              maxSecondsPerClip: 8,
+            },
+          ],
+        }}
       />
       <Composition
         id="ChordlistDemo"
@@ -102,7 +97,74 @@ export const RemotionRoot: React.FC = () => {
         height={1920}
         schema={videoSchema}
         calculateMetadata={calculateMetadata}
-        defaultProps={defaultsFor('standard')}
+        defaultProps={{
+          cut: 'standard',
+          appearance: 'light',
+          copyVariant: 'play-more',
+          accentColor: '#FAFAF8',
+          paperSeed: 184,
+          mediaPadding: 28,
+          showShotLabels: false,
+          musicFile: '',
+          musicVolume: 0.18,
+          voiceoverFile: '',
+          voiceoverVolume: 1,
+          manualClipFile: '',
+          manualClipSeconds: 3,
+          scenes: [
+            {
+              id: 'collect',
+              enabled: true,
+              clipTitles: [
+                'Song library',
+                'Link import',
+                'Imported song draft',
+                'Chord keyboard',
+                'Song opens',
+              ],
+              startOffsetSeconds: 0.5,
+              maxSecondsPerClip: 2.8,
+            },
+            {
+              id: 'find',
+              enabled: true,
+              clipTitles: [
+                'Shuffle',
+                'Search',
+                'Matching songs',
+                'Matching song selected',
+                'Next song',
+              ],
+              startOffsetSeconds: 0.5,
+              maxSecondsPerClip: 3.5,
+            },
+            {
+              id: 'pace',
+              enabled: true,
+              clipTitles: [
+                'Autoscroll starts',
+                'Speed control',
+                'Speed raised to maximum',
+              ],
+              startOffsetSeconds: 0.5,
+              maxSecondsPerClip: 3.2,
+            },
+            {
+              id: 'adapt',
+              enabled: true,
+              clipTitles: ['Transpose control', 'Transposed up a semitone'],
+              startOffsetSeconds: 1.1,
+              maxSecondsPerClip: 3.2,
+            },
+            {
+              id: 'hands-free',
+              enabled: true,
+              clipTitles: ['Hands-free autoscroll'],
+              startOffsetSeconds: 0,
+              maxSecondsPerClip: 8,
+            },
+          ],
+        }}
       />
       <Composition
         id="ChordlistPromoDocumentary"
@@ -113,7 +175,74 @@ export const RemotionRoot: React.FC = () => {
         height={1920}
         schema={videoSchema}
         calculateMetadata={calculateMetadata}
-        defaultProps={defaultsFor('documentary')}
+        defaultProps={{
+          cut: 'documentary',
+          appearance: 'light',
+          copyVariant: 'play-more',
+          accentColor: '#FAFAF8',
+          paperSeed: 184,
+          mediaPadding: 28,
+          showShotLabels: false,
+          musicFile: '',
+          musicVolume: 0.18,
+          voiceoverFile: '',
+          voiceoverVolume: 1,
+          manualClipFile: '',
+          manualClipSeconds: 3,
+          scenes: [
+            {
+              id: 'collect',
+              enabled: true,
+              clipTitles: [
+                'Song library',
+                'Link import',
+                'Imported song draft',
+                'Chord keyboard',
+                'Song opens',
+              ],
+              startOffsetSeconds: 0.5,
+              maxSecondsPerClip: 2.8,
+            },
+            {
+              id: 'find',
+              enabled: true,
+              clipTitles: [
+                'Shuffle',
+                'Search',
+                'Matching songs',
+                'Matching song selected',
+                'Next song',
+              ],
+              startOffsetSeconds: 0.5,
+              maxSecondsPerClip: 3.5,
+            },
+            {
+              id: 'pace',
+              enabled: true,
+              clipTitles: [
+                'Autoscroll starts',
+                'Speed control',
+                'Speed raised to maximum',
+              ],
+              startOffsetSeconds: 0.5,
+              maxSecondsPerClip: 3.2,
+            },
+            {
+              id: 'adapt',
+              enabled: true,
+              clipTitles: ['Transpose control', 'Transposed up a semitone'],
+              startOffsetSeconds: 1.1,
+              maxSecondsPerClip: 3.2,
+            },
+            {
+              id: 'hands-free',
+              enabled: true,
+              clipTitles: ['Hands-free autoscroll'],
+              startOffsetSeconds: 0,
+              maxSecondsPerClip: 8,
+            },
+          ],
+        }}
       />
     </>
   );
