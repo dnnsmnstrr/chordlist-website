@@ -74,6 +74,12 @@ export const homeCopy = {
     title: "Find a song, play it, keep moving.",
     description:
       "Search and filter your library, transpose as you play, and keep related songs close without giving up the simplicity of ordinary files.",
+    video: {
+      title: "chordlist in motion",
+      description:
+        "A short tour through the library, search, autoscroll, transposition, and theme customization.",
+      alt: "Play a short chordlist product video",
+    },
     screenshots: [
       {
         title: "Song library",
@@ -582,19 +588,24 @@ export const screenshotGalleryCopy = {
   viewFullscreen: (title: string) => `View ${title} full screen`,
   download: (title: string) => `Download ${title}`,
   close: "Close full screen view",
-  previous: "Previous image",
-  next: "Next image",
+  previous: "Previous item",
+  next: "Next item",
 } as const
 
 export const galleryCopy = {
   metadata: {
     title: "Gallery",
-    description: `A hidden collection of black-and-white images made for ${siteConfig.name}.`,
+    description: `A hidden collection of imagery and video made for ${siteConfig.name}.`,
   },
   eyebrow: "A hidden corner",
   title: "Gallery",
   introduction:
-    "Black-and-white studies made for chordlist. Open any image to view it full screen, then download the original PNG for a wallpaper or screensaver.",
+    "Black-and-white studies and a product film made for chordlist. Open any item to view it full screen or download the original.",
+  video: {
+    title: "chordlist in motion",
+    description: "A short product film following chordlist from song library to hands-free play-through.",
+    alt: "Play the chordlist product film",
+  },
   images: [
     {
       title: "Between paper and screen",

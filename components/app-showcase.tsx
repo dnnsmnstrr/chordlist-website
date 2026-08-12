@@ -1,7 +1,13 @@
-import { ScreenshotGallery, type Screenshot } from "@/components/screenshot-gallery"
+import { ScreenshotGallery, type GalleryMedia } from "@/components/screenshot-gallery"
 import { homeCopy } from "@/locales/en"
 
-const screenshots: readonly Screenshot[] = [
+const media: readonly GalleryMedia[] = [
+  {
+    type: "video",
+    src: "/video/ChordlistPromoShort.mp4",
+    poster: "/video/ChordlistPromoShort-poster.jpg",
+    ...homeCopy.showcase.video,
+  },
   {
     lightSrc: "/app-screenshots/light/01-Song-List---4-Chord-Library.png",
     darkSrc: "/app-screenshots/dark/01-Song-List---4-Chord-Library.png",
@@ -35,7 +41,7 @@ export function AppShowcase() {
       </div>
 
       <div className="mt-10">
-        <ScreenshotGallery screenshots={screenshots} variant="showcase" />
+        <ScreenshotGallery screenshots={media} variant="showcase" />
       </div>
     </section>
   )

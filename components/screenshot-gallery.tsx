@@ -1,23 +1,35 @@
 "use client"
 
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState, type Ref } from "react"
 import Image, { getImageProps } from "next/image"
-import { ChevronLeft, ChevronRight, Download, X } from "lucide-react"
+import { ChevronLeft, ChevronRight, Download, Play, X } from "lucide-react"
 
 import { screenshotGalleryCopy } from "@/locales/en"
 
-export type Screenshot = {
-  lightSrc: string
-  darkSrc: string
+type MediaBase = {
   title: string
   description: string
   alt?: string
+}
+
+export type Screenshot = MediaBase & {
+  type?: "image"
+  lightSrc: string
+  darkSrc: string
   width?: number
   height?: number
 }
 
+export type Video = MediaBase & {
+  type: "video"
+  src: string
+  poster: string
+}
+
+export type GalleryMedia = Screenshot | Video
+
 type ScreenshotGalleryProps = {
-  screenshots: readonly Screenshot[]
+  screenshots: readonly GalleryMedia[]
   variant?: "gallery" | "press" | "showcase"
 }
 
@@ -27,6 +39,7 @@ const SWIPE_THRESHOLD_PX = 48
 export function ScreenshotGallery({ screenshots, variant = "press" }: ScreenshotGalleryProps) {
   const [activeIndex, setActiveIndex] = useState<number | null>(null)
   const closeButtonRef = useRef<HTMLButtonElement>(null)
+  const activeVideoRef = useRef<HTMLVideoElement>(null)
   const triggerRef = useRef<HTMLButtonElement | null>(null)
   const count = screenshots.length
   const active = activeIndex === null ? undefined : screenshots[activeIndex]
@@ -52,7 +65,16 @@ export function ScreenshotGallery({ screenshots, variant = "press" }: Screenshot
 
     const previousOverflow = document.body.style.overflow
     document.body.style.overflow = "hidden"
-    closeButtonRef.current?.focus()
+    if (active.type === "video") {
+      const video = activeVideoRef.current
+      video?.focus()
+      void video?.play().catch(() => {
+        // A browser may still block playback despite the click that opened the dialog.
+        // Native controls remain visible so playback is always available.
+      })
+    } else {
+      closeButtonRef.current?.focus()
+    }
 
     function onKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") close()
@@ -117,7 +139,7 @@ export function ScreenshotGallery({ screenshots, variant = "press" }: Screenshot
               // below sm this is a snap carousel instead: full-size cards, the next one
               // peeking to advertise the swipe. The negative margin lets it scroll to
               // the viewport edge inside the section's px-6 shell.
-              "-mx-6 flex snap-x snap-mandatory gap-4 overflow-x-auto px-6 pb-4 sm:mx-0 sm:grid sm:grid-cols-3 sm:items-end sm:gap-8 sm:overflow-visible sm:px-0 sm:pb-0"
+              "-mx-6 flex snap-x snap-mandatory gap-4 overflow-x-auto px-6 pb-4 sm:mx-0 sm:grid sm:grid-cols-5 sm:items-stretch sm:gap-6 sm:overflow-visible sm:px-0 sm:pb-0"
             : isGallery
               ? "columns-1 gap-6 sm:columns-2"
               : "grid grid-cols-2 items-start gap-4 sm:grid-cols-3"
@@ -125,10 +147,12 @@ export function ScreenshotGallery({ screenshots, variant = "press" }: Screenshot
       >
         {screenshots.map((screenshot, index) => (
           <li
-            key={screenshot.lightSrc}
+            key={mediaSource(screenshot)}
             className={
               isShowcase
-                ? "w-[62vw] max-w-[17rem] shrink-0 snap-center sm:w-auto sm:min-w-0 sm:max-w-none"
+                ? screenshot.type === "video"
+                  ? "w-[82vw] max-w-[24rem] shrink-0 snap-center sm:col-span-2 sm:w-auto sm:min-w-0 sm:max-w-none"
+                  : "w-[62vw] max-w-[17rem] shrink-0 snap-center sm:w-auto sm:min-w-0 sm:max-w-none"
                 : isGallery
                   ? "mb-6 inline-flex w-full break-inside-avoid flex-col gap-3"
                   : "flex flex-col gap-3"
@@ -143,12 +167,12 @@ export function ScreenshotGallery({ screenshots, variant = "press" }: Screenshot
               aria-label={screenshotGalleryCopy.viewFullscreen(screenshot.title)}
               className={
                 isShowcase
-                  ? "block w-full cursor-zoom-in overflow-hidden rounded-[1.25rem] border border-border bg-muted shadow-2xl shadow-foreground/5 transition-colors hover:border-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:rounded-[2rem]"
+                  ? `block w-full cursor-zoom-in overflow-hidden rounded-[1.25rem] border border-border bg-muted shadow-2xl shadow-foreground/5 transition-colors hover:border-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:rounded-[2rem] ${screenshot.type === "video" ? "sm:h-full" : ""}`
                   : "block w-full cursor-zoom-in overflow-hidden rounded-xl border border-border bg-muted transition-colors hover:border-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               }
             >
-              <ThemeScreenshot
-                screenshot={screenshot}
+              <GalleryMediaView
+                media={screenshot}
                 sizes={
                   isShowcase
                     ? "(max-width: 640px) 62vw, 300px"
@@ -156,7 +180,9 @@ export function ScreenshotGallery({ screenshots, variant = "press" }: Screenshot
                       ? "(max-width: 640px) calc(100vw - 3rem), 480px"
                       : "(max-width: 640px) 45vw, 220px"
                 }
-                className="h-auto w-full"
+                className={screenshot.type === "video" && isShowcase ? "h-full w-full object-contain" : "h-auto w-full"}
+                preview
+                fillPreview={screenshot.type === "video" && isShowcase}
               />
             </button>
             {isShowcase ? null : <p className="text-sm font-medium leading-snug">{screenshot.title}</p>}
@@ -177,21 +203,23 @@ export function ScreenshotGallery({ screenshots, variant = "press" }: Screenshot
             </p>
             <div className="flex items-center gap-2">
               <a
-                href={active.lightSrc}
+                href={mediaSource(active)}
                 download
-                className="system-theme-light flex size-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className={`${active.type === "video" ? "flex" : "system-theme-light flex"} size-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring`}
                 aria-label={screenshotGalleryCopy.download(active.title)}
               >
                 <Download className="size-4" aria-hidden="true" />
               </a>
-              <a
-                href={active.darkSrc}
-                download
-                className="system-theme-dark size-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                aria-label={screenshotGalleryCopy.download(active.title)}
-              >
-                <Download className="size-4" aria-hidden="true" />
-              </a>
+              {active.type === "video" ? null : (
+                <a
+                  href={active.darkSrc}
+                  download
+                  className="system-theme-dark size-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  aria-label={screenshotGalleryCopy.download(active.title)}
+                >
+                  <Download className="size-4" aria-hidden="true" />
+                </a>
+              )}
               <button
                 ref={closeButtonRef}
                 type="button"
@@ -218,10 +246,11 @@ export function ScreenshotGallery({ screenshots, variant = "press" }: Screenshot
               onClick={() => step(-1)}
               disabled={count < 2}
             />
-            <ThemeScreenshot
-              screenshot={active}
+            <GalleryMediaView
+              media={active}
               sizes={isGallery ? "(max-width: 640px) 75vw, 80vw" : "(max-width: 640px) 75vw, 420px"}
               className="max-h-full min-h-0 w-auto max-w-full rounded-xl border border-border object-contain"
+              videoRef={activeVideoRef}
             />
             <GalleryNavButton
               label={screenshotGalleryCopy.next}
@@ -245,20 +274,79 @@ export function ScreenshotGallery({ screenshots, variant = "press" }: Screenshot
   )
 }
 
-function ThemeScreenshot({
-  screenshot,
+function GalleryMediaView({
+  media,
   sizes,
   className,
+  preview = false,
+  fillPreview = false,
+  videoRef,
 }: {
-  screenshot: Screenshot
+  media: GalleryMedia
   sizes: string
   className: string
+  preview?: boolean
+  fillPreview?: boolean
+  videoRef?: Ref<HTMLVideoElement>
 }) {
+  if (media.type === "video") {
+    if (!preview) {
+      return (
+        <video
+          key={media.src}
+          ref={videoRef}
+          src={media.src}
+          poster={media.poster}
+          controls
+          autoPlay
+          playsInline
+          preload="metadata"
+          tabIndex={0}
+          aria-label={media.alt ?? media.title}
+          className={`${className} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring`}
+          onKeyDown={(event) => {
+            if (event.key !== " " && event.code !== "Space") return
+
+            event.preventDefault()
+            if (event.currentTarget.paused) {
+              void event.currentTarget.play()
+            } else {
+              event.currentTarget.pause()
+            }
+          }}
+        />
+      )
+    }
+
+    return (
+      <span
+        className={
+          fillPreview
+            ? "relative block h-full min-h-full bg-black"
+            : "relative block aspect-[1170/2532] bg-black"
+        }
+      >
+        <Image
+          src={media.poster}
+          alt={media.alt ?? media.title}
+          fill
+          sizes={sizes}
+          className="object-cover"
+        />
+        <span className="pointer-events-none absolute inset-0 flex items-end justify-end bg-black/10 p-4 sm:p-5">
+          <span className="flex size-14 items-center justify-center rounded-full border border-white/40 bg-black/70 text-white shadow-lg backdrop-blur-sm">
+            <Play className="ml-1 size-5 fill-current" aria-hidden="true" />
+          </span>
+        </span>
+      </span>
+    )
+  }
+
   const { props: darkImageProps } = getImageProps({
-    src: screenshot.darkSrc,
-    alt: screenshot.alt ?? screenshot.title,
-    width: screenshot.width ?? 1170,
-    height: screenshot.height ?? 2532,
+    src: media.darkSrc,
+    alt: media.alt ?? media.title,
+    width: media.width ?? 1170,
+    height: media.height ?? 2532,
     sizes,
   })
 
@@ -266,15 +354,19 @@ function ThemeScreenshot({
     <picture className="contents">
       <source media="(prefers-color-scheme: dark)" srcSet={darkImageProps.srcSet} sizes={darkImageProps.sizes} />
       <Image
-        src={screenshot.lightSrc}
-        alt={screenshot.alt ?? screenshot.title}
-        width={screenshot.width ?? 1170}
-        height={screenshot.height ?? 2532}
+        src={media.lightSrc}
+        alt={media.alt ?? media.title}
+        width={media.width ?? 1170}
+        height={media.height ?? 2532}
         sizes={sizes}
         className={className}
       />
     </picture>
   )
+}
+
+function mediaSource(media: GalleryMedia) {
+  return media.type === "video" ? media.src : media.lightSrc
 }
 
 function GalleryNavButton({

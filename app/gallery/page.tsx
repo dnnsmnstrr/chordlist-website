@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 
-import { ScreenshotGallery, type Screenshot } from "@/components/screenshot-gallery"
+import { ScreenshotGallery, type GalleryMedia } from "@/components/screenshot-gallery"
 import { SiteFooter } from "@/components/site-footer"
 import { SiteHeader } from "@/components/site-header"
 import { pageMetadata } from "@/lib/page-metadata"
@@ -16,7 +16,13 @@ export const metadata: Metadata = pageMetadata({
   extra: { robots: { index: false, follow: false } },
 })
 
-const images: readonly Screenshot[] = [
+const media: readonly GalleryMedia[] = [
+  {
+    type: "video",
+    src: "/video/ChordlistPromoShort.mp4",
+    poster: "/video/ChordlistPromoShort-poster.jpg",
+    ...galleryCopy.video,
+  },
   {
     lightSrc: "/gallery/phone-on-sheet-music.png",
     darkSrc: "/gallery/phone-on-sheet-music.png",
@@ -60,7 +66,7 @@ export default function GalleryPage() {
         </header>
 
         <div className="mt-10">
-          <ScreenshotGallery screenshots={images} variant="gallery" />
+          <ScreenshotGallery screenshots={media} variant="gallery" />
         </div>
       </article>
 
