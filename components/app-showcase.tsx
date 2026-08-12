@@ -19,8 +19,8 @@ const media: readonly GalleryMedia[] = [
     ...homeCopy.showcase.screenshots[1],
   },
   {
-    lightSrc: "/app-screenshots/light/03-Creation-Flow---New-Song.png",
-    darkSrc: "/app-screenshots/dark/03-Creation-Flow---New-Song.png",
+    lightSrc: "/app-screenshots/light/03-Creation-Flow---Chord-Keyboard.png",
+    darkSrc: "/app-screenshots/dark/03-Creation-Flow---Chord-Keyboard.png",
     ...homeCopy.showcase.screenshots[2],
   },
 ]

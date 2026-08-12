@@ -108,7 +108,7 @@ const textureOptions: { name: TextureName; label: string; src: string }[] = [
 const screenshots = [
   "01-Song-List---4-Chord-Library.png",
   "02-Song-Detail---Matching-Suggestions.png",
-  "03-Creation-Flow---New-Song.png",
+  "03-Creation-Flow---Chord-Keyboard.png",
   "04-Search---Piano-Results.png",
   "05-Tag-Filter---Piano.png",
 ] as const
