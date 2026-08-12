@@ -9,6 +9,30 @@ const textures = [
   "/textures/sampler-pads.webp",
 ] as const
 
+/*
+ * The layers chase their targets in one animation loop rather than through a CSS
+ * transition. A transition whose target moves every frame keeps re-easing from a
+ * standstill, and a wheel scroll — which arrives as a burst of large discrete
+ * jumps — turns that into visible stutter. These are per-second decay rates fed
+ * through an exponential, so the motion is identical on a 60Hz and a 144Hz display.
+ */
+const pointerFollow = 9
+const scrollFollow = 5
+
+// Below this, the remaining distance is far under a device pixel: snap and stop the loop.
+const settleThreshold = 0.02
+
+/*
+ * A backgrounded tab resumes with a frame delta of seconds; clamp it so the layers
+ * ease back in rather than lurching. Kept well above a slow frame so a machine that
+ * is genuinely dropping to 15fps still eases at the same wall-clock rate as a fast one.
+ */
+const maximumFrameSeconds = 1 / 10
+
+const pointerTravelX = 4
+const pointerTravelY = 3
+const scrollTravel = 56
+
 function randomBetween(minimum: number, maximum: number) {
   return minimum + Math.random() * (maximum - minimum)
 }
@@ -44,42 +68,101 @@ export function AmbientBackground() {
     if (reducedMotion.matches) return
 
     let animationFrame = 0
+    let lastTimestamp = 0
+    let scrollSpan = 1
+    let targetPointerX = 0
+    let targetPointerY = 0
+    let targetScrollY = 0
     let pointerX = 0
     let pointerY = 0
     let scrollY = 0
 
-    const renderMovement = () => {
-      animationFrame = 0
-      layer.style.setProperty("--ambient-pointer-x", `${pointerX.toFixed(2)}px`)
-      layer.style.setProperty("--ambient-pointer-y", `${pointerY.toFixed(2)}px`)
-      layer.style.setProperty("--ambient-scroll-y", `${scrollY.toFixed(2)}px`)
-      layer.style.setProperty("--ambient-counter-x", `${(-pointerX * 0.65).toFixed(2)}px`)
-      layer.style.setProperty("--ambient-counter-y", `${(-(pointerY + scrollY) * 0.55).toFixed(2)}px`)
+    /*
+     * scrollHeight forces a layout flush, so it is measured on resize instead of
+     * inside the scroll listener, where it used to run once per scroll event.
+     */
+    const measureScrollSpan = () => {
+      scrollSpan = Math.max(document.documentElement.scrollHeight - window.innerHeight, 1)
     }
 
-    const queueMovement = () => {
-      if (animationFrame === 0) animationFrame = window.requestAnimationFrame(renderMovement)
+    const readScrollTarget = () => (window.scrollY / scrollSpan - 0.5) * scrollTravel
+
+    const write = () => {
+      const shiftY = pointerY + scrollY
+      layer.style.setProperty("--ambient-shift-x", `${pointerX.toFixed(2)}px`)
+      layer.style.setProperty("--ambient-shift-y", `${shiftY.toFixed(2)}px`)
+      layer.style.setProperty("--ambient-counter-x", `${(-pointerX * 0.65).toFixed(2)}px`)
+      layer.style.setProperty("--ambient-counter-y", `${(-shiftY * 0.55).toFixed(2)}px`)
+    }
+
+    const step = (timestamp: number) => {
+      const elapsed =
+        lastTimestamp === 0 ? 1 / 60 : Math.min((timestamp - lastTimestamp) / 1000, maximumFrameSeconds)
+      lastTimestamp = timestamp
+
+      // Sampled per painted frame rather than per scroll event: one read, and always
+      // the position this frame is actually going to show.
+      targetScrollY = readScrollTarget()
+
+      const pointerEase = 1 - Math.exp(-pointerFollow * elapsed)
+      const scrollEase = 1 - Math.exp(-scrollFollow * elapsed)
+      pointerX += (targetPointerX - pointerX) * pointerEase
+      pointerY += (targetPointerY - pointerY) * pointerEase
+      scrollY += (targetScrollY - scrollY) * scrollEase
+
+      const settled =
+        Math.abs(targetPointerX - pointerX) < settleThreshold &&
+        Math.abs(targetPointerY - pointerY) < settleThreshold &&
+        Math.abs(targetScrollY - scrollY) < settleThreshold
+
+      if (settled) {
+        pointerX = targetPointerX
+        pointerY = targetPointerY
+        scrollY = targetScrollY
+        animationFrame = 0
+        lastTimestamp = 0
+      } else {
+        animationFrame = window.requestAnimationFrame(step)
+      }
+
+      write()
+    }
+
+    const startMovement = () => {
+      if (animationFrame !== 0) return
+      lastTimestamp = 0
+      animationFrame = window.requestAnimationFrame(step)
     }
 
     const handlePointerMove = (event: PointerEvent) => {
-      pointerX = (event.clientX / window.innerWidth - 0.5) * 4
-      pointerY = (event.clientY / window.innerHeight - 0.5) * 3
-      queueMovement()
+      targetPointerX = (event.clientX / window.innerWidth - 0.5) * pointerTravelX
+      targetPointerY = (event.clientY / window.innerHeight - 0.5) * pointerTravelY
+      startMovement()
     }
 
-    const handleScroll = () => {
-      const scrollRange = Math.max(document.documentElement.scrollHeight - window.innerHeight, 1)
-      scrollY = (window.scrollY / scrollRange - 0.5) * 56
-      queueMovement()
+    const handleResize = () => {
+      measureScrollSpan()
+      startMovement()
     }
 
-    handleScroll()
+    measureScrollSpan()
+    targetScrollY = readScrollTarget()
+    scrollY = targetScrollY
+    write()
+
+    // The document grows as images and fonts land, which moves the scroll span.
+    const resizeObserver = new ResizeObserver(handleResize)
+    resizeObserver.observe(document.documentElement)
+
     window.addEventListener("pointermove", handlePointerMove, { passive: true })
-    window.addEventListener("scroll", handleScroll, { passive: true })
+    window.addEventListener("scroll", startMovement, { passive: true })
+    window.addEventListener("resize", handleResize, { passive: true })
 
     return () => {
       window.removeEventListener("pointermove", handlePointerMove)
-      window.removeEventListener("scroll", handleScroll)
+      window.removeEventListener("scroll", startMovement)
+      window.removeEventListener("resize", handleResize)
+      resizeObserver.disconnect()
       if (animationFrame !== 0) window.cancelAnimationFrame(animationFrame)
     }
   }, [])
