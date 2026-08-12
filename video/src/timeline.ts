@@ -48,6 +48,7 @@ export type ClipAsset = {
   durationInSeconds: number;
   file: string;
   poster: string | null;
+  mediaType?: 'video' | 'image';
 };
 
 export type ResolvedClip = ClipAsset & {
@@ -66,38 +67,12 @@ export type ResolvedScene = Omit<VideoProps['scenes'][number], 'id'> & {
 
 type AssetManifest = Record<'light' | 'dark', ClipAsset[]> & {
   featured: {
+    settingsAppearance: ClipAsset;
     colorScroll: ClipAsset;
   };
 };
 
 const manifest = manifestJson as AssetManifest;
-
-const sceneBudgetsInSeconds: Record<
-  VideoCut,
-  Record<Exclude<SceneId, 'files'>, number>
-> = {
-  short: {
-    collect: 1.5,
-    find: 2,
-    pace: 2.5,
-    adapt: 2,
-    'hands-free': 4.5,
-  },
-  standard: {
-    collect: 4,
-    find: 3.5,
-    pace: 6,
-    adapt: 4,
-    'hands-free': 8,
-  },
-  documentary: {
-    collect: 9,
-    find: 8,
-    pace: 8.5,
-    adapt: 6.5,
-    'hands-free': 8,
-  },
-};
 
 const shortClipTitles: Record<Exclude<SceneId, 'files'>, string[]> = {
   collect: ['Song library'],
@@ -107,59 +82,113 @@ const shortClipTitles: Record<Exclude<SceneId, 'files'>, string[]> = {
   'hands-free': ['Hands-free autoscroll'],
 };
 
+const resolveFrozenSource = (
+  clips: ClipAsset[],
+  offsetInFrames: number,
+): {clip: ClipAsset; sourceFrame: number} | null => {
+  let remainingOffset = offsetInFrames;
+
+  for (const clip of clips) {
+    const sourceFrames = Math.max(1, Math.round(clip.durationInSeconds * FPS));
+    if (remainingOffset < sourceFrames) {
+      return {clip, sourceFrame: remainingOffset};
+    }
+    remainingOffset -= sourceFrames;
+  }
+
+  const lastClip = clips.at(-1);
+  if (!lastClip) {
+    return null;
+  }
+
+  return {
+    clip: lastClip,
+    sourceFrame: Math.max(0, Math.round(lastClip.durationInSeconds * FPS) - 1),
+  };
+};
+
 export const resolveScenes = (props: VideoProps): ResolvedScene[] => {
   const copy = resolveCopy(props.copyVariant, props.copyMode, props.customCopy);
   const clipsByTitle = new Map(
     manifest[props.appearance].map((clip) => [clip.title, clip]),
   );
   if (props.appearance === 'light') {
-    clipsByTitle.set(manifest.featured.colorScroll.title, manifest.featured.colorScroll);
+    clipsByTitle.set(
+      manifest.featured.settingsAppearance.title,
+      manifest.featured.settingsAppearance,
+    );
+    clipsByTitle.set(
+      manifest.featured.colorScroll.title,
+      manifest.featured.colorScroll,
+    );
   }
 
   const automatedScenes = props.scenes
     .filter((scene) => scene.enabled)
-    .map((scene, sceneIndex) => {
+    .map((scene) => {
       const configuredTitles =
         props.cut === 'short' ? shortClipTitles[scene.id] : scene.clipTitles;
       const clipTitles =
         scene.id === 'hands-free' && props.appearance === 'light'
-          ? [manifest.featured.colorScroll.title]
+          ? [
+              manifest.featured.settingsAppearance.title,
+              manifest.featured.colorScroll.title,
+            ]
           : configuredTitles;
-      const firstAvailableTitle = clipTitles.find((title) => clipsByTitle.has(title));
-      let remainingSceneFrames = Math.round(
-        sceneBudgetsInSeconds[props.cut][scene.id] * FPS,
-      );
-      const clips = clipTitles.flatMap((title) => {
+      const availableClips = clipTitles.flatMap((title) => {
         const clip = clipsByTitle.get(title);
-        if (!clip || remainingSceneFrames <= 0) {
-          return [];
-        }
-
-        const sourceDurationInFrames = Math.max(1, Math.round(clip.durationInSeconds * FPS));
-        const isOpeningClip = sceneIndex === 0 && title === firstAvailableTitle;
-        const startOffsetFrames = isOpeningClip || props.cut === 'documentary'
-          ? 0
-          : Math.min(
-              Math.round(scene.startOffsetSeconds * FPS),
-              Math.max(0, sourceDurationInFrames - Math.round(0.5 * FPS)),
-            );
-        const settledDurationInFrames = sourceDurationInFrames - startOffsetFrames;
-        const perClipLimit =
-          props.cut === 'documentary'
-            ? settledDurationInFrames
-            : Math.round(scene.maxSecondsPerClip * FPS);
-        const durationInFrames = Math.max(
-          1,
-          Math.min(settledDurationInFrames, perClipLimit, remainingSceneFrames),
-        );
-        remainingSceneFrames -= durationInFrames;
-
-        return [{
-          ...clip,
-          durationInFrames,
-          trimBeforeInFrames: Math.max(0, sourceDurationInFrames - durationInFrames),
-        }];
+        return clip ? [clip] : [];
       });
+      let remainingSceneFrames = Math.round(scene.sceneDurationSeconds * FPS);
+      const frozenSource = scene.freezeFrame
+        ? resolveFrozenSource(
+            availableClips,
+            Math.round(scene.startOffsetSeconds * FPS),
+          )
+        : null;
+      let remainingOffsetFrames = Math.round(scene.startOffsetSeconds * FPS);
+      const clips = frozenSource
+        ? [
+            {
+              ...frozenSource.clip,
+              durationInFrames: Math.max(1, remainingSceneFrames),
+              trimBeforeInFrames: frozenSource.sourceFrame,
+            },
+          ]
+        : availableClips.flatMap((clip) => {
+            if (remainingSceneFrames <= 0) {
+              return [];
+            }
+
+            const sourceDurationInFrames = Math.max(
+              1,
+              Math.round(clip.durationInSeconds * FPS),
+            );
+            if (remainingOffsetFrames >= sourceDurationInFrames) {
+              remainingOffsetFrames -= sourceDurationInFrames;
+              return [];
+            }
+
+            const startOffsetFrames = remainingOffsetFrames;
+            remainingOffsetFrames = 0;
+            const durationInFrames = Math.max(
+              1,
+              Math.min(
+                sourceDurationInFrames - startOffsetFrames,
+                Math.round(scene.maxSecondsPerClip * FPS),
+                remainingSceneFrames,
+              ),
+            );
+            remainingSceneFrames -= durationInFrames;
+
+            return [
+              {
+                ...clip,
+                durationInFrames,
+                trimBeforeInFrames: startOffsetFrames,
+              },
+            ];
+          });
 
       return {
         ...scene,
@@ -181,9 +210,11 @@ export const resolveScenes = (props: VideoProps): ResolvedScene[] => {
     ...automatedScenes,
     {
       enabled: true,
+      freezeFrame: false,
       id: 'files',
       ...copy.scenes.files,
       clipTitles: ['Files / Markdown reveal'],
+      sceneDurationSeconds: props.manualClipSeconds,
       startOffsetSeconds: 0,
       maxSecondsPerClip: props.manualClipSeconds,
       clips: [

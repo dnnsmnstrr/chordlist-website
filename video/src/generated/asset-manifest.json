@@ -130,6 +130,14 @@
     }
   ],
   "featured": {
+    "settingsAppearance": {
+      "title": "Theme settings",
+      "summary": "The Appearance settings show the available accent colours.",
+      "durationInSeconds": 2,
+      "file": "generated/featured/settings-appearance-light.png",
+      "poster": null,
+      "mediaType": "image"
+    },
     "colorScroll": {
       "title": "Theme colour autoscroll",
       "summary": "One continuous hands-free scroll moves through every light accent colour without jumping.",

@@ -17,7 +17,8 @@ The template provides:
 - one shared `mediaPadding` setting around every app clip, defaulting to 28 pixels;
 - optional voiceover, music, shot labels, and a separately recorded Files/Markdown reveal;
 - scene switches and copy that can be edited from Remotion Studio's Props panel;
-- the frame-aligned light theme-colour scroll imported directly from the app press kit.
+- the Appearance settings still followed by the frame-aligned light theme-colour scroll imported
+  directly from the app press kit.
 
 ## Open the editor
 
@@ -61,8 +62,9 @@ pnpm sync:video
 clips from the sibling `chordlist-app` checkout into Remotion's local media folder and rebuilds its
 manifest from each take's WebVTT file. Set `CHORDLIST_APP_REPO` to an absolute path when the app
 repository is not the default sibling. Titles, descriptions, and take-specific durations therefore
-continue to come from the capture pipeline. The sync also copies the finished light colour-scroll
-master to `public/video/` for the website and into Remotion's generated feature assets.
+continue to come from the capture pipeline. The sync also copies the Appearance settings screenshot
+into Remotion's generated feature assets, then copies the finished light colour-scroll master to
+`public/video/` for the website and into the same feature asset directory.
 
 For a complete website-side refresh, including screenshots, the press archive, and video clips:
 
@@ -91,15 +93,24 @@ The Props panel exposes:
 - `mediaPadding` — one consistent inset around every video;
 - `showShotLabels` — useful while choosing clips, normally off for the public render;
 - `scenes` — switches scenes on or off and edits clip order and maximum clip length;
-- `startOffsetSeconds` inside each scene — skips the opening portion of its source clips;
+- `sceneDurationSeconds` inside each scene — caps that scene's total screen time;
+- `freezeFrame` inside each scene — treats the configured clips as one continuous source, selects
+  the frame at `startOffsetSeconds`, and holds it for the full `sceneDurationSeconds`;
+- `maxSecondsPerClip` inside each scene — caps every individual source clip in that scene, including
+  documentary mode;
+- `startOffsetSeconds` inside each scene — skips the opening portion of its source sequence;
 - `musicFile` and `voiceoverFile` — optional filenames from `public/audio/`;
 - `manualClipFile` — the optional Files/Markdown MP4 from `public/manual/`.
 
+The opening hook and end line support both pasted line breaks and `\n` sequences. This makes it
+possible to control their wrapping directly from the Props panel instead of relying on automatic
+line wrapping.
+
 Audio and manual footage are ignored by Git so licensed or work-in-progress media is not committed
 accidentally. App captures remain silent; mix levels are controlled with `musicVolume` and
-`voiceoverVolume`. The editor drops up to the first half-second of each generated chapter and, when
-a chapter is longer than its scene limit, uses its ending portion. That skips the UI automation
-delay at the start and favors the action after it has visibly landed.
+`voiceoverVolume`. During normal playback, every clip starts at its scene's
+`startOffsetSeconds` value. In freeze mode, the offset runs across all available clips in their
+configured order; an offset beyond the combined footage clamps to the final available frame.
 
 ## Render repeatable masters
 

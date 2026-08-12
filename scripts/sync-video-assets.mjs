@@ -12,10 +12,18 @@ const publicDirectory = path.join(websiteRoot, 'video', 'public', 'generated');
 const manifestPath = path.join(websiteRoot, 'video', 'src', 'generated', 'asset-manifest.json');
 const appearances = ['light', 'dark'];
 const colorScrollFilename = 'smooth-color-scroll-light-only.mp4';
+const settingsScreenshotFilename = 'settings-appearance-light.png';
 const colorScrollSource = path.join(
   appVideoDirectory,
   'theme-colors',
   colorScrollFilename,
+);
+const settingsScreenshotSource = path.join(
+  websiteRoot,
+  'public',
+  'app-screenshots',
+  'light',
+  '06-Settings---Appearance.png',
 );
 
 const exists = async (filePath) => {
@@ -66,6 +74,14 @@ const manifest = {
   light: [],
   dark: [],
   featured: {
+    settingsAppearance: {
+      title: 'Theme settings',
+      summary: 'The Appearance settings show the available accent colours.',
+      durationInSeconds: 2,
+      file: `generated/featured/${settingsScreenshotFilename}`,
+      poster: null,
+      mediaType: 'image',
+    },
     colorScroll: {
       title: 'Theme colour autoscroll',
       summary:
@@ -134,8 +150,16 @@ if (!(await exists(colorScrollSource))) {
   );
 }
 
+if (!(await exists(settingsScreenshotSource))) {
+  throw new Error(`Missing settings screenshot at ${settingsScreenshotSource}.`);
+}
+
 const featuredDirectory = path.join(publicDirectory, 'featured');
 await mkdir(featuredDirectory, {recursive: true});
+await cp(
+  settingsScreenshotSource,
+  path.join(featuredDirectory, settingsScreenshotFilename),
+);
 await cp(colorScrollSource, path.join(featuredDirectory, colorScrollFilename));
 
 const websiteVideoDirectory = path.join(websiteRoot, 'public', 'video');
@@ -145,5 +169,5 @@ await cp(colorScrollSource, path.join(websiteVideoDirectory, colorScrollFilename
 await writeFile(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
 
 console.log(
-  `Synced ${manifest.light.length} light clips, ${manifest.dark.length} dark clips, and the featured colour scroll.`,
+  `Synced ${manifest.light.length} light clips, ${manifest.dark.length} dark clips, the settings still, and the featured colour scroll.`,
 );

@@ -31,8 +31,10 @@ export const sceneIdSchema = z.enum([
 export const sceneSchema = z.object({
   id: sceneIdSchema,
   enabled: z.boolean(),
+  freezeFrame: z.boolean(),
   clipTitles: z.array(z.string()),
-  startOffsetSeconds: z.number().min(0).max(4).step(0.1),
+  sceneDurationSeconds: z.number().min(0.5).max(30).step(0.1),
+  startOffsetSeconds: z.number().min(0).max(30).step(0.1),
   maxSecondsPerClip: z.number().min(0.5).max(12).step(0.1),
 });
 

@@ -6,7 +6,9 @@ import {paper} from '@remotion/effects/paper';
 import type {ReactNode} from 'react';
 import {
   AbsoluteFill,
+  Freeze,
   Html5Audio,
+  Img,
   OffthreadVideo,
   Series,
   Solid,
@@ -53,6 +55,9 @@ const {fontFamily: monoFont} = loadGeistMono('normal', {
   weights: ['400', '500', '600'],
   subsets: ['latin'],
 });
+
+const normalizeLineBreaks = (text: string) =>
+  text.replace(/\\r\\n|\\n|\\r/g, '\n');
 
 const Background: React.FC<{
   seed: number;
@@ -184,9 +189,10 @@ const HookCard: React.FC<{
               letterSpacing: -3.4,
               lineHeight: 1,
               maxWidth: 900,
+              whiteSpace: 'pre-line',
             }}
           >
-            {text}
+            {normalizeLineBreaks(text)}
           </div>
         </div>
         <div
@@ -213,7 +219,20 @@ const Clip: React.FC<{
   showLabel: boolean;
   slideIn: boolean;
   verticalOffset: number;
-}> = ({clip, palette, padding, showLabel, slideIn, verticalOffset}) => {
+  focusProgress: number;
+  fadeTowardTop: boolean;
+  freezeFrame: boolean;
+}> = ({
+  clip,
+  palette,
+  padding,
+  showLabel,
+  slideIn,
+  verticalOffset,
+  focusProgress,
+  fadeTowardTop,
+  freezeFrame,
+}) => {
   const frame = useCurrentFrame();
   const {height} = useVideoConfig();
   const availableHeight = height - 430;
@@ -227,6 +246,10 @@ const Clip: React.FC<{
         config: {damping: 20, stiffness: 110, mass: 0.9},
       })
     : 1;
+  const focusScale = interpolate(focusProgress, [0, 1], [1, 1.22]);
+  const focusLift = interpolate(focusProgress, [0, 1], [0, -34]);
+  const topFade =
+    'linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.18) 16%, black 38%, black 100%)';
 
   return (
     <AbsoluteFill
@@ -248,7 +271,11 @@ const Clip: React.FC<{
           border: `2px solid ${palette.border}`,
           boxShadow: `0 28px 70px ${palette.shadow}`,
           opacity: interpolate(entrance, [0, 1], [0.35, 1]),
-          transform: `translate(${interpolate(entrance, [0, 1], [520, 0])}px, ${verticalOffset}px)`,
+          transform: `translate(${interpolate(entrance, [0, 1], [520, 0])}px, ${verticalOffset + focusLift}px) scale(${focusScale})`,
+          transformOrigin: '50% 82%',
+          maskImage: fadeTowardTop ? topFade : undefined,
+          WebkitMaskImage: fadeTowardTop ? topFade : undefined,
+          willChange: 'transform',
         }}
       >
         <div
@@ -261,12 +288,25 @@ const Clip: React.FC<{
             backgroundColor: '#000000',
           }}
         >
-          <OffthreadVideo
-            src={staticFile(clip.file)}
-            volume={0}
-            trimBefore={clip.trimBeforeInFrames}
-            style={{width: '100%', height: '100%', objectFit: 'contain'}}
-          />
+          {clip.mediaType === 'image' ? (
+            <Img
+              src={staticFile(clip.file)}
+              style={{width: '100%', height: '100%', objectFit: 'contain'}}
+            />
+          ) : (
+            // Freeze owns the video timeline, so seek with its frame instead of trimBefore.
+            <Freeze
+              frame={freezeFrame ? clip.trimBeforeInFrames : 0}
+              active={freezeFrame}
+            >
+              <OffthreadVideo
+                src={staticFile(clip.file)}
+                volume={0}
+                trimBefore={freezeFrame ? undefined : clip.trimBeforeInFrames}
+                style={{width: '100%', height: '100%', objectFit: 'contain'}}
+              />
+            </Freeze>
+          )}
           {showLabel ? (
             <div
               style={{
@@ -348,6 +388,15 @@ const ProductScene: React.FC<{
         )
       : 1;
   const headingOpacity = enter * headingExit;
+  const transposeFocus =
+    scene.id === 'adapt'
+      ? spring({
+          frame,
+          fps: FPS,
+          durationInFrames: 34,
+          config: {damping: 20, stiffness: 85, mass: 1},
+        })
+      : 0;
 
   return (
     <AbsoluteFill>
@@ -367,6 +416,9 @@ const ProductScene: React.FC<{
                 showLabel={showShotLabels}
                 slideIn={index === 0 && clipIndex === 0}
                 verticalOffset={showExplanation ? 90 : 0}
+                focusProgress={transposeFocus}
+                fadeTowardTop={scene.id === 'adapt'}
+                freezeFrame={scene.freezeFrame}
               />
             </Series.Sequence>
           ))}
@@ -493,9 +545,10 @@ const EndCard: React.FC<{
             letterSpacing: -3.2,
             marginTop: 76,
             maxWidth: 900,
+            whiteSpace: 'pre-line',
           }}
         >
-          {endLine}
+          {normalizeLineBreaks(endLine)}
         </div>
         <div
           style={{
