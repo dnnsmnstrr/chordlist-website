@@ -175,12 +175,14 @@ export function ScreenshotGallery({ screenshots, variant = "press" }: Screenshot
                 media={screenshot}
                 sizes={
                   isShowcase
-                    ? "(max-width: 640px) 62vw, 300px"
+                    ? screenshot.type === "video"
+                      ? "(max-width: 640px) 82vw, 380px"
+                      : "(max-width: 640px) 62vw, 300px"
                     : isGallery
                       ? "(max-width: 640px) calc(100vw - 3rem), 480px"
                       : "(max-width: 640px) 45vw, 220px"
                 }
-                className={screenshot.type === "video" && isShowcase ? "h-full w-full object-contain" : "h-auto w-full"}
+                className="h-auto w-full"
                 preview
                 fillPreview={screenshot.type === "video" && isShowcase}
               />
@@ -322,8 +324,13 @@ function GalleryMediaView({
       <span
         className={
           fillPreview
-            ? "relative block h-full min-h-full bg-black"
-            : "relative block aspect-[1170/2532] bg-black"
+            ? // From sm up the showcase is a grid whose row stretches this card, so `h-full`
+              // has a definite height to match the screenshots against. In the mobile
+              // carousel the button's height is auto, a percentage height resolves to zero,
+              // and the poster is absolutely positioned — so below sm the card has to carry
+              // the video's own ratio or it collapses to nothing.
+              "relative block aspect-[1080/1920] bg-black sm:aspect-auto sm:h-full sm:min-h-full"
+            : "relative block aspect-[1080/1920] bg-black"
         }
       >
         <Image
