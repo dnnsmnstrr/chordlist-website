@@ -127,6 +127,11 @@ Set `focus` on the definition to steer the crop. The build warns when a master l
 its area to a format, which is the practical form of "choose or generate a composition for the final
 aspect ratio": a 3:2 master in a 9:16 story loses about 63% and usually wants its own composition.
 
+Every master in this directory is currently 3:2, 2:3, or 4:5, so none of them is native to a card or
+a story. [Social media plan](social-media-plan.md) keeps the running list of compositions worth
+generating, each with its placeholders already filled in and the shape it needs to be. Add a row to
+the reference table above when one of them lands here.
+
 ## Review checklist
 
 Before publishing a new image, confirm that:

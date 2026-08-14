@@ -136,12 +136,97 @@ Two are scheduled. Unwritten:
 The rule that makes this campaign work: the line has to be **in** the post. The footnote is a canonical
 URL and the asset is self-sourcing, so a paraphrase is a promise the article does not keep.
 
+## Images to generate
+
+Nothing here is blocking — every scheduled asset builds today. These are the images that would make
+the set better than it is, roughly in the order they would earn their place.
+
+### Why the shapes matter
+
+Every master in [`assets/visual-references/analog-photography/`](../assets/visual-references/analog-photography)
+is 3:2 landscape, 2:3 portrait, or 4:5. None of them is the shape of the two formats we post most, so
+the build crops into them:
+
+| Master shape | `card` 1.91:1 | `post` 4:5 | `story` 9:16 |
+| --- | --- | --- | --- |
+| 3:2 landscape (four masters) | 21% lost | **47% lost** | **63% lost** |
+| 2:3 portrait (three masters) | **65% lost** | 17% lost | 16% lost |
+| 4:5 portrait (`phone-on-sheet-music`) | **58% lost** | 0% | 30% lost |
+| *9:16, none yet* | 70% lost | 30% lost | **0%** |
+| *1.91:1, none yet* | **0%** | 58% lost | 70% lost |
+
+Bold is where the build prints a crop warning. Two shapes would end most of it: a **9:16** master
+serves a story natively *and* survives a post, and a **1.91:1** master serves a card natively. So the
+briefs below ask for one of each per subject rather than another 3:2.
+
+Generate from the reusable prompt in [Visual language](visual-language.md) — the placeholders are
+filled in for you. Keep the lossless file at the given filename, and add its row to that document's
+reference table. Never ask for typography in the image; the template sets the type.
+
+### Photography
+
+- [ ] **`guitarist-in-motion-vertical.png` · 9:16.** The one that fixes a live problem:
+  [caught-in-motion](../content/social/caught-in-motion.md) is a launch asset shipping a 3:2 master at
+  63% loss in its story and 47% in its post. Same subject as the existing guitarist master, composed
+  tall — and one file fixes both formats.
+  `[SUBJECT]` a guitarist changing chords during a small live performance.
+  `[SUBJECT DETAILS]` A tall, close crop of the fretting hand and the upper neck of an electric guitar
+  mid change, the player's body falling away into shadow below. One harsh stage light blooms at the top
+  of the frame. Movement smears vertically. No face is clearly visible.
+- [ ] **`phone-on-sheet-music-wide.png` · 1.91:1.** The card counterpart, and the other live warning:
+  [paper-and-glass](../content/social/paper-and-glass.md) and
+  [coming-soon](../content/social/coming-soon.md) both cut 58% off a 4:5 master to make a card.
+  `[SUBJECT]` a phone resting on an open book of sheet music.
+  `[SUBJECT DETAILS]` A wide, low, letterbox view across an open page, the phone lying face down at one
+  side and deep negative space running off to the other. Lamplight blooms from the far edge. The
+  notation is suggestive rather than readable, and no screen content is visible.
+- [ ] **`chord-charts-and-guitar.png` · 4:5.** A subject the library does not have and the product is
+  actually about: the songbook itself, on paper. Would carry the format and file-anatomy campaign the
+  way `caught-in-motion` carries performance.
+  `[SUBJECT]` handwritten chord charts scattered beside an acoustic guitar.
+  `[SUBJECT DETAILS]` Loose paper covered in hand-drawn chord boxes, curling at the edges, half
+  overlapping the body of an acoustic guitar on a dark floor. Late lamplight rakes across the page.
+  Handwriting dissolves into strokes and is nowhere legible.
+- [ ] **`phone-on-a-music-stand.png` · 9:16.** Playing *from* the phone, which nothing in the library
+  shows — the existing phone master is a still life. This is the picture behind "play more, file less"
+  and anything about autoscroll.
+  `[SUBJECT]` a phone clipped to a music stand while someone plays.
+  `[SUBJECT DETAILS]` A tall frame looking past a music stand at chest height, the phone propped on it
+  and a player's hands moving out of focus behind. Practice-room light comes from one side and blooms
+  around the stand. The screen is a bright shapeless glow with no interface visible.
+- [ ] **`rehearsal-room-in-motion.png` · 1.91:1.** Every master is one instrument alone. A room with
+  more than one player in it would give the setlist and launch-week cards somewhere to go.
+  `[SUBJECT]` two musicians rehearsing in a small room.
+  `[SUBJECT DETAILS]` A wide, unstable view across a cramped practice space, one figure blurred in the
+  foreground and another suggested behind an amp. A single overhead bulb blows out at the top of the
+  frame. Faces are lost to movement.
+- [ ] **`piano-keys-vertical.png` · 9:16.** Only if the story format starts carrying more than launch
+  assets: the piano masters are both 3:2, so any keyboard story loses 63% today.
+  `[SUBJECT]` hands moving across a worn piano keyboard.
+  `[SUBJECT DETAILS]` A tall crop looking down the length of the keys with the hands smeared across
+  them, the far end of the keyboard dissolving into darkness. Light falls from directly above and
+  blooms on the white keys.
+
+### App screenshots
+
+These come from the iOS repository's automated screenshot tests rather than an image generator —
+`pnpm sync:assets` copies them in, and adding one means adding its filename to `screenshotNames` in
+`scripts/sync-app-assets.mjs` as well.
+
+- [ ] **Autoscroll running**, with the speed control visible. The most-asked-about feature on a stage,
+  and there is no asset for it because there is no screenshot of it.
+- [ ] **Transposition**, mid-change, showing the progression shifted. Same problem: a real
+  differentiator with nothing to show for it.
+- [ ] **Now Playing**, matching an Apple Music track to a song in the library. Optional, and the only
+  one of the three that needs a connected service to capture.
+
 ## Deliberately not scheduled
 
-- **More photography.** `piano-with-sheet-music.png`, `piano-keys-in-motion.png`, and the sampler
+- **More photo assets.** `piano-with-sheet-music.png`, `piano-keys-in-motion.png`, and the sampler
   masters are unused, and they should stay that way for now. A `photo` asset is roughly forty times
   the file size of a typographic one, and two are already in the calendar. Reach for one when an asset
-  needs atmosphere, not to decorate a week that looks thin.
+  needs atmosphere, not to decorate a week that looks thin. This is about how often the template is
+  *used*; the briefs above are about the shapes the library is missing when it is.
 - **A store link in an image.** `siteConfig.links` is the only thing that can follow availability;
   every asset points at `chordlist.app` instead.
 - **Anything on a network that is not X or Instagram.** `siteConfig.social` declares two accounts and
