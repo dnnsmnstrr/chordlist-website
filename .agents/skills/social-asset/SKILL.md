@@ -10,8 +10,12 @@ Work on social media assets in `content/social/` and their generated images in
 written and reviewed once.
 
 Do not draw a one-off image or add a bespoke script for a single post. If a request genuinely needs
-a layout none of the four templates provides, identify that as a change to the system and agree it
+a layout none of the five templates provides, identify that as a change to the system and agree it
 separately before adding a template.
+
+`docs/social-media-plan.md` is the running calendar: which assets exist, when each is meant to go
+out, and what is still unwritten. Check it before inventing a new asset, and tick a line off when
+its post is published.
 
 ## Workflow
 
@@ -20,7 +24,7 @@ separately before adding a template.
    missing choice would change the copy.
 3. Choose the template from what the asset says, not from what is convenient: `statement` for a
    claim, `progression` for chords, `quote` for a line from an article, `screenshot` for evidence of
-   app behaviour.
+   app behaviour, `file` for the shape of a song on disk.
 4. Choose formats. Default to `card` and `post`. Add `story` when the asset is worth a full-screen
    vertical, which is usually a launch or a single strong statement rather than a detailed one.
 5. Create `content/social/<slug>.md` with frontmatter and a caption body. Reuse an existing slug only
@@ -40,10 +44,21 @@ separately before adding a template.
 | `progression` | `chords` | A chord row over Roman numerals. Optional `numerals`, `headline`. |
 | `quote` | `headline` | A line from an article. Optional `attribution`. |
 | `screenshot` | `screenshot` | A device screenshot from `public/app-screenshots/dark/`. |
+| `file` | `lines` | A song file or folder tree in mono. Optional `filename`, `frontmatter`, `headline`. |
 | `photo` | `photo` | Editorial photography as a backdrop, typography over it. Optional `focus`. |
 
 Every definition also requires `alt`. `eyebrow`, `footnote`, `formats`, `created`, `scheduled`, and
 `draft` are optional and documented in the system guide.
+
+## File excerpts
+
+`file` preserves the spacing you author, which is the whole point — chords have to land above the
+right syllables. Copy a real excerpt instead of retyping one, then check the alignment in the PNG.
+
+- Printable ASCII only. Geist Mono has no box-drawing glyphs and renders `├` as a hollow box instead
+  of failing, so the build rejects them; indent a folder tree with spaces.
+- A `card` holds about six rows and a `post` about twelve, including the blank row between the
+  frontmatter and the body. A headline costs roughly two rows on a card.
 
 ## Formats
 
@@ -113,7 +128,8 @@ pnpm check
 ```
 
 The build fails with the filename in the message on an unknown template, a missing required field,
-missing `alt`, an unknown format, or a `screenshot` naming a file that is not there.
+missing `alt`, an unknown format, a `screenshot` naming a file that is not there, or a `file`
+carrying a character Geist Mono cannot render.
 
 Then review the images themselves:
 

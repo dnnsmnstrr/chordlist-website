@@ -152,7 +152,8 @@ Four categories of files in `public/` are **outputs — edit the generator, not 
   live in the script's `CONFIG` block. It is deliberately separate from `build:og`: that build owns
   `public/og.png` and the page and post cards, which must not change when a campaign does. Deleting a
   definition prunes its images on the next run. `docs/social-media-system.md` is the design source of
-  truth and `.agents/skills/social-asset/SKILL.md` carries the workflow.
+  truth, `docs/social-media-plan.md` is the posting calendar, and `.agents/skills/social-asset/SKILL.md`
+  carries the workflow.
 - **App screenshots** (`public/app-screenshots/{light,dark}/`) and
   `public/press/chordlist-press-kit.zip` — produced by the iOS app repository's automated
   screenshot tests and copied in by `pnpm sync:assets`, which `predev`/`prebuild` run for you. The

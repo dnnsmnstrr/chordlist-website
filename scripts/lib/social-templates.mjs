@@ -364,7 +364,22 @@ function progression({ definition, tokens, scale, inner }) {
  * URL, so the asset stays self-sourcing even when it is screenshotted onward.
  */
 function quote({ definition, tokens, scale, inner }) {
-  const size = fitSize(tokens.type.subhead * scale, definition.headline, { maxWidth: inner.width })
+  // Width alone is not enough here. A pulled line is as long as the sentence the
+  // article happens to use, so a four-line quote at the full subhead size runs
+  // past the body box and collides with the footnote — visibly, and only in the
+  // PNG. The stack is the quotation mark, the lines, and the optional
+  // attribution, so its height is linear in the type size and can simply be
+  // solved for.
+  const markRatio = 1.7 * 0.78
+  const lineRatio = 1.32 * definition.headline.length
+  const fixed =
+    Math.round(16 * scale) +
+    (definition.attribution ? Math.round(40 * scale) + Math.round(tokens.type.footnote * scale * 1.4) : 0)
+  const heightCap = (inner.height - fixed) / (markRatio + lineRatio)
+  const size = Math.min(
+    fitSize(tokens.type.subhead * scale, definition.headline, { maxWidth: inner.width }),
+    Math.round(heightCap),
+  )
 
   const children = [
     h(
@@ -556,6 +571,131 @@ function screenshot({ definition, tokens, scale, inner, format, assets }) {
 }
 
 /**
+ * file — a song as it actually sits on disk: filename, frontmatter, lyric lines.
+ *
+ * The social surface of components/lyric-preview.tsx, and the counterpart to
+ * `progression`: both show the product's subject instead of describing it, one
+ * as harmony and one as a file. It exists because the strongest argument this
+ * product has — a song is a text file you can read without us — cannot be made
+ * in a proportional face. Chords only sit above the right words in a monospaced
+ * grid, which is why the copy here is set in Geist Mono with `white-space: pre`
+ * and why no other template can stand in for this one.
+ *
+ * The type is fitted by width *and* by height. Every other template sets a few
+ * words, so width alone is enough; an excerpt is a block whose row count decides
+ * whether it fits at all. A card holds roughly six rows and a post twice that.
+ * Copy that shrinks past legibility wants fewer lines, not a smaller size — the
+ * excerpt is an illustration, never the whole file.
+ */
+function file({ definition, tokens, scale, inner }) {
+  const filename = definition.filename === undefined ? undefined : String(definition.filename)
+  const meta = (definition.frontmatter ?? []).map(String)
+  const lines = definition.lines.map(String)
+  const lineHeight = 1.5
+
+  const headlineSize = definition.headline
+    ? fitSize(tokens.type.subhead * scale, definition.headline, { maxWidth: inner.width })
+    : 0
+  const headlineGap = Math.round(56 * scale)
+  const headlineHeight = definition.headline
+    ? Math.round(headlineSize * 1.2 * definition.headline.length) + headlineGap
+    : 0
+
+  const filenameSize = Math.round(tokens.type.footnote * scale)
+  const ruleGap = Math.round(20 * scale)
+  const chromeHeight = filename ? Math.round(filenameSize * 1.4) + ruleGap * 2 : 0
+
+  // The blank row between frontmatter and lyrics is part of the file, so it is
+  // part of the budget too.
+  const separator = meta.length > 0 && lines.length > 0
+  const rows = meta.length + lines.length + (separator ? 1 : 0)
+  const widthCap = fitSize(tokens.type.code * scale, [...meta, ...lines], {
+    maxWidth: inner.width,
+    face: "mono",
+  })
+  const heightCap = (inner.height - headlineHeight - chromeHeight) / Math.max(1, rows * lineHeight)
+  const size = Math.round(Math.max(tokens.type.code * scale * 0.5, Math.min(widthCap, heightCap)))
+  const row = Math.round(size * lineHeight)
+
+  // `pre` is load-bearing: collapse the runs of spaces and every chord lands over
+  // the wrong syllable, which is precisely the thing the asset is claiming.
+  const codeLine = (text, key, color) =>
+    h(
+      "div",
+      {
+        key,
+        style: {
+          display: "flex",
+          height: row,
+          fontFamily: "Geist Mono",
+          fontSize: size,
+          lineHeight,
+          whiteSpace: "pre",
+          color,
+        },
+      },
+      text,
+    )
+
+  const children = []
+
+  if (filename) {
+    children.push(
+      h(
+        "div",
+        {
+          key: "filename",
+          style: {
+            display: "flex",
+            fontFamily: "Geist Mono",
+            fontSize: filenameSize,
+            color: tokens.colors.muted,
+          },
+        },
+        filename,
+      ),
+      h("div", {
+        key: "rule",
+        style: {
+          display: "flex",
+          height: Math.max(1, Math.round(scale)),
+          width: "100%",
+          marginTop: ruleGap,
+          marginBottom: ruleGap,
+          background: tokens.colors.rule,
+        },
+      }),
+    )
+  }
+
+  meta.forEach((text, index) => children.push(codeLine(text, `meta-${index}`, tokens.colors.muted)))
+  if (separator) children.push(h("div", { key: "separator", style: { display: "flex", height: row } }))
+  lines.forEach((text, index) => children.push(codeLine(text, `line-${index}`, tokens.colors.text)))
+
+  if (definition.headline) {
+    children.push(
+      h(
+        "div",
+        { key: "headline", style: { display: "flex", marginTop: headlineGap } },
+        textBlock(definition.headline, {
+          fontFamily: "Geist",
+          fontWeight: 700,
+          fontSize: headlineSize,
+          letterSpacing: "-0.02em",
+          lineHeight: 1.2,
+          color: tokens.colors.text,
+        }),
+      ),
+    )
+  }
+
+  return {
+    body: h("div", { style: { display: "flex", flexDirection: "column" } }, ...children),
+    footer: definition.footnote,
+  }
+}
+
+/**
  * photo — editorial photography as a full-bleed backdrop, typography over it.
  *
  * This is the sanctioned way to put the analog photography from
@@ -625,7 +765,7 @@ function photo({ definition, tokens, scale, inner, format, assets }) {
  * adding it here, listing its required fields below, and documenting it in
  * docs/social-media-system.md.
  */
-export const TEMPLATES = { statement, progression, quote, screenshot, photo }
+export const TEMPLATES = { statement, progression, quote, screenshot, file, photo }
 
 /** Fields each template requires beyond the common ones, checked before rendering. */
 export const TEMPLATE_FIELDS = {
@@ -633,5 +773,6 @@ export const TEMPLATE_FIELDS = {
   progression: ["chords"],
   quote: ["headline"],
   screenshot: ["screenshot"],
+  file: ["lines"],
   photo: ["photo"],
 }

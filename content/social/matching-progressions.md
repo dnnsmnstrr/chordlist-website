@@ -12,6 +12,7 @@ headline:
 footnote: chordlist.app/docs#playing
 alt: A chordlist song detail screen on iPhone listing other songs that share the same chord progression.
 created: 2026-08-09
+scheduled: 2026-09-07
 ---
 
 Open a song and chordlist shows you which other songs in your library use the same progression —

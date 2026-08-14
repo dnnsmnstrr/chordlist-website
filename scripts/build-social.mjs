@@ -130,6 +130,9 @@ const CONFIG = {
     headline: 78,
     subhead: 52,
     chord: 104,
+    // File excerpts are set well below the headline sizes on purpose: the point
+    // is that this is ordinary text at ordinary size, not a slogan in a mono face.
+    code: 38,
     footnote: 24,
   },
 
@@ -214,6 +217,40 @@ function readDefinition(file, data) {
   }
   if (data.texture !== undefined && data.backgroundImage !== undefined) {
     fail(`"texture" and "backgroundImage" cannot be used together`)
+  }
+
+  // The file template renders each entry as one monospaced row, so a string where
+  // a list belongs would silently become a single run-on line.
+  if (data.lines !== undefined && (!Array.isArray(data.lines) || data.lines.length === 0)) {
+    fail(`"lines" must be a non-empty list, one entry per rendered row`)
+  }
+  if (data.frontmatter !== undefined && !Array.isArray(data.frontmatter)) {
+    fail(`"frontmatter" must be a list, one entry per rendered row`)
+  }
+  if (data.filename !== undefined && typeof data.filename !== "string") {
+    fail(`"filename" must be a string`)
+  }
+
+  // Geist Mono covers Latin text and the punctuation a song file needs, and
+  // nothing else — a box-drawing character renders as a hollow tofu box rather
+  // than failing, which is invisible unless somebody opens the PNG. The docs page
+  // draws its folder tree with ├ and └, so this is the first thing an author
+  // copies in. Plain indentation reads the same at social sizes.
+  const asciiOnly = /^[\x20-\x7E]*$/
+  for (const [field, value] of [
+    ["filename", data.filename === undefined ? [] : [data.filename]],
+    ["frontmatter", data.frontmatter ?? []],
+    ["lines", data.lines ?? []],
+  ]) {
+    for (const line of Array.isArray(value) ? value : []) {
+      const offender = [...String(line)].find((character) => !asciiOnly.test(character))
+      if (offender !== undefined) {
+        fail(
+          `"${field}" contains ${JSON.stringify(offender)}, which Geist Mono cannot render — ` +
+            `it comes out as an empty box. Use plain ASCII: indent a folder tree with spaces.`,
+        )
+      }
+    }
   }
 
   const formats = data.formats ?? CONFIG.defaultFormats
@@ -479,6 +516,24 @@ async function main() {
   // Only directories this script owns are considered, and a failure to remove
   // one is reported rather than thrown — housekeeping should not fail a build
   // whose images all rendered.
+  //
+  // Dropping one format from a definition orphans a file rather than a
+  // directory, which is the easier case to miss: the slug still builds, so
+  // nothing looks wrong, and the format nobody asked for any more keeps serving.
+  for (const entry of manifest) {
+    const wanted = new Set(entry.outputs.map((output) => `${output.format}.png`))
+    const directory = path.join(destinationRoot, entry.slug)
+    for (const file of await readdir(directory).catch(() => [])) {
+      if (!file.endsWith(".png") || wanted.has(file)) continue
+      try {
+        await rm(path.join(directory, file))
+        console.log(`  removed ${outputDirectory}/${entry.slug}/${file} (format no longer declared)`)
+      } catch (error) {
+        console.warn(`  could not remove ${outputDirectory}/${entry.slug}/${file}: ${error.message}`)
+      }
+    }
+  }
+
   const built = new Set(manifest.map((entry) => entry.slug))
   for (const entry of await readdir(destinationRoot, { withFileTypes: true })) {
     if (!entry.isDirectory() || built.has(entry.name)) continue

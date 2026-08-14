@@ -13,7 +13,8 @@ type scale updates every asset in the repository instead of only the ones somebo
 This document covers the typographic assets the build produces. It is a companion to
 [Visual language](visual-language.md), which governs editorial photography, and to
 [Blog editorial guidelines](blog-editorial-guidelines.md), which governs the voice this copy is
-written in.
+written in. [Social media plan](social-media-plan.md) is the running calendar of what exists, when it
+goes out, and which campaign it belongs to.
 
 ## How the pieces fit
 
@@ -61,7 +62,7 @@ Two cropping rules the build cannot enforce for you:
 
 ## Templates
 
-Pick the template that matches what the asset is actually saying. Adding a fifth template is a
+Pick the template that matches what the asset is actually saying. Adding a sixth template is a
 change to the system; reaching for an existing one is the normal case.
 
 **`statement`** — one short claim, set large. The workhorse: launch notes, feature announcements,
@@ -80,9 +81,37 @@ the right edge beside a short line. `full` keeps the complete screen visible; `d
 top-aligned crop when the interface needs to read at timeline size. Screenshots are never tinted or
 perspective-tilted. Requires `screenshot`, naming a file in that directory.
 
+**`file`** — a song as it sits on disk: an optional filename, an optional frontmatter block, and the
+chord and lyric lines, set in the mono face with the spacing preserved exactly as authored. The
+counterpart to `progression`: both show the subject instead of describing it, one as harmony and one
+as a file. Requires `lines`. See [Setting a file](#setting-a-file) below.
+
 **`photo`** — editorial photography as a full-bleed backdrop with typography over it. Requires
 `photo`, naming a master in `assets/visual-references/analog-photography/`. See
 [Using the photography](#using-the-photography) below, which has rules the other templates do not.
+
+## Setting a file
+
+The claim this product makes is that a song is a readable text file, and that claim cannot be set in
+a proportional face — chords only land above the right syllables on a monospaced grid. So `file`
+renders every entry of `frontmatter` and `lines` as one row of Geist Mono with `white-space: pre`,
+and the leading and interior spaces you author are the ones that ship. Copy a real excerpt rather
+than retyping one, and check the alignment in the PNG.
+
+Three things to know before writing one:
+
+- **Keep it to an excerpt.** The type is fitted by width *and* by height, so a long block shrinks
+  rather than overflowing. A `card` holds roughly six rows and a `post` about twelve, counting the
+  blank row the template puts between the frontmatter and the body. Past that the excerpt is
+  competing with the footnote for the reader — cut lines, or drop `card` and ship it vertical.
+- **ASCII only.** Geist Mono covers Latin text and ordinary punctuation. A box-drawing character
+  renders as a hollow box rather than failing, so the build rejects anything outside printable ASCII
+  in `filename`, `frontmatter`, and `lines`, and names the offending character. Indent a folder tree
+  with spaces — the `├──` in the docs page is the first thing anyone reaches for, and it is the one
+  thing that cannot be used here.
+- **A headline is optional and expensive.** On a `card` a headline and a six-row excerpt cannot both
+  be large. Either let the file carry the asset on its own, or keep the excerpt to about five short
+  rows.
 
 ## Using the photography
 
@@ -152,7 +181,7 @@ whoever posts it is not rewriting copy that was already reviewed.
 
 | Field | Required | Rules |
 | --- | --- | --- |
-| `template` | yes | One of the four above. An unknown name fails the build. |
+| `template` | yes | One of the five above. An unknown name fails the build. |
 | `alt` | yes | Describes the visible asset. Never empty — these are published images. |
 | `headline` | per template | One list entry per rendered line. Line breaks are an editorial decision. |
 | `formats` | no | Defaults to `card` and `post`. |
@@ -160,6 +189,9 @@ whoever posts it is not rewriting copy that was already reviewed.
 | `footnote` | no | The bottom line. Normally the canonical URL for the thing being posted. |
 | `chords` / `numerals` | `progression` | `chords` is a list. `numerals` is one string. |
 | `attribution` | `quote` | Normally the post title the line came from. |
+| `lines` | `file` | The file's body, one entry per rendered row. Spacing is preserved; printable ASCII only. |
+| `frontmatter` | no | A `file`'s YAML block, one entry per row, set muted above the body. |
+| `filename` | no | A `file`'s name, set above a hairline rule. |
 | `screenshot` | `screenshot` | A filename in `public/app-screenshots/dark/`. |
 | `screenshotMode` | no | Screenshot framing: `full` keeps the complete screen visible; `detail` uses a larger top-aligned crop. Defaults to `full`. |
 | `deviceFrame` | no | `true` adds a dark hardware shell and camera island around a screenshot. Defaults to `false`. |
@@ -214,6 +246,8 @@ Before committing a new or changed asset, confirm that:
 - product claims match `lib/site-config.ts` and the current app, and no store URL is printed into
   the image;
 - a `screenshot` asset uses a current file from `public/app-screenshots/dark/`;
+- a `file` asset is a real excerpt whose chords still sit over the right syllables, and is short
+  enough to read at the sizes it ships in;
 - a `photo` asset carries mood rather than a product claim, keeps its copy legible against the
   brightest part of the frame, and either survives its crop or has been given a composition made for
   that ratio;
