@@ -17,7 +17,7 @@ lines:
 footnote: chordlist.app/#preview
 alt: A song file shown as plain text, with the filename Morning Light.md above a YAML block reading "chords G D Em C" and a chord line sitting over the lyric "Coffee on the counter going cold".
 created: 2026-08-14
-scheduled: 2026-08-20
+scheduled: 2026-08-19
 ---
 
 This is a whole song, as chordlist stores it. A Markdown file in a folder you chose, with the

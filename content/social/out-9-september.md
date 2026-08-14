@@ -11,7 +11,7 @@ headline:
 footnote: chordlist.app
 alt: A dark chordlist card reading "Out 9 September." over a faint photograph of a stage microphone.
 created: 2026-08-14
-scheduled: 2026-08-19
+scheduled: 2026-08-26
 ---
 
 chordlist is on the App Store to pre-order now, and installs itself on release day.

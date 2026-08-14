@@ -5,7 +5,7 @@
     "alt": "A song file shown as plain text, with the filename Morning Light.md above a YAML block reading \"chords G D Em C\" and a chord line sitting over the lyric \"Coffee on the counter going cold\".",
     "caption": "This is a whole song, as chordlist stores it. A Markdown file in a folder you chose, with the\nchords sitting above the words the way they do on a chord sheet.\n\nThe sample file on the home page is real — download it and open it in anything.\n\nchordlist.app/#preview",
     "created": "2026-08-14",
-    "scheduled": "2026-08-20",
+    "scheduled": "2026-08-19",
     "outputs": [
       {
         "format": "card",
@@ -83,7 +83,7 @@
     "alt": "A chordlist song editor on iPhone with a purpose-built chord keyboard open below the song's progression.",
     "caption": "Entering a progression with an ordinary keyboard means hunting for sharps and hoping the\ncapitalisation sticks. This one is built for chord symbols, so a progression takes a few taps.\n\nchordlist.app/docs#adding-songs",
     "created": "2026-08-14",
-    "scheduled": "2026-09-04",
+    "scheduled": "2026-09-20",
     "outputs": [
       {
         "format": "card",
@@ -147,9 +147,9 @@
     "slug": "doo-wop-changes",
     "template": "progression",
     "alt": "The chords C, A minor, F and G set large above the Roman numerals one, six minor, four, five.",
-    "caption": "C–Am–F–G is the doo-wop turnaround: four bars that circle straight back to the start, which is\nwhy so many fifties and sixties songs sit on it for a whole verse.\n\nchordlist.app/docs#playing",
+    "caption": "C–Am–F–G is the doo-wop turnaround: four bars that circle straight back to the start, which is\nwhy so many fifties and sixties songs sit on it for a whole verse.\n\nChord symbols above, Roman numerals below — today's post is about when to reach for which:\nchordlist.app/blog/chord-notation-styles",
     "created": "2026-08-14",
-    "scheduled": "2026-09-23",
+    "scheduled": "2026-09-04",
     "outputs": [
       {
         "format": "card",
@@ -193,7 +193,7 @@
     "alt": "A dark chordlist card reading \"Your lyrics and chords, as files in your pocket.\"",
     "caption": "Every song you save is a plain Markdown file in a folder you choose. No account, no export\nbutton, no lock-in — open the same folder in any editor on any device.\n\nchordlist for iPhone and iPad. chordlist.app",
     "created": "2026-08-09",
-    "scheduled": "2026-09-11",
+    "scheduled": "2026-09-13",
     "outputs": [
       {
         "format": "post",
@@ -213,9 +213,9 @@
     "slug": "matching-progressions",
     "template": "screenshot",
     "alt": "A chordlist song detail screen on iPhone listing other songs that share the same chord progression.",
-    "caption": "Open a song and chordlist shows you which other songs in your library use the same progression —\nthe starting point for a mashup, or just an easy second song to play in the same shape.\n\nchordlist.app/docs#playing",
+    "caption": "Open a song and chordlist shows you which other songs in your library use the same progression —\nthe starting point for a mashup, or just an easy second song to play in the same shape.\n\nToday's post covers what counts as a match and how to turn the results into a setlist:\nchordlist.app/blog/finding-songs-that-share-a-progression",
     "created": "2026-08-09",
-    "scheduled": "2026-09-07",
+    "scheduled": "2026-09-11",
     "outputs": [
       {
         "format": "card",
@@ -237,7 +237,7 @@
     "alt": "A dark chordlist card reading \"No account. No upload. Just a folder.\"",
     "caption": "chordlist does not upload or sync your song library. You pick the folder through the Files\npicker, and if that folder happens to be in iCloud Drive, it is Apple's file service doing the\nsyncing — not us.\n\nchordlist.app/privacy",
     "created": "2026-08-14",
-    "scheduled": "2026-08-30",
+    "scheduled": "2026-09-02",
     "outputs": [
       {
         "format": "card",
@@ -281,7 +281,7 @@
     "alt": "A dark chordlist card reading \"There is no export button. There is nothing to export.\"",
     "caption": "An export turns your library into a second copy that has to keep working. When every song starts\nas an ordinary Markdown file, copying the folder is the export.\n\nchordlist.app/faq",
     "created": "2026-08-14",
-    "scheduled": "2026-09-14",
+    "scheduled": "2026-09-23",
     "outputs": [
       {
         "format": "card",
@@ -303,7 +303,7 @@
     "alt": "A dark chordlist card reading \"Out 9 September.\" over a faint photograph of a stage microphone.",
     "caption": "chordlist is on the App Store to pre-order now, and installs itself on release day.\n\nA local-first songbook for iPhone and iPad: every song a Markdown file in a folder you chose.\nchordlist.app",
     "created": "2026-08-14",
-    "scheduled": "2026-08-19",
+    "scheduled": "2026-08-26",
     "outputs": [
       {
         "format": "card",
@@ -403,7 +403,7 @@
     "alt": "A chordlist search screen on iPhone showing results for piano across song titles, artists, and tags.",
     "caption": "One field searches song titles, artists, and tags together, and the library stays in view while\nyou narrow it. Tag filters take it the rest of the way.\n\nchordlist.app/docs#library",
     "created": "2026-08-14",
-    "scheduled": "2026-09-21",
+    "scheduled": "2026-09-25",
     "outputs": [
       {
         "format": "card",
@@ -425,7 +425,7 @@
     "alt": "A dark chordlist card reading \"Ten songs free. Then one purchase, not a subscription.\"",
     "caption": "chordlist is a free download with a library of up to ten songs, and an optional one-time purchase\nfor unlimited songs. Nothing recurring, and nothing that stops your files opening if you stop\npaying.\n\nchordlist.app/faq",
     "created": "2026-08-14",
-    "scheduled": "2026-08-26",
+    "scheduled": "2026-08-30",
     "outputs": [
       {
         "format": "card",
@@ -447,7 +447,7 @@
     "alt": "A folder tree in monospaced text showing a songbook folder containing artist folders for Nina Simone and Radiohead, each holding one Markdown song file.",
     "caption": "There is no database and no library file. Rename a song and it is renamed; move it to another\nartist folder and its artist changes. The folder is the structure.\n\nchordlist.app/docs#file-format",
     "created": "2026-08-14",
-    "scheduled": "2026-09-02",
+    "scheduled": "2026-09-06",
     "outputs": [
       {
         "format": "card",

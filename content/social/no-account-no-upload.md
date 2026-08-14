@@ -11,7 +11,7 @@ headline:
 footnote: chordlist.app/privacy
 alt: A dark chordlist card reading "No account. No upload. Just a folder."
 created: 2026-08-14
-scheduled: 2026-08-30
+scheduled: 2026-09-02
 ---
 
 chordlist does not upload or sync your song library. You pick the folder through the Files
