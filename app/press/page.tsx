@@ -128,6 +128,7 @@ export default function PressPage() {
                 value={siteConfig.contact.press}
                 href={`mailto:${siteConfig.contact.press}`}
               />
+              <DetailRow label={pressCopy.details.labels.appStoreLink} value={pressCopy.details.appStoreLink} href={siteConfig.links.appStore} />
             </dl>
           </CollapsibleSection>
 

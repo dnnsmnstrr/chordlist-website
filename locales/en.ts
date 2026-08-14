@@ -382,11 +382,13 @@ export const pressCopy = {
       category: "Category",
       website: "Website",
       pressContact: "Press contact",
+      appStoreLink: "App Store"
     },
     platforms: "iPhone and iPad",
     requirements: `iOS or iPadOS ${siteConfig.minimumOSVersion} or later`,
     category: "Music",
     website: "chordlist.app",
+    appStoreLink: "6798344297"
   },
   boilerplate: {
     sectionTitle: "Boilerplate description",

@@ -24,10 +24,10 @@ export const siteConfig = {
   links: {
     // Add the public TestFlight URL here to use the TestFlight CTA.
     testFlight: "https://testflight.apple.com/join/HS4DNEH8" as string | null,
-    // Add the public App Store URL here once the listing is live.
-    appStore: null as string | null,
     // Add a pre-order URL here to turn every app CTA into a pre-order link.
-    preorder: null as string | null,
+    preorder: "https://apps.apple.com/us/app/chordlist-personal-songbook/id6798344297" as string | null,
+    // Add the public App Store URL here once the listing is live.
+    appStore: "https://apps.apple.com/us/app/chordlist-personal-songbook/id6798344297" as string | null,
     pressKitArchive: "/press/chordlist-press-kit.zip" as string | null,
     terms: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/",
   },
