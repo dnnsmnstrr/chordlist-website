@@ -151,7 +151,12 @@ export function ScreenshotGallery({ screenshots, variant = "press" }: Screenshot
             className={
               isShowcase
                 ? screenshot.type === "video"
-                  ? "w-[82vw] max-w-[24rem] shrink-0 snap-center sm:col-span-2 sm:w-auto sm:min-w-0 sm:max-w-none"
+                  ? // The video card is deliberately wider than a screenshot, so matching
+                    // widths would leave it taller — 9:16 over 82vw is more height than
+                    // 1170:2532 over 62vw. Below sm the card therefore takes the screenshot
+                    // card's computed height and the poster crops into it, which is what the
+                    // sm-and-up grid row already does.
+                    "h-[calc(62vw*2532/1170)] max-h-[calc(17rem*2532/1170)] w-[82vw] max-w-[24rem] shrink-0 snap-center sm:col-span-2 sm:h-auto sm:max-h-none sm:w-auto sm:min-w-0 sm:max-w-none"
                   : "w-[62vw] max-w-[17rem] shrink-0 snap-center sm:w-auto sm:min-w-0 sm:max-w-none"
                 : isGallery
                   ? "mb-6 inline-flex w-full break-inside-avoid flex-col gap-3"
@@ -167,7 +172,7 @@ export function ScreenshotGallery({ screenshots, variant = "press" }: Screenshot
               aria-label={screenshotGalleryCopy.viewFullscreen(screenshot.title)}
               className={
                 isShowcase
-                  ? `block w-full cursor-zoom-in overflow-hidden rounded-[1.25rem] border border-border bg-muted shadow-2xl shadow-foreground/5 transition-colors hover:border-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:rounded-[2rem] ${screenshot.type === "video" ? "sm:h-full" : ""}`
+                  ? `block w-full cursor-zoom-in overflow-hidden rounded-[1.25rem] border border-border bg-muted shadow-2xl shadow-foreground/5 transition-colors hover:border-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:rounded-[2rem] ${screenshot.type === "video" ? "h-full" : ""}`
                   : "block w-full cursor-zoom-in overflow-hidden rounded-xl border border-border bg-muted transition-colors hover:border-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               }
             >
@@ -324,12 +329,10 @@ function GalleryMediaView({
       <span
         className={
           fillPreview
-            ? // From sm up the showcase is a grid whose row stretches this card, so `h-full`
-              // has a definite height to match the screenshots against. In the mobile
-              // carousel the button's height is auto, a percentage height resolves to zero,
-              // and the poster is absolutely positioned — so below sm the card has to carry
-              // the video's own ratio or it collapses to nothing.
-              "relative block aspect-[1080/1920] bg-black sm:aspect-auto sm:h-full sm:min-h-full"
+            ? // The poster is absolutely positioned, so this span needs a definite height or
+              // it collapses to nothing. It gets one from the showcase card: the grid row
+              // stretches it from sm up, and below sm the card carries an explicit height.
+              "relative block h-full min-h-full bg-black"
             : "relative block aspect-[1080/1920] bg-black"
         }
       >

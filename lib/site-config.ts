@@ -3,7 +3,7 @@ export const siteConfig = {
   name: "chordlist",
   operator: "makerer studio",
   url: "https://chordlist.app",
-  launchDate: "2026-08-30",
+  launchDate: "2026-09-09",
   minimumOSVersion: 18,
   freeSongLimit: 10,
   contact: {
@@ -26,11 +26,25 @@ export const siteConfig = {
     testFlight: "https://testflight.apple.com/join/HS4DNEH8" as string | null,
     // Add a pre-order URL here to turn every app CTA into a pre-order link.
     preorder: "https://apps.apple.com/us/app/chordlist-personal-songbook/id6798344297" as string | null,
-    // Add the public App Store URL here once the listing is live.
-    appStore: "https://apps.apple.com/us/app/chordlist-personal-songbook/id6798344297" as string | null,
+    // Add the public App Store URL here once the listing is live. It is the same
+    // URL as the pre-order above, so setting it on launch day is what flips every
+    // CTA from "Pre-order" to "Download".
+    appStore: null as string | null,
     pressKitArchive: "/press/chordlist-press-kit.zip" as string | null,
     terms: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/",
   },
 } as const
 
-export const primaryAppLink = siteConfig.links.testFlight ?? siteConfig.links.appStore ?? siteConfig.links.preorder
+/**
+ * The strongest offer we can make, in order: buying it beats reserving it, and
+ * reserving it beats joining a beta. Keeping the beta last means adding a store
+ * link is always what moves the CTA forward, never something that has to be
+ * paired with clearing `testFlight`.
+ */
+export const primaryAppLink = siteConfig.links.appStore ?? siteConfig.links.preorder ?? siteConfig.links.testFlight
+
+/**
+ * The App Store product page, whether it is selling or taking pre-orders. Press
+ * want the listing either way, so this stays linked through the pre-order window.
+ */
+export const storeListingLink = siteConfig.links.appStore ?? siteConfig.links.preorder

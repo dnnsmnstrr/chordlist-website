@@ -8,7 +8,7 @@ import { SiteFooter } from "@/components/site-footer"
 import { SiteHeader } from "@/components/site-header"
 import { Button } from "@/components/ui/button"
 import { pageMetadata } from "@/lib/page-metadata"
-import { siteConfig } from "@/lib/site-config"
+import { siteConfig, storeListingLink } from "@/lib/site-config"
 import { pressCopy } from "@/locales/en"
 
 export const metadata: Metadata = pageMetadata({
@@ -128,11 +128,11 @@ export default function PressPage() {
                 value={siteConfig.contact.press}
                 href={`mailto:${siteConfig.contact.press}`}
               />
-              {siteConfig.links.appStore ? (
+              {storeListingLink ? (
                 <DetailRow
                   label={pressCopy.details.labels.appStoreLink}
                   value={pressCopy.details.appStoreLink}
-                  href={siteConfig.links.appStore}
+                  href={storeListingLink}
                 />
               ) : null}
             </dl>
