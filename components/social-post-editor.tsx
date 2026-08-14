@@ -8,7 +8,7 @@ import { parse as parseYaml } from "yaml"
 import { Button, buttonVariants } from "@/components/ui/button"
 
 type FormatName = "card" | "post" | "story"
-type TemplateName = "statement" | "progression" | "quote" | "screenshot" | "photo"
+type TemplateName = "statement" | "progression" | "quote" | "screenshot" | "file" | "photo"
 type ThemeName = "ink" | "paper" | "blueprint"
 type BackgroundMode = "plain" | "texture" | "image"
 type TextureName = "studio" | "stage" | "sampler" | "guitar" | "piano-keys" | "piano-score"
@@ -27,6 +27,9 @@ type EditorConfig = {
   chords: string
   numerals: string
   attribution: string
+  filename: string
+  frontmatter: string
+  fileLines: string
   screenshot: string
   screenshotMode: ScreenshotMode
   deviceFrame: boolean
@@ -82,6 +85,7 @@ const templates: { name: TemplateName; label: string; description: string }[] = 
   { name: "progression", label: "Progression", description: "Chords and numerals" },
   { name: "quote", label: "Quote", description: "An attributed pull quote" },
   { name: "screenshot", label: "Screenshot", description: "Product evidence" },
+  { name: "file", label: "File", description: "A song as plain text" },
   { name: "photo", label: "Photo", description: "Editorial atmosphere" },
 ]
 
@@ -126,6 +130,9 @@ const initialConfig: EditorConfig = {
   chords: "C G Am F",
   numerals: "I · V · vi · IV",
   attribution: "Why plain-text songbooks last",
+  filename: "Morning Light.md",
+  frontmatter: "---\nchords: G D Em C\n---",
+  fileLines: "G            D\nCoffee on the counter going cold",
   screenshot: screenshots[1],
   screenshotMode: "detail",
   deviceFrame: false,
@@ -159,6 +166,17 @@ function fontFamily(variable: string, fallback: string) {
 
 function lines(value: string) {
   return value.split("\n").map((line) => line.trimEnd()).filter(Boolean)
+}
+
+/**
+ * Rows of a file excerpt. Unlike `lines`, leading spaces survive and interior
+ * blank rows are kept — both are the alignment the file template exists to show.
+ */
+function fileRows(value: string) {
+  const rows = value.split("\n").map((line) => line.trimEnd())
+  while (rows.length > 0 && rows[rows.length - 1] === "") rows.pop()
+  while (rows.length > 0 && rows[0] === "") rows.shift()
+  return rows
 }
 
 function fitFont(
@@ -487,6 +505,60 @@ async function renderPost(
     }
   }
 
+  if (config.template === "file") {
+    const meta = fileRows(config.frontmatter)
+    const body = fileRows(config.fileLines)
+    const separator = meta.length > 0 && body.length > 0
+    const rowCount = meta.length + body.length + (separator ? 1 : 0)
+    const filename = config.filename.trim()
+
+    const headlineSize = headline.length ? fitFont(context, headline, 52 * scale, innerWidth, 700, sans) : 0
+    const headlineGap = 56 * scale
+    const headlineHeight = headline.length ? headline.length * headlineSize * 1.2 + headlineGap : 0
+
+    const filenameSize = Math.round(24 * scale)
+    const ruleGap = 20 * scale
+    const chromeHeight = filename ? filenameSize * 1.4 + ruleGap * 2 : 0
+
+    // Mirrors the file template in scripts/lib/social-templates.mjs: fitted by
+    // width and by height, because an excerpt is a block rather than a phrase.
+    const widthCap = fitFont(context, [...meta, ...body], 38 * scale, innerWidth, 400, mono, 0.5)
+    const heightCap = (bodyHeight - headlineHeight - chromeHeight) / Math.max(1, rowCount * 1.5)
+    const size = Math.round(Math.max(38 * scale * 0.5, Math.min(widthCap, heightCap)))
+    const row = Math.round(size * 1.5)
+
+    const groupHeight = chromeHeight + rowCount * row + headlineHeight
+    let y = bodyTop + (bodyHeight - groupHeight) / 2
+
+    if (filename) {
+      context.fillStyle = activeTheme.muted
+      context.font = `400 ${filenameSize}px ${mono}`
+      context.textBaseline = "top"
+      context.fillText(filename, padding, y)
+      y += filenameSize * 1.4 + ruleGap
+      context.fillStyle = activeTheme.rule
+      context.fillRect(padding, y, innerWidth, Math.max(1, Math.round(scale)))
+      y += ruleGap
+    }
+
+    context.textBaseline = "top"
+    context.font = `400 ${size}px ${mono}`
+    meta.forEach((line, index) => {
+      context.fillStyle = activeTheme.muted
+      context.fillText(line, padding, y + index * row)
+    })
+    y += meta.length * row + (separator ? row : 0)
+    body.forEach((line, index) => {
+      context.fillStyle = activeTheme.text
+      context.fillText(line, padding, y + index * row)
+    })
+    y += body.length * row
+
+    if (headline.length) {
+      drawTextLines(context, headline, padding, y + headlineGap, headlineSize, 1.2, activeTheme.text, 700, sans)
+    }
+  }
+
   if (config.template === "screenshot") {
     const image = await loadImage(`/app-screenshots/dark/${config.screenshot}`)
     const detail = config.screenshotMode === "detail"
@@ -623,6 +695,9 @@ function parseImportedConfig(source: string): EditorConfig {
     chords: Array.isArray(data.chords) ? data.chords.map(String).join(" ") : importedString(data.chords),
     numerals: importedString(data.numerals),
     attribution: importedString(data.attribution),
+    filename: importedString(data.filename),
+    frontmatter: importedLines(data.frontmatter),
+    fileLines: importedLines(data.lines),
     screenshot: importedString(data.screenshot, initialConfig.screenshot),
     screenshotMode: screenshotMode === "detail" ? "detail" : "full",
     deviceFrame: data.deviceFrame === true,
@@ -672,6 +747,13 @@ function configMarkdown(config: EditorConfig) {
   if (config.template === "progression") {
     output.push("chords:", ...config.chords.split(/\s+/).filter(Boolean).map((chord) => `  - ${yamlString(chord)}`))
     if (config.numerals.trim()) output.push(`numerals: ${yamlString(config.numerals.trim())}`)
+  }
+  if (config.template === "file") {
+    if (config.filename.trim()) output.push(`filename: ${yamlString(config.filename.trim())}`)
+    const meta = fileRows(config.frontmatter)
+    if (meta.length) output.push("frontmatter:", ...meta.map((line) => `  - ${yamlString(line)}`))
+    const body = fileRows(config.fileLines)
+    if (body.length) output.push("lines:", ...body.map((line) => `  - ${yamlString(line)}`))
   }
   const headline = lines(config.headline)
   if (headline.length) output.push("headline:", ...headline.map((line) => `  - ${yamlString(line)}`))
@@ -920,7 +1002,33 @@ export function SocialPostEditor() {
               </>
             ) : null}
 
-            <Field label="Headline" hint="One rendered line per row">
+            {config.template === "file" ? (
+              <>
+                <Field label="Filename" hint="Optional">
+                  <input
+                    className={`${inputClass} font-mono`}
+                    value={config.filename}
+                    onChange={(event) => update("filename", event.target.value)}
+                  />
+                </Field>
+                <Field label="Frontmatter" hint="Optional, set muted">
+                  <textarea
+                    className={`${inputClass} min-h-24 resize-y font-mono leading-relaxed`}
+                    value={config.frontmatter}
+                    onChange={(event) => update("frontmatter", event.target.value)}
+                  />
+                </Field>
+                <Field label="Lines" hint="Spacing is preserved · ASCII only">
+                  <textarea
+                    className={`${inputClass} min-h-28 resize-y font-mono leading-relaxed`}
+                    value={config.fileLines}
+                    onChange={(event) => update("fileLines", event.target.value)}
+                  />
+                </Field>
+              </>
+            ) : null}
+
+            <Field label="Headline" hint={config.template === "file" ? "Optional" : "One rendered line per row"}>
               <textarea
                 className={`${inputClass} min-h-28 resize-y leading-relaxed`}
                 value={config.headline}
