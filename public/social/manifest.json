@@ -5,7 +5,7 @@
     "alt": "A song file shown as plain text, with the filename Morning Light.md above a YAML block reading \"chords G D Em C\" and a chord line sitting over the lyric \"Coffee on the counter going cold\".",
     "caption": "This is a whole song, as chordlist stores it. A Markdown file in a folder you chose, with the\nchords sitting above the words the way they do on a chord sheet.\n\nThe sample file on the home page is real — download it and open it in anything.\n\nchordlist.app/#preview",
     "created": "2026-08-14",
-    "scheduled": "2026-08-19",
+    "scheduled": "2026-08-16",
     "outputs": [
       {
         "format": "card",
@@ -25,9 +25,9 @@
     "slug": "beta-is-open",
     "template": "statement",
     "alt": "A dark chordlist card reading \"Play it before it ships.\"",
-    "caption": "A free public beta is running on TestFlight until release day. Point it at a folder, add a song,\nand tell us what gets in your way.\n\niPhone and iPad, iOS 18 or later. chordlist.app",
+    "caption": "A free public beta runs on TestFlight until release day, which is two weeks from today. Point it\nat a folder, add a song, and tell me what gets in your way.\n\niPhone and iPad, iOS 18 or later. chordlist.app",
     "created": "2026-08-14",
-    "scheduled": "2026-08-16",
+    "scheduled": "2026-08-26",
     "outputs": [
       {
         "format": "card",
@@ -301,9 +301,9 @@
     "slug": "out-9-september",
     "template": "statement",
     "alt": "A dark chordlist card reading \"Out 9 September.\" over a faint photograph of a stage microphone.",
-    "caption": "chordlist is on the App Store to pre-order now, and installs itself on release day.\n\nA local-first songbook for iPhone and iPad: every song a Markdown file in a folder you chose.\nchordlist.app",
+    "caption": "chordlist is on the App Store to pre-order — out 9 September.\n\nEvery song is a Markdown file in a folder you chose. No account, nothing uploaded, nothing to\nexport.\n\nWant it before then? Message me for a TestFlight link — iPhone or iPad, iOS 18 or later.\n\nchordlist.app",
     "created": "2026-08-14",
-    "scheduled": "2026-08-26",
+    "scheduled": "2026-08-16",
     "outputs": [
       {
         "format": "card",
@@ -414,6 +414,28 @@
       {
         "format": "post",
         "file": "public/social/search-across-everything/post.png",
+        "width": 1080,
+        "height": 1350
+      }
+    ]
+  },
+  {
+    "slug": "song-library",
+    "template": "screenshot",
+    "alt": "A chordlist song library on iPhone grouped by artist, each song showing its chord progression and tags beneath the title.",
+    "caption": "Every song in the library carries its artist, its tags, and its chord progression, so you can find\nsomething to play without opening anything first.\n\nGroup by artist or title, or sort by what you played last.\n\nchordlist.app/docs#library",
+    "created": "2026-08-16",
+    "scheduled": "2026-08-19",
+    "outputs": [
+      {
+        "format": "card",
+        "file": "public/social/song-library/card.png",
+        "width": 1200,
+        "height": 630
+      },
+      {
+        "format": "post",
+        "file": "public/social/song-library/post.png",
         "width": 1080,
         "height": 1350
       }

@@ -18,7 +18,9 @@ Three phases, and the calendar below is built around them:
 
 1. **Pre-order run-up** (now → 8 September). The app is on the App Store to pre-order and the public
    TestFlight beta is open. Nothing in the set said either of those things, which was the largest gap
-   in the calendar — four assets now cover it.
+   in the calendar. It opens with the announcement on **Sunday 16 August** and works through the
+   product's four best arguments — the file, the library, the pricing, the privacy — while the beta
+   is still worth joining.
 2. **Launch week** (9 September). One asset announces availability on the day; the positioning and
    atmosphere pieces follow it rather than competing with it.
 3. **After** (mid-September onward). The recurring series carry the account once the launch news is
@@ -58,18 +60,34 @@ After 18 September the blog has nothing scheduled, so Fridays are free again.
 
 ## Pre-order run-up
 
-- [ ] **Sun 16 Aug** · [beta-is-open](../content/social/beta-is-open.md) — the TestFlight beta, which
-  nothing had announced. `card` `post` `story` · [preview](../public/social/beta-is-open/card.png)
-- [ ] **Wed 19 Aug** · [anatomy-of-a-song-file](../content/social/anatomy-of-a-song-file.md) — a whole
-  song as a text file. `card` `post` · [preview](../public/social/anatomy-of-a-song-file/card.png)
+- [ ] **Sun 16 Aug — the announcement.** Two assets, posted together:
+  [out-9-september](../content/social/out-9-september.md) then
+  [anatomy-of-a-song-file](../content/social/anatomy-of-a-song-file.md) — the news, then the thing
+  itself, because most of the people who see this post have never heard of it.
+  `card` `post` `story` · [preview](../public/social/out-9-september/card.png) ·
+  [preview](../public/social/anatomy-of-a-song-file/post.png)
+  - On Instagram it is one carousel in that order, at `post` size. On X the card carries it, with the
+    file image attached second.
+  - The caption on `out-9-september` is the one to post: it says the pre-order is live and invites a
+    message for a TestFlight link. It is written to fit X; on Instagram there is room to add that
+    pre-ordering installs the app for you on release day, and that the link is in the bio.
+  - Check that X direct messages are open to people who do not follow you before posting, or the
+    invitation goes nowhere. `feedback@chordlist.app` is the fallback for anyone who would rather
+    email. The public TestFlight link is also on the site, so this is an invitation to talk rather
+    than the only way in.
+- [ ] **Wed 19 Aug** · [song-library](../content/social/song-library.md) — the first look at the app
+  itself. Nothing else in the pre-order window shows a screen, and this one makes the case on its own:
+  every song in the list carries its chord progression. `card` `post` ·
+  [preview](../public/social/song-library/card.png)
 - [ ] **Fri 21 Aug** · [chords-by-ear](../content/social/chords-by-ear.md) — 📝 pull quote, with
   [Finding the chords in a song](../content/blog/finding-the-chords-in-a-song.md). `card` `post` ·
   [preview](../public/social/chords-by-ear/card.png)
 - [ ] **Sun 23 Aug** · [plain-text-lasts](../content/social/plain-text-lasts.md) — pull quote from
   [Why your songbook should be plain text](../content/blog/why-plain-text-songbooks-last.md), live
   since 1 August. `card` `post` · [preview](../public/social/plain-text-lasts/card.png)
-- [ ] **Wed 26 Aug** · [out-9-september](../content/social/out-9-september.md) — the release date, two
-  weeks out. `card` `post` `story` · [preview](../public/social/out-9-september/card.png)
+- [ ] **Wed 26 Aug** · [beta-is-open](../content/social/beta-is-open.md) — last call for testers,
+  exactly two weeks out from release and the last moment their feedback can still change anything.
+  `card` `post` `story` · [preview](../public/social/beta-is-open/card.png)
 - [ ] **Fri 28 Aug** · [four-chords](../content/social/four-chords.md) — 📝 with
   [Learn a four-chord pop progression](../content/blog/how-to-play-almost-any-pop-song.md). `card`
   `post` · [preview](../public/social/four-chords/card.png)
@@ -151,9 +169,8 @@ Unwritten:
 - [ ] nothing to migrate when you leave
 
 **One screen at a time.** Seven screenshots sit in [`public/app-screenshots/dark/`](../public/app-screenshots/dark)
-and three now have assets. Unwritten:
+and four now have assets. Unwritten:
 
-- [ ] `01-Song-List---4-Chord-Library.png` — the library grouped by artist
 - [ ] `05-Tag-Filter---Piano.png` — narrowing by tag
 - [ ] `06-Settings---Appearance.png` — accent colour and appearance, a light-hearted one
 - [ ] autoscroll and transposition, neither of which has a screenshot yet — they need one from the
