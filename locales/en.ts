@@ -54,7 +54,7 @@ export const commonCopy = {
     // does not want to wait for the release has somewhere to go. See
     // components/app-cta.tsx.
     betaAside: {
-      prefix: `Want it before ${launchDate}?`,
+      prefix: `Want it before the official release?`,
       link: "Join the TestFlight beta",
       suffix: ".",
     },
@@ -133,8 +133,10 @@ export const homeCopy = {
       "Chords sit right above the words, so you can read and play at a glance. This is a real file — download it and open it anywhere.",
     download: "Download",
     downloadLabel: "Download sample song",
+    openInApp: `Open this song in ${siteConfig.name}`,
     frontmatterHelp:
       "Frontmatter: metadata about the song stored at the top of the file. Used by the app to track chord progressions and other song details.",
+    frontmatterHelpLabel: "What is frontmatter?",
   },
   closingCta: {
     title: `Start your songbook ${isEvening ? 'tonight' : 'today'}.`,

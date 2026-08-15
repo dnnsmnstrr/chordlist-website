@@ -35,11 +35,16 @@ type ScreenshotSet = {
   screenshots: AppStoreScreenshot[]
 }
 
+/**
+ * Display order for the page, deliberately independent of `manifest.json`: the
+ * analog sets lead, and a rebuild or a re-import of the app screenshots cannot
+ * reshuffle them. Change the order here, not in the generator.
+ */
 const setOrder = [
-  { variant: "classic", device: "iphone" },
-  { variant: "classic", device: "ipad" },
   { variant: "analog", device: "iphone" },
   { variant: "analog", device: "ipad" },
+  { variant: "classic", device: "iphone" },
+  { variant: "classic", device: "ipad" },
 ] as const
 
 const manifestPromise = readFile(
