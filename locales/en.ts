@@ -435,9 +435,7 @@ export const screensCopy = {
   screenshotTitle: (index: number, headline: string) => `${String(index).padStart(2, "0")} · ${headline}`,
   screenshotAlt: (title: string, variant: string, device: string) =>
     `${title}, from the ${variant.toLowerCase()} ${device} App Store screenshot set.`,
-  viewFullSize: (title: string) => `View ${title} at full size`,
   downloadSet: "Download set (.zip)",
-  downloadPng: "Download PNG",
 } as const
 
 export const privacyCopy = {
@@ -601,6 +599,7 @@ export const blogCopy = {
 export const screenshotGalleryCopy = {
   viewFullscreen: (title: string) => `View ${title} full screen`,
   download: (title: string) => `Download ${title}`,
+  downloadPng: "Download PNG",
   close: "Close full screen view",
   previous: "Previous item",
   next: "Next item",

@@ -15,7 +15,8 @@ type MediaBase = {
 export type Screenshot = MediaBase & {
   type?: "image"
   lightSrc: string
-  darkSrc: string
+  /** Omitted when one rendering serves both themes, as the App Store sets do. */
+  darkSrc?: string
   width?: number
   height?: number
 }
@@ -28,9 +29,11 @@ export type Video = MediaBase & {
 
 export type GalleryMedia = Screenshot | Video
 
+type GalleryVariant = "gallery" | "press" | "screens" | "showcase"
+
 type ScreenshotGalleryProps = {
   screenshots: readonly GalleryMedia[]
-  variant?: "gallery" | "press" | "showcase"
+  variant?: GalleryVariant
 }
 
 /** Shorter than this is a tap, or a finger that moved while lifting. */
@@ -43,8 +46,8 @@ export function ScreenshotGallery({ screenshots, variant = "press" }: Screenshot
   const triggerRef = useRef<HTMLButtonElement | null>(null)
   const count = screenshots.length
   const active = activeIndex === null ? undefined : screenshots[activeIndex]
-  const isShowcase = variant === "showcase"
   const isGallery = variant === "gallery"
+  const activeDarkSource = active?.type === "video" ? undefined : active?.darkSrc
 
   const close = useCallback(() => setActiveIndex(null), [])
 
@@ -132,37 +135,9 @@ export function ScreenshotGallery({ screenshots, variant = "press" }: Screenshot
 
   return (
     <>
-      <ul
-        className={
-          isShowcase
-            ? // Three phones side by side leave nothing readable on a 375px screen, so
-              // below sm this is a snap carousel instead: full-size cards, the next one
-              // peeking to advertise the swipe. The negative margin lets it scroll to
-              // the viewport edge inside the section's px-6 shell.
-              "-mx-6 flex snap-x snap-mandatory gap-4 overflow-x-auto px-6 pb-4 sm:mx-0 sm:grid sm:grid-cols-5 sm:items-stretch sm:gap-6 sm:overflow-visible sm:px-0 sm:pb-0"
-            : isGallery
-              ? "columns-1 gap-6 sm:columns-2"
-              : "grid grid-cols-2 items-start gap-4 sm:grid-cols-3"
-        }
-      >
+      <ul className={listClassName(variant)}>
         {screenshots.map((screenshot, index) => (
-          <li
-            key={mediaSource(screenshot)}
-            className={
-              isShowcase
-                ? screenshot.type === "video"
-                  ? // The video card is deliberately wider than a screenshot, so matching
-                    // widths would leave it taller — 9:16 over 82vw is more height than
-                    // 1170:2532 over 62vw. Below sm the card therefore takes the screenshot
-                    // card's computed height and the poster crops into it, which is what the
-                    // sm-and-up grid row already does.
-                    "h-[calc(62vw*2532/1170)] max-h-[calc(17rem*2532/1170)] w-[82vw] max-w-[24rem] shrink-0 snap-center sm:col-span-2 sm:h-auto sm:max-h-none sm:w-auto sm:min-w-0 sm:max-w-none"
-                  : "w-[62vw] max-w-[17rem] shrink-0 snap-center sm:w-auto sm:min-w-0 sm:max-w-none"
-                : isGallery
-                  ? "mb-6 inline-flex w-full break-inside-avoid flex-col gap-3"
-                  : "flex flex-col gap-3"
-            }
-          >
+          <li key={mediaSource(screenshot)} className={itemClassName(variant, screenshot)}>
             <button
               type="button"
               onClick={(event) => {
@@ -170,29 +145,17 @@ export function ScreenshotGallery({ screenshots, variant = "press" }: Screenshot
                 setActiveIndex(index)
               }}
               aria-label={screenshotGalleryCopy.viewFullscreen(screenshot.title)}
-              className={
-                isShowcase
-                  ? `block w-full cursor-zoom-in overflow-hidden rounded-[1.25rem] border border-border bg-muted shadow-2xl shadow-foreground/5 transition-colors hover:border-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:rounded-[2rem] ${screenshot.type === "video" ? "h-full" : ""}`
-                  : "block w-full cursor-zoom-in overflow-hidden rounded-xl border border-border bg-muted transition-colors hover:border-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              }
+              className={triggerClassName(variant, screenshot)}
             >
               <GalleryMediaView
                 media={screenshot}
-                sizes={
-                  isShowcase
-                    ? screenshot.type === "video"
-                      ? "(max-width: 640px) 82vw, 380px"
-                      : "(max-width: 640px) 62vw, 300px"
-                    : isGallery
-                      ? "(max-width: 640px) calc(100vw - 3rem), 480px"
-                      : "(max-width: 640px) 45vw, 220px"
-                }
+                sizes={previewSizes(variant, screenshot)}
                 className="h-auto w-full"
                 preview
-                fillPreview={screenshot.type === "video" && isShowcase}
+                fillPreview={screenshot.type === "video" && variant === "showcase"}
               />
             </button>
-            {isShowcase ? null : <p className="text-sm font-medium leading-snug">{screenshot.title}</p>}
+            <ItemCaption variant={variant} media={screenshot} />
           </li>
         ))}
       </ul>
@@ -212,21 +175,21 @@ export function ScreenshotGallery({ screenshots, variant = "press" }: Screenshot
               <a
                 href={mediaSource(active)}
                 download
-                className={`${active.type === "video" ? "flex" : "system-theme-light flex"} size-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring`}
+                className={`${activeDarkSource ? "system-theme-light flex" : "flex"} size-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring`}
                 aria-label={screenshotGalleryCopy.download(active.title)}
               >
                 <Download className="size-4" aria-hidden="true" />
               </a>
-              {active.type === "video" ? null : (
+              {activeDarkSource ? (
                 <a
-                  href={active.darkSrc}
+                  href={activeDarkSource}
                   download
                   className="system-theme-dark size-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   aria-label={screenshotGalleryCopy.download(active.title)}
                 >
                   <Download className="size-4" aria-hidden="true" />
                 </a>
-              )}
+              ) : null}
               <button
                 ref={closeButtonRef}
                 type="button"
@@ -278,6 +241,100 @@ export function ScreenshotGallery({ screenshots, variant = "press" }: Screenshot
         </div>
       ) : null}
     </>
+  )
+}
+
+/*
+  Three phones side by side leave nothing readable on a 375px screen, so below sm the
+  showcase is a snap carousel instead: full-size cards, the next one peeking to advertise
+  the swipe. The screens variant stays a carousel at every width — an App Store set reads
+  as one horizontal run of five, however wide the window is. The negative margin lets
+  either scroll to the viewport edge inside the section's px-6 shell.
+*/
+const carouselList = "-mx-6 flex snap-x snap-mandatory gap-4 overflow-x-auto px-6 pb-4"
+
+function listClassName(variant: GalleryVariant) {
+  switch (variant) {
+    case "showcase":
+      return `${carouselList} sm:mx-0 sm:grid sm:grid-cols-5 sm:items-stretch sm:gap-6 sm:overflow-visible sm:px-0 sm:pb-0`
+    case "screens":
+      return carouselList
+    case "gallery":
+      return "columns-1 gap-6 sm:columns-2"
+    default:
+      return "grid grid-cols-2 items-start gap-4 sm:grid-cols-3"
+  }
+}
+
+function itemClassName(variant: GalleryVariant, media: GalleryMedia) {
+  switch (variant) {
+    case "showcase":
+      return media.type === "video"
+        ? // The video card is deliberately wider than a screenshot, so matching widths
+          // would leave it taller — 9:16 over 82vw is more height than 1170:2532 over
+          // 62vw. Below sm the card therefore takes the screenshot card's computed height
+          // and the poster crops into it, which is what the sm-and-up grid row already does.
+          "h-[calc(62vw*2532/1170)] max-h-[calc(17rem*2532/1170)] w-[82vw] max-w-[24rem] shrink-0 snap-center sm:col-span-2 sm:h-auto sm:max-h-none sm:w-auto sm:min-w-0 sm:max-w-none"
+        : "w-[62vw] max-w-[17rem] shrink-0 snap-center sm:w-auto sm:min-w-0 sm:max-w-none"
+    case "screens":
+      // 14rem keeps a five-image set inside the page shell on a wide screen, so the row
+      // only scrolls once it has to.
+      return "flex w-[62vw] max-w-[14rem] shrink-0 snap-center flex-col overflow-hidden rounded-xl border border-border bg-card"
+    case "gallery":
+      return "mb-6 inline-flex w-full break-inside-avoid flex-col gap-3"
+    default:
+      return "flex flex-col gap-3"
+  }
+}
+
+const triggerBase =
+  "block w-full cursor-zoom-in overflow-hidden bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+
+function triggerClassName(variant: GalleryVariant, media: GalleryMedia) {
+  switch (variant) {
+    case "showcase":
+      return `${triggerBase} rounded-[1.25rem] border border-border shadow-2xl shadow-foreground/5 transition-colors hover:border-foreground sm:rounded-[2rem] ${media.type === "video" ? "h-full" : ""}`
+    case "screens":
+      // The card around it already carries the border, so this only needs its focus ring.
+      return `${triggerBase} focus-visible:ring-inset`
+    default:
+      return `${triggerBase} rounded-xl border border-border transition-colors hover:border-foreground`
+  }
+}
+
+function previewSizes(variant: GalleryVariant, media: GalleryMedia) {
+  switch (variant) {
+    case "showcase":
+      return media.type === "video" ? "(max-width: 640px) 82vw, 380px" : "(max-width: 640px) 62vw, 300px"
+    case "screens":
+      return "(max-width: 640px) 62vw, 224px"
+    case "gallery":
+      return "(max-width: 640px) calc(100vw - 3rem), 480px"
+    default:
+      return "(max-width: 640px) 45vw, 220px"
+  }
+}
+
+function ItemCaption({ variant, media }: { variant: GalleryVariant; media: GalleryMedia }) {
+  if (variant === "showcase") return null
+
+  if (variant !== "screens") return <p className="text-sm font-medium leading-snug">{media.title}</p>
+
+  return (
+    <div className="flex flex-col gap-3 p-4">
+      <div>
+        <h3 className="text-sm font-medium leading-snug">{media.title}</h3>
+        <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-muted-foreground">{media.description}</p>
+      </div>
+      <a
+        href={mediaSource(media)}
+        download
+        className="flex w-fit items-center gap-1.5 text-xs font-medium text-muted-foreground underline underline-offset-4 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      >
+        <Download className="size-3.5" aria-hidden="true" />
+        {screenshotGalleryCopy.downloadPng}
+      </a>
+    </div>
   )
 }
 
@@ -352,6 +409,19 @@ function GalleryMediaView({
     )
   }
 
+  const image = (
+    <Image
+      src={media.lightSrc}
+      alt={media.alt ?? media.title}
+      width={media.width ?? 1170}
+      height={media.height ?? 2532}
+      sizes={sizes}
+      className={className}
+    />
+  )
+
+  if (!media.darkSrc) return image
+
   const { props: darkImageProps } = getImageProps({
     src: media.darkSrc,
     alt: media.alt ?? media.title,
@@ -363,14 +433,7 @@ function GalleryMediaView({
   return (
     <picture className="contents">
       <source media="(prefers-color-scheme: dark)" srcSet={darkImageProps.srcSet} sizes={darkImageProps.sizes} />
-      <Image
-        src={media.lightSrc}
-        alt={media.alt ?? media.title}
-        width={media.width ?? 1170}
-        height={media.height ?? 2532}
-        sizes={sizes}
-        className={className}
-      />
+      {image}
     </picture>
   )
 }

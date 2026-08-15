@@ -1,9 +1,9 @@
 import { readFile } from "node:fs/promises"
 import path from "node:path"
 import type { Metadata } from "next"
-import Image from "next/image"
 import { Download } from "lucide-react"
 
+import { ScreenshotGallery, type GalleryMedia } from "@/components/screenshot-gallery"
 import { SiteFooter } from "@/components/site-footer"
 import { SiteHeader } from "@/components/site-header"
 import { Button } from "@/components/ui/button"
@@ -102,51 +102,9 @@ export default async function ScreensPage() {
                   />
                 </div>
 
-                <ul className="mt-6 grid grid-cols-2 items-start gap-4 md:grid-cols-3 xl:grid-cols-5">
-                  {set.screenshots.map((screenshot, index) => {
-                    const source = `/app-store-screenshots/${screenshot.file}`
-                    const title = screensCopy.screenshotTitle(index + 1, screenshot.headline)
-
-                    return (
-                      <li key={screenshot.file} className="overflow-hidden rounded-xl border border-border bg-card">
-                        <a
-                          href={source}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          aria-label={screensCopy.viewFullSize(title)}
-                          className="group block overflow-hidden bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
-                        >
-                          <Image
-                            src={source}
-                            alt={screensCopy.screenshotAlt(title, variant.title, set.label)}
-                            width={screenshot.width}
-                            height={screenshot.height}
-                            loading={set.variant === "classic" && set.device === "iphone" ? "eager" : "lazy"}
-                            sizes="(max-width: 768px) 50vw, (max-width: 1280px) 33vw, 240px"
-                            className="h-auto w-full transition-transform duration-300 group-hover:scale-[1.015]"
-                          />
-                        </a>
-
-                        <div className="flex flex-col gap-3 p-4">
-                          <div>
-                            <h3 className="text-sm font-medium leading-snug">{title}</h3>
-                            <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-muted-foreground">
-                              {screenshot.supporting}
-                            </p>
-                          </div>
-                          <a
-                            href={source}
-                            download
-                            className="flex w-fit items-center gap-1.5 text-xs font-medium text-muted-foreground underline underline-offset-4 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                          >
-                            <Download className="size-3.5" aria-hidden="true" />
-                            {screensCopy.downloadPng}
-                          </a>
-                        </div>
-                      </li>
-                    )
-                  })}
-                </ul>
+                <div className="mt-6">
+                  <ScreenshotGallery variant="screens" screenshots={galleryMedia(set, variant.title)} />
+                </div>
               </section>
             )
           })}
@@ -156,6 +114,25 @@ export default async function ScreensPage() {
       <SiteFooter />
     </main>
   )
+}
+
+/**
+ * One App Store rendering serves both themes, so each entry carries only `lightSrc` and
+ * the gallery skips its light/dark `<picture>` pair.
+ */
+function galleryMedia(set: ScreenshotSet, variantTitle: string): GalleryMedia[] {
+  return set.screenshots.map((screenshot, index) => {
+    const title = screensCopy.screenshotTitle(index + 1, screenshot.headline)
+
+    return {
+      lightSrc: `/app-store-screenshots/${screenshot.file}`,
+      width: screenshot.width,
+      height: screenshot.height,
+      title,
+      description: screenshot.supporting,
+      alt: screensCopy.screenshotAlt(title, variantTitle, set.label),
+    }
+  })
 }
 
 function screenshotSets(screenshots: AppStoreScreenshot[]): ScreenshotSet[] {

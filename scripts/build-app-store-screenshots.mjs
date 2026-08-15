@@ -104,9 +104,9 @@ const CONFIG = {
     },
     {
       id: "03-song-sheet",
-      eyebrow: "Made for music",
-      headline: ["Lyrics and chords,", "side by side."],
-      supporting: "A focused view designed for rehearsal and performance.",
+      eyebrow: "Chord matching",
+      headline: ["Songs that share", "your chords."],
+      supporting: "Every song suggests others in your library built on the same progression.",
       screenshot: "02-Song-Detail---Matching-Suggestions.png",
       appearance: "light",
       gradient: ["#24140F", "#B85F28"],
@@ -132,11 +132,11 @@ const CONFIG = {
     },
     {
       id: "05-flow",
-      eyebrow: "Stay in the flow",
-      headline: ["Make your set", "feel effortless."],
-      supporting: "Organize the songs you love and stay in the flow.",
+      eyebrow: "Built for adding songs",
+      headline: ["Adding a song", "takes seconds."],
+      supporting: "Use the purpose-built chord keyboard, fill in details from Apple Music or import from the web.",
       screenshot: "03-Creation-Flow---Chord-Keyboard.png",
-      appearance: "dark",
+      appearance: "light",
       gradient: ["#111D18", "#35755C"],
       accent: "#9CE7BE",
       backgrounds: {
