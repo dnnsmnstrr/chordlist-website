@@ -69,7 +69,7 @@ body:
 
 ```
 ---
-chords: G D Em C, C G D Em
+chords: G D Em C
 ---
 
 [Verse]
@@ -78,10 +78,11 @@ G            D
 Coffee on the counter going cold
 ```
 
-Commas separate progression sections. [Adding songs](/docs#adding-songs) covers creating one in the
-app, while the [file format](/docs#file-format) explains what to type in a Markdown editor. If you
-import an existing online chart, review the result against the recording before saving it and make
-sure you have the right to use the material.
+Commas separate the field into sections when a song needs more than one.
+[Adding songs](/docs#adding-songs) covers creating one in the app, while the
+[file format](/docs#file-format) explains what to type in a Markdown editor. If you import an
+existing online chart, review the result against the recording before saving it and make sure you
+have the right to use the material.
 
 ## Check the awkward bars
 

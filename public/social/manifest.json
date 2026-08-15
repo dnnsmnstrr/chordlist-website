@@ -2,7 +2,7 @@
   {
     "slug": "anatomy-of-a-song-file",
     "template": "file",
-    "alt": "A song file shown as plain text, with the filename Morning Light.md above a YAML block reading \"chords G D Em C\" and a chord line sitting over the lyric \"Coffee on the counter going cold\".",
+    "alt": "A song file shown as plain text, with the filename Let It Be.md above a YAML block reading \"chords C G Am F\" and the same four chords laid out under a verse and a chorus marker.",
     "caption": "This is a whole song, as chordlist stores it. A Markdown file in a folder you chose, with the\nchords sitting above the words the way they do on a chord sheet.\n\nThe sample file on the home page is real — download it and open it in anything.\n\nchordlist.app/#preview",
     "created": "2026-08-14",
     "scheduled": "2026-08-16",

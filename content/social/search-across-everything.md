@@ -4,7 +4,7 @@ eyebrow: Feature
 formats:
   - card
   - post
-screenshot: 04-Search---Piano-Results.png
+screenshot: 04-Search.png
 headline:
   - Titles, artists
   - and tags,

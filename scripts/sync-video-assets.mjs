@@ -23,7 +23,7 @@ const settingsScreenshotSource = path.join(
   'public',
   'app-screenshots',
   'light',
-  '06-Settings---Appearance.png',
+  '06-Settings.png',
 );
 
 const exists = async (filePath) => {
@@ -76,7 +76,7 @@ const manifest = {
   featured: {
     settingsAppearance: {
       title: 'Theme settings',
-      summary: 'The Appearance settings show the available accent colours.',
+      summary: 'The settings show the available accent colours.',
       durationInSeconds: 2,
       file: `generated/featured/${settingsScreenshotFilename}`,
       poster: null,

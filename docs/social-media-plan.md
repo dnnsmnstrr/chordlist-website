@@ -171,8 +171,8 @@ Unwritten:
 **One screen at a time.** Seven screenshots sit in [`public/app-screenshots/dark/`](../public/app-screenshots/dark)
 and four now have assets. Unwritten:
 
-- [ ] `05-Tag-Filter---Piano.png` — narrowing by tag
-- [ ] `06-Settings---Appearance.png` — accent colour and appearance, a light-hearted one
+- [ ] `05-Tag-Filter.png` — narrowing by tag
+- [ ] `06-Settings.png` — accent colour and appearance, a light-hearted one
 - [ ] autoscroll and transposition, neither of which has a screenshot yet — they need one from the
   iOS repository's screenshot tests first
 

@@ -110,11 +110,13 @@ const textureOptions: { name: TextureName; label: string; src: string }[] = [
 ]
 
 const screenshots = [
-  "01-Song-List---4-Chord-Library.png",
-  "02-Song-Detail---Matching-Suggestions.png",
-  "03-Creation-Flow---Chord-Keyboard.png",
-  "04-Search---Piano-Results.png",
-  "05-Tag-Filter---Piano.png",
+  "01-Song-List.png",
+  "02-Song-Detail.png",
+  "03-Creation-Flow.png",
+  "04-Search.png",
+  "05-Tag-Filter.png",
+  "06-Settings.png",
+  "07-Song-Suggestions.png",
 ] as const
 
 const initialConfig: EditorConfig = {
@@ -130,9 +132,9 @@ const initialConfig: EditorConfig = {
   chords: "C G Am F",
   numerals: "I · V · vi · IV",
   attribution: "Why plain-text songbooks last",
-  filename: "Morning Light.md",
-  frontmatter: "---\nchords: G D Em C\n---",
-  fileLines: "G            D\nCoffee on the counter going cold",
+  filename: "Let It Be.md",
+  frontmatter: "---\nchords: C G Am F\n---",
+  fileLines: "[Verse]\nC        G        Am       F",
   screenshot: screenshots[1],
   screenshotMode: "detail",
   deviceFrame: false,

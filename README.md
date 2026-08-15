@@ -34,7 +34,7 @@ elsewhere, set `CHORDLIST_APP_REPO` to its absolute path.
 | `pnpm build:icons` | Regenerate the favicon, app icon, and related icon assets in `public/`. |
 | `pnpm build:og` | Regenerate the site, page, and blog Open Graph images. |
 | `pnpm build:social` | Render social images and their manifest from `content/social/`. |
-| `pnpm build:app-store` | Sync app captures, then generate the iPhone and iPad App Store upload sets. |
+| `pnpm build:screens` | Sync app captures, then generate the iPhone and iPad App Store upload sets. |
 | `pnpm video:studio` | Sync current demo clips and open the interactive Remotion editor. |
 | `pnpm video:render:campaign` | Render the short, standard, and documentary light promo cuts. |
 | `pnpm video:render:both` | Render the light and dark vertical demo masters. |

@@ -1,4 +1,4 @@
-import { access, copyFile, mkdir } from "node:fs/promises"
+import { access, copyFile, mkdir, readdir, rm } from "node:fs/promises"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
 
@@ -7,13 +7,17 @@ const appRoot = process.env.CHORDLIST_APP_REPO
   ? path.resolve(process.env.CHORDLIST_APP_REPO)
   : path.resolve(websiteRoot, "..", "chordlist-app")
 
+// Named for the screen alone, matching ScreenshotTests in the app repository. The names deliberately
+// say nothing about what is on the fixture data, so tweaking a fixture never renames a file that the
+// press page, the social posts, and the App Store builder all reference by path.
 const screenshotNames = [
-  "01-Song-List---4-Chord-Library.png",
-  "02-Song-Detail---Matching-Suggestions.png",
-  "03-Creation-Flow---Chord-Keyboard.png",
-  "04-Search---Piano-Results.png",
-  "05-Tag-Filter---Piano.png",
-  "06-Settings---Appearance.png",
+  "01-Song-List.png",
+  "02-Song-Detail.png",
+  "03-Creation-Flow.png",
+  "04-Search.png",
+  "05-Tag-Filter.png",
+  "06-Settings.png",
+  "07-Song-Suggestions.png",
 ]
 
 async function exists(filePath) {
@@ -37,6 +41,15 @@ async function syncScreenshots(sourceDirectory, destinationDirectory) {
 
     await copyFile(source, path.join(destinationDirectory, name))
     copied += 1
+  }
+
+  // Drop anything the app repository no longer produces. Without this a renamed shot leaves its
+  // predecessor behind, and the stale file keeps serving on the pages that still point at it.
+  const expected = new Set(screenshotNames)
+  for (const entry of await readdir(destinationDirectory)) {
+    if (!entry.endsWith(".png") || expected.has(entry)) continue
+    await rm(path.join(destinationDirectory, entry))
+    console.log(`Removed stale screenshot ${path.join(destinationDirectory, entry)}`)
   }
 
   return copied

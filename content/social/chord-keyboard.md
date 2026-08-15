@@ -4,7 +4,7 @@ eyebrow: Feature
 formats:
   - card
   - post
-screenshot: 03-Creation-Flow---Chord-Keyboard.png
+screenshot: 03-Creation-Flow.png
 headline:
   - A keyboard that
   - speaks in chords.

@@ -14,6 +14,8 @@ const launchDate = new Intl.DateTimeFormat(locale.dateLocale, {
   timeZone: "UTC",
 }).format(new Date(`${siteConfig.launchDate}T00:00:00Z`))
 
+const isEvening = new Date().getTime() >= new Date().setHours(18, 0, 0, 0) || new Date().getTime() < new Date().setHours(2, 0, 0, 0)
+
 export const commonCopy = {
   appName: siteConfig.name,
   appDescription:
@@ -135,7 +137,7 @@ export const homeCopy = {
       "Frontmatter: metadata about the song stored at the top of the file. Used by the app to track chord progressions and other song details.",
   },
   closingCta: {
-    title: "Start your songbook tonight.",
+    title: `Start your songbook ${isEvening ? 'tonight' : 'today'}.`,
     description: `Point ${siteConfig.name} at a folder and your first song is already a file you own — readable, portable, and yours to move anywhere.`,
   },
 } as const
@@ -375,7 +377,7 @@ export const pressCopy = {
         description: "Narrow the library to the songs that share a selected tag.",
       },
       {
-        title: "Appearance settings",
+        title: "Settings",
         description: "Choose the app's accent colour and preferred light, dark, or system appearance.",
       },
     ],

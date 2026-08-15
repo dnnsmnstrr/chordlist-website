@@ -4,7 +4,7 @@ eyebrow: Feature
 formats:
   - card
   - post
-screenshot: 01-Song-List---4-Chord-Library.png
+screenshot: 01-Song-List.png
 headline:
   - The chords are
   - in the list.

@@ -4,18 +4,19 @@ eyebrow: Format
 formats:
   - card
   - post
-filename: Morning Light.md
+filename: Let It Be.md
 frontmatter:
   - "---"
-  - "chords: G D Em C"
+  - "chords: C G Am F"
   - "---"
 lines:
-  - "G            D"
-  - "Coffee on the counter going cold"
-  - "Em               C"
-  - "Radio is humming something old"
+  - "[Verse]"
+  - "C        G        Am       F"
+  - ""
+  - "[Chorus]"
+  - "C        G        Am       F"
 footnote: chordlist.app/#preview
-alt: A song file shown as plain text, with the filename Morning Light.md above a YAML block reading "chords G D Em C" and a chord line sitting over the lyric "Coffee on the counter going cold".
+alt: A song file shown as plain text, with the filename Let It Be.md above a YAML block reading "chords C G Am F" and the same four chords laid out under a verse and a chorus marker.
 created: 2026-08-14
 scheduled: 2026-08-16
 ---

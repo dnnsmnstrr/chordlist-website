@@ -4,7 +4,7 @@ eyebrow: Feature
 formats:
   - card
   - post
-screenshot: 02-Song-Detail---Matching-Suggestions.png
+screenshot: 07-Song-Suggestions.png
 headline:
   - Songs that share
   - a progression,

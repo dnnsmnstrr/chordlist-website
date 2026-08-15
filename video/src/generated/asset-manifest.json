@@ -132,7 +132,7 @@
   "featured": {
     "settingsAppearance": {
       "title": "Theme settings",
-      "summary": "The Appearance settings show the available accent colours.",
+      "summary": "The settings show the available accent colours.",
       "durationInSeconds": 2,
       "file": "generated/featured/settings-appearance-light.png",
       "poster": null,

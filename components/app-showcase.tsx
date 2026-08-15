@@ -9,18 +9,18 @@ const media: readonly GalleryMedia[] = [
     ...homeCopy.showcase.video,
   },
   {
-    lightSrc: "/app-screenshots/light/01-Song-List---4-Chord-Library.png",
-    darkSrc: "/app-screenshots/dark/01-Song-List---4-Chord-Library.png",
+    lightSrc: "/app-screenshots/light/01-Song-List.png",
+    darkSrc: "/app-screenshots/dark/01-Song-List.png",
     ...homeCopy.showcase.screenshots[0],
   },
   {
-    lightSrc: "/app-screenshots/light/02-Song-Detail---Matching-Suggestions.png",
-    darkSrc: "/app-screenshots/dark/02-Song-Detail---Matching-Suggestions.png",
+    lightSrc: "/app-screenshots/light/02-Song-Detail.png",
+    darkSrc: "/app-screenshots/dark/02-Song-Detail.png",
     ...homeCopy.showcase.screenshots[1],
   },
   {
-    lightSrc: "/app-screenshots/light/03-Creation-Flow---Chord-Keyboard.png",
-    darkSrc: "/app-screenshots/dark/03-Creation-Flow---Chord-Keyboard.png",
+    lightSrc: "/app-screenshots/light/03-Creation-Flow.png",
+    darkSrc: "/app-screenshots/dark/03-Creation-Flow.png",
     ...homeCopy.showcase.screenshots[2],
   },
 ]

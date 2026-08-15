@@ -19,33 +19,33 @@ export const metadata: Metadata = pageMetadata({
 
 const screenshots: readonly Screenshot[] = [
   {
-    lightSrc: "/app-screenshots/light/01-Song-List---4-Chord-Library.png",
-    darkSrc: "/app-screenshots/dark/01-Song-List---4-Chord-Library.png",
+    lightSrc: "/app-screenshots/light/01-Song-List.png",
+    darkSrc: "/app-screenshots/dark/01-Song-List.png",
     ...pressCopy.screenshots.items[0],
   },
   {
-    lightSrc: "/app-screenshots/light/02-Song-Detail---Matching-Suggestions.png",
-    darkSrc: "/app-screenshots/dark/02-Song-Detail---Matching-Suggestions.png",
+    lightSrc: "/app-screenshots/light/02-Song-Detail.png",
+    darkSrc: "/app-screenshots/dark/02-Song-Detail.png",
     ...pressCopy.screenshots.items[1],
   },
   {
-    lightSrc: "/app-screenshots/light/03-Creation-Flow---Chord-Keyboard.png",
-    darkSrc: "/app-screenshots/dark/03-Creation-Flow---Chord-Keyboard.png",
+    lightSrc: "/app-screenshots/light/03-Creation-Flow.png",
+    darkSrc: "/app-screenshots/dark/03-Creation-Flow.png",
     ...pressCopy.screenshots.items[2],
   },
   {
-    lightSrc: "/app-screenshots/light/04-Search---Piano-Results.png",
-    darkSrc: "/app-screenshots/dark/04-Search---Piano-Results.png",
+    lightSrc: "/app-screenshots/light/04-Search.png",
+    darkSrc: "/app-screenshots/dark/04-Search.png",
     ...pressCopy.screenshots.items[3],
   },
   {
-    lightSrc: "/app-screenshots/light/05-Tag-Filter---Piano.png",
-    darkSrc: "/app-screenshots/dark/05-Tag-Filter---Piano.png",
+    lightSrc: "/app-screenshots/light/05-Tag-Filter.png",
+    darkSrc: "/app-screenshots/dark/05-Tag-Filter.png",
     ...pressCopy.screenshots.items[4],
   },
   {
-    lightSrc: "/app-screenshots/light/06-Settings---Appearance.png",
-    darkSrc: "/app-screenshots/dark/06-Settings---Appearance.png",
+    lightSrc: "/app-screenshots/light/06-Settings.png",
+    darkSrc: "/app-screenshots/dark/06-Settings.png",
     ...pressCopy.screenshots.items[5],
   },
 ]
