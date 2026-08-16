@@ -76,10 +76,12 @@ chordlist. Requires `chords`; `numerals` and `headline` are optional.
 footnote so the asset stays self-sourcing when it is screenshotted onward. Requires `headline`;
 `attribution` is optional.
 
-**`screenshot`** — a real device screenshot from `public/app-screenshots/dark/` running large off
-the right edge beside a short line. `full` keeps the complete screen visible; `detail` uses a larger
-top-aligned crop when the interface needs to read at timeline size. Screenshots are never tinted or
-perspective-tilted. Requires `screenshot`, naming a file in that directory.
+**`screenshot`** — a real device screenshot from `public/app-screenshots/dark/` beside a short line.
+On a `post` or a `story` it runs large off the right edge; on a `card` it sits whole inside the
+subject column (see [Composing a card](#composing-a-card)). `full` keeps the complete screen
+visible; `detail` uses a larger top-aligned crop when the interface needs to read at timeline size.
+Screenshots are never tinted or perspective-tilted. Requires `screenshot`, naming a file in that
+directory.
 
 **`file`** — a song as it sits on disk: an optional filename, an optional frontmatter block, and the
 chord and lyric lines, set in the mono face with the spacing preserved exactly as authored. The
@@ -89,6 +91,22 @@ as a file. Requires `lines`. See [Setting a file](#setting-a-file) below.
 **`photo`** — editorial photography as a full-bleed backdrop with typography over it. Requires
 `photo`, naming a master in `assets/visual-references/analog-photography/`. See
 [Using the photography](#using-the-photography) below, which has rules the other templates do not.
+
+## Composing a card
+
+The `card` is the only landscape format, and the only one wide enough to hold two things side by
+side. Where a `post` or a `story` stacks copy over a subject that bleeds off the edge, a card puts
+the copy in a left column and the subject — a screenshot, a file excerpt — in a right one.
+
+The division is the golden section: copy takes the major part, the subject the minor. It yields to
+the copy rather than colliding with it, so a headline that renders wider than its share pushes the
+subject right until it is flush with the padding, and the gap between them stays the same either
+way. A screenshot, which is a fixed-size object rather than a block of text, is centred in whatever
+the column leaves over — with a short headline that puts it around two thirds across. It is also
+sized to the drawing box rather than overrunning it, so a card shows the whole screen.
+
+This applies to the `card` only. Nothing about the portrait formats changed, and a template that
+has no second column to fill — a `file` with no headline — keeps the full width.
 
 ## Setting a file
 
@@ -109,9 +127,10 @@ Three things to know before writing one:
   in `filename`, `frontmatter`, and `lines`, and names the offending character. Indent a folder tree
   with spaces — the `├──` in the docs page is the first thing anyone reaches for, and it is the one
   thing that cannot be used here.
-- **A headline is optional and expensive.** On a `card` a headline and a six-row excerpt cannot both
-  be large. Either let the file carry the asset on its own, or keep the excerpt to about five short
-  rows.
+- **A headline moves the excerpt into a column.** On a `card`, a headline puts the two side by side
+  — headline left, excerpt in the subject column — so neither is paying for the other's height. The
+  excerpt is then fitted to a third of the width, which suits five short rows rather than six long
+  ones. On a `post` they stack, and a headline does cost the excerpt height.
 
 ## Using the photography
 
@@ -185,7 +204,7 @@ whoever posts it is not rewriting copy that was already reviewed.
 | `alt` | yes | Describes the visible asset. Never empty — these are published images. |
 | `headline` | per template | One list entry per rendered line. Line breaks are an editorial decision. |
 | `formats` | no | Defaults to `card` and `post`. |
-| `eyebrow` | no | A short label beside the wordmark: `Launch`, `Feature`, `From the blog`. |
+| `eyebrow` | no | A short label beside the wordmark: `Launch`, `Feature`, `From the blog`. Written as prose, rendered lowercase to match the wordmark. |
 | `footnote` | no | The bottom line. Normally the canonical URL for the thing being posted. |
 | `chords` / `numerals` | `progression` | `chords` is a list. `numerals` is one string. |
 | `attribution` | `quote` | Normally the post title the line came from. |

@@ -1,10 +1,11 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useCallback, useMemo, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { Check, Copy, Download, ExternalLink, Images, Pencil, Share2 } from "lucide-react"
+import { Calendar, Check, Copy, Download, ExternalLink, Images, Pencil, Share2 } from "lucide-react"
 
+import { SocialPostCalendar } from "@/components/social-post-calendar"
 import { Button, buttonVariants } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
@@ -216,6 +217,9 @@ export function SocialPostGallery({ posts }: { posts: SocialManifestEntry[] }) {
   const [sortMode, setSortMode] = useState<SortMode>("created")
   const [copied, setCopied] = useState<string | null>(null)
   const [sharing, setSharing] = useState<string | null>(null)
+  const [calendarOpen, setCalendarOpen] = useState(false)
+
+  const closeCalendar = useCallback(() => setCalendarOpen(false), [])
 
   const imageCount = useMemo(() => posts.reduce((count, post) => count + post.outputs.length, 0), [posts])
   const visiblePosts = useMemo(
@@ -281,6 +285,20 @@ export function SocialPostGallery({ posts }: { posts: SocialManifestEntry[] }) {
             <div className="mb-3 flex items-center gap-2 font-mono text-xs uppercase tracking-[0.16em] text-muted-foreground">
               <Images className="size-4" />
               {imageCount} images · {posts.length} posts
+              {/*
+                The way into the posting calendar, deliberately unannounced: it reads as
+                another icon in the count row, keeps the text cursor, and stays out of the
+                tab order, so only someone who already knows it is there will click it.
+              */}
+              <button
+                type="button"
+                onClick={() => setCalendarOpen(true)}
+                tabIndex={-1}
+                aria-hidden="true"
+                className="cursor-default outline-none"
+              >
+                <Calendar className="size-4" />
+              </button>
             </div>
             <h2 className="text-3xl font-semibold tracking-tight sm:text-5xl">Pick one. Share it.</h2>
             <p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground sm:text-base">
@@ -339,6 +357,10 @@ export function SocialPostGallery({ posts }: { posts: SocialManifestEntry[] }) {
           ))}
         </div>
       </main>
+
+      {calendarOpen && (
+        <SocialPostCalendar posts={posts} onClose={closeCalendar} title={(post) => titleFromSlug(post.slug)} />
+      )}
     </div>
   )
 }
