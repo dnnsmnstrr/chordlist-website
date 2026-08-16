@@ -156,14 +156,14 @@
       "name": "tagline",
       "translations": {
         "en": "Your lyrics and chords, as files in your pocket.",
-        "de": "Deine Songtexte und Akkorde – als Dateien in deiner Tasche."
+        "de": "Deine Songtexte und Akkorde – immer mit dabei."
       }
     },
     {
       "name": "description",
       "translations": {
         "en": "A local-first songbook for iPhone and iPad that keeps lyrics and chords in portable Markdown files you control.",
-        "de": "Ein local-first Songbook für iPhone und iPad, das Songtexte und Akkorde in portablen Markdown-Dateien aufbewahrt, die dir gehören."
+        "de": "Ein Songbook für iPhone und iPad, das Songtexte und Akkorde als Textdateien aufbewahrt, die dir gehören."
       }
     },
     {
