@@ -1075,11 +1075,13 @@ export function SocialPostEditor() {
               <Menu.Root>
                 <Menu.Trigger
                   render={
+                    // The same variant as export, so the pair reads as one split
+                    // button rather than two; a hairline in the foreground colour
+                    // is what separates the halves.
                     <Button
-                      variant="outline"
                       size="icon-lg"
                       aria-label="More actions"
-                      className="rounded-l-none lg:hidden"
+                      className="rounded-l-none border-l-primary-foreground/25 lg:hidden"
                     />
                   }
                 >
@@ -1447,7 +1449,7 @@ export function SocialPostEditor() {
         */}
         <section
           className={cn(
-            "sticky top-16 z-20 order-first border-b border-border bg-muted/95 backdrop-blur-xl",
+            "group sticky top-16 z-20 order-first border-b border-border bg-muted/95 backdrop-blur-xl",
             "lg:static lg:order-none lg:min-h-[70vh] lg:border-b-0 lg:bg-muted/35 lg:backdrop-blur-none",
             previewCollapsed ? "p-3" : "p-4 sm:p-6",
             "lg:relative lg:p-12",
@@ -1493,17 +1495,31 @@ export function SocialPostEditor() {
                   </button>
                 ))}
               </div>
-              <Button
-                variant="ghost"
-                size="icon-lg"
-                className="shrink-0 lg:hidden"
-                aria-expanded={!previewCollapsed}
-                aria-controls="preview-canvas"
-                aria-label={previewCollapsed ? "Expand the preview" : "Collapse the preview"}
-                onClick={() => setPreviewCollapsed((current) => !current)}
-              >
-                {previewCollapsed ? <ChevronDown /> : <ChevronUp />}
-              </Button>
+              {/*
+                Collapsed, the whole strip is the control — see the overlay at the
+                end of this section — so the chevron is only the affordance for it
+                and must not also be a button.
+              */}
+              {previewCollapsed ? (
+                <span
+                  aria-hidden="true"
+                  className="flex size-9 shrink-0 items-center justify-center text-muted-foreground transition-colors group-hover:text-foreground lg:hidden"
+                >
+                  <ChevronDown className="size-4" />
+                </span>
+              ) : (
+                <Button
+                  variant="ghost"
+                  size="icon-lg"
+                  className="shrink-0 lg:hidden"
+                  aria-expanded
+                  aria-controls="preview-canvas"
+                  aria-label="Collapse the preview"
+                  onClick={() => setPreviewCollapsed(true)}
+                >
+                  <ChevronUp />
+                </Button>
+              )}
             </div>
             <div
               className={cn(
@@ -1532,6 +1548,24 @@ export function SocialPostEditor() {
               The preview renders at full export resolution. Line breaks, crops, and selected formats are carried into the copied repository config.
             </p>
           </div>
+
+          {/*
+            Collapsed, the strip is a thumbnail and two lines of text — a 36px
+            chevron is a poor target for it, so the whole strip takes the tap. It
+            covers the strip rather than wrapping it because the canvas has to stay
+            in one place in the tree: moving it into a button would remount it, and
+            it is only ever redrawn on a config change.
+          */}
+          {previewCollapsed ? (
+            <button
+              type="button"
+              onClick={() => setPreviewCollapsed(false)}
+              aria-expanded={false}
+              aria-controls="preview-canvas"
+              aria-label="Expand the preview"
+              className="absolute inset-0 z-10 cursor-pointer lg:hidden"
+            />
+          ) : null}
         </section>
       </main>
 
