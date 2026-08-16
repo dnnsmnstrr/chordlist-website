@@ -1,11 +1,25 @@
 "use client"
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState, type ComponentType } from "react"
 import Link from "next/link"
-import { Check, ClipboardPaste, Copy, Download, Images, ImagePlus, RotateCcw, X } from "lucide-react"
+import { Menu } from "@base-ui/react/menu"
+import {
+  Check,
+  ChevronDown,
+  ChevronUp,
+  ClipboardPaste,
+  Copy,
+  Download,
+  Ellipsis,
+  Images,
+  ImagePlus,
+  RotateCcw,
+  X,
+} from "lucide-react"
 import { parse as parseYaml } from "yaml"
 
 import { Button, buttonVariants } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
 
 type FormatName = "card" | "post" | "story"
 type TemplateName = "statement" | "progression" | "quote" | "screenshot" | "file" | "photo"
@@ -843,6 +857,19 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   )
 }
 
+const menuItemClass =
+  "flex cursor-default select-none items-center gap-2 rounded-lg px-3 py-2 text-sm outline-none transition-colors data-[highlighted]:bg-muted data-[highlighted]:text-foreground"
+
+/** A header action, rendered as a button on a wide window and a menu item on a narrow one. */
+type HeaderAction = {
+  key: string
+  label: string
+  icon: ComponentType<{ className?: string }>
+  /** Set for the one action that navigates; the rest carry `onClick`. */
+  href?: "/social/posts"
+  onClick?: () => void
+}
+
 function Field({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
   return (
     <label className="block text-sm font-medium">
@@ -863,6 +890,11 @@ export function SocialPostEditor() {
   const [importOpen, setImportOpen] = useState(false)
   const [importText, setImportText] = useState("")
   const [importError, setImportError] = useState("")
+  // Below lg the preview is pinned under the header and competes with the form
+  // for the viewport, so it can be folded down to a strip. The canvas is never
+  // unmounted for this — only resized — because it is only redrawn when the
+  // config changes, and a remounted canvas would come back blank.
+  const [previewCollapsed, setPreviewCollapsed] = useState(false)
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
   const photoSrc = useMemo(() => {
@@ -978,6 +1010,27 @@ export function SocialPostEditor() {
 
   const selectedFormat = formats[activeFormat]
 
+  const secondaryActions: HeaderAction[] = [
+    { key: "posts", label: "Posts", icon: Images, href: "/social/posts" },
+    {
+      key: "import",
+      label: status === "imported" ? "Imported" : "Import config",
+      icon: status === "imported" ? Check : ClipboardPaste,
+      onClick: () => {
+        setImportText("")
+        setImportError("")
+        setImportOpen(true)
+      },
+    },
+    { key: "reset", label: "Reset", icon: RotateCcw, onClick: () => setConfig(initialConfig) },
+    {
+      key: "copy",
+      label: status === "copied" ? "Copied" : "Copy config",
+      icon: status === "copied" ? Check : Copy,
+      onClick: copyConfig,
+    },
+  ]
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="sticky top-0 z-30 border-b border-border bg-background/90 backdrop-blur-xl">
@@ -986,33 +1039,75 @@ export function SocialPostEditor() {
             <p className="font-mono text-xs text-muted-foreground">chordlist / studio</p>
             <h1 className="text-base font-semibold tracking-tight">Social post editor</h1>
           </div>
-          <div className="flex flex-wrap items-center justify-end gap-2">
-            <Link href="/social/posts" className={buttonVariants({ variant: "outline", size: "lg" })}>
-              <Images /> Posts
-            </Link>
-            <Button
-              variant="outline"
-              size="lg"
-              onClick={() => {
-                setImportText("")
-                setImportError("")
-                setImportOpen(true)
-              }}
-            >
-              {status === "imported" ? <Check /> : <ClipboardPaste />}
-              {status === "imported" ? "Imported" : "Import config"}
-            </Button>
-            <Button variant="outline" size="lg" onClick={() => setConfig(initialConfig)}>
-              <RotateCcw /> Reset
-            </Button>
-            <Button variant="outline" size="lg" onClick={copyConfig}>
-              {status === "copied" ? <Check /> : <Copy />}
-              {status === "copied" ? "Copied" : "Copy config"}
-            </Button>
-            <Button size="lg" onClick={exportImage}>
-              {status === "exported" ? <Check /> : <Download />}
-              {status === "exported" ? "Exported" : "Export PNG"}
-            </Button>
+          <div className="flex items-center justify-end gap-2">
+            {/*
+              Five buttons wrap onto three rows on a phone, so below lg the four
+              secondary ones fold into a menu behind the export button. Both
+              renderings read the same list, which is what keeps them in step.
+            */}
+            <div className="hidden items-center gap-2 lg:flex">
+              {secondaryActions.map((action) =>
+                action.href ? (
+                  <Link
+                    key={action.key}
+                    href={action.href}
+                    className={buttonVariants({ variant: "outline", size: "lg" })}
+                  >
+                    <action.icon /> {action.label}
+                  </Link>
+                ) : (
+                  <Button key={action.key} variant="outline" size="lg" onClick={action.onClick}>
+                    <action.icon /> {action.label}
+                  </Button>
+                ),
+              )}
+            </div>
+
+            <div className="flex items-center lg:contents">
+              <Button
+                size="lg"
+                onClick={exportImage}
+                className="rounded-r-none lg:rounded-r-lg"
+              >
+                {status === "exported" ? <Check /> : <Download />}
+                {status === "exported" ? "Exported" : "Export PNG"}
+              </Button>
+              <Menu.Root>
+                <Menu.Trigger
+                  render={
+                    <Button
+                      variant="outline"
+                      size="icon-lg"
+                      aria-label="More actions"
+                      className="rounded-l-none lg:hidden"
+                    />
+                  }
+                >
+                  <Ellipsis />
+                </Menu.Trigger>
+                <Menu.Portal>
+                  <Menu.Positioner sideOffset={8} align="end" className="z-40">
+                    <Menu.Popup className="min-w-52 rounded-xl border border-border bg-background p-1 shadow-xl outline-none">
+                      {secondaryActions.map((action) =>
+                        action.href ? (
+                          <Menu.LinkItem
+                            key={action.key}
+                            render={<Link href={action.href} />}
+                            className={menuItemClass}
+                          >
+                            <action.icon className="size-4" /> {action.label}
+                          </Menu.LinkItem>
+                        ) : (
+                          <Menu.Item key={action.key} onClick={action.onClick} className={menuItemClass}>
+                            <action.icon className="size-4" /> {action.label}
+                          </Menu.Item>
+                        ),
+                      )}
+                    </Menu.Popup>
+                  </Menu.Positioner>
+                </Menu.Portal>
+              </Menu.Root>
+            </div>
           </div>
         </div>
       </header>
@@ -1344,21 +1439,51 @@ export function SocialPostEditor() {
           </Section>
         </aside>
 
-        <section className="relative min-h-[70vh] bg-muted/35 p-4 sm:p-8 lg:p-12">
-          <div className="sticky top-28 mx-auto flex max-w-4xl flex-col items-center">
-            <div className="mb-4 flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div>
+        {/*
+          Below lg the preview leads and stays pinned under the header, so an edit
+          two thirds down the form is still visible as it is typed; from lg it goes
+          back to being the right-hand column. Every collapsed style is undone at
+          lg, where the preview has its own column and nothing to yield to.
+        */}
+        <section
+          className={cn(
+            "sticky top-16 z-20 order-first border-b border-border bg-muted/95 backdrop-blur-xl",
+            "lg:static lg:order-none lg:min-h-[70vh] lg:border-b-0 lg:bg-muted/35 lg:backdrop-blur-none",
+            previewCollapsed ? "p-3" : "p-4 sm:p-6",
+            "lg:relative lg:p-12",
+          )}
+        >
+          <div className="mx-auto flex w-full max-w-4xl flex-wrap items-center gap-3 lg:sticky lg:top-28 lg:flex-col lg:flex-nowrap">
+            <div
+              className={cn(
+                "flex items-center gap-3",
+                previewCollapsed
+                  ? "order-2 min-w-0 flex-1 justify-between lg:order-1 lg:w-full"
+                  : "order-1 w-full justify-between",
+              )}
+            >
+              <div className="min-w-0">
                 <span className="block font-mono text-xs uppercase tracking-[0.14em] text-muted-foreground">Live preview</span>
-                <span className="mt-1 block text-xs text-muted-foreground">{selectedFormat.width} × {selectedFormat.height} px</span>
+                <span className="mt-1 block truncate text-xs text-muted-foreground">
+                  {previewCollapsed ? `${selectedFormat.label} · ` : ""}
+                  {selectedFormat.width} × {selectedFormat.height} px
+                </span>
               </div>
-              <div className="grid grid-cols-3 rounded-xl border border-border bg-background/80 p-1 shadow-sm" role="group" aria-label="Preview format">
+              <div
+                className={cn(
+                  "grid-cols-3 rounded-xl border border-border bg-background/80 p-1 shadow-sm",
+                  previewCollapsed ? "hidden lg:grid" : "grid",
+                )}
+                role="group"
+                aria-label="Preview format"
+              >
                 {(Object.keys(formats) as FormatName[]).map((name) => (
                   <button
                     key={name}
                     type="button"
                     onClick={() => setActiveFormat(name)}
                     aria-pressed={activeFormat === name}
-                    className={`rounded-lg px-4 py-2 text-xs font-medium transition ${
+                    className={`rounded-lg px-3 py-2 text-xs font-medium transition sm:px-4 ${
                       activeFormat === name
                         ? "bg-foreground text-background"
                         : "text-muted-foreground hover:bg-muted hover:text-foreground"
@@ -1368,16 +1493,42 @@ export function SocialPostEditor() {
                   </button>
                 ))}
               </div>
+              <Button
+                variant="ghost"
+                size="icon-lg"
+                className="shrink-0 lg:hidden"
+                aria-expanded={!previewCollapsed}
+                aria-controls="preview-canvas"
+                aria-label={previewCollapsed ? "Expand the preview" : "Collapse the preview"}
+                onClick={() => setPreviewCollapsed((current) => !current)}
+              >
+                {previewCollapsed ? <ChevronDown /> : <ChevronUp />}
+              </Button>
             </div>
-            <div className="relative flex max-h-[calc(100vh-12rem)] w-full items-center justify-center overflow-hidden rounded-2xl border border-border bg-background/70 p-3 shadow-sm sm:p-6">
+            <div
+              className={cn(
+                "relative flex items-center justify-center overflow-hidden border border-border bg-background/70 shadow-sm",
+                previewCollapsed
+                  ? "order-1 w-auto shrink-0 rounded-lg p-1 lg:order-2 lg:w-full lg:rounded-2xl lg:p-6"
+                  : "order-2 max-h-[calc(100vh-12rem)] w-full rounded-2xl p-3 sm:p-6",
+              )}
+            >
               <canvas
+                id="preview-canvas"
                 ref={canvasRef}
                 aria-label={`Preview of the ${selectedFormat.label.toLowerCase()} social image`}
-                className="block max-h-[calc(100vh-16rem)] max-w-full bg-black shadow-2xl"
+                className={cn(
+                  "block bg-black shadow-2xl",
+                  previewCollapsed
+                    ? "h-12 w-auto lg:h-auto lg:max-h-[calc(100vh-16rem)] lg:max-w-full"
+                    : "max-h-[38vh] max-w-full lg:max-h-[calc(100vh-16rem)]",
+                )}
                 style={{ aspectRatio: `${selectedFormat.width} / ${selectedFormat.height}` }}
               />
             </div>
-            <p className="mt-4 max-w-xl text-center text-xs leading-relaxed text-muted-foreground">
+            {/* The explanatory line is desktop-only: on a phone the pinned strip is
+                worth more than the sentence. */}
+            <p className="order-3 hidden max-w-xl text-center text-xs leading-relaxed text-muted-foreground lg:block">
               The preview renders at full export resolution. Line breaks, crops, and selected formats are carried into the copied repository config.
             </p>
           </div>
