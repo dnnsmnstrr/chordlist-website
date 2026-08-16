@@ -60,7 +60,7 @@ export async function PATCH(request: Request) {
 
     if (edit.kind === "vocabulary") {
       await writeVocabulary(edit.vocabulary)
-      return NextResponse.json({ ok: true, wrote: "VOCABULARY.md" })
+      return NextResponse.json({ ok: true, wrote: "VOCABULARY.md, vocabulary.json" })
     }
 
     const file = await readLanguage(edit.language)
@@ -84,7 +84,10 @@ export async function PATCH(request: Request) {
     }
 
     await writeLanguage(edit.language, file)
-    return NextResponse.json({ ok: true, wrote: `scripts/translations/${edit.language}.json` })
+    return NextResponse.json({
+      ok: true,
+      wrote: `scripts/translations/${edit.language}.json, and the String Catalogs`,
+    })
   } catch (error) {
     return failure(error)
   }

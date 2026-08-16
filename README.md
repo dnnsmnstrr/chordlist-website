@@ -210,12 +210,18 @@ Writes land in:
 
 | Edited | Written to |
 | --- | --- |
-| A string or plural | `scripts/translations/<language>.json` |
-| A glossary term or phrase | `VOCABULARY.md` and `vocabulary.json` |
+| A string or plural | `scripts/translations/<language>.json`, then straight into the String Catalogs |
+| A glossary term or phrase | `VOCABULARY.md`, then `vocabulary.json` |
 | A new language | both of the above, plus `LANGUAGES` in `apply-translations.py` |
 
-Afterwards run `scripts/sync-string-catalogs.sh` in the app repository to push the wording into the
-String Catalogs, and commit there.
+The editor writes the *sources* and hands off to the app repository's own scripts —
+`apply-translations.py` and `build-vocabulary.py` — for everything derived from them, rather than
+deriving it a second time in TypeScript. So an edit reaches the String Catalogs immediately, and
+there is exactly one implementation of each derivation to keep correct. Commit the result in the
+app repository.
+
+Run `scripts/sync-string-catalogs.sh` there only when you have added or changed a string in Swift,
+which is what re-extracts the keys.
 
 Provisioning deliberately stops short of the steps that need judgement or that risk a file worth
 protecting: `knownRegions` in the Xcode project, a `case` in the capture script, a fixture set of
