@@ -49,7 +49,7 @@ content/social/      Social asset definitions — frontmatter builds the image, 
 lib/site-config.ts   Single source of truth for facts about the product
 lib/blog.ts          Reads content/blog: validation, visibility, tags, related posts
 lib/markdown.ts      marked configuration — Markdown to HTML
-lib/page-metadata.ts Per-page canonical, Open Graph, and Twitter metadata
+lib/page-metadata.ts Per-page canonical, hreflang, Open Graph, and Twitter metadata
 lib/frontmatter.ts   Splits a YAML frontmatter block from a Markdown body
 lib/utils.ts         `cn()` — clsx + tailwind-merge
 locales/en.ts        Single source of truth for all user-facing copy
@@ -173,8 +173,10 @@ lines above the words.
 1. Create `app/<route>/page.tsx` as a server component.
 2. Export `metadata` from `pageMetadata()` in `lib/page-metadata.ts`, passing the route path plus a
    title and description from a `<name>Copy.metadata` object in `locales/en.ts`. It writes the
-   canonical URL and the Open Graph and Twitter blocks, which Next replaces rather than merges — a
-   page that declares them by hand ends up advertising the home page's `og:url`. Add the route to
+   canonical URL, the `hreflang` set, the feed link, and the Open Graph and Twitter blocks, all of
+   which Next replaces rather than merges — a page that declares them by hand ends up advertising
+   the home page's `og:url`. Passing `extra.alternates` merges on top of the generated
+   `canonical`/`languages`/`types` rather than replacing them. Add the route to
    `CONFIG.pages` in `scripts/build-page-og.mjs` and run `pnpm build:og` so it has its own card,
    or pass `image` to point at an existing one.
 3. Wrap in `<main className="min-h-screen bg-background text-foreground">` with `<SiteHeader />`
@@ -184,6 +186,16 @@ lines above the words.
    nav in front of the first Tab and of sequential reading.
 4. Add the route to `app/sitemap.ts` (now `async` — it derives post URLs from `lib/blog.ts`), and to
    `commonCopy.navigation` plus the footer/header nav if it should be linked.
+
+`components/structured-data.tsx` holds every JSON-LD block: `StructuredData` (home — Organization,
+WebSite, SoftwareApplication), `FaqStructuredData`, and `BlogPostStructuredData`. Each one emits the
+Organization and WebSite nodes **in full**, because a validator reading a single page does not fetch
+another to resolve a bare `{"@id": …}` — a post whose `author` is only a reference fails Article
+rich-result validation. The `@id`s are stable across the blocks, so a crawler that reads several
+pages still collapses them into one publisher. Keep new blocks self-contained the same way. Every
+human-readable value is read from `siteConfig` or `locales/en.ts` — a block that restates copy can
+drift from the page and turn a rich result into a lie. The same content accuracy rules apply here:
+no `offers` node until pricing is final.
 
 ## Blog
 

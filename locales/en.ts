@@ -66,8 +66,42 @@ export const metadataCopy = {
   defaultTitle: `${siteConfig.name} — Local-first songbook for lyrics and chords`,
   titleTemplate: `%s — ${siteConfig.name}`,
   category: "Music",
-  socialTitle: `${siteConfig.name} — ${commonCopy.tagline}`,
+  /**
+   * The home page's meta description, and the sentence a search engine or an AI
+   * summary is most likely to quote. Aimed at 120–160 characters: shorter and
+   * Google pads it with copy scraped from the page, longer and it truncates.
+   * It leads with what the product is, so the first clause survives either way.
+   */
+  defaultDescription:
+    `${siteConfig.name} is a local-first songbook for iPhone and iPad. Every song stays a plain Markdown ` +
+    "file in a folder you choose — offline, with no account.",
+  // Share cards crop far harder than search results do. The title stays near 30
+  // characters and the description near 60, so neither is cut mid-word in a
+  // Slack, iMessage, or Facebook preview.
+  socialTitle: `${siteConfig.name} — lyrics and chords`,
+  socialDescription: "A local-first songbook for iPhone and iPad, in Markdown.",
+  // X shows a longer summary than the Open Graph card does, so it gets its own.
+  // Longer means room for a second sentence, not room for a feature list.
+  twitterDescription:
+    `A songbook made of files you own. ${siteConfig.name} keeps every song as a plain Markdown file on ` +
+    "iPhone and iPad, so your lyrics and chords stay readable, portable, and available offline.",
   socialImageAlt: `${siteConfig.name}: ${commonCopy.tagline}`,
+  // Search engines have ignored meta keywords for years; these are here for the
+  // assistants and site auditors that still read them, and for nothing else. Keep
+  // them to terms the site can actually back up — see the content accuracy rules.
+  keywords: [
+    "songbook app",
+    "lyrics and chords",
+    "chord charts",
+    "markdown songbook",
+    "plain text songbook",
+    "local-first",
+    "offline songbook",
+    "transpose chords",
+    "iPhone songbook app",
+    "iPad songbook app",
+    "Obsidian",
+  ],
 } as const
 
 export const homeCopy = {
@@ -559,6 +593,13 @@ export const blogCopy = {
     label: "Search posts",
     placeholder: "Search posts",
     clear: "Clear filters",
+  },
+  feed: {
+    label: "RSS",
+    // The visible label is two letters, so the accessible name says what
+    // subscribing actually gets you. It still contains "RSS", which is what a
+    // voice-control user will say to activate the link.
+    ariaLabel: `Subscribe to the ${siteConfig.name} blog with RSS`,
   },
   filters: {
     label: "Filter by tag",
