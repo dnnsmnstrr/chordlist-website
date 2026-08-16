@@ -146,7 +146,10 @@ function textBlock(lines, style) {
  * The wordmark lockup: squircle mark, name, and an optional trailing label.
  *
  * Identical in every template and every format apart from scale, so the account
- * is recognisable before any of the copy is read.
+ * is recognisable before any of the copy is read. The label is lowercased on the
+ * way in so it sits beside the wordmark in the same voice the name is set in —
+ * definitions stay readable as prose (`From the blog`) without a capital landing
+ * next to a lowercase "chordlist".
  */
 function lockup({ tokens, scale, iconUri, label }) {
   const size = Math.round(tokens.type.lockupMark * scale)
@@ -181,7 +184,7 @@ function lockup({ tokens, scale, iconUri, label }) {
             color: tokens.colors.muted,
           },
         },
-        label,
+        label.toLowerCase(),
       ),
     )
   }

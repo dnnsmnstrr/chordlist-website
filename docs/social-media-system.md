@@ -185,7 +185,7 @@ whoever posts it is not rewriting copy that was already reviewed.
 | `alt` | yes | Describes the visible asset. Never empty — these are published images. |
 | `headline` | per template | One list entry per rendered line. Line breaks are an editorial decision. |
 | `formats` | no | Defaults to `card` and `post`. |
-| `eyebrow` | no | A short label beside the wordmark: `Launch`, `Feature`, `From the blog`. |
+| `eyebrow` | no | A short label beside the wordmark: `Launch`, `Feature`, `From the blog`. Written as prose, rendered lowercase to match the wordmark. |
 | `footnote` | no | The bottom line. Normally the canonical URL for the thing being posted. |
 | `chords` / `numerals` | `progression` | `chords` is a list. `numerals` is one string. |
 | `attribution` | `quote` | Normally the post title the line came from. |

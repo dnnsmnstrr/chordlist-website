@@ -422,8 +422,10 @@ async function renderPost(
     const wordmarkWidth = context.measureText("chordlist").width
     context.fillStyle = activeTheme.muted
     context.font = `400 ${Math.round(24 * scale)}px ${mono}`
+    // Lowercased to match the wordmark, the same way the build does it, so the
+    // preview and the rendered PNG agree.
     context.fillText(
-      config.eyebrow.trim(),
+      config.eyebrow.trim().toLowerCase(),
       padding + markSize + Math.round(36 * scale) + wordmarkWidth,
       top + markSize / 2,
     )
