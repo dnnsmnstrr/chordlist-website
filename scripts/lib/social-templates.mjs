@@ -51,6 +51,41 @@ export function fitSize(base, text, { maxWidth, face = "sans", floor = 0.58 } = 
   return Math.round(Math.max(base * floor, Math.min(base, cap)))
 }
 
+/** The estimated rendered width of the longest line, in the same terms as `fitSize`. */
+export function estimateWidth(text, size, face = "sans") {
+  const lines = Array.isArray(text) ? text : [text]
+  return Math.round(Math.max(0, ...lines.map((line) => line.length)) * size * ADVANCE[face])
+}
+
+/**
+ * The golden section of a width, as a fraction.
+ *
+ * The card is the one format wide enough to compose in two columns, and this is
+ * where it divides: copy in the major part, the subject — a screenshot, a file —
+ * in the minor one.
+ */
+const GOLDEN_SECTION = 0.618
+
+/**
+ * The subject column of a landscape card: where it starts, how wide it is, and
+ * where an object of `subjectWidth` sits inside it.
+ *
+ * The division is the golden section, but it yields to the copy: a headline that
+ * renders wider than the major part pushes the column right rather than being
+ * run into, so the gap between the two is the same whether the line is two words
+ * or six. An object narrower than the column is centred in what is left over,
+ * which is what keeps a phone screenshot off the edge it used to hug — with a
+ * short headline it settles around two thirds across, and with a long one it
+ * moves right until it is flush with the padding.
+ */
+export function subjectColumn({ inner, gutter, textWidth = 0, subjectWidth = 0 }) {
+  const start = Math.max(Math.round(inner.width * GOLDEN_SECTION), textWidth > 0 ? textWidth + gutter : 0)
+  const width = Math.max(0, inner.width - start)
+  const centred = start + Math.round(Math.max(0, width - subjectWidth) / 2)
+
+  return { start, width, left: Math.max(0, Math.min(centred, inner.width - subjectWidth)) }
+}
+
 /**
  * Parses a CSS-like focus string ("60% 40%", "center", "50%") into a pair of
  * 0–1 fractions describing which part of the picture to keep when it is cropped.
@@ -439,10 +474,15 @@ function quote({ definition, tokens, scale, inner }) {
 /**
  * screenshot — a real device screenshot beside or above a short line.
  *
- * The screenshot stays sharp and literal. It is deliberately oversized and
- * allowed to run beyond the right edge, leaving a stable left column for copy.
- * `detail` enlarges the interface with a top-aligned crop; `full` preserves the
- * complete screen. An optional device shell is drawn outside either treatment.
+ * The screenshot stays sharp and literal. `detail` enlarges the interface with a
+ * top-aligned crop; `full` preserves the complete screen. An optional device
+ * shell is drawn outside either treatment.
+ *
+ * The two portrait formats keep the oversized treatment the system was built on:
+ * the shot runs past the right edge, leaving a stable left column for copy. The
+ * card does not, because at 1.91:1 there is room for the phone to sit inside the
+ * frame — it is placed in the subject column instead, whole, and vertically
+ * centred rather than cropped by the bottom edge.
  */
 function screenshot({ definition, tokens, scale, inner, format, assets }) {
   const source = assets.screenshots.get(definition.screenshot)
@@ -461,12 +501,17 @@ function screenshot({ definition, tokens, scale, inner, format, assets }) {
     story: { height: 0.8, detail: 0.58, visible: 0.68, copy: 0.45 },
   }[format.name]
   const screenshotRatio = 1242 / 2688
-  const shotHeight = Math.round(format.height * ratios.height)
+  // Contained on the card, where the phone is a whole object in a column of its
+  // own and so may not be taller than the box the frame leaves for it; oversized
+  // on the portrait formats, where it is a cropped backdrop to the copy.
+  const contained = format.name === "card"
+  const shotHeight = contained
+    ? Math.min(Math.round(format.height * ratios.height), inner.height)
+    : Math.round(format.height * ratios.height)
   const shotWidth = Math.round(shotHeight * (detail ? ratios.detail : screenshotRatio))
   const outerPadding = (format.width - inner.width) / 2
   const deviceBorder = Math.max(2, Math.round(2 * scale))
-  const cardFrameInset = format.name === "card" && deviceFrame ? deviceBorder * 2 : 0
-  const shotRight = -Math.round(outerPadding + shotWidth * (1 - ratios.visible)) + cardFrameInset
+  const shotRight = -Math.round(outerPadding + shotWidth * (1 - ratios.visible))
   const shotTop = -Math.round(16 * scale)
   const copyWidth = Math.round(inner.width * ratios.copy)
   const copySize = definition.headline
@@ -474,6 +519,22 @@ function screenshot({ definition, tokens, scale, inner, format, assets }) {
     : 0
   const imageFit = detail ? "cover" : "contain"
   const imagePosition = detail ? "top" : "center"
+
+  // The device shell draws its border outside the screen, so the column has to
+  // place the wider box or the phone ends up sitting a border off centre.
+  const outerWidth = shotWidth + (deviceFrame ? deviceBorder * 2 : 0)
+  const column = subjectColumn({
+    inner,
+    gutter: Math.round(tokens.layout.columnGap * scale),
+    textWidth: definition.headline ? estimateWidth(definition.headline, copySize) : 0,
+    subjectWidth: outerWidth,
+  })
+  // Absolute against the body box on the portrait formats, a flex child in the
+  // card's two-column row — which is what centres it vertically without the
+  // template having to know how tall the body box came out.
+  const placement = contained
+    ? { position: "relative", flexShrink: 0, marginLeft: column.left - (definition.headline ? copyWidth : 0) }
+    : { position: "absolute", right: shotRight, top: shotTop }
 
   let shot
   if (deviceFrame) {
@@ -487,10 +548,8 @@ function screenshot({ definition, tokens, scale, inner, format, assets }) {
       "div",
       {
         style: {
-          position: "absolute",
           display: "flex",
-          right: shotRight,
-          top: shotTop,
+          ...placement,
           width: shotWidth,
           height: shotHeight,
           background: "#050505",
@@ -527,9 +586,7 @@ function screenshot({ definition, tokens, scale, inner, format, assets }) {
     shot = h("img", {
       src: source,
       style: {
-        position: "absolute",
-        right: shotRight,
-        top: shotTop,
+        ...placement,
         width: shotWidth,
         height: shotHeight,
         objectFit: imageFit,
@@ -550,6 +607,14 @@ function screenshot({ definition, tokens, scale, inner, format, assets }) {
       })
     : null
 
+  const copyBlock = copy
+    ? h(
+        "div",
+        { style: { display: "flex", position: "relative", flexShrink: 0, width: copyWidth } },
+        copy,
+      )
+    : null
+
   return {
     body: h(
       "div",
@@ -557,17 +622,19 @@ function screenshot({ definition, tokens, scale, inner, format, assets }) {
         style: {
           position: "relative",
           display: "flex",
-          flexDirection: "column",
-          alignItems: "flex-start",
-          justifyContent: "center",
+          flexDirection: contained ? "row" : "column",
+          // On the card the cross axis is vertical, so this is what centres the
+          // phone against the copy; in the column it would centre the copy block
+          // horizontally, which is not what a left column is.
+          alignItems: contained ? "center" : "flex-start",
+          justifyContent: contained ? "flex-start" : "center",
           width: "100%",
           height: "100%",
         },
       },
-      shot,
-      ...(copy
-        ? [h("div", { style: { display: "flex", position: "relative", width: copyWidth } }, copy)]
-        : []),
+      // Document order decides paint order, and on the portrait formats the copy
+      // has to land over the screenshot rather than under it.
+      ...(contained ? [...(copyBlock ? [copyBlock] : []), shot] : [shot, ...(copyBlock ? [copyBlock] : [])]),
     ),
     footer: definition.footnote,
   }
@@ -590,19 +657,34 @@ function screenshot({ definition, tokens, scale, inner, format, assets }) {
  * Copy that shrinks past legibility wants fewer lines, not a smaller size — the
  * excerpt is an illustration, never the whole file.
  */
-function file({ definition, tokens, scale, inner }) {
+function file({ definition, tokens, scale, inner, format }) {
   const filename = definition.filename === undefined ? undefined : String(definition.filename)
   const meta = (definition.frontmatter ?? []).map(String)
   const lines = definition.lines.map(String)
   const lineHeight = 1.5
 
+  /*
+    Stacked, a headline and an excerpt split one 352px-tall box between them and
+    both come out small — the excerpt worst, because it is the one thing on the
+    card that has to stay readable as text. On the card they go side by side
+    instead, the excerpt taking the same subject column the screenshot template
+    uses, so each gets the full height. Without a headline there is no second
+    column to fill, and the excerpt keeps the whole width.
+  */
+  const twoColumn = format.name === "card" && Boolean(definition.headline)
+  const gutter = Math.round(tokens.layout.columnGap * scale)
+  const column = subjectColumn({ inner, gutter })
+  const contentWidth = twoColumn ? column.width : inner.width
+  const headlineWidth = twoColumn ? column.start - gutter : inner.width
+
   const headlineSize = definition.headline
-    ? fitSize(tokens.type.subhead * scale, definition.headline, { maxWidth: inner.width })
+    ? fitSize(tokens.type.subhead * scale, definition.headline, { maxWidth: headlineWidth })
     : 0
   const headlineGap = Math.round(56 * scale)
-  const headlineHeight = definition.headline
-    ? Math.round(headlineSize * 1.2 * definition.headline.length) + headlineGap
-    : 0
+  const headlineHeight =
+    definition.headline && !twoColumn
+      ? Math.round(headlineSize * 1.2 * definition.headline.length) + headlineGap
+      : 0
 
   const filenameSize = Math.round(tokens.type.footnote * scale)
   const ruleGap = Math.round(20 * scale)
@@ -613,7 +695,7 @@ function file({ definition, tokens, scale, inner }) {
   const separator = meta.length > 0 && lines.length > 0
   const rows = meta.length + lines.length + (separator ? 1 : 0)
   const widthCap = fitSize(tokens.type.code * scale, [...meta, ...lines], {
-    maxWidth: inner.width,
+    maxWidth: contentWidth,
     face: "mono",
   })
   const heightCap = (inner.height - headlineHeight - chromeHeight) / Math.max(1, rows * lineHeight)
@@ -675,25 +757,36 @@ function file({ definition, tokens, scale, inner }) {
   if (separator) children.push(h("div", { key: "separator", style: { display: "flex", height: row } }))
   lines.forEach((text, index) => children.push(codeLine(text, `line-${index}`, tokens.colors.text)))
 
-  if (definition.headline) {
-    children.push(
-      h(
-        "div",
-        { key: "headline", style: { display: "flex", marginTop: headlineGap } },
-        textBlock(definition.headline, {
-          fontFamily: "Geist",
-          fontWeight: 700,
-          fontSize: headlineSize,
-          letterSpacing: "-0.02em",
-          lineHeight: 1.2,
-          color: tokens.colors.text,
-        }),
-      ),
-    )
+  const headline = definition.headline
+    ? textBlock(definition.headline, {
+        fontFamily: "Geist",
+        fontWeight: 700,
+        fontSize: headlineSize,
+        letterSpacing: "-0.02em",
+        lineHeight: 1.2,
+        color: tokens.colors.text,
+      })
+    : null
+
+  if (headline && !twoColumn) {
+    children.push(h("div", { key: "headline", style: { display: "flex", marginTop: headlineGap } }, headline))
   }
 
+  const excerpt = h(
+    "div",
+    { style: { display: "flex", flexDirection: "column", width: contentWidth } },
+    ...children,
+  )
+
+  if (!twoColumn) return { body: excerpt, footer: definition.footnote }
+
   return {
-    body: h("div", { style: { display: "flex", flexDirection: "column" } }, ...children),
+    body: h(
+      "div",
+      { style: { display: "flex", flexDirection: "row", alignItems: "center", width: "100%" } },
+      h("div", { key: "headline", style: { display: "flex", flexShrink: 0, width: headlineWidth } }, headline),
+      h("div", { key: "excerpt", style: { display: "flex", flexShrink: 0, marginLeft: gutter } }, excerpt),
+    ),
     footer: definition.footnote,
   }
 }

@@ -199,6 +199,18 @@ function fitFont(
   return Math.round(size)
 }
 
+/** The widest of `copy` as it will render, for laying out beside it. */
+function measureLines(
+  context: CanvasRenderingContext2D,
+  copy: string[],
+  size: number,
+  weight: number,
+  family: string,
+) {
+  context.font = `${weight} ${Math.round(size)}px ${family}`
+  return Math.max(0, ...copy.map((line) => context.measureText(line).width))
+}
+
 function drawTextLines(
   context: CanvasRenderingContext2D,
   copy: string[],
@@ -441,6 +453,12 @@ async function renderPost(
   const bodyHeight = bodyBottom - bodyTop
   const headline = lines(config.headline)
 
+  // The box a template may draw in, as scripts/build-social.mjs computes it. The
+  // preview's own body box sits a gap lower, so the card layouts below size
+  // against this one to land where the build puts them.
+  const innerHeight = format.height - padding * 2 - safeTop - safeBottom - Math.round((56 + 24 * 2.6) * scale)
+  const columnGap = Math.round(64 * scale)
+
   if (config.template === "statement" || config.template === "photo") {
     const size = fitFont(context, headline, 78 * scale, innerWidth, 700, sans)
     const lineHeight = 1.14
@@ -516,9 +534,18 @@ async function renderPost(
     const rowCount = meta.length + body.length + (separator ? 1 : 0)
     const filename = config.filename.trim()
 
-    const headlineSize = headline.length ? fitFont(context, headline, 52 * scale, innerWidth, 700, sans) : 0
+    // On a card a headline puts the excerpt in the subject column beside it
+    // rather than under it, so neither pays for the other's height.
+    const twoColumn = formatName === "card" && headline.length > 0
+    const column = subjectColumn(innerWidth, columnGap, 0, 0)
+    const contentWidth = twoColumn ? column.width : innerWidth
+    const contentX = padding + (twoColumn ? column.start : 0)
+
+    const headlineSize = headline.length
+      ? fitFont(context, headline, 52 * scale, twoColumn ? column.start - columnGap : innerWidth, 700, sans)
+      : 0
     const headlineGap = 56 * scale
-    const headlineHeight = headline.length ? headline.length * headlineSize * 1.2 + headlineGap : 0
+    const headlineHeight = headline.length && !twoColumn ? headline.length * headlineSize * 1.2 + headlineGap : 0
 
     const filenameSize = Math.round(24 * scale)
     const ruleGap = 20 * scale
@@ -526,7 +553,7 @@ async function renderPost(
 
     // Mirrors the file template in scripts/lib/social-templates.mjs: fitted by
     // width and by height, because an excerpt is a block rather than a phrase.
-    const widthCap = fitFont(context, [...meta, ...body], 38 * scale, innerWidth, 400, mono, 0.5)
+    const widthCap = fitFont(context, [...meta, ...body], 38 * scale, contentWidth, 400, mono, 0.5)
     const heightCap = (bodyHeight - headlineHeight - chromeHeight) / Math.max(1, rowCount * 1.5)
     const size = Math.round(Math.max(38 * scale * 0.5, Math.min(widthCap, heightCap)))
     const row = Math.round(size * 1.5)
@@ -538,10 +565,10 @@ async function renderPost(
       context.fillStyle = activeTheme.muted
       context.font = `400 ${filenameSize}px ${mono}`
       context.textBaseline = "top"
-      context.fillText(filename, padding, y)
+      context.fillText(filename, contentX, y)
       y += filenameSize * 1.4 + ruleGap
       context.fillStyle = activeTheme.rule
-      context.fillRect(padding, y, innerWidth, Math.max(1, Math.round(scale)))
+      context.fillRect(contentX, y, contentWidth, Math.max(1, Math.round(scale)))
       y += ruleGap
     }
 
@@ -549,17 +576,20 @@ async function renderPost(
     context.font = `400 ${size}px ${mono}`
     meta.forEach((line, index) => {
       context.fillStyle = activeTheme.muted
-      context.fillText(line, padding, y + index * row)
+      context.fillText(line, contentX, y + index * row)
     })
     y += meta.length * row + (separator ? row : 0)
     body.forEach((line, index) => {
       context.fillStyle = activeTheme.text
-      context.fillText(line, padding, y + index * row)
+      context.fillText(line, contentX, y + index * row)
     })
     y += body.length * row
 
     if (headline.length) {
-      drawTextLines(context, headline, padding, y + headlineGap, headlineSize, 1.2, activeTheme.text, 700, sans)
+      const headlineY = twoColumn
+        ? bodyTop + (bodyHeight - headline.length * headlineSize * 1.2) / 2
+        : y + headlineGap
+      drawTextLines(context, headline, padding, headlineY, headlineSize, 1.2, activeTheme.text, 700, sans)
     }
   }
 
@@ -570,15 +600,31 @@ async function renderPost(
     const detailRatio = activeFormatRatio(formatName, { card: 0.76, post: 0.62, story: 0.58 })
     const visibleRatio = activeFormatRatio(formatName, { card: 1, post: 0.73, story: 0.68 })
     const copyRatio = activeFormatRatio(formatName, { card: 0.58, post: 0.48, story: 0.45 })
-    const shotY = top + markSize * 0.7
-    const shotHeight = format.height - shotY - activeFormatRatio(formatName, { card: 18, post: 24, story: 28 }) * scale
-    const shotWidth = shotHeight * (detail ? detailRatio : screenshotRatio)
-    const cardFrameInset = formatName === "card" && config.deviceFrame ? Math.max(2, 2 * scale) * 50  : 0
-    const shotX = format.width - shotWidth * visibleRatio - cardFrameInset
     const copyWidth = innerWidth * copyRatio
     const copySize = fitFont(context, headline, 52 * scale, copyWidth, 700, sans)
     const copyHeight = headline.length * copySize * 1.18
     const copyY = bodyTop + (bodyHeight - copyHeight) / 2
+
+    // The card holds the whole phone inside the subject column; the portrait
+    // formats run it past the right edge. Mirrors the screenshot template in
+    // scripts/lib/social-templates.mjs.
+    const contained = formatName === "card"
+    const bleedTop = top + markSize * 0.7
+    const shotHeight = contained
+      ? Math.min(format.height * 0.78, innerHeight)
+      : format.height - bleedTop - activeFormatRatio(formatName, { card: 18, post: 24, story: 28 }) * scale
+    const shotWidth = shotHeight * (detail ? detailRatio : screenshotRatio)
+    const shotY = contained ? bodyTop + (bodyHeight - shotHeight) / 2 : bleedTop
+    const outerWidth = shotWidth + (config.deviceFrame ? Math.max(2, 2 * scale) * 2 : 0)
+    const shotX = contained
+      ? padding +
+        subjectColumn(
+          innerWidth,
+          columnGap,
+          headline.length ? measureLines(context, headline, copySize, 700, sans) : 0,
+          outerWidth,
+        ).left
+      : format.width - shotWidth * visibleRatio
 
     drawScreenshot(
       context,
@@ -597,6 +643,21 @@ async function renderPost(
 
 function activeFormatRatio<Value>(format: FormatName, values: Record<FormatName, Value>) {
   return values[format]
+}
+
+/**
+ * Mirrors `subjectColumn()` in scripts/lib/social-templates.mjs: the golden
+ * section a card divides on, pushed right by copy that renders wider than its
+ * share. The build predicts that width from the character count because satori
+ * cannot measure text; here the canvas measures it, so the two can disagree by a
+ * few pixels on a headline that fills its column exactly.
+ */
+function subjectColumn(innerWidth: number, gutter: number, textWidth: number, subjectWidth: number) {
+  const start = Math.max(Math.round(innerWidth * 0.618), textWidth > 0 ? Math.round(textWidth) + gutter : 0)
+  const width = Math.max(0, innerWidth - start)
+  const centred = start + Math.round(Math.max(0, width - subjectWidth) / 2)
+
+  return { start, width, left: Math.max(0, Math.min(centred, innerWidth - subjectWidth)) }
 }
 
 function importedSource(source: string) {
