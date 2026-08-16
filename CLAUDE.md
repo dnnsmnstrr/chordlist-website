@@ -262,6 +262,39 @@ Each German object is typed `Localized<typeof …>` (see `locales/types.ts`): th
 its wording set free. Adding a key to `en.ts` therefore fails the German build instead of silently
 rendering English, which is what keeps a partial translation honest.
 
+### Translation editor
+
+```bash
+pnpm dev   # then http://localhost:3000/translations
+```
+
+A table of every app string across every language, editable in place, plus the shared glossary and
+a button that provisions a new language.
+
+**It only runs locally.** Editing means writing files in the `chordlist-app` checkout beside this
+one; a deployed build can reach neither the filesystem nor that repository, so the route 404s in
+production and the API refuses with an explanation. It finds the app repository the same way
+`sync:app` does — `../chordlist-app`, or `CHORDLIST_APP_REPO`.
+
+Each edit writes straight through to the file it came from. There is no save button, because a
+staged buffer that can disagree with disk is the drift this whole arrangement exists to prevent.
+Writes land in:
+
+| Edited | Written to |
+| --- | --- |
+| A string or plural | `scripts/translations/<language>.json` |
+| A glossary term or phrase | `VOCABULARY.md` and `vocabulary.json` |
+| A new language | both of the above, plus `LANGUAGES` in `apply-translations.py` |
+
+Afterwards run `scripts/sync-string-catalogs.sh` in the app repository to push the wording into the
+String Catalogs, and commit there.
+
+Provisioning deliberately stops short of the steps that need judgement or that risk a file worth
+protecting: `knownRegions` in the Xcode project, a `case` in the capture script, a fixture set of
+songs a speaker would recognise, and `locales/<code>.ts` here. The UI lists them when it finishes.
+A provisioned language starts empty rather than machine-translated — an untranslated string is
+visible and fails the build, a plausible wrong one is not.
+
 ### Shared wording
 
 Terms the app and the site both use — *Songtext*, *Akkordfolge*, *Interpret*, the tagline, the
