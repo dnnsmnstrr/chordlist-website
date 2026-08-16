@@ -270,11 +270,11 @@ function itemClassName(variant: GalleryVariant, media: GalleryMedia) {
   switch (variant) {
     case "showcase":
       return media.type === "video"
-        ? // The video card is deliberately wider than a screenshot, so matching widths
-          // would leave it taller — 9:16 over 82vw is more height than 1170:2532 over
-          // 62vw. Below sm the card therefore takes the screenshot card's computed height
-          // and the poster crops into it, which is what the sm-and-up grid row already does.
-          "h-[calc(62vw*2532/1170)] max-h-[calc(17rem*2532/1170)] w-[82vw] max-w-[24rem] shrink-0 snap-center sm:col-span-2 sm:h-auto sm:max-h-none sm:w-auto sm:min-w-0 sm:max-w-none"
+        ? // Below sm the video card takes the screenshot card's computed height so the row
+          // lines up, and its width is that height at the poster's own 9:16 — the widest it
+          // can be before `object-cover` starts eating the titles at the top and bottom of
+          // the frame. It still reads wider than a screenshot, which is 1170:2532.
+          "h-[calc(62vw*2532/1170)] max-h-[calc(17rem*2532/1170)] w-[calc(62vw*2532/1170*9/16)] max-w-[calc(17rem*2532/1170*9/16)] shrink-0 snap-center sm:col-span-2 sm:h-auto sm:max-h-none sm:w-auto sm:min-w-0 sm:max-w-none"
         : "w-[62vw] max-w-[17rem] shrink-0 snap-center sm:w-auto sm:min-w-0 sm:max-w-none"
     case "screens":
       // 14rem keeps a five-image set inside the page shell on a wide screen, so the row
@@ -305,7 +305,7 @@ function triggerClassName(variant: GalleryVariant, media: GalleryMedia) {
 function previewSizes(variant: GalleryVariant, media: GalleryMedia) {
   switch (variant) {
     case "showcase":
-      return media.type === "video" ? "(max-width: 640px) 82vw, 380px" : "(max-width: 640px) 62vw, 300px"
+      return media.type === "video" ? "(max-width: 640px) 76vw, 380px" : "(max-width: 640px) 62vw, 300px"
     case "screens":
       return "(max-width: 640px) 62vw, 224px"
     case "gallery":
