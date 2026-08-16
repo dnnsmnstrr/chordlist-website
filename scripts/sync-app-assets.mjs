@@ -1,4 +1,4 @@
-import { access, copyFile, mkdir, readdir, rm } from "node:fs/promises"
+import { access, copyFile, mkdir, readFile, readdir, rm } from "node:fs/promises"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
 
@@ -76,6 +76,18 @@ const iPadDarkCount = await syncScreenshots(
   path.join(publicScreenshots, "ipad", "dark"),
 )
 
+// The shared wording, so a term changed in the app repository's VOCABULARY.md reaches the site
+// without anyone retyping it. Committed here too, so a build without the app repository present
+// still has the last synced copy — same contract as the screenshots above.
+const vocabularySource = path.join(appRoot, "vocabulary.json")
+let vocabularyTerms = 0
+if (await exists(vocabularySource)) {
+  const destination = path.join(websiteRoot, "locales", "vocabulary.json")
+  await mkdir(path.dirname(destination), { recursive: true })
+  await copyFile(vocabularySource, destination)
+  vocabularyTerms = JSON.parse(await readFile(destination, "utf8")).terms.length
+}
+
 const pressArchiveSource = path.join(appRoot, "build", "press-kit", "chordlist-press-kit.zip")
 if (await exists(pressArchiveSource)) {
   const pressDirectory = path.join(websiteRoot, "public", "press")
@@ -85,5 +97,6 @@ if (await exists(pressArchiveSource)) {
 
 console.log(
   `Synced iPhone (${lightCount} light, ${darkCount} dark) and ` +
-    `iPad (${iPadLightCount} light, ${iPadDarkCount} dark) app screenshots.`,
+    `iPad (${iPadLightCount} light, ${iPadDarkCount} dark) app screenshots` +
+    (vocabularyTerms ? `, and ${vocabularyTerms} vocabulary terms.` : "."),
 )

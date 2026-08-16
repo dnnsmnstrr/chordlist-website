@@ -1,0 +1,184 @@
+{
+  "$comment": "Generated from VOCABULARY.md by scripts/build-vocabulary.py. Do not edit.",
+  "sourceLanguage": "en",
+  "languages": [
+    "en",
+    "de"
+  ],
+  "terms": [
+    {
+      "term": "lyrics",
+      "translations": {
+        "de": "Songtext"
+      },
+      "match": "strict",
+      "notes": "Never *Liedtext*. Plural *Songtexte*."
+    },
+    {
+      "term": "chord",
+      "translations": {
+        "de": "Akkord"
+      },
+      "match": "strict",
+      "notes": "Plural *Akkorde*."
+    },
+    {
+      "term": "chord progression",
+      "translations": {
+        "de": "Akkordfolge"
+      },
+      "match": "strict",
+      "notes": "Not *Akkordprogression*, which reads as a translation."
+    },
+    {
+      "term": "artist",
+      "translations": {
+        "de": "Interpret"
+      },
+      "match": "strict",
+      "notes": "Never *Künstler*, which means an artist in the gallery sense."
+    },
+    {
+      "term": "song",
+      "translations": {
+        "de": "Song"
+      },
+      "match": "strict",
+      "notes": "Never *Lied*. Plural *Songs*, not *Songe*."
+    },
+    {
+      "term": "songbook",
+      "translations": {
+        "de": "Songbook"
+      },
+      "match": "loose",
+      "notes": "Kept as-is; *Liederbuch* sounds like a school hymnal."
+    },
+    {
+      "term": "library",
+      "translations": {
+        "de": "Bibliothek"
+      },
+      "match": "loose",
+      "notes": "The user's collection of songs."
+    },
+    {
+      "term": "tag",
+      "translations": {
+        "de": "Tag"
+      },
+      "match": "loose",
+      "notes": "Plural *Tags*. Collides with the German word for *day*; keep it in contexts where that is unambiguous."
+    },
+    {
+      "term": "transpose",
+      "translations": {
+        "de": "transponieren"
+      },
+      "match": "strict",
+      "notes": "The musical term, and the one players use."
+    },
+    {
+      "term": "autoscroll",
+      "translations": {
+        "de": "Auto-Scroll"
+      },
+      "match": "strict",
+      "notes": "Hyphenated. Not *Automatischer Bildlauf*."
+    },
+    {
+      "term": "capo",
+      "translations": {
+        "de": "Capo"
+      },
+      "match": "loose",
+      "notes": "Unchanged."
+    },
+    {
+      "term": "setlist",
+      "translations": {
+        "de": "Setlist"
+      },
+      "match": "loose",
+      "notes": "Unchanged."
+    },
+    {
+      "term": "folder",
+      "translations": {
+        "de": "Ordner"
+      },
+      "match": "strict",
+      "notes": ""
+    },
+    {
+      "term": "song file",
+      "translations": {
+        "de": "Song-Datei"
+      },
+      "match": "loose",
+      "notes": "Hyphenated, because *Songdatei* is hard to read."
+    },
+    {
+      "term": "Markdown",
+      "translations": {
+        "de": "Markdown"
+      },
+      "match": "loose",
+      "notes": "A format name; never translated."
+    },
+    {
+      "term": "unlimited songs",
+      "translations": {
+        "de": "Unbegrenzte Songs"
+      },
+      "match": "loose",
+      "notes": "The purchase, capitalised as a product name. Lowercase *unlimited songs* is the generic phrase and translates freely — *unbegrenzt viele Songs*."
+    },
+    {
+      "term": "Apple Music",
+      "translations": {
+        "de": "Apple Music"
+      },
+      "match": "loose",
+      "notes": "Apple's name; never translated."
+    },
+    {
+      "term": "share extension",
+      "translations": {
+        "de": "Share-Erweiterung"
+      },
+      "match": "loose",
+      "notes": ""
+    }
+  ],
+  "phrases": [
+    {
+      "name": "tagline",
+      "translations": {
+        "en": "Your lyrics and chords, as files in your pocket.",
+        "de": "Deine Songtexte und Akkorde – als Dateien in deiner Tasche."
+      }
+    },
+    {
+      "name": "description",
+      "translations": {
+        "en": "A local-first songbook for iPhone and iPad that keeps lyrics and chords in portable Markdown files you control.",
+        "de": "Ein local-first Songbook für iPhone und iPad, das Songtexte und Akkorde in portablen Markdown-Dateien aufbewahrt, die dir gehören."
+      }
+    },
+    {
+      "name": "unlock",
+      "translations": {
+        "en": "Unlock Unlimited Songs",
+        "de": "Unbegrenzte Songs freischalten"
+      }
+    },
+    {
+      "name": "free limit",
+      "translations": {
+        "en": "Your first 10 songs are free.",
+        "de": "Deine ersten 10 Songs sind kostenlos."
+      }
+    }
+  ]
+}

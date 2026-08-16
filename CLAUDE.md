@@ -249,3 +249,76 @@ with Cursor's frontmatter dialect. There are three: `stripe-projects-cli`, `blog
 RevenueCat). See `AGENTS.md` and `.agents/skills/stripe-projects-cli/` for that workflow.
 `.projects/cache`, `.projects/vault`, and all `.env*` files are gitignored — never commit
 credentials.
+
+## Localization
+
+Copy lives in `locales/`. `en.ts` is the site as it ships today; `de.ts` is a partial German
+translation of `locale`, `commonCopy`, `metadataCopy` and `homeCopy`. The remaining objects —
+`docsCopy`, `faqCopy`, `pressCopy`, `screensCopy`, `privacyCopy`, `blogCopy`, `galleryCopy`,
+`screenshotGalleryCopy`, `pianoCopy` — are still English only, and every page still imports
+`@/locales/en` directly. Locale selection and routing are not wired up yet.
+
+Each German object is typed `Localized<typeof …>` (see `locales/types.ts`): the English shape with
+its wording set free. Adding a key to `en.ts` therefore fails the German build instead of silently
+rendering English, which is what keeps a partial translation honest.
+
+### Translation editor
+
+```bash
+pnpm dev   # then http://localhost:3000/translations
+```
+
+A table of every app string across every language, editable in place, plus the shared glossary and
+a button that provisions a new language.
+
+**It only runs locally.** Editing means writing files in the `chordlist-app` checkout beside this
+one; a deployed build can reach neither the filesystem nor that repository, so the route 404s in
+production and the API refuses with an explanation. It finds the app repository the same way
+`sync:app` does — `../chordlist-app`, or `CHORDLIST_APP_REPO`.
+
+Each edit writes straight through to the file it came from. There is no save button, because a
+staged buffer that can disagree with disk is the drift this whole arrangement exists to prevent.
+Writes land in:
+
+| Edited | Written to |
+| --- | --- |
+| A string or plural | `scripts/translations/<language>.json`, then straight into the String Catalogs |
+| A glossary term or phrase | `VOCABULARY.md`, then `vocabulary.json` |
+| A new language | both of the above, plus `LANGUAGES` in `apply-translations.py` |
+
+The editor writes the *sources* and hands off to the app repository's own scripts —
+`apply-translations.py` and `build-vocabulary.py` — for everything derived from them, rather than
+deriving it a second time in TypeScript. So an edit reaches the String Catalogs immediately, and
+there is exactly one implementation of each derivation to keep correct. Commit the result in the
+app repository.
+
+Run `scripts/sync-string-catalogs.sh` there only when you have added or changed a string in Swift,
+which is what re-extracts the keys.
+
+Provisioning deliberately stops short of the steps that need judgement or that risk a file worth
+protecting: `knownRegions` in the Xcode project, a `case` in the capture script, a fixture set of
+songs a speaker would recognise, and `locales/<code>.ts` here. The UI lists them when it finishes.
+A provisioned language starts empty rather than machine-translated — an untranslated string is
+visible and fails the build, a plausible wrong one is not.
+
+### Shared wording
+
+Terms the app and the site both use — *Songtext*, *Akkordfolge*, *Interpret*, the tagline, the
+product description — are not retyped here. They come from `VOCABULARY.md` in the chordlist-app
+repository, which is the single source of truth for wording across the app, this site, the App
+Store listing and the press kit.
+
+`pnpm sync:app` copies the generated `vocabulary.json` into `locales/`, exactly as it copies
+screenshots, and `locales/vocabulary.ts` exposes it:
+
+```ts
+import { phrase, term } from "@/locales/vocabulary"
+
+phrase("tagline", "de")   // Deine Songtexte und Akkorde – als Dateien in deiner Tasche.
+term("lyrics", "de")      // Songtext
+```
+
+Both throw on an unknown key rather than falling back, so a term that has been renamed in the app
+repository surfaces at build time. To change a shared word, edit `VOCABULARY.md` in chordlist-app,
+run `scripts/build-vocabulary.py` there, then `pnpm sync:app` here. The committed copy means a
+build without the app repository checked out still works.
