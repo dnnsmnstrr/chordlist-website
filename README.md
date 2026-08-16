@@ -177,3 +177,37 @@ catches invalid content as well as code errors.
 
 The repository is also linked to its [v0 project](https://v0.app/chat/projects/prj_AsUQPET3z9WZP5VoDtZIfAsTxWwR),
 so changes may arrive as commits from v0 chats.
+
+## Localization
+
+Copy lives in `locales/`. `en.ts` is the site as it ships today; `de.ts` is a partial German
+translation of `locale`, `commonCopy`, `metadataCopy` and `homeCopy`. The remaining objects —
+`docsCopy`, `faqCopy`, `pressCopy`, `screensCopy`, `privacyCopy`, `blogCopy`, `galleryCopy`,
+`screenshotGalleryCopy`, `pianoCopy` — are still English only, and every page still imports
+`@/locales/en` directly. Locale selection and routing are not wired up yet.
+
+Each German object is typed `Localized<typeof …>` (see `locales/types.ts`): the English shape with
+its wording set free. Adding a key to `en.ts` therefore fails the German build instead of silently
+rendering English, which is what keeps a partial translation honest.
+
+### Shared wording
+
+Terms the app and the site both use — *Songtext*, *Akkordfolge*, *Interpret*, the tagline, the
+product description — are not retyped here. They come from `VOCABULARY.md` in the chordlist-app
+repository, which is the single source of truth for wording across the app, this site, the App
+Store listing and the press kit.
+
+`pnpm sync:app` copies the generated `vocabulary.json` into `locales/`, exactly as it copies
+screenshots, and `locales/vocabulary.ts` exposes it:
+
+```ts
+import { phrase, term } from "@/locales/vocabulary"
+
+phrase("tagline", "de")   // Deine Songtexte und Akkorde – als Dateien in deiner Tasche.
+term("lyrics", "de")      // Songtext
+```
+
+Both throw on an unknown key rather than falling back, so a term that has been renamed in the app
+repository surfaces at build time. To change a shared word, edit `VOCABULARY.md` in chordlist-app,
+run `scripts/build-vocabulary.py` there, then `pnpm sync:app` here. The committed copy means a
+build without the app repository checked out still works.
