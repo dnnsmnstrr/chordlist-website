@@ -139,6 +139,9 @@ const CONFIG = {
   layout: {
     padding: 80,
     chordGap: 44,
+    // The gap between the copy and the subject beside it on a card. Wide enough
+    // that the two read as separate columns rather than one crowded block.
+    columnGap: 64,
     squircleExponent: 5,
     glyphInset: 0,
   },

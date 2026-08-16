@@ -39,6 +39,12 @@ type ScreenshotGalleryProps = {
 /** Shorter than this is a tap, or a finger that moved while lifting. */
 const SWIPE_THRESHOLD_PX = 48
 
+/*
+  Dismissing costs more than stepping: a swipe that closes the view by mistake loses the
+  place in the set, so it asks for a longer pull than moving between images does.
+*/
+const SWIPE_CLOSE_THRESHOLD_PX = 96
+
 export function ScreenshotGallery({ screenshots, variant = "press" }: ScreenshotGalleryProps) {
   const [activeIndex, setActiveIndex] = useState<number | null>(null)
   const closeButtonRef = useRef<HTMLButtonElement>(null)
@@ -101,10 +107,10 @@ export function ScreenshotGallery({ screenshots, variant = "press" }: Screenshot
   }, [active])
 
   /*
-    Swiping between images, which is how anyone holding a phone expects to move
-    through a full-screen gallery — the arrow buttons are small and the arrow keys
-    are not there. A pinch (more than one finger) cancels the gesture rather than
-    counting as a swipe on the way out.
+    Swiping between images, and swiping down to dismiss — which is how anyone holding a
+    phone expects to move through and leave a full-screen gallery — the arrow buttons and
+    the close button are small, and the arrow and Escape keys are not there. A pinch (more
+    than one finger) cancels the gesture rather than counting as a swipe on the way out.
   */
   const swipeOrigin = useRef<{ x: number; y: number } | null>(null)
 
@@ -121,16 +127,26 @@ export function ScreenshotGallery({ screenshots, variant = "press" }: Screenshot
 
       if (!origin || !touch) return
 
+      // While the page is pinch-zoomed, a one-finger drag is how you look around the
+      // screenshot. Reading it as a swipe would make a zoomed image impossible to pan.
+      if ((window.visualViewport?.scale ?? 1) > 1) return
+
       const deltaX = touch.clientX - origin.x
       const deltaY = touch.clientY - origin.y
 
-      // A mostly vertical drag is someone dismissing the keyboard or steadying the
-      // phone, not a swipe. Left moves forward, matching the reading direction.
-      if (Math.abs(deltaX) < SWIPE_THRESHOLD_PX || Math.abs(deltaX) <= Math.abs(deltaY)) return
+      // A mostly vertical drag going down dismisses the view, the way a phone's own
+      // full-screen media does; going up is someone steadying the phone, not a gesture.
+      if (Math.abs(deltaY) > Math.abs(deltaX)) {
+        if (deltaY >= SWIPE_CLOSE_THRESHOLD_PX) close()
+        return
+      }
+
+      // Left moves forward, matching the reading direction.
+      if (Math.abs(deltaX) < SWIPE_THRESHOLD_PX) return
 
       step(deltaX < 0 ? 1 : -1)
     },
-    [step],
+    [close, step],
   )
 
   return (
@@ -165,6 +181,8 @@ export function ScreenshotGallery({ screenshots, variant = "press" }: Screenshot
           role="dialog"
           aria-modal="true"
           aria-labelledby="screenshot-dialog-title"
+          onTouchStart={onTouchStart}
+          onTouchEnd={onTouchEnd}
           className="fixed inset-0 z-50 flex flex-col bg-background/95 backdrop-blur-sm"
         >
           <div className="flex items-center justify-between gap-4 border-b border-border px-4 py-3 sm:px-6">
@@ -203,8 +221,6 @@ export function ScreenshotGallery({ screenshots, variant = "press" }: Screenshot
           </div>
 
           <div
-            onTouchStart={onTouchStart}
-            onTouchEnd={onTouchEnd}
             // Vertical panning and pinch-zoom stay with the browser — zooming into a
             // screenshot is the point of this view — while horizontal movement is
             // claimed for the swipe above.

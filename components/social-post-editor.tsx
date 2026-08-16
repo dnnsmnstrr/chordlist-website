@@ -1,11 +1,25 @@
 "use client"
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState, type ComponentType } from "react"
 import Link from "next/link"
-import { Check, ClipboardPaste, Copy, Download, Images, ImagePlus, RotateCcw, X } from "lucide-react"
+import { Menu } from "@base-ui/react/menu"
+import {
+  Check,
+  ChevronDown,
+  ChevronUp,
+  ClipboardPaste,
+  Copy,
+  Download,
+  Ellipsis,
+  Images,
+  ImagePlus,
+  RotateCcw,
+  X,
+} from "lucide-react"
 import { parse as parseYaml } from "yaml"
 
 import { Button, buttonVariants } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
 
 type FormatName = "card" | "post" | "story"
 type TemplateName = "statement" | "progression" | "quote" | "screenshot" | "file" | "photo"
@@ -197,6 +211,18 @@ function fitFont(
     size -= 2
   }
   return Math.round(size)
+}
+
+/** The widest of `copy` as it will render, for laying out beside it. */
+function measureLines(
+  context: CanvasRenderingContext2D,
+  copy: string[],
+  size: number,
+  weight: number,
+  family: string,
+) {
+  context.font = `${weight} ${Math.round(size)}px ${family}`
+  return Math.max(0, ...copy.map((line) => context.measureText(line).width))
 }
 
 function drawTextLines(
@@ -422,8 +448,10 @@ async function renderPost(
     const wordmarkWidth = context.measureText("chordlist").width
     context.fillStyle = activeTheme.muted
     context.font = `400 ${Math.round(24 * scale)}px ${mono}`
+    // Lowercased to match the wordmark, the same way the build does it, so the
+    // preview and the rendered PNG agree.
     context.fillText(
-      config.eyebrow.trim(),
+      config.eyebrow.trim().toLowerCase(),
       padding + markSize + Math.round(36 * scale) + wordmarkWidth,
       top + markSize / 2,
     )
@@ -438,6 +466,12 @@ async function renderPost(
   const bodyBottom = bottom - Math.round(24 * scale * 2.6)
   const bodyHeight = bodyBottom - bodyTop
   const headline = lines(config.headline)
+
+  // The box a template may draw in, as scripts/build-social.mjs computes it. The
+  // preview's own body box sits a gap lower, so the card layouts below size
+  // against this one to land where the build puts them.
+  const innerHeight = format.height - padding * 2 - safeTop - safeBottom - Math.round((56 + 24 * 2.6) * scale)
+  const columnGap = Math.round(64 * scale)
 
   if (config.template === "statement" || config.template === "photo") {
     const size = fitFont(context, headline, 78 * scale, innerWidth, 700, sans)
@@ -514,9 +548,18 @@ async function renderPost(
     const rowCount = meta.length + body.length + (separator ? 1 : 0)
     const filename = config.filename.trim()
 
-    const headlineSize = headline.length ? fitFont(context, headline, 52 * scale, innerWidth, 700, sans) : 0
+    // On a card a headline puts the excerpt in the subject column beside it
+    // rather than under it, so neither pays for the other's height.
+    const twoColumn = formatName === "card" && headline.length > 0
+    const column = subjectColumn(innerWidth, columnGap, 0, 0)
+    const contentWidth = twoColumn ? column.width : innerWidth
+    const contentX = padding + (twoColumn ? column.start : 0)
+
+    const headlineSize = headline.length
+      ? fitFont(context, headline, 52 * scale, twoColumn ? column.start - columnGap : innerWidth, 700, sans)
+      : 0
     const headlineGap = 56 * scale
-    const headlineHeight = headline.length ? headline.length * headlineSize * 1.2 + headlineGap : 0
+    const headlineHeight = headline.length && !twoColumn ? headline.length * headlineSize * 1.2 + headlineGap : 0
 
     const filenameSize = Math.round(24 * scale)
     const ruleGap = 20 * scale
@@ -524,7 +567,7 @@ async function renderPost(
 
     // Mirrors the file template in scripts/lib/social-templates.mjs: fitted by
     // width and by height, because an excerpt is a block rather than a phrase.
-    const widthCap = fitFont(context, [...meta, ...body], 38 * scale, innerWidth, 400, mono, 0.5)
+    const widthCap = fitFont(context, [...meta, ...body], 38 * scale, contentWidth, 400, mono, 0.5)
     const heightCap = (bodyHeight - headlineHeight - chromeHeight) / Math.max(1, rowCount * 1.5)
     const size = Math.round(Math.max(38 * scale * 0.5, Math.min(widthCap, heightCap)))
     const row = Math.round(size * 1.5)
@@ -536,10 +579,10 @@ async function renderPost(
       context.fillStyle = activeTheme.muted
       context.font = `400 ${filenameSize}px ${mono}`
       context.textBaseline = "top"
-      context.fillText(filename, padding, y)
+      context.fillText(filename, contentX, y)
       y += filenameSize * 1.4 + ruleGap
       context.fillStyle = activeTheme.rule
-      context.fillRect(padding, y, innerWidth, Math.max(1, Math.round(scale)))
+      context.fillRect(contentX, y, contentWidth, Math.max(1, Math.round(scale)))
       y += ruleGap
     }
 
@@ -547,17 +590,20 @@ async function renderPost(
     context.font = `400 ${size}px ${mono}`
     meta.forEach((line, index) => {
       context.fillStyle = activeTheme.muted
-      context.fillText(line, padding, y + index * row)
+      context.fillText(line, contentX, y + index * row)
     })
     y += meta.length * row + (separator ? row : 0)
     body.forEach((line, index) => {
       context.fillStyle = activeTheme.text
-      context.fillText(line, padding, y + index * row)
+      context.fillText(line, contentX, y + index * row)
     })
     y += body.length * row
 
     if (headline.length) {
-      drawTextLines(context, headline, padding, y + headlineGap, headlineSize, 1.2, activeTheme.text, 700, sans)
+      const headlineY = twoColumn
+        ? bodyTop + (bodyHeight - headline.length * headlineSize * 1.2) / 2
+        : y + headlineGap
+      drawTextLines(context, headline, padding, headlineY, headlineSize, 1.2, activeTheme.text, 700, sans)
     }
   }
 
@@ -568,15 +614,31 @@ async function renderPost(
     const detailRatio = activeFormatRatio(formatName, { card: 0.76, post: 0.62, story: 0.58 })
     const visibleRatio = activeFormatRatio(formatName, { card: 1, post: 0.73, story: 0.68 })
     const copyRatio = activeFormatRatio(formatName, { card: 0.58, post: 0.48, story: 0.45 })
-    const shotY = top + markSize * 0.7
-    const shotHeight = format.height - shotY - activeFormatRatio(formatName, { card: 18, post: 24, story: 28 }) * scale
-    const shotWidth = shotHeight * (detail ? detailRatio : screenshotRatio)
-    const cardFrameInset = formatName === "card" && config.deviceFrame ? Math.max(2, 2 * scale) * 50  : 0
-    const shotX = format.width - shotWidth * visibleRatio - cardFrameInset
     const copyWidth = innerWidth * copyRatio
     const copySize = fitFont(context, headline, 52 * scale, copyWidth, 700, sans)
     const copyHeight = headline.length * copySize * 1.18
     const copyY = bodyTop + (bodyHeight - copyHeight) / 2
+
+    // The card holds the whole phone inside the subject column; the portrait
+    // formats run it past the right edge. Mirrors the screenshot template in
+    // scripts/lib/social-templates.mjs.
+    const contained = formatName === "card"
+    const bleedTop = top + markSize * 0.7
+    const shotHeight = contained
+      ? Math.min(format.height * 0.78, innerHeight)
+      : format.height - bleedTop - activeFormatRatio(formatName, { card: 18, post: 24, story: 28 }) * scale
+    const shotWidth = shotHeight * (detail ? detailRatio : screenshotRatio)
+    const shotY = contained ? bodyTop + (bodyHeight - shotHeight) / 2 : bleedTop
+    const outerWidth = shotWidth + (config.deviceFrame ? Math.max(2, 2 * scale) * 2 : 0)
+    const shotX = contained
+      ? padding +
+        subjectColumn(
+          innerWidth,
+          columnGap,
+          headline.length ? measureLines(context, headline, copySize, 700, sans) : 0,
+          outerWidth,
+        ).left
+      : format.width - shotWidth * visibleRatio
 
     drawScreenshot(
       context,
@@ -595,6 +657,21 @@ async function renderPost(
 
 function activeFormatRatio<Value>(format: FormatName, values: Record<FormatName, Value>) {
   return values[format]
+}
+
+/**
+ * Mirrors `subjectColumn()` in scripts/lib/social-templates.mjs: the golden
+ * section a card divides on, pushed right by copy that renders wider than its
+ * share. The build predicts that width from the character count because satori
+ * cannot measure text; here the canvas measures it, so the two can disagree by a
+ * few pixels on a headline that fills its column exactly.
+ */
+function subjectColumn(innerWidth: number, gutter: number, textWidth: number, subjectWidth: number) {
+  const start = Math.max(Math.round(innerWidth * 0.618), textWidth > 0 ? Math.round(textWidth) + gutter : 0)
+  const width = Math.max(0, innerWidth - start)
+  const centred = start + Math.round(Math.max(0, width - subjectWidth) / 2)
+
+  return { start, width, left: Math.max(0, Math.min(centred, innerWidth - subjectWidth)) }
 }
 
 function importedSource(source: string) {
@@ -780,6 +857,19 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   )
 }
 
+const menuItemClass =
+  "flex cursor-default select-none items-center gap-2 rounded-lg px-3 py-2 text-sm outline-none transition-colors data-[highlighted]:bg-muted data-[highlighted]:text-foreground"
+
+/** A header action, rendered as a button on a wide window and a menu item on a narrow one. */
+type HeaderAction = {
+  key: string
+  label: string
+  icon: ComponentType<{ className?: string }>
+  /** Set for the one action that navigates; the rest carry `onClick`. */
+  href?: "/social/posts"
+  onClick?: () => void
+}
+
 function Field({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
   return (
     <label className="block text-sm font-medium">
@@ -800,6 +890,11 @@ export function SocialPostEditor() {
   const [importOpen, setImportOpen] = useState(false)
   const [importText, setImportText] = useState("")
   const [importError, setImportError] = useState("")
+  // Below lg the preview is pinned under the header and competes with the form
+  // for the viewport, so it can be folded down to a strip. The canvas is never
+  // unmounted for this — only resized — because it is only redrawn when the
+  // config changes, and a remounted canvas would come back blank.
+  const [previewCollapsed, setPreviewCollapsed] = useState(false)
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
   const photoSrc = useMemo(() => {
@@ -915,6 +1010,27 @@ export function SocialPostEditor() {
 
   const selectedFormat = formats[activeFormat]
 
+  const secondaryActions: HeaderAction[] = [
+    { key: "posts", label: "Posts", icon: Images, href: "/social/posts" },
+    {
+      key: "import",
+      label: status === "imported" ? "Imported" : "Import config",
+      icon: status === "imported" ? Check : ClipboardPaste,
+      onClick: () => {
+        setImportText("")
+        setImportError("")
+        setImportOpen(true)
+      },
+    },
+    { key: "reset", label: "Reset", icon: RotateCcw, onClick: () => setConfig(initialConfig) },
+    {
+      key: "copy",
+      label: status === "copied" ? "Copied" : "Copy config",
+      icon: status === "copied" ? Check : Copy,
+      onClick: copyConfig,
+    },
+  ]
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="sticky top-0 z-30 border-b border-border bg-background/90 backdrop-blur-xl">
@@ -923,33 +1039,77 @@ export function SocialPostEditor() {
             <p className="font-mono text-xs text-muted-foreground">chordlist / studio</p>
             <h1 className="text-base font-semibold tracking-tight">Social post editor</h1>
           </div>
-          <div className="flex flex-wrap items-center justify-end gap-2">
-            <Link href="/social/posts" className={buttonVariants({ variant: "outline", size: "lg" })}>
-              <Images /> Posts
-            </Link>
-            <Button
-              variant="outline"
-              size="lg"
-              onClick={() => {
-                setImportText("")
-                setImportError("")
-                setImportOpen(true)
-              }}
-            >
-              {status === "imported" ? <Check /> : <ClipboardPaste />}
-              {status === "imported" ? "Imported" : "Import config"}
-            </Button>
-            <Button variant="outline" size="lg" onClick={() => setConfig(initialConfig)}>
-              <RotateCcw /> Reset
-            </Button>
-            <Button variant="outline" size="lg" onClick={copyConfig}>
-              {status === "copied" ? <Check /> : <Copy />}
-              {status === "copied" ? "Copied" : "Copy config"}
-            </Button>
-            <Button size="lg" onClick={exportImage}>
-              {status === "exported" ? <Check /> : <Download />}
-              {status === "exported" ? "Exported" : "Export PNG"}
-            </Button>
+          <div className="flex items-center justify-end gap-2">
+            {/*
+              Five buttons wrap onto three rows on a phone, so below lg the four
+              secondary ones fold into a menu behind the export button. Both
+              renderings read the same list, which is what keeps them in step.
+            */}
+            <div className="hidden items-center gap-2 lg:flex">
+              {secondaryActions.map((action) =>
+                action.href ? (
+                  <Link
+                    key={action.key}
+                    href={action.href}
+                    className={buttonVariants({ variant: "outline", size: "lg" })}
+                  >
+                    <action.icon /> {action.label}
+                  </Link>
+                ) : (
+                  <Button key={action.key} variant="outline" size="lg" onClick={action.onClick}>
+                    <action.icon /> {action.label}
+                  </Button>
+                ),
+              )}
+            </div>
+
+            <div className="flex items-center lg:contents">
+              <Button
+                size="lg"
+                onClick={exportImage}
+                className="rounded-r-none lg:rounded-r-lg"
+              >
+                {status === "exported" ? <Check /> : <Download />}
+                {status === "exported" ? "Exported" : "Export PNG"}
+              </Button>
+              <Menu.Root>
+                <Menu.Trigger
+                  render={
+                    // The same variant as export, so the pair reads as one split
+                    // button rather than two; a hairline in the foreground colour
+                    // is what separates the halves.
+                    <Button
+                      size="icon-lg"
+                      aria-label="More actions"
+                      className="rounded-l-none border-l-primary-foreground/25 lg:hidden"
+                    />
+                  }
+                >
+                  <Ellipsis />
+                </Menu.Trigger>
+                <Menu.Portal>
+                  <Menu.Positioner sideOffset={8} align="end" className="z-40">
+                    <Menu.Popup className="min-w-52 rounded-xl border border-border bg-background p-1 shadow-xl outline-none">
+                      {secondaryActions.map((action) =>
+                        action.href ? (
+                          <Menu.LinkItem
+                            key={action.key}
+                            render={<Link href={action.href} />}
+                            className={menuItemClass}
+                          >
+                            <action.icon className="size-4" /> {action.label}
+                          </Menu.LinkItem>
+                        ) : (
+                          <Menu.Item key={action.key} onClick={action.onClick} className={menuItemClass}>
+                            <action.icon className="size-4" /> {action.label}
+                          </Menu.Item>
+                        ),
+                      )}
+                    </Menu.Popup>
+                  </Menu.Positioner>
+                </Menu.Portal>
+              </Menu.Root>
+            </div>
           </div>
         </div>
       </header>
@@ -1281,21 +1441,51 @@ export function SocialPostEditor() {
           </Section>
         </aside>
 
-        <section className="relative min-h-[70vh] bg-muted/35 p-4 sm:p-8 lg:p-12">
-          <div className="sticky top-28 mx-auto flex max-w-4xl flex-col items-center">
-            <div className="mb-4 flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div>
+        {/*
+          Below lg the preview leads and stays pinned under the header, so an edit
+          two thirds down the form is still visible as it is typed; from lg it goes
+          back to being the right-hand column. Every collapsed style is undone at
+          lg, where the preview has its own column and nothing to yield to.
+        */}
+        <section
+          className={cn(
+            "group sticky top-16 z-20 order-first border-b border-border bg-muted/95 backdrop-blur-xl",
+            "lg:static lg:order-none lg:min-h-[70vh] lg:border-b-0 lg:bg-muted/35 lg:backdrop-blur-none",
+            previewCollapsed ? "p-3" : "p-4 sm:p-6",
+            "lg:relative lg:p-12",
+          )}
+        >
+          <div className="mx-auto flex w-full max-w-4xl flex-wrap items-center gap-3 lg:sticky lg:top-28 lg:flex-col lg:flex-nowrap">
+            <div
+              className={cn(
+                "flex items-center gap-3",
+                previewCollapsed
+                  ? "order-2 min-w-0 flex-1 justify-between lg:order-1 lg:w-full"
+                  : "order-1 w-full justify-between",
+              )}
+            >
+              <div className="min-w-0">
                 <span className="block font-mono text-xs uppercase tracking-[0.14em] text-muted-foreground">Live preview</span>
-                <span className="mt-1 block text-xs text-muted-foreground">{selectedFormat.width} × {selectedFormat.height} px</span>
+                <span className="mt-1 block truncate text-xs text-muted-foreground">
+                  {previewCollapsed ? `${selectedFormat.label} · ` : ""}
+                  {selectedFormat.width} × {selectedFormat.height} px
+                </span>
               </div>
-              <div className="grid grid-cols-3 rounded-xl border border-border bg-background/80 p-1 shadow-sm" role="group" aria-label="Preview format">
+              <div
+                className={cn(
+                  "grid-cols-3 rounded-xl border border-border bg-background/80 p-1 shadow-sm",
+                  previewCollapsed ? "hidden lg:grid" : "grid",
+                )}
+                role="group"
+                aria-label="Preview format"
+              >
                 {(Object.keys(formats) as FormatName[]).map((name) => (
                   <button
                     key={name}
                     type="button"
                     onClick={() => setActiveFormat(name)}
                     aria-pressed={activeFormat === name}
-                    className={`rounded-lg px-4 py-2 text-xs font-medium transition ${
+                    className={`rounded-lg px-3 py-2 text-xs font-medium transition sm:px-4 ${
                       activeFormat === name
                         ? "bg-foreground text-background"
                         : "text-muted-foreground hover:bg-muted hover:text-foreground"
@@ -1305,19 +1495,77 @@ export function SocialPostEditor() {
                   </button>
                 ))}
               </div>
+              {/*
+                Collapsed, the whole strip is the control — see the overlay at the
+                end of this section — so the chevron is only the affordance for it
+                and must not also be a button.
+              */}
+              {previewCollapsed ? (
+                <span
+                  aria-hidden="true"
+                  className="flex size-9 shrink-0 items-center justify-center text-muted-foreground transition-colors group-hover:text-foreground lg:hidden"
+                >
+                  <ChevronDown className="size-4" />
+                </span>
+              ) : (
+                <Button
+                  variant="ghost"
+                  size="icon-lg"
+                  className="shrink-0 lg:hidden"
+                  aria-expanded
+                  aria-controls="preview-canvas"
+                  aria-label="Collapse the preview"
+                  onClick={() => setPreviewCollapsed(true)}
+                >
+                  <ChevronUp />
+                </Button>
+              )}
             </div>
-            <div className="relative flex max-h-[calc(100vh-12rem)] w-full items-center justify-center overflow-hidden rounded-2xl border border-border bg-background/70 p-3 shadow-sm sm:p-6">
+            <div
+              className={cn(
+                "relative flex items-center justify-center overflow-hidden border border-border bg-background/70 shadow-sm",
+                previewCollapsed
+                  ? "order-1 w-auto shrink-0 rounded-lg p-1 lg:order-2 lg:w-full lg:rounded-2xl lg:p-6"
+                  : "order-2 max-h-[calc(100vh-12rem)] w-full rounded-2xl p-3 sm:p-6",
+              )}
+            >
               <canvas
+                id="preview-canvas"
                 ref={canvasRef}
                 aria-label={`Preview of the ${selectedFormat.label.toLowerCase()} social image`}
-                className="block max-h-[calc(100vh-16rem)] max-w-full bg-black shadow-2xl"
+                className={cn(
+                  "block bg-black shadow-2xl",
+                  previewCollapsed
+                    ? "h-12 w-auto lg:h-auto lg:max-h-[calc(100vh-16rem)] lg:max-w-full"
+                    : "max-h-[38vh] max-w-full lg:max-h-[calc(100vh-16rem)]",
+                )}
                 style={{ aspectRatio: `${selectedFormat.width} / ${selectedFormat.height}` }}
               />
             </div>
-            <p className="mt-4 max-w-xl text-center text-xs leading-relaxed text-muted-foreground">
+            {/* The explanatory line is desktop-only: on a phone the pinned strip is
+                worth more than the sentence. */}
+            <p className="order-3 hidden max-w-xl text-center text-xs leading-relaxed text-muted-foreground lg:block">
               The preview renders at full export resolution. Line breaks, crops, and selected formats are carried into the copied repository config.
             </p>
           </div>
+
+          {/*
+            Collapsed, the strip is a thumbnail and two lines of text — a 36px
+            chevron is a poor target for it, so the whole strip takes the tap. It
+            covers the strip rather than wrapping it because the canvas has to stay
+            in one place in the tree: moving it into a button would remount it, and
+            it is only ever redrawn on a config change.
+          */}
+          {previewCollapsed ? (
+            <button
+              type="button"
+              onClick={() => setPreviewCollapsed(false)}
+              aria-expanded={false}
+              aria-controls="preview-canvas"
+              aria-label="Expand the preview"
+              className="absolute inset-0 z-10 cursor-pointer lg:hidden"
+            />
+          ) : null}
         </section>
       </main>
 
