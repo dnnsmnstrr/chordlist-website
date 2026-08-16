@@ -153,8 +153,23 @@ export async function writeLanguage(code: string, contents: LanguageFile) {
 /// the share extension — "Artist", "Title", the invalid-filename error — and a translation is
 /// keyed by the string itself, so both catalogs share one piece of wording. Listing them twice
 /// would show two rows that silently edit the same value.
-export async function catalogKeys(): Promise<{ key: string; catalogs: string[] }[]> {
+export async function catalogKeys(): Promise<
+  { key: string; catalogs: string[]; debugOnly: boolean }[]
+> {
   await assertEditable()
+
+  // Where each string was written, recorded by scripts/build-string-origins.py from the
+  // compiler's own extraction. Absent when the app repository has not been synced since this was
+  // introduced, in which case nothing is marked rather than everything being guessed at.
+  let origins: Record<string, { files: string[]; debugOnly: boolean }> = {}
+  const originsFile = path.join(appRepositoryPath, "string-origins.json")
+  if (await exists(originsFile)) {
+    origins = (
+      JSON.parse(await readFile(originsFile, "utf8")) as {
+        strings: Record<string, { files: string[]; debugOnly: boolean }>
+      }
+    ).strings
+  }
 
   const sources = [
     { file: path.join(appRepositoryPath, "ChordListApp", "Localizable.xcstrings"), name: "app" },
@@ -174,7 +189,11 @@ export async function catalogKeys(): Promise<{ key: string; catalogs: string[] }
   }
 
   return [...byKey.entries()]
-    .map(([key, catalogs]) => ({ key, catalogs }))
+    .map(([key, catalogs]) => ({
+      key,
+      catalogs,
+      debugOnly: origins[key]?.debugOnly ?? false,
+    }))
     .sort((a, b) => (a.key < b.key ? -1 : a.key > b.key ? 1 : 0))
 }
 

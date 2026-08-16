@@ -30,7 +30,7 @@ type Vocabulary = {
 type EditorData = {
   appRepositoryPath: string
   languages: string[]
-  keys: { key: string; catalogs: string[] }[]
+  keys: { key: string; catalogs: string[]; debugOnly: boolean }[]
   wording: Record<string, LanguageFile>
   vocabulary: Vocabulary
 }
@@ -90,10 +90,15 @@ export function TranslationEditor({ data }: { data: EditorData }) {
 function StringsTable({ data, onChanged }: { data: EditorData; onChanged: () => void }) {
   const [query, setQuery] = useState("")
   const [untranslatedOnly, setUntranslatedOnly] = useState(false)
+  // Debug wording is only ever read by whoever is holding the debugger, so it is noise while
+  // translating the app. Hidden by default, and counted separately below so it is not simply
+  // forgotten.
+  const [showDebug, setShowDebug] = useState(false)
 
   const rows = useMemo(() => {
     const needle = query.trim().toLowerCase()
-    return data.keys.filter(({ key }) => {
+    return data.keys.filter(({ key, debugOnly }) => {
+      if (debugOnly && !showDebug) return false
       if (untranslatedOnly) {
         const missing = data.languages.some(
           (language) =>
@@ -107,7 +112,9 @@ function StringsTable({ data, onChanged }: { data: EditorData; onChanged: () => 
         (data.wording[language]?.translations[key] ?? "").toLowerCase().includes(needle),
       )
     })
-  }, [data, query, untranslatedOnly])
+  }, [data, query, untranslatedOnly, showDebug])
+
+  const debugCount = useMemo(() => data.keys.filter((row) => row.debugOnly).length, [data])
 
   const untranslatedCount = useMemo(
     () =>
@@ -138,6 +145,14 @@ function StringsTable({ data, onChanged }: { data: EditorData; onChanged: () => 
           />
           Untranslated only
         </label>
+        <label className="flex items-center gap-2 text-sm text-muted-foreground">
+          <input
+            type="checkbox"
+            checked={showDebug}
+            onChange={(event) => setShowDebug(event.target.checked)}
+          />
+          Show debug strings ({debugCount})
+        </label>
         <p className="ml-auto text-sm text-muted-foreground">
           {rows.length} of {data.keys.length} strings
           {untranslatedCount > 0 ? ` · ${untranslatedCount} untranslated` : " · all translated"}
@@ -157,7 +172,7 @@ function StringsTable({ data, onChanged }: { data: EditorData; onChanged: () => 
             </tr>
           </thead>
           <tbody>
-            {rows.map(({ key, catalogs }) => (
+            {rows.map(({ key, catalogs, debugOnly }) => (
               <tr key={key} className="border-t border-border align-top">
                 <td className="px-3 py-2">
                   <span className="whitespace-pre-wrap break-words">{key}</span>
@@ -171,6 +186,14 @@ function StringsTable({ data, onChanged }: { data: EditorData; onChanged: () => 
                         {catalog}
                       </span>
                     ))}
+                  {debugOnly && (
+                    <span
+                      className="ml-2 rounded bg-amber-500/15 px-1.5 py-0.5 text-xs text-amber-600 dark:text-amber-400"
+                      title="Only compiled into debug builds — nobody using the app will read this."
+                    >
+                      debug
+                    </span>
+                  )}
                 </td>
                 {data.languages.map((language) => (
                   <td key={language} className="px-3 py-2">

@@ -199,6 +199,12 @@ pnpm dev   # then http://localhost:3000/translations
 A table of every app string across every language, editable in place, plus the shared glossary and
 a button that provisions a new language.
 
+Strings carry a badge for where they came from: `share extension` for the extension's own catalog,
+`debug` for wording only compiled into debug builds. Debug strings are hidden by default — nobody
+using the app will ever read the debug menu — and the toggle says how many are being held back.
+That comes from `string-origins.json`, which the app repository generates from the compiler's own
+extraction; without it nothing is badged rather than anything being guessed at.
+
 **It only runs locally.** Editing means writing files in the `chordlist-app` checkout beside this
 one; a deployed build can reach neither the filesystem nor that repository, so the route 404s in
 production and the API refuses with an explanation. It finds the app repository the same way
