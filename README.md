@@ -61,7 +61,9 @@ Simulator captures are owned by the `chordlist-app` repository. From this reposi
 pnpm sync:assets
 ```
 
-The script copies light and dark iPhone and iPad captures into `public/app-screenshots/`. If
+The script copies light and dark iPhone and iPad captures into `public/app-screenshots/`. Captures in
+another language come along with them: English stays at the root and every other language nests under
+its code (`public/app-screenshots/de/light/`), mirroring the app repository. If
 `chordlist-app/build/press-kit/chordlist-press-kit.zip` exists, it also updates the downloadable
 archive in `public/press/`.
 
@@ -130,13 +132,16 @@ audio, manual shots, and repeatable render presets.
 ### Build App Store screenshots
 
 ```bash
-pnpm build:app-store
+pnpm build:screens
 ```
 
 This syncs the raw app captures first, validates them, and writes the generated upload sets and
-manifest to `public/app-store-screenshots/`. Copy, screenshot selection, colours, and layout geometry
-are configured in `scripts/build-app-store-screenshots.mjs`. The generated sets can be reviewed and
-downloaded from `/screens`; each device and treatment also gets a ZIP archive.
+manifest to `public/app-store-screenshots/`. Screenshot selection, colours, and layout geometry are
+configured in `scripts/build-app-store-screenshots.mjs`; the words are in
+`scripts/lib/app-store-copy.mjs`, one block per language, built on the shared `VOCABULARY.md`
+wording. Every language there gets its own sets, rendered from that language's captures. The
+generated sets can be reviewed and downloaded from `/screens`; each language, device, and treatment
+also gets a ZIP archive.
 
 See [App Store screenshot system](docs/app-store-screenshot-system.md) for supported sizes,
 treatments, and the full pipeline.

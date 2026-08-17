@@ -457,7 +457,7 @@ export const screensCopy = {
   eyebrow: "App Store assets",
   title: "App Store screenshot sets",
   introduction:
-    "Review every current iPhone and iPad image at a glance. Download an individual full-resolution PNG or take a complete, upload-ready set as a ZIP archive.",
+    "Review every current iPhone and iPad image at a glance, in each language the listing ships in. Download an individual full-resolution PNG or take a complete, upload-ready set as a ZIP archive.",
   variants: {
     classic: {
       title: "Classic",
@@ -468,11 +468,21 @@ export const screensCopy = {
       description: "The same product story set against atmospheric black-and-white rehearsal photography.",
     },
   },
-  setTitle: (variant: string, device: string) => `${variant} · ${device}`,
+  /// The App Store locales a set can be built for. The manifest carries the code, so a language
+  /// added to the generator before its name reaches this map still lists, under its code.
+  languages: {
+    en: "English",
+    de: "German",
+  },
+  languageToggle: {
+    label: "Screenshot language",
+    optionLabel: (language: string) => `Show the ${language} screenshot sets`,
+  },
+  setTitle: (language: string, variant: string, device: string) => `${language} · ${variant} · ${device}`,
   setMeta: (count: number, width: number, height: number) => `${count} PNGs · ${width} × ${height}`,
   screenshotTitle: (index: number, headline: string) => `${String(index).padStart(2, "0")} · ${headline}`,
-  screenshotAlt: (title: string, variant: string, device: string) =>
-    `${title}, from the ${variant.toLowerCase()} ${device} App Store screenshot set.`,
+  screenshotAlt: (title: string, language: string, variant: string, device: string) =>
+    `${title}, from the ${language} ${variant.toLowerCase()} ${device} App Store screenshot set.`,
   downloadSet: "Download set (.zip)",
 } as const
 

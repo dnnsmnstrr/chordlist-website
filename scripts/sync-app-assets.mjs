@@ -62,19 +62,41 @@ if (!(await exists(appRoot))) {
 
 const publicScreenshots = path.join(websiteRoot, "public", "app-screenshots")
 const rawScreenshots = path.join(appRoot, "press-kit", "raw-screenshots")
-const lightCount = await syncScreenshots(path.join(rawScreenshots, "light"), path.join(publicScreenshots, "light"))
-const darkCount = await syncScreenshots(
-  path.join(rawScreenshots, "dark"),
-  path.join(publicScreenshots, "dark"),
-)
-const iPadLightCount = await syncScreenshots(
-  path.join(rawScreenshots, "ipad", "light"),
-  path.join(publicScreenshots, "ipad", "light"),
-)
-const iPadDarkCount = await syncScreenshots(
-  path.join(rawScreenshots, "ipad", "dark"),
-  path.join(publicScreenshots, "ipad", "dark"),
-)
+
+/// The language directories beside the English captures — anything that is not one of English's own
+/// `light`, `dark`, or `ipad` folders. Reading the tree rather than a list means a language captured
+/// in the app repository reaches the website without a second place to update.
+async function captureLanguages() {
+  if (!(await exists(rawScreenshots))) return []
+
+  const reserved = new Set(["light", "dark", "ipad"])
+  const entries = await readdir(rawScreenshots, { withFileTypes: true })
+  return entries
+    .filter((entry) => entry.isDirectory() && !reserved.has(entry.name) && !entry.name.startsWith("."))
+    .map((entry) => entry.name)
+    .sort()
+}
+
+// English keeps the original paths and every other language nests under its code, on both sides of
+// the copy — the convention the app repository's capture script already writes to. A language with
+// no captures yet simply copies nothing; the App Store builder reports which sets are still missing.
+const languages = ["", ...(await captureLanguages())]
+const synced = []
+
+for (const language of languages) {
+  for (const device of [
+    { segment: "", label: "iPhone" },
+    { segment: "ipad", label: "iPad" },
+  ]) {
+    for (const appearance of ["light", "dark"]) {
+      const copied = await syncScreenshots(
+        path.join(rawScreenshots, language, device.segment, appearance),
+        path.join(publicScreenshots, language, device.segment, appearance),
+      )
+      if (copied > 0) synced.push({ language: language || "en", detail: `${copied} ${device.label} ${appearance}` })
+    }
+  }
+}
 
 // The shared wording, so a term changed in the app repository's VOCABULARY.md reaches the site
 // without anyone retyping it. Committed here too, so a build without the app repository present
@@ -95,8 +117,17 @@ if (await exists(pressArchiveSource)) {
   await copyFile(pressArchiveSource, path.join(pressDirectory, "chordlist-press-kit.zip"))
 }
 
+const summary = [...new Set(synced.map((entry) => entry.language))]
+  .map(
+    (language) =>
+      `${language} (${synced
+        .filter((entry) => entry.language === language)
+        .map((entry) => entry.detail)
+        .join(", ")})`,
+  )
+  .join("; ")
+
 console.log(
-  `Synced iPhone (${lightCount} light, ${darkCount} dark) and ` +
-    `iPad (${iPadLightCount} light, ${iPadDarkCount} dark) app screenshots` +
+  `Synced app screenshots — ${summary || "none found"}` +
     (vocabularyTerms ? `, and ${vocabularyTerms} vocabulary terms.` : "."),
 )

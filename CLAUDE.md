@@ -132,7 +132,7 @@ enabled in `next.config.mjs`, so `<Link href>` values are checked against real r
 
 ## Generated and synced assets
 
-Four categories of files in `public/` are **outputs — edit the generator, not the file**:
+Five categories of files in `public/` are **outputs — edit the generator, not the file**:
 
 - **Icons** (`favicon.ico`, `icon.svg`, `icon-{light,dark}-32x32.png`, `apple-icon.png`) —
   `pnpm build:icons`.
@@ -154,14 +154,21 @@ Four categories of files in `public/` are **outputs — edit the generator, not 
   definition prunes its images on the next run. `docs/social-media-system.md` is the design source of
   truth, `docs/social-media-plan.md` is the posting calendar, and `.agents/skills/social-asset/SKILL.md`
   carries the workflow.
-- **App screenshots** (`public/app-screenshots/{light,dark}/`) and
-  `public/press/chordlist-press-kit.zip` — produced by the iOS app repository's automated
-  screenshot tests and copied in by `pnpm sync:assets`, which `predev`/`prebuild` run for you. The
-  script looks for a sibling `../progressions-swift-rork` checkout, or `$CHORDLIST_APP_REPO`; when
-  neither exists it exits cleanly and the committed copies are used. Adding a screenshot means
-  adding its filename to `screenshotNames` in `scripts/sync-app-assets.mjs` **and** to the
-  `screenshots` arrays in `components/app-showcase.tsx` / `app/press/page.tsx`, plus its copy in
-  `locales/en.ts`.
+- **App screenshots** (`public/app-screenshots/{light,dark}/`, plus `<code>/` for every other
+  language) and `public/press/chordlist-press-kit.zip` — produced by the iOS app repository's
+  automated screenshot tests and copied in by `pnpm sync:assets`, which `predev`/`prebuild` run for
+  you. The script looks for a sibling `../progressions-swift-rork` checkout, or `$CHORDLIST_APP_REPO`;
+  when neither exists it exits cleanly and the committed copies are used. It discovers language
+  directories by reading the tree, so a newly captured language needs no change here. Adding a
+  screenshot means adding its filename to `screenshotNames` in `scripts/sync-app-assets.mjs` **and**
+  to the `screenshots` arrays in `components/app-showcase.tsx` / `app/press/page.tsx`, plus its copy
+  in `locales/en.ts`.
+- **App Store screenshot sets** (`public/app-store-screenshots/`, plus `manifest.json` and the ZIPs
+  in `downloads/`) — `pnpm build:screens`. Art direction lives in the script's `CONFIG` block; the
+  words live in `scripts/lib/app-store-copy.mjs`, keyed by language and then slide, and read shared
+  product wording from `VOCABULARY.md` through `scripts/lib/vocabulary.mjs`. Each language renders
+  from its own captures, never English ones. `docs/app-store-screenshot-system.md` is the source of
+  truth; `/screens` is the review and download page.
 
 `public/songs/morning-light.md` is a real sample song file: it is both rendered by
 `components/lyric-preview.tsx` (read at build time with `fs.readFile`) and offered as a download,
@@ -340,3 +347,7 @@ Both throw on an unknown key rather than falling back, so a term that has been r
 repository surfaces at build time. To change a shared word, edit `VOCABULARY.md` in chordlist-app,
 run `scripts/build-vocabulary.py` there, then `pnpm sync:app` here. The committed copy means a
 build without the app repository checked out still works.
+
+`scripts/lib/vocabulary.mjs` is the same reader for the Node build scripts, which is how translated
+image copy — currently the App Store sets in `scripts/lib/app-store-copy.mjs` — stays in step with
+the app without a second glossary.
