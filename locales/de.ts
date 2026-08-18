@@ -79,8 +79,28 @@ export const metadataCopy: Localized<typeof enMetadata> = {
   defaultTitle: `${siteConfig.name} — Local-first Songbook für Songtexte und Akkorde`,
   titleTemplate: `%s — ${siteConfig.name}`,
   category: "Musik",
+  defaultDescription:
+    `${siteConfig.name} is a local-first songbook for iPhone and iPad. Every song stays a plain Markdown ` +
+    "file in a folder you choose — offline, with no account.",
   socialTitle: `${siteConfig.name} — ${commonCopy.tagline}`,
+  socialDescription: "A local-first songbook for iPhone and iPad, in Markdown.",
+  twitterDescription:
+    `A songbook made of files you own. ${siteConfig.name} keeps every song as a plain Markdown file on ` +
+    "iPhone and iPad, so your lyrics and chords stay readable, portable, and available offline.",
   socialImageAlt: `${siteConfig.name}: ${commonCopy.tagline}`,
+  keywords: [
+    "songbook app",
+    "lyrics and chords",
+    "chord charts",
+    "markdown songbook",
+    "plain text songbook",
+    "local-first",
+    "offline songbook",
+    "transpose chords",
+    "iPhone songbook app",
+    "iPad songbook app",
+    "Obsidian",
+  ],
 } as const
 
 export const homeCopy: Localized<typeof enHome> = {
