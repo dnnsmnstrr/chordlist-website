@@ -13,6 +13,7 @@ import {
   Ellipsis,
   Images,
   ImagePlus,
+  Link2,
   RotateCcw,
   X,
 } from "lucide-react"
@@ -46,6 +47,9 @@ type EditorConfig = {
   fileLines: string
   screenshot: string
   screenshotMode: ScreenshotMode
+  screenshotX: number
+  screenshotY: number
+  screenshotScale: number
   deviceFrame: boolean
   photo: string
   focusX: number
@@ -151,6 +155,9 @@ const initialConfig: EditorConfig = {
   fileLines: "[Verse]\nC        G        Am       F",
   screenshot: screenshots[1],
   screenshotMode: "detail",
+  screenshotX: 0,
+  screenshotY: 0,
+  screenshotScale: 100,
   deviceFrame: false,
   photo: photos[0].name,
   focusX: 60,
@@ -624,9 +631,10 @@ async function renderPost(
     // scripts/lib/social-templates.mjs.
     const contained = formatName === "card"
     const bleedTop = top + markSize * 0.7
+    const screenshotScale = Math.min(150, Math.max(50, config.screenshotScale)) / 100
     const shotHeight = contained
-      ? Math.min(format.height * 0.78, innerHeight)
-      : format.height - bleedTop - activeFormatRatio(formatName, { card: 18, post: 24, story: 28 }) * scale
+      ? Math.min(format.height * 0.78, innerHeight) * screenshotScale
+      : (format.height - bleedTop - activeFormatRatio(formatName, { card: 18, post: 24, story: 28 }) * scale) * screenshotScale
     const shotWidth = shotHeight * (detail ? detailRatio : screenshotRatio)
     const shotY = contained ? bodyTop + (bodyHeight - shotHeight) / 2 : bleedTop
     const outerWidth = shotWidth + (config.deviceFrame ? Math.max(2, 2 * scale) * 2 : 0)
@@ -640,11 +648,14 @@ async function renderPost(
         ).left
       : format.width - shotWidth * visibleRatio
 
+    const offsetX = (config.screenshotX / 100) * format.width
+    const offsetY = (config.screenshotY / 100) * format.height
+
     drawScreenshot(
       context,
       image,
-      shotX,
-      shotY,
+      shotX + offsetX,
+      shotY + offsetY,
       shotWidth,
       shotHeight,
       scale,
@@ -759,6 +770,7 @@ function parseImportedConfig(source: string): EditorConfig {
   const focus = importedFocus(data.focus)
   const headline = importedLines(data.headline)
   const screenshotMode = importedString(data.screenshotMode, "full")
+  const screenshotFocus = importedFocus(data.screenshotFocus)
 
   return {
     ...initialConfig,
@@ -779,6 +791,9 @@ function parseImportedConfig(source: string): EditorConfig {
     fileLines: importedLines(data.lines),
     screenshot: importedString(data.screenshot, initialConfig.screenshot),
     screenshotMode: screenshotMode === "detail" ? "detail" : "full",
+    screenshotX: screenshotFocus.x,
+    screenshotY: screenshotFocus.y,
+    screenshotScale: importedBackgroundScale(data.screenshotScale),
     deviceFrame: data.deviceFrame === true,
     photo,
     focusX: focus.x,
@@ -816,6 +831,10 @@ function configMarkdown(config: EditorConfig) {
   if (config.template === "screenshot") {
     output.push(`screenshot: ${yamlString(config.screenshot)}`)
     output.push(`screenshotMode: ${config.screenshotMode}`)
+    if (config.screenshotX !== 0 || config.screenshotY !== 0) {
+      output.push(`screenshotFocus: ${config.screenshotX}% ${config.screenshotY}%`)
+    }
+    if (config.screenshotScale !== 100) output.push(`screenshotScale: ${config.screenshotScale}%`)
     if (config.deviceFrame) output.push("deviceFrame: true")
   }
   if (config.template === "photo") {
@@ -1002,6 +1021,14 @@ export function SocialPostEditor({ configMarkdown: initialMarkdown }: { configMa
     setStatus("copied")
   }
 
+  const shareConfig = async () => {
+    const markdown = configMarkdown(config)
+    const encoded = btoa(encodeURIComponent(markdown))
+    const url = `${window.location.origin}/social/editor?config=${encoded}`
+    await navigator.clipboard.writeText(url)
+    setStatus("copied")
+  }
+
   const exportImage = async () => {
     const canvas = canvasRef.current
     if (!canvas) return
@@ -1037,6 +1064,12 @@ export function SocialPostEditor({ configMarkdown: initialMarkdown }: { configMa
       label: status === "copied" ? "Copied" : "Copy config",
       icon: status === "copied" ? Check : Copy,
       onClick: copyConfig,
+    },
+    {
+      key: "share",
+      label: status === "copied" ? "Copied" : "Share link",
+      icon: status === "copied" ? Check : Link2,
+      onClick: shareConfig,
     },
   ]
 
@@ -1388,7 +1421,18 @@ export function SocialPostEditor({ configMarkdown: initialMarkdown }: { configMa
                   {config.deviceFrame ? <Check className="size-3.5" /> : null}
                 </span>
               </button>
-              <div className="grid grid-cols-5 gap-2">
+              <div className="grid grid-cols-2 gap-4">
+                <Field label="Horizontal position" hint={`${config.screenshotX > 0 ? "+" : ""}${config.screenshotX}%`}>
+                  <input className="mt-3 w-full accent-foreground" type="range" min="-20" max="20" step="1" value={config.screenshotX} onChange={(event) => update("screenshotX", Number(event.target.value))} onDoubleClick={() => update("screenshotX", 0)} />
+                </Field>
+                <Field label="Vertical position" hint={`${config.screenshotY > 0 ? "+" : ""}${config.screenshotY}%`}>
+                  <input className="mt-3 w-full accent-foreground" type="range" min="-20" max="20" step="1" value={config.screenshotY} onChange={(event) => update("screenshotY", Number(event.target.value))} onDoubleClick={() => update("screenshotY", 0)} />
+                </Field>
+              </div>
+              <Field label="Scale" hint={`${config.screenshotScale}%`}>
+                <input className="mt-3 w-full accent-foreground" type="range" min="50" max="150" step="1" value={config.screenshotScale} onChange={(event) => update("screenshotScale", Number(event.target.value))} onDoubleClick={() => update("screenshotScale", 100)} />
+              </Field>
+              <div className="-mx-5 flex gap-2 overflow-x-auto px-5 sm:-mx-6 sm:px-6">
                 {screenshots.map((screenshot, index) => (
                   <button
                     key={screenshot}
@@ -1396,10 +1440,10 @@ export function SocialPostEditor({ configMarkdown: initialMarkdown }: { configMa
                     onClick={() => update("screenshot", screenshot)}
                     aria-label={`App screenshot ${index + 1}`}
                     aria-pressed={config.screenshot === screenshot}
-                    className={`overflow-hidden rounded-lg border bg-[#0a0a0a] p-1 transition ${config.screenshot === screenshot ? "border-foreground ring-2 ring-ring/30" : "border-border"}`}
+                    className={`h-44 shrink-0 overflow-hidden rounded-lg border bg-[#0a0a0a] p-1 transition sm:h-52 ${config.screenshot === screenshot ? "border-foreground ring-2 ring-ring/30" : "border-border"}`}
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={`/app-screenshots/dark/${screenshot}`} alt="" className="aspect-[9/19] w-full object-contain" />
+                    <img src={`/app-screenshots/dark/${screenshot}`} alt="" className="h-full w-auto object-contain" />
                   </button>
                 ))}
               </div>

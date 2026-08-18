@@ -12,7 +12,16 @@ export const metadata: Metadata = {
 }
 
 type Props = {
-  searchParams: Promise<{ slug?: string }>
+  searchParams: Promise<{ slug?: string; config?: string }>
+}
+
+function decodeConfigParam(encoded: string): string | null {
+  try {
+    const base64Decoded = Buffer.from(encoded, "base64").toString("utf-8")
+    return decodeURIComponent(base64Decoded)
+  } catch {
+    return null
+  }
 }
 
 async function loadConfigForSlug(slug: string): Promise<string | null> {
@@ -25,8 +34,12 @@ async function loadConfigForSlug(slug: string): Promise<string | null> {
 }
 
 export default async function SocialEditorPage({ searchParams }: Props) {
-  const { slug } = await searchParams
-  const configMarkdown = slug ? await loadConfigForSlug(slug) : null
+  const { slug, config } = await searchParams
+  const configMarkdown = config
+    ? decodeConfigParam(config)
+    : slug
+      ? await loadConfigForSlug(slug)
+      : null
 
   return <SocialPostEditor configMarkdown={configMarkdown ?? undefined} />
 }
