@@ -882,7 +882,7 @@ function Field({ label, hint, children }: { label: string; hint?: string; childr
   )
 }
 
-export function SocialPostEditor() {
+export function SocialPostEditor({ configMarkdown: initialMarkdown }: { configMarkdown?: string } = {}) {
   const [config, setConfig] = useState(initialConfig)
   const [activeFormat, setActiveFormat] = useState<FormatName>("post")
   const [customPhoto, setCustomPhoto] = useState<{ name: string; src: string } | null>(null)
@@ -896,6 +896,15 @@ export function SocialPostEditor() {
   // config changes, and a remounted canvas would come back blank.
   const [previewCollapsed, setPreviewCollapsed] = useState(false)
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const appliedInitialConfig = useRef(false)
+
+  useEffect(() => {
+    if (appliedInitialConfig.current || !initialMarkdown) return
+    appliedInitialConfig.current = true
+    const imported = parseImportedConfig(initialMarkdown)
+    setConfig(imported)
+    setActiveFormat(imported.formats[0] ?? "post")
+  }, [initialMarkdown])
 
   const photoSrc = useMemo(() => {
     if (customPhoto?.name === config.photo) return customPhoto.src

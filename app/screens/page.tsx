@@ -132,7 +132,7 @@ export default async function ScreensPage({ searchParams }: ScreensPageProps) {
         </header>
 
         <div className="mt-12 flex flex-col gap-16">
-          {sets.map((set) => {
+          {sets.map((set, setIndex) => {
             const variant = screensCopy.variants[set.variant]
             const key = `${set.language}-${set.variant}-${set.device}`
 
@@ -164,7 +164,13 @@ export default async function ScreensPage({ searchParams }: ScreensPageProps) {
                 </div>
 
                 <div className="mt-6">
-                  <ScreenshotGallery variant="screens" screenshots={galleryMedia(set, variant.title)} />
+                  <ScreenshotGallery
+                    variant="screens"
+                    screenshots={galleryMedia(set, variant.title)}
+                    // The leading set's first image is what the page paints largest, so it is the
+                    // one worth loading eagerly; the sets below it stay lazy.
+                    priority={setIndex === 0}
+                  />
                 </div>
               </section>
             )

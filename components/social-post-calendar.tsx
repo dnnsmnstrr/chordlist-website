@@ -1,7 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { ChevronLeft, ChevronRight, X } from "lucide-react"
+import { ChevronLeft, ChevronRight, Pencil, X } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
@@ -14,6 +14,7 @@ type SocialPostCalendarProps<Post extends CalendarPost> = {
   posts: Post[]
   onClose: () => void
   title: (post: Post) => string
+  editHref?: (post: Post) => string
 }
 
 /** Monday first, matching the en-GB dates the rest of the page prints. */
@@ -62,6 +63,7 @@ export function SocialPostCalendar<Post extends CalendarPost>({
   posts,
   onClose,
   title,
+  editHref,
 }: SocialPostCalendarProps<Post>) {
   const closeButtonRef = useRef<HTMLButtonElement>(null)
 
@@ -227,13 +229,25 @@ export function SocialPostCalendar<Post extends CalendarPost>({
                   )}
                   <div className="hidden flex-col gap-1 sm:flex">
                     {scheduled.map((post) => (
-                      <span
-                        key={post.slug}
-                        title={title(post)}
-                        className="truncate rounded-md bg-foreground/10 px-1.5 py-1 text-xs leading-tight text-foreground"
-                      >
-                        {title(post)}
-                      </span>
+                      editHref ? (
+                        <a
+                          key={post.slug}
+                          href={editHref(post)}
+                          title={title(post)}
+                          className="flex items-center gap-1 truncate rounded-md bg-foreground/10 px-1.5 py-1 text-xs leading-tight text-foreground transition-colors hover:bg-foreground/20"
+                        >
+                          <span className="truncate">{title(post)}</span>
+                          <Pencil className="size-2.5 shrink-0 text-muted-foreground" />
+                        </a>
+                      ) : (
+                        <span
+                          key={post.slug}
+                          title={title(post)}
+                          className="truncate rounded-md bg-foreground/10 px-1.5 py-1 text-xs leading-tight text-foreground"
+                        >
+                          {title(post)}
+                        </span>
+                      )
                     ))}
                   </div>
                 </div>
@@ -248,7 +262,22 @@ export function SocialPostCalendar<Post extends CalendarPost>({
                   {dayLabel.format(new Date(`${date}T00:00:00Z`))}
                 </span>
                 <span className="min-w-0 text-sm leading-tight">
-                  {scheduled.map((post) => title(post)).join(", ")}
+                  {scheduled.map((post, index) => (
+                    <span key={post.slug}>
+                      {index > 0 && ", "}
+                      {editHref ? (
+                        <a
+                          href={editHref(post)}
+                          className="inline-flex items-center gap-1 text-foreground underline-offset-2 hover:underline"
+                        >
+                          {title(post)}
+                          <Pencil className="inline size-2.5 text-muted-foreground" />
+                        </a>
+                      ) : (
+                        title(post)
+                      )}
+                    </span>
+                  ))}
                 </span>
               </li>
             ))}

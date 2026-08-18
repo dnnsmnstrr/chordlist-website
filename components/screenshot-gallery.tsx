@@ -34,6 +34,12 @@ type GalleryVariant = "gallery" | "press" | "screens" | "showcase"
 type ScreenshotGalleryProps = {
   screenshots: readonly GalleryMedia[]
   variant?: GalleryVariant
+  /**
+   * Loads the first item eagerly, as the page's LCP candidate. Set it on the one gallery that
+   * opens above the fold and nowhere else: marking every gallery makes them compete for bandwidth
+   * with the image that is actually on screen, which is the problem it exists to solve.
+   */
+  priority?: boolean
 }
 
 /** Shorter than this is a tap, or a finger that moved while lifting. */
@@ -45,7 +51,7 @@ const SWIPE_THRESHOLD_PX = 48
 */
 const SWIPE_CLOSE_THRESHOLD_PX = 96
 
-export function ScreenshotGallery({ screenshots, variant = "press" }: ScreenshotGalleryProps) {
+export function ScreenshotGallery({ screenshots, variant = "press", priority = false }: ScreenshotGalleryProps) {
   const [activeIndex, setActiveIndex] = useState<number | null>(null)
   const closeButtonRef = useRef<HTMLButtonElement>(null)
   const activeVideoRef = useRef<HTMLVideoElement>(null)
@@ -168,6 +174,7 @@ export function ScreenshotGallery({ screenshots, variant = "press" }: Screenshot
                 sizes={previewSizes(variant, screenshot)}
                 className="h-auto w-full"
                 preview
+                priority={priority && index === 0}
                 fillPreview={screenshot.type === "video" && variant === "showcase"}
               />
             </button>
@@ -360,6 +367,7 @@ function GalleryMediaView({
   className,
   preview = false,
   fillPreview = false,
+  priority = false,
   videoRef,
 }: {
   media: GalleryMedia
@@ -367,6 +375,7 @@ function GalleryMediaView({
   className: string
   preview?: boolean
   fillPreview?: boolean
+  priority?: boolean
   videoRef?: Ref<HTMLVideoElement>
 }) {
   if (media.type === "video") {
@@ -414,6 +423,7 @@ function GalleryMediaView({
           alt={media.alt ?? media.title}
           fill
           sizes={sizes}
+          priority={priority}
           className="object-cover"
         />
         <span className="pointer-events-none absolute inset-0 flex items-end justify-end bg-black/10 p-4 sm:p-5">
@@ -432,6 +442,7 @@ function GalleryMediaView({
       width={media.width ?? 1170}
       height={media.height ?? 2532}
       sizes={sizes}
+      priority={priority}
       className={className}
     />
   )
@@ -444,6 +455,7 @@ function GalleryMediaView({
     width: media.width ?? 1170,
     height: media.height ?? 2532,
     sizes,
+    priority,
   })
 
   return (

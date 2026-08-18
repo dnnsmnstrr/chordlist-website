@@ -151,11 +151,20 @@ function SocialPostCard({ post, assets, copied, sharing, onCopy, onShare }: Soci
               {asset.width} × {asset.height}
             </p>
           </div>
-          {assets.length === 1 && (
-            <span className="rounded-full border border-border px-2.5 py-1 font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
-              {asset.format}
-            </span>
-          )}
+          <div className="flex shrink-0 items-center gap-2">
+            {assets.length === 1 && (
+              <span className="rounded-full border border-border px-2.5 py-1 font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
+                {asset.format}
+              </span>
+            )}
+            <Link
+              href={`/social/editor?slug=${post.slug}`}
+              aria-label={`Edit ${asset.title}`}
+              className="flex size-8 items-center justify-center rounded-lg border border-border text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <Pencil className="size-3.5" />
+            </Link>
+          </div>
         </div>
 
         {assets.length > 1 && (
@@ -284,21 +293,22 @@ export function SocialPostGallery({ posts }: { posts: SocialManifestEntry[] }) {
           <div className="max-w-2xl">
             <div className="mb-3 flex items-center gap-2 font-mono text-xs uppercase tracking-[0.16em] text-muted-foreground">
               <Images className="size-4" />
-              {imageCount} images · {posts.length} posts
-              {/*
-                The way into the posting calendar, deliberately unannounced: it reads as
-                another icon in the count row, keeps the text cursor, and stays out of the
-                tab order, so only someone who already knows it is there will click it.
-              */}
+              {imageCount} images
               <button
                 type="button"
                 onClick={() => setCalendarOpen(true)}
                 tabIndex={-1}
                 aria-hidden="true"
-                className="cursor-default outline-none"
+                className="cursor-default outline-none ml-4 hover:opacity-85"
               >
                 <Calendar className="size-4" />
               </button>
+              {posts.length} posts
+              {/*
+                The way into the posting calendar, deliberately unannounced: it reads as
+                another icon in the count row, keeps the text cursor, and stays out of the
+                tab order, so only someone who already knows it is there will click it.
+              */}
             </div>
             <h2 className="text-3xl font-semibold tracking-tight sm:text-5xl">Pick one. Share it.</h2>
             <p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground sm:text-base">
@@ -359,7 +369,12 @@ export function SocialPostGallery({ posts }: { posts: SocialManifestEntry[] }) {
       </main>
 
       {calendarOpen && (
-        <SocialPostCalendar posts={posts} onClose={closeCalendar} title={(post) => titleFromSlug(post.slug)} />
+        <SocialPostCalendar
+          posts={posts}
+          onClose={closeCalendar}
+          title={(post) => titleFromSlug(post.slug)}
+          editHref={(post) => `/social/editor?slug=${post.slug}`}
+        />
       )}
     </div>
   )
