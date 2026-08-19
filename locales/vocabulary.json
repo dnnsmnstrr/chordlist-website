@@ -33,7 +33,7 @@
     {
       "term": "artist",
       "translations": {
-        "de": "Interpret"
+        "de": "Artist"
       },
       "match": "strict",
       "notes": "Never *Künstler*, which means an artist in the gallery sense."

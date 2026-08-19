@@ -712,8 +712,8 @@ function importedFocus(value: unknown, fallback = "50% 50%") {
   }
   const fallbackParts = fallback.trim().split(/\s+/)
   return {
-    x: coordinate(parts[0], Number.parseFloat(fallbackParts[0]) || 50),
-    y: coordinate(parts[1], Number.parseFloat(fallbackParts[1]) || 50),
+    x: coordinate(parts[0], Number.parseFloat(fallbackParts[0] ?? "") || 50),
+    y: coordinate(parts[1], Number.parseFloat(fallbackParts[1] ?? "") || 50),
   }
 }
 
@@ -1082,7 +1082,9 @@ export function SocialPostEditor({ configMarkdown: initialMarkdown }: { configMa
       <header className="sticky top-0 z-30 border-b border-border bg-background/90 backdrop-blur-xl">
         <div className="mx-auto flex min-h-16 max-w-[1500px] flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6">
           <div>
-            <p className="font-mono text-xs text-muted-foreground">chordlist / studio</p>
+            <a className="font-mono text-xs text-muted-foreground" href="/">
+              chordlist / studio
+            </a>
             <h1 className="text-base font-semibold tracking-tight">Social post editor</h1>
           </div>
           <div className="flex items-center justify-end gap-2">
