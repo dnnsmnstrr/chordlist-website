@@ -704,13 +704,17 @@ function importedLines(value: unknown) {
   return importedString(value)
 }
 
-function importedFocus(value: unknown) {
-  const parts = importedString(value, "50% 50%").trim().split(/\s+/)
-  const coordinate = (part: string | undefined, fallback: number) => {
+function importedFocus(value: unknown, fallback = "50% 50%") {
+  const parts = importedString(value, fallback).trim().split(/\s+/)
+  const coordinate = (part: string | undefined, fb: number) => {
     const parsed = Number.parseFloat(part ?? "")
-    return Number.isFinite(parsed) ? Math.min(100, Math.max(0, parsed)) : fallback
+    return Number.isFinite(parsed) ? Math.min(100, Math.max(0, parsed)) : fb
   }
-  return { x: coordinate(parts[0], 50), y: coordinate(parts[1], 50) }
+  const fallbackParts = fallback.trim().split(/\s+/)
+  return {
+    x: coordinate(parts[0], Number.parseFloat(fallbackParts[0]) || 50),
+    y: coordinate(parts[1], Number.parseFloat(fallbackParts[1]) || 50),
+  }
 }
 
 function importedBackgroundScale(value: unknown) {
@@ -770,7 +774,7 @@ function parseImportedConfig(source: string): EditorConfig {
   const focus = importedFocus(data.focus)
   const headline = importedLines(data.headline)
   const screenshotMode = importedString(data.screenshotMode, "full")
-  const screenshotFocus = importedFocus(data.screenshotFocus)
+  const screenshotFocus = importedFocus(data.screenshotFocus, "0% 0%")
 
   return {
     ...initialConfig,
