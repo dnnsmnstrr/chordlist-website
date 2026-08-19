@@ -1,15 +1,24 @@
 import { siteConfig } from "@/lib/site-config"
-import { commonCopy as en, homeCopy as enHome, locale as enLocale, metadataCopy as enMetadata } from "@/locales/en"
+import {
+  commonCopy as en,
+  homeCopy as enHome,
+  locale as enLocale,
+  metadataCopy as enMetadata,
+  pianoCopy as enPiano,
+  screenshotGalleryCopy as enScreenshotGallery,
+} from "@/locales/en"
 import type { Localized } from "@/locales/types"
 import { phrase } from "@/locales/vocabulary"
 
 /// German copy for the site.
 ///
-/// **Partial.** `locale`, `commonCopy`, `metadataCopy` and `homeCopy` are translated; `docsCopy`,
-/// `faqCopy`, `pressCopy`, `screensCopy`, `privacyCopy`, `blogCopy`, `galleryCopy`,
-/// `screenshotGalleryCopy` and `pianoCopy` are not, and the site still imports `@/locales/en`
-/// everywhere. Wiring locale selection and routing is the next step — see the German localization
-/// section of the app repository's AGENTS.md.
+/// **Partial, and deliberately shaped around the home page.** Everything the home page and the
+/// chrome around it render is translated: `locale`, `commonCopy`, `metadataCopy`, `homeCopy`,
+/// `pianoCopy` and `screenshotGalleryCopy`. `docsCopy`, `faqCopy`, `pressCopy`, `screensCopy`,
+/// `privacyCopy`, `blogCopy` and `galleryCopy` are not, so those pages are English-only and are
+/// still linked at their English URLs from the German header and footer. `locales/index.ts` is
+/// the registry that decides which of these a route gets; adding a page to the German site means
+/// translating its copy object here and widening `Dictionary` there.
 ///
 /// Each object is typed `Localized<typeof …>` — the English shape with its wording set free — so
 /// TypeScript refuses a translation that has drifted structurally: a key added to `en.ts` breaks
@@ -41,6 +50,7 @@ export const commonCopy: Localized<typeof en> = {
   tagline: phrase("tagline", "de"),
   navigation: {
     homeLabel: `${siteConfig.name} Startseite`,
+    languageLabel: "Sprache",
     features: "Funktionen",
     footerLabel: "Fußzeile",
     docs: "Doku",
@@ -73,6 +83,11 @@ export const commonCopy: Localized<typeof en> = {
     },
   },
   skipToContent: "Zum Inhalt springen",
+  notFound: {
+    title: "Seite nicht gefunden",
+    description: "Diese Seite wurde verschoben oder hat es nie gegeben. Das Songbook gibt es weiterhin.",
+    backHome: "Zurück zur Startseite",
+  },
 } as const
 
 export const metadataCopy: Localized<typeof enMetadata> = {
@@ -80,25 +95,28 @@ export const metadataCopy: Localized<typeof enMetadata> = {
   titleTemplate: `%s — ${siteConfig.name}`,
   category: "Musik",
   defaultDescription:
-    `${siteConfig.name} is a local-first songbook for iPhone and iPad. Every song stays a plain Markdown ` +
-    "file in a folder you choose — offline, with no account.",
+    `${siteConfig.name} ist ein Local-first-Songbook für iPhone und iPad. Jeder Song bleibt eine einfache ` +
+    "Markdown-Datei in einem Ordner deiner Wahl – offline und ohne Konto.",
   socialTitle: `${siteConfig.name} — ${commonCopy.tagline}`,
-  socialDescription: "A local-first songbook for iPhone and iPad, in Markdown.",
+  socialDescription: "Ein Local-first-Songbook für iPhone und iPad, in Markdown.",
   twitterDescription:
-    `A songbook made of files you own. ${siteConfig.name} keeps every song as a plain Markdown file on ` +
-    "iPhone and iPad, so your lyrics and chords stay readable, portable, and available offline.",
+    `Ein Songbook aus Dateien, die dir gehören. ${siteConfig.name} legt jeden Song als einfache ` +
+    "Markdown-Datei auf iPhone und iPad ab – deine Songtexte und Akkorde bleiben lesbar, portabel und offline verfügbar.",
   socialImageAlt: `${siteConfig.name}: ${commonCopy.tagline}`,
+  // Search terms as a German player would type them, not a translation of the English list: the
+  // product words that stay English here (Songbook, Markdown, local-first) are the ones VOCABULARY.md
+  // keeps untranslated, so they are what someone actually searches for.
   keywords: [
-    "songbook app",
-    "lyrics and chords",
-    "chord charts",
-    "markdown songbook",
-    "plain text songbook",
+    "Songbook App",
+    "Songtexte und Akkorde",
+    "Akkorde App",
+    "Markdown Songbook",
+    "Songbook als Textdateien",
     "local-first",
-    "offline songbook",
-    "transpose chords",
-    "iPhone songbook app",
-    "iPad songbook app",
+    "Songbook offline",
+    "Akkorde transponieren",
+    "Songbook iPhone",
+    "Songbook iPad",
     "Obsidian",
   ],
 } as const
@@ -107,7 +125,7 @@ export const homeCopy: Localized<typeof enHome> = {
   hero: {
     eyebrow: "Local-first Songbook für iOS",
     subheadline:
-      "Ein Offline-Songbook für alle, die ihre Charts auf iPhone und iPad dabeihaben wollen.",
+      "Ein Offline-Songbook für alle, die ihre Songs auf iPhone und iPad dabeihaben wollen.",
     description: `${siteConfig.name} sichert jeden Song als Markdown-Datei in einem Ordner deiner Wahl. \nKeine Accounts, keine Cloud-Synchronisierung. Deine Dateien bleiben portabel und in deiner Hand.`,
     formatLink: "Das Format ansehen",
   },
@@ -176,6 +194,22 @@ export const homeCopy: Localized<typeof enHome> = {
     title: `Starte dein Songbook ${isEvening ? "heute Abend" : "heute"}.`,
     description: `Zeig ${siteConfig.name} einen Ordner, und dein erster Song ist schon eine Datei, die dir gehört – lesbar, portabel und überallhin mitzunehmen.`,
   },
+} as const
+
+export const pianoCopy: Localized<typeof enPiano> = {
+  label: "Interaktive Klaviatur",
+  playNote: (note: string) => `Note ${note} spielen`,
+  chordModeHint: "Drücke A–G dreimal schnell hintereinander für den Akkordmodus",
+  chordModeActive: "Akkordmodus · Umschalt für Moll · Esc zum Beenden",
+} as const
+
+export const screenshotGalleryCopy: Localized<typeof enScreenshotGallery> = {
+  viewFullscreen: (title: string) => `${title} im Vollbild ansehen`,
+  download: (title: string) => `${title} herunterladen`,
+  downloadPng: "PNG herunterladen",
+  close: "Vollbild schließen",
+  previous: "Vorheriges Bild",
+  next: "Nächstes Bild",
 } as const
 
 // Referenced so the launch date stays wired up the way `en.ts` has it; the objects that use it are

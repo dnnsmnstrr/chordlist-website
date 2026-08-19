@@ -23,6 +23,7 @@ export const commonCopy = {
   tagline: "Your lyrics and chords, as files in your pocket.",
   navigation: {
     homeLabel: `${siteConfig.name} home`,
+    languageLabel: "Language",
     features: "Features",
     footerLabel: "Footer",
     docs: "Docs",
@@ -60,6 +61,11 @@ export const commonCopy = {
     },
   },
   skipToContent: "Skip to content",
+  notFound: {
+    title: "Page not found",
+    description: "This page has moved or never existed. The songbook is still here.",
+    backHome: "Back to the home page",
+  },
 } as const
 
 export const metadataCopy = {

@@ -1,31 +1,33 @@
 import { ScreenshotGallery, type GalleryMedia } from "@/components/screenshot-gallery"
-import { homeCopy } from "@/locales/en"
+import { defaultLanguage, dictionary, type Language } from "@/locales"
 
-const media: readonly GalleryMedia[] = [
-  {
-    type: "video",
-    src: "/video/ChordlistPromoShort.mp4",
-    poster: "/video/ChordlistPromoShort-poster.jpg",
-    ...homeCopy.showcase.video,
-  },
-  {
-    lightSrc: "/app-screenshots/light/01-Song-List.png",
-    darkSrc: "/app-screenshots/dark/01-Song-List.png",
-    ...homeCopy.showcase.screenshots[0],
-  },
-  {
-    lightSrc: "/app-screenshots/light/02-Song-Detail.png",
-    darkSrc: "/app-screenshots/dark/02-Song-Detail.png",
-    ...homeCopy.showcase.screenshots[1],
-  },
-  {
-    lightSrc: "/app-screenshots/light/03-Creation-Flow.png",
-    darkSrc: "/app-screenshots/dark/03-Creation-Flow.png",
-    ...homeCopy.showcase.screenshots[2],
-  },
-]
+export function AppShowcase({ language = defaultLanguage }: { language?: Language }) {
+  const { home: homeCopy } = dictionary(language)
 
-export function AppShowcase() {
+  const media: readonly GalleryMedia[] = [
+    {
+      type: "video",
+      src: "/video/ChordlistPromoShort.mp4",
+      poster: "/video/ChordlistPromoShort-poster.jpg",
+      ...homeCopy.showcase.video,
+    },
+    {
+      lightSrc: "/app-screenshots/light/01-Song-List.png",
+      darkSrc: "/app-screenshots/dark/01-Song-List.png",
+      ...homeCopy.showcase.screenshots[0],
+    },
+    {
+      lightSrc: "/app-screenshots/light/02-Song-Detail.png",
+      darkSrc: "/app-screenshots/dark/02-Song-Detail.png",
+      ...homeCopy.showcase.screenshots[1],
+    },
+    {
+      lightSrc: "/app-screenshots/light/03-Creation-Flow.png",
+      darkSrc: "/app-screenshots/dark/03-Creation-Flow.png",
+      ...homeCopy.showcase.screenshots[2],
+    },
+  ]
+
   return (
     <section aria-labelledby="showcase-title" className="mx-auto w-full max-w-5xl px-6 py-20">
       <div className="max-w-2xl">
@@ -41,7 +43,7 @@ export function AppShowcase() {
       </div>
 
       <div className="mt-10">
-        <ScreenshotGallery screenshots={media} variant="showcase" />
+        <ScreenshotGallery screenshots={media} variant="showcase" language={language} />
       </div>
     </section>
   )

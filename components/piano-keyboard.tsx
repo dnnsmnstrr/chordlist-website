@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react"
 
-import { pianoCopy } from "@/locales/en"
+import { defaultLanguage, dictionary, type Language } from "@/locales"
 
 type Key = {
   id: string
@@ -76,7 +76,8 @@ function isEditableTarget(target: EventTarget | null) {
   )
 }
 
-export function PianoKeyboard() {
+export function PianoKeyboard({ language = defaultLanguage }: { language?: Language }) {
+  const { piano: pianoCopy } = dictionary(language)
   const audioRef = useRef<AudioContext | null>(null)
   const [active, setActive] = useState<Set<string>>(new Set())
   const [isChordMode, setIsChordMode] = useState(false)

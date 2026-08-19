@@ -1,6 +1,7 @@
 import type { PostMeta } from "@/lib/blog"
 import { primaryAppLink, siteConfig } from "@/lib/site-config"
-import { blogCopy, commonCopy, faqCopy, homeCopy, locale, metadataCopy } from "@/locales/en"
+import { defaultLanguage, dictionary, homeHref, type Language } from "@/locales"
+import { blogCopy, faqCopy } from "@/locales/en"
 
 const organizationId = `${siteConfig.url}#organization`
 const websiteId = `${siteConfig.url}#website`
@@ -37,14 +38,25 @@ const organizationNode = {
   sameAs: [siteConfig.social.x.url, siteConfig.social.instagram.url],
 }
 
-const websiteNode = {
-  "@type": "WebSite",
-  "@id": websiteId,
-  name: siteConfig.name,
-  url: siteConfig.url,
-  description: metadataCopy.defaultDescription,
-  inLanguage: locale.htmlLang,
-  publisher: { "@id": organizationId },
+/**
+ * The site, described in the language of the page emitting it.
+ *
+ * The `@id` is stable across languages on purpose — it is one website — while `inLanguage` and the
+ * description follow the page, so a validator reading the German home page is not told the page it
+ * is looking at is English.
+ */
+function websiteNode(language: Language) {
+  const { locale, metadata: metadataCopy } = dictionary(language)
+
+  return {
+    "@type": "WebSite",
+    "@id": websiteId,
+    name: siteConfig.name,
+    url: siteConfig.url,
+    description: metadataCopy.defaultDescription,
+    inLanguage: locale.htmlLang,
+    publisher: { "@id": organizationId },
+  }
 }
 
 /**
@@ -55,17 +67,21 @@ const websiteNode = {
  * drift from the page around it. The remaining strings are schema.org vocabulary,
  * not copy — the same reason `openGraph.type` lives in app/layout.tsx.
  */
-const structuredData = {
+function structuredData(language: Language) {
+  const { common: commonCopy, home: homeCopy } = dictionary(language)
+  const url = `${siteConfig.url}${homeHref[language] === "/" ? "" : homeHref[language]}`
+
+  return {
   "@context": "https://schema.org",
   "@graph": [
     organizationNode,
-    websiteNode,
+    websiteNode(language),
     {
       "@type": "SoftwareApplication",
       "@id": `${siteConfig.url}#app`,
       name: siteConfig.name,
       description: commonCopy.appDescription,
-      url: siteConfig.url,
+      url,
       applicationCategory: "MusicApplication",
       operatingSystem: `iOS ${siteConfig.minimumOSVersion}, iPadOS ${siteConfig.minimumOSVersion}`,
       image: `${siteConfig.url}/og.png`,
@@ -78,10 +94,11 @@ const structuredData = {
       ...(primaryAppLink === null ? {} : { downloadUrl: primaryAppLink }),
     },
   ],
+  }
 }
 
-export function StructuredData() {
-  return <JsonLd data={structuredData} />
+export function StructuredData({ language = defaultLanguage }: { language?: Language }) {
+  return <JsonLd data={structuredData(language)} />
 }
 
 /**
@@ -94,13 +111,13 @@ const faqStructuredData = {
   "@context": "https://schema.org",
   "@graph": [
     organizationNode,
-    websiteNode,
+    websiteNode(defaultLanguage),
     {
       "@type": "FAQPage",
       "@id": `${siteConfig.url}/faq#faq`,
       name: faqCopy.metadata.title,
       description: faqCopy.metadata.description,
-      inLanguage: locale.htmlLang,
+      inLanguage: dictionary(defaultLanguage).locale.htmlLang,
       isPartOf: { "@id": websiteId },
       publisher: { "@id": organizationId },
       mainEntity: faqCopy.questions.map((item) => ({
@@ -135,7 +152,7 @@ export function BlogPostStructuredData({ post }: { post: PostMeta }) {
     "@context": "https://schema.org",
     "@graph": [
       organizationNode,
-      websiteNode,
+      websiteNode(defaultLanguage),
       {
         "@type": "BlogPosting",
         "@id": `${url}#post`,
@@ -146,7 +163,7 @@ export function BlogPostStructuredData({ post }: { post: PostMeta }) {
         datePublished: post.publishedISO,
         dateModified: post.publishedISO,
         keywords: post.tags.map((tag) => blogCopy.tags[tag]),
-        inLanguage: locale.htmlLang,
+        inLanguage: dictionary(defaultLanguage).locale.htmlLang,
         isPartOf: { "@id": websiteId },
         mainEntityOfPage: url,
         author: { "@id": organizationId },

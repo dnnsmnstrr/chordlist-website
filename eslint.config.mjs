@@ -5,6 +5,8 @@ import nextTypeScript from "eslint-config-next/typescript"
 export default defineConfig([
   ...nextVitals,
   ...nextTypeScript,
-  globalIgnores([".next/**", "out/**", "build/**", "next-env.d.ts"]),
+  // `**/.next/**` rather than `.next/**`: a git worktree under .claude/worktrees carries its own
+  // build output, and linting bundled chunks buries the real findings under thousands of warnings.
+  globalIgnores(["**/.next/**", "out/**", "build/**", "next-env.d.ts", ".claude/**"]),
 ])
 

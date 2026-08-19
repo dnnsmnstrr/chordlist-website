@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState, type Ref } from "react"
 import Image, { getImageProps } from "next/image"
 import { ChevronLeft, ChevronRight, Download, Play, X } from "lucide-react"
 
-import { screenshotGalleryCopy } from "@/locales/en"
+import { defaultLanguage, dictionary, type Language } from "@/locales"
 
 type MediaBase = {
   title: string
@@ -33,6 +33,7 @@ type GalleryVariant = "gallery" | "press" | "screens" | "showcase"
 
 type ScreenshotGalleryProps = {
   screenshots: readonly GalleryMedia[]
+  language?: Language
   variant?: GalleryVariant
   /**
    * Loads the first item eagerly, as the page's LCP candidate. Set it on the one gallery that
@@ -51,7 +52,13 @@ const SWIPE_THRESHOLD_PX = 48
 */
 const SWIPE_CLOSE_THRESHOLD_PX = 96
 
-export function ScreenshotGallery({ screenshots, variant = "press", priority = false }: ScreenshotGalleryProps) {
+export function ScreenshotGallery({
+  screenshots,
+  variant = "press",
+  priority = false,
+  language = defaultLanguage,
+}: ScreenshotGalleryProps) {
+  const { screenshotGallery: screenshotGalleryCopy } = dictionary(language)
   const [activeIndex, setActiveIndex] = useState<number | null>(null)
   const closeButtonRef = useRef<HTMLButtonElement>(null)
   const activeVideoRef = useRef<HTMLVideoElement>(null)
@@ -178,7 +185,7 @@ export function ScreenshotGallery({ screenshots, variant = "press", priority = f
                 fillPreview={screenshot.type === "video" && variant === "showcase"}
               />
             </button>
-            <ItemCaption variant={variant} media={screenshot} />
+            <ItemCaption variant={variant} media={screenshot} language={language} />
           </li>
         ))}
       </ul>
@@ -338,7 +345,15 @@ function previewSizes(variant: GalleryVariant, media: GalleryMedia) {
   }
 }
 
-function ItemCaption({ variant, media }: { variant: GalleryVariant; media: GalleryMedia }) {
+function ItemCaption({
+  variant,
+  media,
+  language,
+}: {
+  variant: GalleryVariant
+  media: GalleryMedia
+  language: Language
+}) {
   if (variant === "showcase") return null
 
   if (variant !== "screens") return <p className="text-sm font-medium leading-snug">{media.title}</p>
@@ -355,7 +370,7 @@ function ItemCaption({ variant, media }: { variant: GalleryVariant; media: Galle
         className="flex w-fit items-center gap-1.5 text-xs font-medium text-muted-foreground underline underline-offset-4 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
         <Download className="size-3.5" aria-hidden="true" />
-        {screenshotGalleryCopy.downloadPng}
+        {dictionary(language).screenshotGallery.downloadPng}
       </a>
     </div>
   )

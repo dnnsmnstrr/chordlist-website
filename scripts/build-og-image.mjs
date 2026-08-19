@@ -1,5 +1,6 @@
 /**
- * Builds the Open Graph image at public/og.png.
+ * Builds the site's Open Graph cards — public/og.png, plus one og-<code>.png per language the home
+ * page is translated into.
  *
  *   pnpm build:og
  *
@@ -7,6 +8,9 @@
  * the copy, the colours, the type sizes, and how large the app icon sits.
  * The app icon is drawn from the same geometry as components/chordlist-icon.tsx,
  * so the mark stays in sync with the header logo and the favicons.
+ *
+ * The headline on each card is checked against the tagline in VOCABULARY.md, so a card cannot go on
+ * claiming wording the app has moved on from.
  *
  * Rendering uses Next's bundled ImageResponse (satori + resvg), so no extra
  * dependencies are needed. Fonts are read from assets/fonts so the build is
@@ -20,24 +24,45 @@ import { createElement as h } from "react"
 import { ImageResponse } from "next/og.js"
 
 import { markSvg, svgDataUri } from "./lib/chordlist-mark.mjs"
+import { phrase } from "./lib/vocabulary.mjs"
 
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..")
 
 /* ─────────────────────────────── CONFIG ─────────────────────────────── */
 
 const CONFIG = {
-  output: "public/og.png",
-
   // Open Graph's expected size. Most scrapers crop to 1.91:1.
   width: 1200,
   height: 630,
 
-  copy: {
-    wordmark: "chordlist",
-    // One array entry per rendered line, so line breaks stay deliberate.
-    headline: ["Your lyrics and chords,", "as files in your pocket."],
-    footnote: "Local-first songbook for iPhone and iPad",
-  },
+  wordmark: "chordlist",
+
+  // One card per language the home page exists in. English keeps public/og.png — it is the
+  // site-wide fallback that every untranslated page still points at — and each translation gets a
+  // sibling next to it, which lib/page-metadata.ts names from the language code.
+  //
+  // `headline` is an array so the line break stays deliberate rather than falling where the
+  // renderer happens to wrap. Joined back together it has to equal the tagline in VOCABULARY.md,
+  // which `main` checks: the card is the first thing a shared link says, and it saying something
+  // the app and the App Store listing no longer say is the drift this guard exists to catch.
+  cards: [
+    {
+      language: "en",
+      output: "public/og.png",
+      headline: ["Your lyrics and chords,", "as files in your pocket."],
+      footnote: "Local-first songbook for iPhone and iPad",
+    },
+    {
+      language: "de",
+      output: "public/og-de.png",
+      headline: ["Deine Songtexte und Akkorde –", "immer mit dabei."],
+      footnote: "Local-first Songbook für iPhone und iPad",
+      // The German tagline is a third longer than the English one and wraps to a third line at the
+      // shared size. Smaller type plus a break before the dash keeps it to two. Overrides
+      // layout.headlineSize.
+      headlineSize: 33,
+    },
+  ],
 
   colors: {
     background: "#0A0A0A",
@@ -52,6 +77,7 @@ const CONFIG = {
     padding: 80,
     columnGap: 72,
     wordmarkSize: 96,
+    // Default for a card that does not override it; see CONFIG.cards.
     headlineSize: 50,
     footnoteSize: 24,
     iconSize: 380,
@@ -72,8 +98,8 @@ const CONFIG = {
 
 /* ───────────────────────────── END CONFIG ───────────────────────────── */
 
-function buildElement(iconUri) {
-  const { copy, colors, layout } = CONFIG
+function buildElement(iconUri, card) {
+  const { colors, layout } = CONFIG
 
   const wordmark = h(
     "div",
@@ -87,7 +113,7 @@ function buildElement(iconUri) {
         color: colors.text,
       },
     },
-    copy.wordmark,
+    CONFIG.wordmark,
   )
 
   const headline = h(
@@ -98,13 +124,13 @@ function buildElement(iconUri) {
         flexDirection: "column",
         fontFamily: "Geist",
         fontWeight: 700,
-        fontSize: layout.headlineSize,
+        fontSize: card.headlineSize ?? layout.headlineSize,
         letterSpacing: "-0.02em",
         lineHeight: 1.22,
         color: colors.text,
       },
     },
-    ...copy.headline.map((line, index) => h("div", { key: index }, line)),
+    ...card.headline.map((line, index) => h("div", { key: index }, line)),
   )
 
   const footnote = h(
@@ -118,7 +144,7 @@ function buildElement(iconUri) {
         color: colors.muted,
       },
     },
-    copy.footnote,
+    card.footnote,
   )
 
   const textColumn = h(
@@ -164,7 +190,7 @@ function buildElement(iconUri) {
 }
 
 async function main() {
-  const { layout, colors, width, height, output } = CONFIG
+  const { layout, colors, width, height, cards } = CONFIG
 
   const fonts = await Promise.all(
     CONFIG.fonts.map(async ({ file, name, weight }) => ({
@@ -185,13 +211,24 @@ async function main() {
     }),
   )
 
-  const response = new ImageResponse(buildElement(iconUri), { width, height, fonts })
-  const buffer = Buffer.from(await response.arrayBuffer())
+  for (const card of cards) {
+    const tagline = phrase("tagline", card.language)
+    const rendered = card.headline.join(" ")
+    if (rendered !== tagline) {
+      throw new Error(
+        `The ${card.language} card headline reads "${rendered}" but VOCABULARY.md says the tagline is ` +
+          `"${tagline}". Update the headline lines in CONFIG, or change the tagline in the app repository ` +
+          "and run pnpm sync:app.",
+      )
+    }
 
-  const destination = path.join(projectRoot, output)
-  await writeFile(destination, buffer)
+    const response = new ImageResponse(buildElement(iconUri, card), { width, height, fonts })
+    const buffer = Buffer.from(await response.arrayBuffer())
 
-  console.log(`Wrote ${output} (${width}x${height}, ${(buffer.length / 1024).toFixed(1)} kB).`)
+    await writeFile(path.join(projectRoot, card.output), buffer)
+
+    console.log(`Wrote ${card.output} (${width}x${height}, ${(buffer.length / 1024).toFixed(1)} kB).`)
+  }
 }
 
 await main()

@@ -5,7 +5,7 @@ import { HelpHint } from "@/components/help-hint"
 import { Button } from "@/components/ui/button"
 import { splitFrontmatter } from "@/lib/frontmatter"
 import { siteConfig } from "@/lib/site-config"
-import { homeCopy } from "@/locales/en"
+import { defaultLanguage, dictionary, type Language } from "@/locales"
 
 /** Single source of truth: the same file visitors download. */
 const SAMPLE_SONG_FILE = "morning-light.md"
@@ -16,7 +16,8 @@ const SAMPLE_SONG_URL = `/songs/${SAMPLE_SONG_FILE}`
  */
 const SAMPLE_SONG_IMPORT_URL = `chordlist://import?url=${encodeURIComponent(`${siteConfig.url}${SAMPLE_SONG_URL}`)}`
 
-export async function LyricPreview() {
+export async function LyricPreview({ language = defaultLanguage }: { language?: Language }) {
+  const { home: homeCopy } = dictionary(language)
   const source = await readFile(path.join(process.cwd(), "public", "songs", SAMPLE_SONG_FILE), "utf8")
   const { frontmatter, body } = splitFrontmatter(source)
 

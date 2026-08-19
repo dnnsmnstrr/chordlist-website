@@ -1082,9 +1082,9 @@ export function SocialPostEditor({ configMarkdown: initialMarkdown }: { configMa
       <header className="sticky top-0 z-30 border-b border-border bg-background/90 backdrop-blur-xl">
         <div className="mx-auto flex min-h-16 max-w-[1500px] flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6">
           <div>
-            <a className="font-mono text-xs text-muted-foreground" href="/">
+            <Link className="font-mono text-xs text-muted-foreground" href="/">
               chordlist / studio
-            </a>
+            </Link>
             <h1 className="text-base font-semibold tracking-tight">Social post editor</h1>
           </div>
           <div className="flex items-center justify-end gap-2">

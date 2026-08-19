@@ -1,45 +1,61 @@
 import Link from "next/link"
+import { LanguageSwitcher } from "@/components/language-switcher"
 
 import { siteConfig } from "@/lib/site-config"
-import { commonCopy } from "@/locales/en"
+import { defaultLanguage, dictionary, homeHref, type Language } from "@/locales"
+import type { Route } from "next"
 
-export function SiteFooter({ compact = false }: { compact?: boolean }) {
+export function SiteFooter({
+  compact = false,
+  language = defaultLanguage,
+  alternates,
+}: {
+  compact?: boolean
+  language?: Language
+  alternates?: Partial<Record<Language, Route>>
+}) {
+  const { common } = dictionary(language)
+
   return (
     <footer
       className={`mx-auto flex w-full flex-col items-center justify-between gap-5 px-6 py-10 text-sm text-muted-foreground sm:flex-row ${
         compact ? "max-w-3xl" : "max-w-5xl"
       }`}
     >
-      <Link href="/" className="font-mono transition-colors hover:text-foreground">
-        {siteConfig.name}
-      </Link>
+      <div className="flex flex-col items-center gap-2 sm:flex-row sm:gap-4">
+        <Link href={homeHref[language]} className="font-mono transition-colors hover:text-foreground">
+          {siteConfig.name}
+        </Link>
+        {alternates ? <LanguageSwitcher current={language} alternates={alternates} /> : null}
+      </div>
+
       <nav
-        aria-label={commonCopy.navigation.footerLabel}
+        aria-label={common.navigation.footerLabel}
         className="flex flex-wrap items-center justify-center gap-x-5 gap-y-3"
       >
         <a href={`mailto:${siteConfig.contact.support}`} className="transition-colors hover:text-foreground">
-          {commonCopy.navigation.support}
+          {common.navigation.support}
         </a>
         <Link href="/faq" className="transition-colors hover:text-foreground">
-          {commonCopy.navigation.faq}
+          {common.navigation.faq}
         </Link>
         <Link href="/press" className="transition-colors hover:text-foreground">
-          {commonCopy.navigation.press}
+          {common.navigation.press}
         </Link>
         {/* <Link href="/screens" className="transition-colors hover:text-foreground">
-          {commonCopy.navigation.screens}
+          {common.navigation.screens}
         </Link>
         <Link href="/social/posts" className="transition-colors hover:text-foreground">
-          {commonCopy.navigation.socialPosts}
+          {common.navigation.socialPosts}
         </Link> */}
         <Link href="/privacy" className="transition-colors hover:text-foreground">
-          {commonCopy.navigation.privacy}
+          {common.navigation.privacy}
         </Link>
         <a
           href={siteConfig.social.x.url}
           target="_blank"
           rel="noopener noreferrer"
-          aria-label={commonCopy.navigation.x}
+          aria-label={common.navigation.x}
           className="flex size-8 items-center justify-center rounded-md transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
           <XIcon className="size-4" />
@@ -48,7 +64,7 @@ export function SiteFooter({ compact = false }: { compact?: boolean }) {
           href={siteConfig.social.instagram.url}
           target="_blank"
           rel="noopener noreferrer"
-          aria-label={commonCopy.navigation.instagram}
+          aria-label={common.navigation.instagram}
           className="flex size-8 items-center justify-center rounded-md transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
           <InstagramIcon className="size-4" />

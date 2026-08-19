@@ -36,13 +36,20 @@ There is no test suite. `pnpm check` is the gate.
 
 ```
 app/                 App Router pages (all server components unless noted)
-  layout.tsx         Root layout: fonts, metadata, viewport, Vercel Analytics
-  page.tsx           Home page — composes the section components
-  docs/  faq/  press/  privacy/    One page.tsx each
-  blog/              Index, [slug] post page, and rss.xml route handler
+  (en)/              English route group — everything except the German home
+    layout.tsx       English root layout: rootMetadata("en") around <RootShell>
+    page.tsx         Home page — three lines around <HomePage language="en" />
+    docs/  faq/  press/  privacy/    One page.tsx each
+    blog/            Index, [slug] post page, and rss.xml route handler
+  (de)/              German route group
+    layout.tsx       German root layout: rootMetadata("de") around <RootShell>
+    de/page.tsx      The German home page, at /de
+  global-not-found.tsx  The 404, with its own document — see Localization
   sitemap.ts  robots.ts            Metadata routes, driven by siteConfig.url
   globals.css        Tailwind v4 entry + design tokens + the .post-body block
 components/          Section and widget components (kebab-case files)
+  root-shell.tsx     The <html>/<body> both root layouts render, per language
+  home-page.tsx      The home page tree, taking a language
   ui/button.tsx      The only shadcn/base-ui primitive currently vendored
 content/blog/        Blog posts as Markdown + frontmatter — the filename is the URL
 content/social/      Social asset definitions — frontmatter builds the image, body is the caption
@@ -53,6 +60,7 @@ lib/page-metadata.ts Per-page canonical, hreflang, Open Graph, and Twitter metad
 lib/frontmatter.ts   Splits a YAML frontmatter block from a Markdown body
 lib/utils.ts         `cn()` — clsx + tailwind-merge
 locales/en.ts        Single source of truth for all user-facing copy
+locales/index.ts     Language registry: languages, dictionary(), homeHref
 scripts/             Node build scripts (.mjs, run directly, no bundler)
   lib/chordlist-mark.mjs   Shared logo geometry for icon + OG builds
   lib/social-templates.mjs Layouts, shared frame, and type fitting for the social build
@@ -74,7 +82,12 @@ object (`homeCopy`, `docsCopy`, `faqCopy`, `pressCopy`, `privacyCopy`, `commonCo
 and read from it.
 
 Copy objects use `as const`, and dynamic values are functions (e.g. `count: (count: number) => …`).
-The file name implies a future i18n split; keep the shape locale-agnostic.
+Keep the shape locale-agnostic: `locales/de.ts` is typed against these objects, so their structure
+is a contract.
+
+Components on a translated route read `dictionary(language)` from `@/locales` instead of importing
+`@/locales/en` directly — see Localization. Everything else still imports `@/locales/en`, which is
+correct for a page that only exists in English.
 
 **Blog posts are the one carve-out, and it is about chrome vs. content, not an exception to the
 rule.** `locales/en.ts` owns every string the site renders *around* content — including all the blog
@@ -136,13 +149,18 @@ Five categories of files in `public/` are **outputs — edit the generator, not 
 
 - **Icons** (`favicon.ico`, `icon.svg`, `icon-{light,dark}-32x32.png`, `apple-icon.png`) —
   `pnpm build:icons`.
-- **`og.png`, the page cards in `public/og/`, and the per-post cards in `public/blog/og/`** —
+- **`og.png` and its per-language siblings (`og-de.png`), the page cards in `public/og/`, and the
+  per-post cards in `public/blog/og/`** —
   `pnpm build:og`, which runs `scripts/build-og-image.mjs`, then `scripts/build-page-og.mjs`, then
   `scripts/build-blog-og.mjs`. The page script writes one card per route listed in its `CONFIG.pages`,
   which is what `lib/page-metadata.ts` points each route's `og:image` at. The blog script writes one
   card per post, including future-dated ones, so a scheduled post already has its card when it goes
   live. Run it after adding a post or a page and commit the PNG. All scripts render through Next's bundled `ImageResponse`
   (satori + resvg) and read fonts from `assets/fonts/`, so the builds are hermetic and offline.
+  `build-og-image.mjs` writes one card per entry in its `CONFIG.cards` — English keeps `og.png`
+  because every untranslated page falls back to it, and each translation gets an `og-<code>.png`
+  beside it, which `rootMetadata()` names from the language code. Each card's headline is checked
+  against the tagline in `VOCABULARY.md` and the build fails if they have drifted apart.
   Shared logo geometry lives in `scripts/lib/chordlist-mark.mjs` and mirrors
   `components/chordlist-icon.tsx` — change the mark in both, or the header logo and the favicons
   drift apart. Each script has a `CONFIG` block at the top for copy, colors, and sizing.
@@ -177,7 +195,8 @@ lines above the words.
 
 ## Adding a page
 
-1. Create `app/<route>/page.tsx` as a server component.
+1. Create `app/(en)/<route>/page.tsx` as a server component — inside the `(en)` group, which is
+   where every English route lives. The group is invisible in the URL.
 2. Export `metadata` from `pageMetadata()` in `lib/page-metadata.ts`, passing the route path plus a
    title and description from a `<name>Copy.metadata` object in `locales/en.ts`. It writes the
    canonical URL, the `hreflang` set, the feed link, and the Open Graph and Twitter blocks, all of
@@ -271,15 +290,55 @@ credentials.
 
 ## Localization
 
-Copy lives in `locales/`. `en.ts` is the site as it ships today; `de.ts` is a partial German
-translation of `locale`, `commonCopy`, `metadataCopy` and `homeCopy`. The remaining objects —
-`docsCopy`, `faqCopy`, `pressCopy`, `screensCopy`, `privacyCopy`, `blogCopy`, `galleryCopy`,
-`screenshotGalleryCopy`, `pianoCopy` — are still English only, and every page still imports
-`@/locales/en` directly. Locale selection and routing are not wired up yet.
+Copy lives in `locales/`. `en.ts` is the whole site; `de.ts` covers **the home page and the chrome
+around it** — `locale`, `commonCopy`, `metadataCopy`, `homeCopy`, `pianoCopy` and
+`screenshotGalleryCopy`. `docsCopy`, `faqCopy`, `pressCopy`, `screensCopy`, `privacyCopy`,
+`blogCopy` and `galleryCopy` are English only, so those pages exist at their English URLs and
+nothing links a reader to a translation that is not there.
 
 Each German object is typed `Localized<typeof …>` (see `locales/types.ts`): the English shape with
-its wording set free. Adding a key to `en.ts` therefore fails the German build instead of silently
-rendering English, which is what keeps a partial translation honest.
+its wording set free, and functions mapped to a function of the same arguments returning a `string`
+so interpolated copy stays callable. Adding a key to `en.ts` therefore fails the German build
+instead of silently rendering English, which is what keeps a partial translation honest.
+
+### How a language reaches the page
+
+`locales/index.ts` is the registry. Components take a `language` and call `dictionary(language)`;
+they do **not** import `@/locales/en` at module scope, which is what lets one component render in
+either language instead of needing a copy per locale.
+
+```tsx
+export function Hero({ language = defaultLanguage }: { language?: Language }) {
+  const { common, home } = dictionary(language)
+```
+
+`Dictionary` names exactly the objects a translated route may use. That is the honest boundary of
+the translation: a component cannot reach for `docsCopy` through it and quietly render English
+inside a German page, because it is not in the type. Translating another page means adding its copy
+object to `Dictionary` and to every language, which will not compile until each one has it.
+
+The default is `defaultLanguage`, so the English pages that render `<SiteHeader />` with no props
+are unchanged.
+
+**Routing is subpath-based.** English is at `/`, every other language hangs off `homeHref` —
+currently `{ en: "/", de: "/de" }`. Only the home page is translated, so `homeHref` is a map of one
+page rather than a path-rewriting rule; a rule would imply `/de/docs` exists. `siteAlternateLanguages()`
+in `lib/page-metadata.ts` reads it, so widening `homeHref` widens the `hreflang` set, the sitemap
+entries, and the language switcher together.
+
+**There is one root layout per language**, in the route groups `app/(en)` and `app/(de)`. Route
+groups do not appear in URLs, so every existing route is byte-identical to before. The reason for
+the split is that `<html lang>` and the skip link are outside any page, and a root layout cannot
+read the route it wraps without `headers()`, which would opt the whole static site into dynamic
+rendering. Both layouts are three lines around `<RootShell language={…}>`, and their metadata comes
+from `rootMetadata(language)` — so the two cannot drift.
+
+The cost of that split is that a URL matching nothing belongs to neither group, which is why
+`app/global-not-found.tsx` exists: without it the 404 renders a bare `<html>` with no fonts, no
+stylesheet, and no `lang`.
+
+`components/language-switcher.tsx` takes the alternates rather than deriving them, so it appears
+only on routes that actually have a translation.
 
 ### Translation editor
 

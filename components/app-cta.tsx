@@ -3,10 +3,11 @@ import { Apple } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { primaryAppLink, siteConfig } from "@/lib/site-config"
 import { cn } from "@/lib/utils"
-import { commonCopy } from "@/locales/en"
+import { defaultLanguage, dictionary, type Language } from "@/locales"
 
 type AppCTAProps = {
   large?: boolean
+  language?: Language
 }
 
 /**
@@ -21,9 +22,10 @@ const ctaState: "testFlight" | "download" | "preorder" | "comingSoon" = siteConf
       ? "testFlight"
       : "comingSoon"
 
-export function AppCTA({ large = false }: AppCTAProps) {
-  const primaryLabel = commonCopy.appCta[ctaState]
-  const label = large && primaryAppLink ? `${primaryLabel} ${commonCopy.appCta.largeSuffix}` : primaryLabel
+export function AppCTA({ large = false, language = defaultLanguage }: AppCTAProps) {
+  const { appCta } = dictionary(language).common
+  const primaryLabel = appCta[ctaState]
+  const label = large && primaryAppLink ? `${primaryLabel} ${appCta.largeSuffix}` : primaryLabel
   const icon = large ? <Apple aria-hidden="true" /> : null
 
   if (!primaryAppLink) {
@@ -52,6 +54,7 @@ export function AppCTA({ large = false }: AppCTAProps) {
 
 type AppCTANoteProps = {
   className?: string
+  language?: Language
 }
 
 /**
@@ -63,20 +66,21 @@ type AppCTANoteProps = {
  * early, and before a listing exists TestFlight is the button rather than the
  * small print.
  */
-export function AppCTANote({ className }: AppCTANoteProps) {
+export function AppCTANote({ className, language = defaultLanguage }: AppCTANoteProps) {
+  const { appCta } = dictionary(language).common
   const betaLink = ctaState === "preorder" ? siteConfig.links.testFlight : null
 
   return (
     <p className={cn("text-pretty text-xs leading-relaxed text-muted-foreground", className)}>
-      {commonCopy.appCta.note[ctaState]}
+      {appCta.note[ctaState]}
       {betaLink ? (
         <>
           {" "}
-          {commonCopy.appCta.betaAside.prefix}{" "}
+          {appCta.betaAside.prefix}{" "}
           <a href={betaLink} className="underline underline-offset-2 transition-colors hover:text-foreground">
-            {commonCopy.appCta.betaAside.link}
+            {appCta.betaAside.link}
           </a>
-          {commonCopy.appCta.betaAside.suffix}
+          {appCta.betaAside.suffix}
         </>
       ) : null}
     </p>

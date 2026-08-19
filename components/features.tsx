@@ -1,22 +1,26 @@
 import { ArrowRightLeft, FileText, FolderHeart, HardDrive } from "lucide-react"
 
-import { homeCopy } from "@/locales/en"
+import { defaultLanguage, dictionary, type Language } from "@/locales"
 
-const FEATURES = [
-  { ...homeCopy.features.items[0], icon: FileText },
-  { ...homeCopy.features.items[1], icon: HardDrive },
-  { ...homeCopy.features.items[2], icon: FolderHeart },
-  { ...homeCopy.features.items[3], icon: ArrowRightLeft },
-] as const
+export function Features({ language = defaultLanguage }: { language?: Language }) {
+  const { home: homeCopy } = dictionary(language)
 
-export function Features() {
+  // Paired by position against the copy, which `Localized` keeps as a four-tuple, so a
+  // translation cannot drop an item and leave an icon without a card.
+  const features = [
+    { ...homeCopy.features.items[0], icon: FileText },
+    { ...homeCopy.features.items[1], icon: HardDrive },
+    { ...homeCopy.features.items[2], icon: FolderHeart },
+    { ...homeCopy.features.items[3], icon: ArrowRightLeft },
+  ] as const
+
   return (
     <section id="features" className="mx-auto w-full max-w-5xl px-6 py-20">
       <h2 className="text-balance text-2xl font-semibold tracking-tight sm:text-3xl">
         {homeCopy.features.title}
       </h2>
       <div className="mt-10 grid grid-cols-1 gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-2">
-        {FEATURES.map((f) => (
+        {features.map((f) => (
           <div key={f.title} className="bg-background p-6">
             <span className="flex size-9 items-center justify-center rounded-md bg-foreground text-background">
               <f.icon className="size-4" aria-hidden="true" />
