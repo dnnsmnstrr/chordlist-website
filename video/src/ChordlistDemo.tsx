@@ -259,7 +259,7 @@ const Clip: React.FC<{
         alignItems: 'center',
         justifyContent: 'center',
       }}
-    >
+      from={-84}>
       <div
         style={{
           position: 'relative',
@@ -296,7 +296,7 @@ const Clip: React.FC<{
             />
           ) : (
             // Freeze owns the video timeline, so seek with its frame instead of trimBefore.
-            <Freeze
+            (<Freeze
               frame={freezeFrame ? clip.trimBeforeInFrames : 0}
               active={freezeFrame}
             >
@@ -306,7 +306,7 @@ const Clip: React.FC<{
                 trimBefore={freezeFrame ? undefined : clip.trimBeforeInFrames}
                 style={{width: '100%', height: '100%', objectFit: 'contain'}}
               />
-            </Freeze>
+            </Freeze>)
           )}
           {showLabel ? (
             <div
