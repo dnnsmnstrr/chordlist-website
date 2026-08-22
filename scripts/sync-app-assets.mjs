@@ -18,6 +18,7 @@ const screenshotNames = [
   "05-Tag-Filter.png",
   "06-Settings.png",
   "07-Song-Suggestions.png",
+  "08-Paywall.png",
 ]
 
 async function exists(filePath) {
