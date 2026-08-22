@@ -48,6 +48,11 @@ const screenshots: readonly Screenshot[] = [
     darkSrc: "/app-screenshots/dark/06-Settings.png",
     ...pressCopy.screenshots.items[5],
   },
+  {
+    lightSrc: "/app-screenshots/light/07-Song-Suggestions.png",
+    darkSrc: "/app-screenshots/dark/07-Song-Suggestions.png",
+    ...pressCopy.screenshots.items[6],
+  },
 ]
 
 export default function PressPage() {

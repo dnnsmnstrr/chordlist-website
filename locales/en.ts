@@ -422,6 +422,11 @@ export const pressCopy = {
         title: "Settings",
         description: "Choose the app's accent colour and preferred light, dark, or system appearance.",
       },
+      {
+        title: "Matching songs",
+        description:
+          "Finish a song and see which others in the library share its chord progression, ready to play next.",
+      },
     ],
   },
   availability: {
