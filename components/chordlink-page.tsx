@@ -1,8 +1,7 @@
 import type { Route } from "next"
 import Link from "next/link"
-import { Check, Gift, Nfc, PackageCheck, Smartphone } from "lucide-react"
+import { Check, Gift, Nfc, PackageCheck, Printer, Smartphone } from "lucide-react"
 
-import { ChordlistIcon } from "@/components/chordlist-icon"
 import { SiteFooter } from "@/components/site-footer"
 import { SiteHeader } from "@/components/site-header"
 import { buttonVariants } from "@/components/ui/button"
@@ -27,6 +26,10 @@ const copy = {
       "Every later scan opens that action immediately.",
     ],
     details: ["Printed with linus3d.de", "Numbered first edition", "Works as a web link without the app"],
+    modelHint: "Drag to rotate",
+    diyTitle: "Have a 3D printer? Make your own.",
+    diyBody: "The unnumbered model and browser-based STL generator are free to use for a personal chordlink. Add your own NFC tag and program its link at home.",
+    diyAction: "See the DIY instructions",
     manufacturingNote: "Because every chordlink is 3D-printed, small cosmetic layer lines, marks, or variations can occur. These are part of the production method and are not considered defects. If the NFC function has a fault, the chordlink will be repaired or replaced. Your statutory warranty and withdrawal rights remain unaffected.",
     legal: "Physical-product terms and withdrawal information",
   },
@@ -46,6 +49,10 @@ const copy = {
       "Jeder weitere Scan öffnet diese Aktion sofort.",
     ],
     details: ["Gedruckt mit linus3d.de", "Nummerierte erste Edition", "Funktioniert ohne App auch als Weblink"],
+    modelHint: "Zum Drehen ziehen",
+    diyTitle: "Du hast einen 3D-Drucker? Bau deinen eigenen.",
+    diyBody: "Das unnummerierte Modell und der STL-Generator im Browser sind für einen persönlichen chordlink kostenlos nutzbar. Ergänze zu Hause deinen eigenen NFC-Tag und programmiere den Link.",
+    diyAction: "Zur DIY-Anleitung",
     manufacturingNote: "Da jeder chordlink 3D-gedruckt wird, können kleine kosmetische Schichtlinien, Spuren oder Abweichungen entstehen. Sie sind Teil des Herstellungsverfahrens und gelten nicht als Mangel. Bei einem Fehler der NFC-Funktion wird der chordlink repariert oder ersetzt. Deine gesetzlichen Gewährleistungs- und Widerrufsrechte bleiben unberührt.",
     legal: "Bedingungen und Widerrufsbelehrung für physische Produkte",
   },
@@ -54,8 +61,8 @@ const copy = {
 export function ChordlinkPage({ language }: { language: Language }) {
   const text = copy[language]
   const paths = language === "de"
-    ? { en: "/chordlink" as Route, de: "/de/chordlink" as Route, terms: "/de/chordlink/terms" as Route }
-    : { en: "/chordlink" as Route, de: "/de/chordlink" as Route, terms: "/chordlink/terms" as Route }
+    ? { en: "/chordlink" as Route, de: "/de/chordlink" as Route, terms: "/de/chordlink/terms" as Route, diy: "/de/chordlink/diy" as Route }
+    : { en: "/chordlink" as Route, de: "/de/chordlink" as Route, terms: "/chordlink/terms" as Route, diy: "/chordlink/diy" as Route }
 
   return (
     <main className="min-h-screen text-foreground">
@@ -87,8 +94,16 @@ export function ChordlinkPage({ language }: { language: Language }) {
           </div>
         </div>
 
-        <div aria-hidden="true" className="mx-auto flex aspect-square w-full max-w-sm rotate-3 items-center justify-center overflow-hidden rounded-[4rem] bg-logo-tile text-logo-glyph shadow-logo">
-          <ChordlistIcon className="h-full w-auto" />
+        <div className="relative mx-auto aspect-square w-full max-w-sm rotate-3 overflow-hidden rounded-[4rem] bg-logo-tile shadow-logo">
+          <iframe
+            className="size-full border-0"
+            loading="lazy"
+            src="/model.html?preview=1&numbering=1&nfc=1"
+            title={language === "de" ? "Interaktives 3D-Modell des chordlink" : "Interactive 3D model of chordlink"}
+          />
+          <span className="pointer-events-none absolute bottom-5 left-1/2 -translate-x-1/2 rounded-full border border-black/10 bg-white/80 px-3 py-1 font-mono text-[11px] text-black/60 shadow-sm backdrop-blur-sm">
+            {text.modelHint}
+          </span>
         </div>
       </section>
 
@@ -112,6 +127,19 @@ export function ChordlinkPage({ language }: { language: Language }) {
           <p className="border-t border-border pt-6 text-xs leading-5 text-muted-foreground md:col-span-2">
             {text.manufacturingNote}
           </p>
+        </div>
+      </section>
+
+      <section className="border-b border-border">
+        <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 px-6 py-12 sm:flex-row sm:items-center sm:justify-between">
+          <div className="max-w-2xl">
+            <Printer className="size-6" />
+            <h2 className="mt-4 text-2xl font-semibold tracking-tight">{text.diyTitle}</h2>
+            <p className="mt-3 leading-7 text-muted-foreground">{text.diyBody}</p>
+          </div>
+          <Link className={cn(buttonVariants({ variant: "outline", size: "lg" }), "shrink-0")} href={paths.diy}>
+            {text.diyAction}
+          </Link>
         </div>
       </section>
 

@@ -208,6 +208,22 @@ be inserted without changing an NFC URL.
 Never add a unit number, Checkout Session, buyer email, delivery address, or Apple offer code to
 Vercel Analytics. Individual `/link/*` requests redirect to the shared setup route and are noindex.
 
+### Public chordlink model
+
+`public/model.html` is a self-contained 3D configurator and STL exporter that can also be downloaded
+and shared as one file. Its public default is deliberately unnumbered:
+
+- `/model.html` — unnumbered model.
+- `/model.html?nfc=1` — unnumbered model with the NFC cavity enabled.
+- `/model.html?nfc=1&numbering=1` — opt-in personal numbering controls.
+- `/model.html?preview=1&nfc=1&numbering=1` — clean interactive render embedded on the product page.
+
+The bilingual instructions at `/chordlink/diy` and `/de/chordlink/diy` recommend six-digit personal
+link IDs so home-made tags stay visually separate from the two- and three-digit limited-edition
+namespaces. These IDs are public routing identifiers, not globally unique credentials. The DIY page
+must continue to state that self-printed tags are outside the official edition and do not include
+the paid unlimited entitlement.
+
 ## Localization
 
 Copy lives in `locales/`. `en.ts` is the site as it ships today; `de.ts` is a partial German

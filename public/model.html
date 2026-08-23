@@ -76,6 +76,70 @@ document.addEventListener('DOMContentLoaded', async function() {
     const manifest = JSON.parse(manifestEl.textContent);
     let template = JSON.parse(templateEl.textContent);
 
+    // Keep the downloaded bundle useful as a plain, unnumbered community model.
+    // Optional serial tooling is opt-in at /model.html?numbering=1; the other
+    // flags provide a ready-to-assemble starting point and the clean product-page
+    // render without maintaining a second copy of the geometry.
+    const publicParams = new URLSearchParams(window.location.search);
+    const modelOptions = Object.freeze({
+      numbering: publicParams.get('numbering') === '1',
+      nfc: publicParams.get('nfc') === '1',
+      preview: publicParams.get('preview') === '1'
+    });
+    function replaceModelSource(source, before, after) {
+      if (!source.includes(before)) throw new Error('Model bundle customization is out of date');
+      return source.replace(before, after);
+    }
+    const modelReplacements = [
+      [
+        'const { THREE } = await stage.ready;',
+        "const { THREE } = await stage.ready;\nif (window.CHORDLINK_PREVIEW_ONLY === true && stage.shadowRoot) {\n  for (const selector of ['.toolbar', '.note']) {\n    const element = stage.shadowRoot.querySelector(selector);\n    if (element) element.style.display = 'none';\n  }\n}"
+      ],
+      [
+        '                 num, numH, markH, depth, inlay, inlayGap, numberTop }) {',
+        '                 num, numH, markH, depth, inlay, inlayGap, numberTop, numbering }) {'
+      ],
+      [
+        '  const number = engrave\n    ? textContours(num, numH, 0, numberTop ? numRow : -numRow, inner)',
+        '  const number = engrave && numbering\n    ? textContours(num, numH, 0, numberTop ? numRow : -numRow, inner)'
+      ],
+      [
+        "    ? textContours('chordlist', markH, 0, numberTop ? -numH * 0.5 : numH * 0.5, inner)",
+        "    ? textContours('chordlist', markH, 0, numbering ? (numberTop ? -numH * 0.5 : numH * 0.5) : 0, inner)"
+      ],
+      [
+        "  const textParts = engrave\n    ? [{ name: 'number', ...number }, { name: 'wordmark', ...wordmark }]\n    : [];",
+        "  const textParts = engrave\n    ? [...(numbering ? [{ name: 'number', ...number }] : []), { name: 'wordmark', ...wordmark }]\n    : [];"
+      ],
+      [
+        '    inlayGap: Number(ui.inlayGap.value)\n  };',
+        '    inlayGap: Number(ui.inlayGap.value),\n    numbering: window.CHORDLINK_NUMBERING_ENABLED === true\n  };'
+      ],
+      [
+        "ui.numberTop.addEventListener('change', () => apply(false));\napply(true);",
+        "ui.numberTop.addEventListener('change', () => apply(false));\nif (window.CHORDLINK_NFC_ENABLED === true) ui.nfc.checked = true;\napply(true);\nif (window.CHORDLINK_PREVIEW_ONLY === true && stage._camera && stage._controls) {\n  stage._camera.position.multiplyScalar(0.72);\n  stage._controls.update();\n}"
+      ],
+      [
+        'const cfgKeys = Object.keys(ui);',
+        "const cfgKeys = Object.keys(ui).filter(k => window.CHORDLINK_NUMBERING_ENABLED || !['num', 'digits', 'numH', 'numberTop'].includes(k));"
+      ],
+      [
+        "};\n\ndocument.getElementById('stl').addEventListener('click', () => {",
+        "};\n\nconst exportName = (suffix = '') => {\n  const serial = window.CHORDLINK_NUMBERING_ENABLED\n    ? '-' + pad(Math.round(Number(ui.num.value) || 0))\n    : '';\n  return 'chordlink' + serial + suffix;\n};\n\ndocument.getElementById('stl').addEventListener('click', () => {"
+      ],
+      [
+        '    `chordlist-tile-${pad(Math.round(Number(ui.num.value) || 0))}.stl`);',
+        "    exportName() + '.stl');"
+      ],
+      [
+        "    { name: `chordlist-tile-${n}-plate.stl`, data: new Uint8Array(stlBuffer(o => !isAccent(o))) },\n    { name: `chordlist-tile-${n}-accent.stl`, data: new Uint8Array(stlBuffer(isAccent)) }\n  ]), `chordlist-tile-${n}-2colour.zip`);",
+        "    { name: exportName('-plate') + '.stl', data: new Uint8Array(stlBuffer(o => !isAccent(o))) },\n    { name: exportName('-accent') + '.stl', data: new Uint8Array(stlBuffer(isAccent)) }\n  ]), exportName('-2colour') + '.zip');"
+      ]
+    ];
+    for (const [before, after] of modelReplacements) {
+      template = replaceModelSource(template, before, after);
+    }
+
     // Nested page bundles (iframe targets). Each ships ONCE, in the ROOT
     // document's manifest; frame srcs carry an about:blank#<uuid> marker
     // instead of a substitutable uuid. Every document mints the blobs for
@@ -299,6 +363,9 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     const resourceScript = '<script>window.__resources = ' +
       JSON.stringify(resourceMap).replace(/<\//g, '<\\/') +
+      ';window.CHORDLINK_NUMBERING_ENABLED=' + JSON.stringify(modelOptions.numbering) +
+      ';window.CHORDLINK_NFC_ENABLED=' + JSON.stringify(modelOptions.nfc) +
+      ';window.CHORDLINK_PREVIEW_ONLY=' + JSON.stringify(modelOptions.preview) +
       ';</' + 'script>';
     // Inject after <head> so the DOCTYPE stays first; prepending the script
     // would push the parser into quirks mode. DOMParser always emits a <head>
@@ -316,6 +383,19 @@ document.addEventListener('DOMContentLoaded', async function() {
     // createElement so they execute, awaiting onload for src scripts to
     // preserve ordering (React before ReactDOM before Babel before text/babel).
     const doc = new DOMParser().parseFromString(template, 'text/html');
+    if (!modelOptions.numbering) {
+      const numberGroup = doc.getElementById('num')?.closest('.num');
+      const batchGroup = doc.getElementById('nfrom')?.closest('.num');
+      const numberOnly = [
+        numberGroup?.previousElementSibling,
+        numberGroup,
+        doc.getElementById('numtop')?.closest('label'),
+        doc.getElementById('numh')?.closest('label'),
+        batchGroup
+      ];
+      for (const element of numberOnly) element?.setAttribute('hidden', '');
+    }
+    if (modelOptions.preview) doc.querySelector('.caption')?.setAttribute('hidden', '');
     document.documentElement.replaceWith(doc.documentElement);
 
     // Resolve page-frame markers: mint this document's own blob for each

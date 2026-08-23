@@ -50,3 +50,11 @@ test("pilot checkout stays gated until every legal and postage prerequisite is e
   assert.equal(siteConfig.chordlink.shippingRegion, "DE")
   assert.equal(chordlinkCheckoutEnabled, false)
 })
+
+test("the public model is unnumbered unless its explicit URL option is present", async () => {
+  const model = await readFile("public/model.html", "utf8")
+  assert.match(model, /publicParams\.get\('numbering'\) === '1'/)
+  assert.match(model, /CHORDLINK_NUMBERING_ENABLED/)
+  assert.match(model, /numbering \? \[\{ name: 'number'/)
+  assert.match(model, /modelOptions\.preview/)
+})
