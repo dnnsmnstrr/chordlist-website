@@ -2,7 +2,7 @@
 title: Learn a four-chord pop progression
 description: Learn I–V–vi–IV in several keys, practise the changes without stopping, and use the same shape as a reference for other songs.
 created: 2026-08-08
-published: 2026-08-28
+published: 2026-09-01
 tags:
   - chords
   - workflow

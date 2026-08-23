@@ -14,10 +14,10 @@ const copy = {
   en: {
     eyebrow: "chordlink · first edition",
     title: "Tap your instrument. Open your songbook.",
-    intro: "A numbered, 3D-printed NFC tag that opens chordlist exactly where you want it.",
+    intro: "A 3D-printed NFC tag that opens chordlist exactly where you want it.",
     priceSuffix: "including postage within Germany",
     buy: "Buy chordlink",
-    unavailable: "Pilot sale coming soon",
+    unavailable: "Limited sale coming soon",
     availability: "10 available · numbered 001–010",
     unlimited: "Includes chordlist unlimited",
     howTitle: "One tap, your choice",
@@ -26,11 +26,15 @@ const copy = {
       "Scan it once and choose Library, Shuffle, or Add Song.",
       "Every later scan opens that action immediately.",
     ],
-    details: ["Printed with linus3d.de", "Numbered first edition", "Works as a web link without the app"],
+    details: [
+      "Numbered first edition", 
+      "Works as a web link without the app",
+      "Printed by Linus3d", 
+    ],
     diyTitle: "Have a 3D printer? Make your own.",
     diyBody: "The browser-based model generator is free to use for a personal chordlink. Add your own NFC tag and program its link at home.",
     diyAction: "See the DIY instructions",
-    manufacturingNote: "Because every chordlink is 3D-printed, small cosmetic layer lines, marks, or variations can occur. These are part of the production method and are not considered defects. If the NFC function has a fault, the chordlink will be repaired or replaced. Your statutory warranty and withdrawal rights remain unaffected.",
+    manufacturingNote: "Because every chordlink is 3D-printed, small cosmetic layer lines, marks, or variations can occur. These are part of the production method and are not considered defects. Your statutory warranty and withdrawal rights remain unaffected.",
     legal: "Physical-product terms and withdrawal information",
   },
   de: {
@@ -48,11 +52,15 @@ const copy = {
       "Scanne ihn einmal und wähle Bibliothek, Zufall oder Song hinzufügen.",
       "Jeder weitere Scan öffnet diese Aktion sofort.",
     ],
-    details: ["Gedruckt mit linus3d.de", "Nummerierte erste Edition", "Funktioniert ohne App auch als Weblink"],
+    details: [
+      "Nummerierte erste Edition", 
+      "Funktioniert ohne App auch als Weblink",
+      "Gedruckt von Linus3d", 
+    ],
     diyTitle: "Du hast einen 3D-Drucker? Bau deinen eigenen.",
     diyBody: "Der Modellgenerator im Browser ist für einen persönlichen chordlink kostenlos nutzbar. Ergänze zu Hause deinen eigenen NFC-Tag und programmiere den Link.",
     diyAction: "Zur DIY-Anleitung",
-    manufacturingNote: "Da jeder chordlink 3D-gedruckt wird, können kleine kosmetische Schichtlinien, Spuren oder Abweichungen entstehen. Sie sind Teil des Herstellungsverfahrens und gelten nicht als Mangel. Bei einem Fehler der NFC-Funktion wird der chordlink repariert oder ersetzt. Deine gesetzlichen Gewährleistungs- und Widerrufsrechte bleiben unberührt.",
+    manufacturingNote: "Da jeder chordlink 3D-gedruckt wird, können kleine kosmetische Schichtlinien, Spuren oder Abweichungen entstehen. Sie sind Teil des Herstellungsverfahrens und gelten nicht als Mangel. Deine gesetzlichen Gewährleistungs- und Widerrufsrechte bleiben unberührt.",
     legal: "Bedingungen und Widerrufsbelehrung für physische Produkte",
   },
 } as const
@@ -110,10 +118,21 @@ export function ChordlinkPage({ language }: { language: Language }) {
             </ol>
           </div>
           <div className="grid gap-4">
-            {[PackageCheck, Smartphone, Check].map((Icon, index) => (
+            {[Check, Smartphone, PackageCheck].map((Icon, index) => (
               <div key={text.details[index]} className="flex items-center gap-4 rounded-2xl border border-border bg-background p-5">
                 <Icon className="size-5 shrink-0" />
-                <span>{text.details[index]}</span>
+                {index === 2 ? (
+                  <a
+                    className="underline underline-offset-4 transition-colors hover:text-muted-foreground"
+                    href="https://linus3d.de/"
+                    rel="noopener noreferrer"
+                    target="_blank"
+                  >
+                    {text.details[index]}
+                  </a>
+                ) : (
+                  <span>{text.details[index]}</span>
+                )}
               </div>
             ))}
           </div>
