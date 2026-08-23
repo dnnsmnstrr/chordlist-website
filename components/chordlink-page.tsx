@@ -1,6 +1,6 @@
 import type { Route } from "next"
 import Link from "next/link"
-import { Check, Gift, Nfc, PackageCheck, Printer, Smartphone } from "lucide-react"
+import { FileDigit, Gift, Nfc, PackageCheck, Printer, Smartphone } from "lucide-react"
 
 import { ChordlinkModelViewer } from "@/components/chordlink-model-viewer"
 import { SiteFooter } from "@/components/site-footer"
@@ -28,8 +28,8 @@ const copy = {
     ],
     details: [
       "Numbered first edition", 
-      "Works as a web link without the app",
-      "Printed by Linus3d", 
+      "Works as a quick link into the app",
+      "Produced by Linus3d", 
     ],
     diyTitle: "Have a 3D printer? Make your own.",
     diyBody: "The browser-based model generator is free to use for a personal chordlink. Add your own NFC tag and program its link at home.",
@@ -40,13 +40,13 @@ const copy = {
   de: {
     eyebrow: "chordlink · erste Edition",
     title: "Instrument antippen. Songbook öffnen.",
-    intro: "Ein nummerierter, 3D-gedruckter NFC-Tag, der chordlist genau dort öffnet, wo du hinwillst.",
+    intro: "Ein 3D-gedruckter NFC-Tag, der chordlist genau dort öffnet, wo du hinwillst.",
     priceSuffix: "inklusive Versand innerhalb Deutschlands",
     buy: "chordlink kaufen",
     unavailable: "Pilotverkauf startet bald",
     availability: "10 verfügbar · nummeriert 001–010",
     unlimited: "chordlist unlimited inklusive",
-    howTitle: "Ein Tap, deine Auswahl",
+    howTitle: "Ein Scan, deine Songs",
     how: [
       "Befestige chordlink an deinem Instrument oder Koffer.",
       "Scanne ihn einmal und wähle Bibliothek, Zufall oder Song hinzufügen.",
@@ -54,8 +54,8 @@ const copy = {
     ],
     details: [
       "Nummerierte erste Edition", 
-      "Funktioniert ohne App auch als Weblink",
-      "Gedruckt von Linus3d", 
+      "Schneller Link in die App",
+      "Produziert von Linus3d", 
     ],
     diyTitle: "Du hast einen 3D-Drucker? Bau deinen eigenen.",
     diyBody: "Der Modellgenerator im Browser ist für einen persönlichen chordlink kostenlos nutzbar. Ergänze zu Hause deinen eigenen NFC-Tag und programmiere den Link.",
@@ -118,7 +118,7 @@ export function ChordlinkPage({ language }: { language: Language }) {
             </ol>
           </div>
           <div className="grid gap-4">
-            {[Check, Smartphone, PackageCheck].map((Icon, index) => (
+            {[FileDigit, Smartphone, PackageCheck].map((Icon, index) => (
               <div key={text.details[index]} className="flex items-center gap-4 rounded-2xl border border-border bg-background p-5">
                 <Icon className="size-5 shrink-0" />
                 {index === 2 ? (
