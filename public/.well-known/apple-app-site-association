@@ -1,0 +1,15 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["CSKA8928CG.app.chordlist"],
+        "components": [
+          {
+            "/": "/link/*",
+            "comment": "NFC links for chordlink"
+          }
+        ]
+      }
+    ]
+  }
+}

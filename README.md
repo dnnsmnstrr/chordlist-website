@@ -26,6 +26,7 @@ elsewhere, set `CHORDLIST_APP_REPO` to its absolute path.
 | `pnpm build:all` | Sync app assets, regenerate every visual asset, build the App Store sets, and create the production build. |
 | `pnpm start` | Serve an existing production build locally. |
 | `pnpm lint` | Run ESLint with warnings treated as failures. |
+| `pnpm test` | Run the chordlink URL-contract and AASA tests. |
 | `pnpm typecheck` | Run TypeScript without emitting files. |
 | `pnpm sync:app` | Copy current iPhone/iPad screenshots and the available press-kit archive from the app repository. |
 | `pnpm sync:video` | Copy prepared demo clips and rebuild the Remotion asset manifest. |
@@ -39,7 +40,7 @@ elsewhere, set `CHORDLIST_APP_REPO` to its absolute path.
 | `pnpm video:render:campaign` | Render the short, standard, and documentary light promo cuts. |
 | `pnpm video:render:both` | Render the light and dark vertical demo masters. |
 
-There is currently no separate test suite; `pnpm check` is the project gate.
+`pnpm check` remains the full project gate; run `pnpm test` alongside it for the chordlink route contract.
 
 ## Core workflows
 
@@ -182,6 +183,53 @@ catches invalid content as well as code errors.
 
 The repository is also linked to its [v0 project](https://v0.app/chat/projects/prj_AsUQPET3z9WZP5VoDtZIfAsTxWwR),
 so changes may arrive as commits from v0 chats.
+
+### chordlink launch gate
+
+The public product routes are `/chordlink` and `/de/chordlink`; shared setup routes sit behind
+`/link/<public-id>`. `lib/chordlink.ts` treats two-to-six digit IDs as opaque strings. The shipped
+three-digit edition rule and generic fallback are data, so a future two-digit dark-edition rule can
+be inserted without changing an NFC URL.
+
+`siteConfig.chordlink` is the only checkout switch. The Payment Link remains disabled until all of
+`sellerAddressConfirmed`, `legalTextReviewed`, and `postageDimensionsConfirmed` are true and both a
+live `stripePaymentLink` and its `stripePaymentLinkId` are present. Before changing those values:
+
+1. Have the bilingual seller, withdrawal, return-cost, and §19 UStG wording reviewed and replace the
+   launch-gate notice with the complete postal identity and return address.
+2. Confirm that the packaged chordlink fits the intended Deutsche Post letter product.
+3. In Stripe, create `chordlink — first edition` at EUR 9.99 including German postage, fix quantity
+   at one, require a German delivery address, and cap the Payment Link at ten completed payments.
+4. Set the completion URL to
+   `https://chordlist.app/chordlink/complete?session_id={CHECKOUT_SESSION_ID}`. The server retrieves
+   that session before showing the localized confirmation page; invalid or unpaid sessions return
+   to the product page.
+5. Put the live Payment Link URL and `plink_…` ID in site/backend configuration. Add a dedicated
+   `STRIPE_CHECKOUT_SESSION_READ_KEY` sensitive environment variable with read-only Checkout Session
+   access, configure the signed Supabase webhook, test one delayed-payment event, and only then
+   enable the readiness flags.
+
+Never add a unit number, Checkout Session, buyer email, delivery address, or Apple offer code to
+Vercel Analytics. Individual `/link/*` requests redirect to the shared setup route and are noindex.
+
+### Public chordlink model
+
+`public/model.html` is a self-contained 3D configurator and STL exporter that can also be downloaded
+and shared as one file. Its public default is deliberately unnumbered:
+
+- `/model.html` — unnumbered model.
+- `/model.html?nfc=1` — unnumbered model with the NFC cavity enabled.
+- `/model.html?nfc=1&numbering=1` — opt-in personal numbering controls.
+
+The product page uses `ChordlinkModelViewer` to render the optimized static
+`/models/chordlink.glb` directly on a transparent stage. The DIY page has a single model action that
+opens the full generator with the NFC cavity enabled.
+
+The bilingual instructions at `/chordlink/diy` and `/de/chordlink/diy` recommend six-digit personal
+link IDs so separate home-made tags can have independent actions. These IDs are public routing
+identifiers, not globally unique credentials. The DIY page
+must continue to state that self-printed tags are outside the official edition and do not include
+the paid unlimited entitlement.
 
 ## Localization
 

@@ -1,4 +1,5 @@
 import { AppShowcase } from "@/components/app-showcase"
+import { ChordlinkBanner } from "@/components/chordlink-banner"
 import { ClosingCTA } from "@/components/closing-cta"
 import { Features } from "@/components/features"
 import { Hero } from "@/components/hero"
@@ -28,6 +29,7 @@ export function HomePage({ language }: { language: Language }) {
           nav back in front of the first Tab and of sequential reading, which is the one
           thing the link exists to avoid. */}
       <div id="main-content" tabIndex={-1}>
+        <ChordlinkBanner language={language} />
         <Hero language={language} />
         <AppShowcase language={language} />
         <Features language={language} />

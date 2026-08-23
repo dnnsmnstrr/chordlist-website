@@ -1,8 +1,8 @@
 ---
 title: Finding the chords in a song
-description: A practical way to work out a chord progression by ear when there is no chart, or the chart you found does not sound right.
+description: How to work out chord progressions by ear when there is no chart, or the chart you found does not sound right.
 created: 2026-08-08
-published: 2026-08-21
+published: 2026-08-28
 tags:
   - chords
   - workflow
@@ -11,7 +11,7 @@ tags:
 Sooner or later you want to play something nobody has written a chart for. Or you find a chart that
 is transposed oddly, skips a section, or simply does not match the recording.
 
-Working out the chords by ear is not a single flash of recognition. It is a series of small tests:
+Working out the chords by ear is not always easy for beginners, but it is a skill that improves with practice. The following steps are a practical way to work out a chord progression when there is no chart available:
 find a likely home note, follow the bass, try the common chords around it, and revisit the bar that
 still sounds wrong.
 
@@ -23,8 +23,7 @@ Listen for a note that feels settled rather than tense. It often appears at the 
 chorus, or final held chord. Hum that note, find it on an instrument, and test it against several
 parts of the song.
 
-Treat it as a candidate, not a verdict. A melody can finish on another note of the chord, a recording
-can fade before resolving, and some songs deliberately avoid a clear tonic. The playable keyboard
+Treat it as a candidate, not a verdict. A melody can finish on another note of the chord, a recording can fade before resolving, and some songs deliberately avoid a clear tonic. The playable keyboard
 at the bottom of [the home page](/) is enough to hunt for the note if you do not have an instrument
 nearby.
 
@@ -64,8 +63,7 @@ loop first gives you something reliable to compare it with.
 Record the verse before moving to the chorus. Otherwise a partly solved song has a way of becoming
 the same puzzle again tomorrow.
 
-In chordlist, the progression can live in the file's frontmatter while the chord sheet stays in the
-body:
+In chordlist, a summary of used progressions lives in the file's frontmatter while the chord sheet stays in the body:
 
 ```
 ---
@@ -78,11 +76,10 @@ G            D
 Coffee on the counter going cold
 ```
 
-Commas separate the field into sections when a song needs more than one.
+Commas separate the fromtmatter field into sections when a song needs more than one progression.
 [Adding songs](/docs#adding-songs) covers creating one in the app, while the
 [file format](/docs#file-format) explains what to type in a Markdown editor. If you import an
-existing online chart, review the result against the recording before saving it and make sure you
-have the right to use the material.
+existing online chart, review the result against the recording before saving it.
 
 ## Check the awkward bars
 
