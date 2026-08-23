@@ -100,6 +100,8 @@ test("the public model is unnumbered unless its explicit URL option is present",
   for (const control of ["num", "numtop", "numh", "nfrom"]) {
     assert.match(model, new RegExp(`getElementById\\('${control}'\\)`))
   }
+  // The panel's own .num/.tweak rules set display, so the UA sheet's [hidden] never wins on its own.
+  assert.match(model, /\[hidden\]\{display:none!important\}/)
   assert.match(model, /modelOptions\.preview/)
 })
 
