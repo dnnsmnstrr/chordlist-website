@@ -96,6 +96,10 @@ test("the public model is unnumbered unless its explicit URL option is present",
   assert.match(model, /publicParams\.get\('numbering'\) === '1'/)
   assert.match(model, /CHORDLINK_NUMBERING_ENABLED/)
   assert.match(model, /numbering \? \[\{ name: 'number'/)
+  assert.match(model, /element\?\.toggleAttribute\('hidden', !modelOptions\.numbering\)/)
+  for (const control of ["num", "numtop", "numh", "nfrom"]) {
+    assert.match(model, new RegExp(`getElementById\\('${control}'\\)`))
+  }
   assert.match(model, /modelOptions\.preview/)
 })
 

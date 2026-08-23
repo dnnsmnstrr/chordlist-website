@@ -383,17 +383,19 @@ document.addEventListener('DOMContentLoaded', async function() {
     // createElement so they execute, awaiting onload for src scripts to
     // preserve ordering (React before ReactDOM before Babel before text/babel).
     const doc = new DOMParser().parseFromString(template, 'text/html');
-    if (!modelOptions.numbering) {
-      const numberGroup = doc.getElementById('num')?.closest('.num');
-      const batchGroup = doc.getElementById('nfrom')?.closest('.num');
-      const numberOnly = [
-        numberGroup?.previousElementSibling,
-        numberGroup,
-        doc.getElementById('numtop')?.closest('label'),
-        doc.getElementById('numh')?.closest('label'),
-        batchGroup
-      ];
-      for (const element of numberOnly) element?.setAttribute('hidden', '');
+    const numberGroup = doc.getElementById('num')?.closest('.num');
+    const numberDivider = numberGroup?.previousElementSibling?.classList.contains('hr')
+      ? numberGroup.previousElementSibling
+      : null;
+    const numberingOptions = [
+      numberDivider,
+      numberGroup,
+      doc.getElementById('numtop')?.closest('label'),
+      doc.getElementById('numh')?.closest('label'),
+      doc.getElementById('nfrom')?.closest('.num')
+    ];
+    for (const element of numberingOptions) {
+      element?.toggleAttribute('hidden', !modelOptions.numbering);
     }
     if (modelOptions.preview) doc.querySelector('.caption')?.setAttribute('hidden', '');
     document.documentElement.replaceWith(doc.documentElement);
