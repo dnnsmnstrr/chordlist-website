@@ -45,10 +45,22 @@ export function preferredChordlinkLanguage(acceptLanguage: string | null): Langu
 
   const preferences = acceptLanguage
     .split(",")
-    .map((entry) => entry.trim().toLowerCase())
-    .filter(Boolean)
+    .flatMap((entry, index) => {
+      const [range, ...parameters] = entry.trim().toLowerCase().split(";")
+      const qualityParameter = parameters.find((parameter) => parameter.trim().startsWith("q="))
+      const quality = qualityParameter === undefined
+        ? 1
+        : Number.parseFloat(qualityParameter.trim().slice(2))
+      if (!range || !Number.isFinite(quality) || quality <= 0 || quality > 1) return []
 
-  return preferences.some((entry) => entry === "de" || entry.startsWith("de-") || entry.startsWith("de;"))
-    ? "de"
-    : "en"
+      const language: Language | null = range === "*" || range === "en" || range.startsWith("en-")
+        ? "en"
+        : range === "de" || range.startsWith("de-")
+          ? "de"
+          : null
+      return language ? [{ language, quality, index }] : []
+    })
+    .toSorted((left, right) => right.quality - left.quality || left.index - right.index)
+
+  return preferences[0]?.language ?? "en"
 }

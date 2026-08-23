@@ -37,7 +37,9 @@ export function ChordlinkModelViewer({ label }: { label: string }) {
     container.append(renderer.domElement)
 
     const controls = new OrbitControls(camera, renderer.domElement)
-    controls.enableDamping = true
+    // Event-driven rendering keeps the static product preview idle when the
+    // user is not interacting. Damping would require a continuous frame loop.
+    controls.enableDamping = false
     controls.enablePan = false
     controls.minPolarAngle = Math.PI * 0.15
     controls.maxPolarAngle = Math.PI * 0.72
@@ -50,11 +52,15 @@ export function ChordlinkModelViewer({ label }: { label: string }) {
     fillLight.position.set(-4, 1, -2)
     scene.add(fillLight)
 
+    const render = () => renderer.render(scene, camera)
+    controls.addEventListener("change", render)
+
     const resize = () => {
       const { width, height } = container.getBoundingClientRect()
       renderer.setSize(width, height, false)
       camera.aspect = width / Math.max(height, 1)
       camera.updateProjectionMatrix()
+      render()
     }
     const resizeObserver = new ResizeObserver(resize)
     resizeObserver.observe(container)
@@ -80,20 +86,13 @@ export function ChordlinkModelViewer({ label }: { label: string }) {
       controls.maxDistance = distance * 2.2
       controls.update()
       container.dataset.ready = "true"
+      render()
     })
-
-    let animationFrame = 0
-    const render = () => {
-      controls.update()
-      renderer.render(scene, camera)
-      animationFrame = requestAnimationFrame(render)
-    }
-    render()
 
     return () => {
       disposed = true
-      cancelAnimationFrame(animationFrame)
       resizeObserver.disconnect()
+      controls.removeEventListener("change", render)
       controls.dispose()
       disposeObject(scene)
       renderer.dispose()

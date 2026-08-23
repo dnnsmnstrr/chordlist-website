@@ -8,6 +8,8 @@ export const metadata: Metadata = pageMetadata({
   title: "Eigenen chordlink bauen",
   description: "Konfiguriere, drucke und programmiere zu Hause deinen persönlichen chordlink NFC-Tag.",
   language: "de",
+  image: "/og/chordlink.png",
+  imageAlt: "chordlink — Instrument antippen, chordlist öffnen",
   extra: { alternates: { languages: { en: "/chordlink/diy", de: "/de/chordlink/diy", "x-default": "/chordlink/diy" } } },
 })
 

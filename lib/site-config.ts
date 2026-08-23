@@ -49,11 +49,23 @@ export const siteConfig = {
   },
 } as const
 
-export const chordlinkCheckoutEnabled =
-  siteConfig.chordlink.stripePaymentLink !== null &&
-  siteConfig.chordlink.sellerAddressConfirmed &&
-  siteConfig.chordlink.legalTextReviewed &&
-  siteConfig.chordlink.postageDimensionsConfirmed
+type ChordlinkCheckoutReadiness = {
+  stripePaymentLink: string | null
+  stripePaymentLinkId: string | null
+  sellerAddressConfirmed: boolean
+  legalTextReviewed: boolean
+  postageDimensionsConfirmed: boolean
+}
+
+export function isChordlinkCheckoutReady(readiness: ChordlinkCheckoutReadiness): boolean {
+  return readiness.stripePaymentLink !== null
+    && readiness.stripePaymentLinkId !== null
+    && readiness.sellerAddressConfirmed
+    && readiness.legalTextReviewed
+    && readiness.postageDimensionsConfirmed
+}
+
+export const chordlinkCheckoutEnabled = isChordlinkCheckoutReady(siteConfig.chordlink)
 
 /**
  * The strongest offer we can make, in order: buying it beats reserving it, and

@@ -192,18 +192,22 @@ three-digit edition rule and generic fallback are data, so a future two-digit da
 be inserted without changing an NFC URL.
 
 `siteConfig.chordlink` is the only checkout switch. The Payment Link remains disabled until all of
-`sellerAddressConfirmed`, `legalTextReviewed`, and `postageDimensionsConfirmed` are true and a live
-`stripePaymentLink` is present. Before changing those values:
+`sellerAddressConfirmed`, `legalTextReviewed`, and `postageDimensionsConfirmed` are true and both a
+live `stripePaymentLink` and its `stripePaymentLinkId` are present. Before changing those values:
 
 1. Have the bilingual seller, withdrawal, return-cost, and §19 UStG wording reviewed and replace the
    launch-gate notice with the complete postal identity and return address.
 2. Confirm that the packaged chordlink fits the intended Deutsche Post letter product.
 3. In Stripe, create `chordlink — first edition` at EUR 9.99 including German postage, fix quantity
    at one, require a German delivery address, and cap the Payment Link at ten completed payments.
-4. Set the completion URL to `https://chordlist.app/chordlink/complete`; it selects the English or
-   German thank-you page without adding a unit ID to analytics.
-5. Put the live Payment Link URL and `plink_…` ID in site/backend configuration, configure the
-   signed Supabase webhook, test one delayed-payment event, and only then enable the readiness flags.
+4. Set the completion URL to
+   `https://chordlist.app/chordlink/complete?session_id={CHECKOUT_SESSION_ID}`. The server retrieves
+   that session before showing the localized confirmation page; invalid or unpaid sessions return
+   to the product page.
+5. Put the live Payment Link URL and `plink_…` ID in site/backend configuration. Add a dedicated
+   `STRIPE_CHECKOUT_SESSION_READ_KEY` sensitive environment variable with read-only Checkout Session
+   access, configure the signed Supabase webhook, test one delayed-payment event, and only then
+   enable the readiness flags.
 
 Never add a unit number, Checkout Session, buyer email, delivery address, or Apple offer code to
 Vercel Analytics. Individual `/link/*` requests redirect to the shared setup route and are noindex.
