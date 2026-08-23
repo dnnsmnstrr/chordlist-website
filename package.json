@@ -27,6 +27,7 @@
     "build:all": "pnpm sync:assets && pnpm build:icons && pnpm build:og && pnpm build:social && pnpm build:screens && pnpm build",
     "start": "next start",
     "lint": "eslint . --max-warnings=0",
+    "test": "tsx --test tests/**/*.test.ts",
     "typecheck": "tsc --noEmit",
     "check": "pnpm lint && pnpm typecheck && pnpm build"
   },
@@ -60,6 +61,7 @@
     "remotion": "4.0.509",
     "tailwindcss": "^4.2.0",
     "typescript": "5.7.3",
+    "tsx": "4.20.5",
     "zod": "4.4.3"
   }
 }

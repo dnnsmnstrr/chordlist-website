@@ -503,7 +503,7 @@ export const privacyCopy = {
     description: `How ${siteConfig.name} handles song files, optional analytics, imports, purchases, and website visits.`,
   },
   title: "Privacy Policy",
-  lastUpdated: "Last updated: 7 August 2026",
+  lastUpdated: "Last updated: 23 August 2026",
   sections: {
     shortVersion: {
       title: "The short version",
@@ -555,6 +555,14 @@ export const privacyCopy = {
       linkLabel: "App Store privacy information",
       revenueCatLinkPrefix: "RevenueCat's handling of that data is described in its",
       revenueCatLinkLabel: "privacy policy",
+    },
+    chordlinkOrders: {
+      title: "chordlink orders",
+      paragraphs: [
+        `When chordlink sales open, Stripe will process the checkout, buyer email, payment, and German delivery address. ${siteConfig.operator} will use that information to fulfil the physical order and send the individual Apple offer-code redemption link. Payment-card and bank-account details remain with Stripe.`,
+        "The private chordlink inventory stores only the Stripe Checkout Session reference, the unit's public number and edition metadata, fulfillment state, an optional operator note, and its assigned Apple offer code. The public NFC number is not used as an entitlement secret. Buyer email and delivery address are not copied into the chordlist database.",
+        "Individual /link/ URLs redirect to a shared setup page without carrying the unit number into page analytics. Hosting infrastructure may still process the requested URL in ordinary security and delivery logs.",
+      ],
     },
     support: {
       title: "Support and feedback",

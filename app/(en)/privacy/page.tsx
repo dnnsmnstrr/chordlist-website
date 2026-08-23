@@ -79,6 +79,14 @@ export default function PrivacyPage() {
             </p>
           </PolicySection>
 
+          <PolicySection title={sections.chordlinkOrders.title}>
+            <PolicyParagraphs paragraphs={sections.chordlinkOrders.paragraphs} />
+            <p>
+              Stripe describes its handling of checkout data in its{" "}
+              <PolicyLink href="https://stripe.com/privacy">privacy policy</PolicyLink>.
+            </p>
+          </PolicySection>
+
           <PolicySection title={sections.support.title}>
             <PolicyParagraphs paragraphs={sections.support.paragraphs} />
           </PolicySection>

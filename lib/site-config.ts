@@ -33,7 +33,27 @@ export const siteConfig = {
     pressKitArchive: "/press/chordlist-press-kit.zip" as string | null,
     terms: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/",
   },
+  chordlink: {
+    price: { amount: 999, currency: "EUR", display: "€9.99" },
+    firstEditionSize: 20,
+    saleQuantity: 10,
+    shippingRegion: "DE",
+    shippingIncluded: true,
+    // Keep null until the reviewed live Payment Link exists. The page renders a
+    // disabled launch state when any readiness flag below is false.
+    stripePaymentLink: null as string | null,
+    stripePaymentLinkId: null as string | null,
+    sellerAddressConfirmed: false,
+    legalTextReviewed: false,
+    postageDimensionsConfirmed: false,
+  },
 } as const
+
+export const chordlinkCheckoutEnabled =
+  siteConfig.chordlink.stripePaymentLink !== null &&
+  siteConfig.chordlink.sellerAddressConfirmed &&
+  siteConfig.chordlink.legalTextReviewed &&
+  siteConfig.chordlink.postageDimensionsConfirmed
 
 /**
  * The strongest offer we can make, in order: buying it beats reserving it, and

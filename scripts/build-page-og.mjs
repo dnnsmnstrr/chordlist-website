@@ -68,6 +68,11 @@ const CONFIG = {
       title: "Privacy Policy",
       description: "How chordlist handles song files, optional analytics, imports, and purchases.",
     },
+    {
+      slug: "chordlink",
+      title: "Tap your instrument. Open your songbook.",
+      description: "A numbered 3D-printed NFC tag that opens chordlist exactly where you want it.",
+    },
   ],
 
   colors: {

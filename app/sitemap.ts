@@ -35,6 +35,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const englishHome = pages[0]
   if (englishHome) englishHome.alternates = { languages: homeAlternates }
 
+  const chordlinkAlternates = {
+    en: `${siteConfig.url}/chordlink`,
+    de: `${siteConfig.url}/de/chordlink`,
+  }
+  const chordlinkPages: MetadataRoute.Sitemap = Object.values(chordlinkAlternates).map((url) => ({
+    url,
+    changeFrequency: "monthly",
+    priority: 0.8,
+    alternates: { languages: chordlinkAlternates },
+  }))
+
   const postPages: MetadataRoute.Sitemap = posts.map((post) => ({
     url: `${siteConfig.url}${post.href}`,
     lastModified: new Date(post.publishedISO),
@@ -42,5 +53,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.5,
   }))
 
-  return [...pages, ...translatedHomes, ...postPages]
+  return [...pages, ...translatedHomes, ...chordlinkPages, ...postPages]
 }
