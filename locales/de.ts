@@ -122,6 +122,11 @@ export const metadataCopy: Localized<typeof enMetadata> = {
 } as const
 
 export const homeCopy: Localized<typeof enHome> = {
+  chordlinkBanner: {
+    eyebrow: "Neu · chordlink",
+    title: "Instrument antippen und chordlist öffnen.",
+    action: "chordlink ansehen",
+  },
   hero: {
     eyebrow: "Local-first Songbook für iOS",
     subheadline:

@@ -111,6 +111,11 @@ export const metadataCopy = {
 } as const
 
 export const homeCopy = {
+  chordlinkBanner: {
+    eyebrow: "New · chordlink",
+    title: "Tap your instrument and open chordlist.",
+    action: "Meet chordlink",
+  },
   hero: {
     eyebrow: "Local-first songbook for iOS",
     // Says plainly what the product is, so the tagline above it does not have to

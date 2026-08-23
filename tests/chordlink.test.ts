@@ -80,3 +80,18 @@ test("the DIY page offers one model action without discussing model numbering", 
   assert.equal(page.match(/href="\/model\.html\?nfc=1"/g)?.length, 1)
   assert.doesNotMatch(page, /custom numbering|About numbering|Nummerierung|nummeriert/i)
 })
+
+test("the localized home page banner links to chordlink", async () => {
+  const [banner, homePage, english, german] = await Promise.all([
+    readFile("components/chordlink-banner.tsx", "utf8"),
+    readFile("components/home-page.tsx", "utf8"),
+    readFile("locales/en.ts", "utf8"),
+    readFile("locales/de.ts", "utf8"),
+  ])
+
+  assert.match(homePage, /<ChordlinkBanner language=\{language\} \/>/)
+  assert.match(banner, /"\/chordlink"/)
+  assert.match(banner, /"\/de\/chordlink"/)
+  assert.match(english, /eyebrow: "New · chordlink"/)
+  assert.match(german, /eyebrow: "Neu · chordlink"/)
+})
