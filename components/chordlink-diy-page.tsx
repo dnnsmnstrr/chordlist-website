@@ -14,8 +14,7 @@ const copy = {
     eyebrow: "DIY chordlink",
     title: "Print and program your own.",
     intro: "The chordlink model and browser-based STL generator are free to use for a personal tag you make at home. The model stays on your device while you configure and export it.",
-    openModel: "Open the unnumbered model",
-    numberedModel: "Add custom numbering",
+    openModel: "Generate model",
     includedTitle: "What you need",
     included: [
       "An FDM 3D printer and suitable filament",
@@ -37,9 +36,7 @@ const copy = {
     copy: "Copy link",
     copied: "Copied",
     linkNote: "The six-digit ID is public and is not a password or entitlement. It only distinguishes this tag from your other chordlinks on a device.",
-    numberingTitle: "About numbering",
-    numbering: "The public configurator is unnumbered by default. The optional numbering controls are for personal labels only; please do not reproduce the two- or three-digit identifiers used by official limited editions.",
-    editionNote: "A self-printed chordlink is not part of the numbered first edition and does not include chordlist unlimited or fulfillment support. The app and linking behavior work the same way.",
+    editionNote: "A self-printed chordlink is not part of the official first edition and does not include chordlist unlimited or fulfillment support. The app and linking behavior work the same way.",
     safetyTitle: "Before attaching it",
     safety: "Test NFC scanning in the exact mounting position first. Metal can block ordinary NFC tags, and adhesives can damage some instrument finishes. Prefer a case, a removable mounting method, or materials approved for your instrument.",
     back: "Back to chordlink",
@@ -48,8 +45,7 @@ const copy = {
     eyebrow: "DIY-chordlink",
     title: "Drucke und programmiere deinen eigenen.",
     intro: "Das chordlink-Modell und der STL-Generator im Browser sind für einen persönlichen Tag, den du zu Hause herstellst, kostenlos nutzbar. Das Modell bleibt beim Konfigurieren und Exportieren auf deinem Gerät.",
-    openModel: "Unnummeriertes Modell öffnen",
-    numberedModel: "Eigene Nummerierung hinzufügen",
+    openModel: "Modell generieren",
     includedTitle: "Was du brauchst",
     included: [
       "Einen FDM-3D-Drucker und geeignetes Filament",
@@ -71,9 +67,7 @@ const copy = {
     copy: "Link kopieren",
     copied: "Kopiert",
     linkNote: "Die sechsstellige ID ist öffentlich und weder Passwort noch Berechtigungsnachweis. Sie unterscheidet diesen Tag auf einem Gerät lediglich von deinen anderen chordlinks.",
-    numberingTitle: "Zur Nummerierung",
-    numbering: "Der öffentliche Konfigurator ist standardmäßig unnummeriert. Die optionalen Nummernfelder sind nur für persönliche Kennzeichnungen gedacht; bitte übernimm nicht die zwei- oder dreistelligen Kennungen offizieller limitierter Editionen.",
-    editionNote: "Ein selbst gedruckter chordlink gehört nicht zur nummerierten ersten Edition und enthält weder chordlist unlimited noch Fulfillment-Support. App und Verlinkung funktionieren auf dieselbe Weise.",
+    editionNote: "Ein selbst gedruckter chordlink gehört nicht zur offiziellen ersten Edition und enthält weder chordlist unlimited noch Fulfillment-Support. App und Verlinkung funktionieren auf dieselbe Weise.",
     safetyTitle: "Vor dem Befestigen",
     safety: "Teste den NFC-Scan zuerst an der exakten Befestigungsstelle. Metall kann gewöhnliche NFC-Tags blockieren und Klebstoffe können manche Instrumentenoberflächen beschädigen. Nutze bevorzugt einen Koffer, eine ablösbare Befestigung oder für dein Instrument freigegebene Materialien.",
     back: "Zurück zu chordlink",
@@ -97,9 +91,6 @@ export function ChordlinkDiyPage({ language }: { language: Language }) {
         <div className="mt-8 flex flex-wrap gap-3">
           <a className={buttonVariants({ size: "lg" })} href="/model.html?nfc=1" rel="noreferrer" target="_blank">
             {text.openModel}<ExternalLink />
-          </a>
-          <a className={buttonVariants({ variant: "outline", size: "lg" })} href="/model.html?nfc=1&numbering=1" rel="noreferrer" target="_blank">
-            {text.numberedModel}<ExternalLink />
           </a>
         </div>
 
@@ -133,8 +124,7 @@ export function ChordlinkDiyPage({ language }: { language: Language }) {
           </div>
         </section>
 
-        <section className="mt-12 grid gap-4 sm:grid-cols-2">
-          <div className="rounded-2xl bg-muted p-6"><h2 className="font-semibold">{text.numberingTitle}</h2><p className="mt-3 text-sm leading-6 text-muted-foreground">{text.numbering}</p></div>
+        <section className="mt-12">
           <div className="rounded-2xl bg-muted p-6"><h2 className="font-semibold">{text.safetyTitle}</h2><p className="mt-3 text-sm leading-6 text-muted-foreground">{text.safety}</p></div>
         </section>
 

@@ -216,11 +216,14 @@ and shared as one file. Its public default is deliberately unnumbered:
 - `/model.html` — unnumbered model.
 - `/model.html?nfc=1` — unnumbered model with the NFC cavity enabled.
 - `/model.html?nfc=1&numbering=1` — opt-in personal numbering controls.
-- `/model.html?preview=1&nfc=1&numbering=1` — clean interactive render embedded on the product page.
+
+The product page uses `ChordlinkModelViewer` to render the optimized static
+`/models/chordlink.glb` directly on a transparent stage. The DIY page has a single model action that
+opens the full generator with the NFC cavity enabled.
 
 The bilingual instructions at `/chordlink/diy` and `/de/chordlink/diy` recommend six-digit personal
-link IDs so home-made tags stay visually separate from the two- and three-digit limited-edition
-namespaces. These IDs are public routing identifiers, not globally unique credentials. The DIY page
+link IDs so separate home-made tags can have independent actions. These IDs are public routing
+identifiers, not globally unique credentials. The DIY page
 must continue to state that self-printed tags are outside the official edition and do not include
 the paid unlimited entitlement.
 

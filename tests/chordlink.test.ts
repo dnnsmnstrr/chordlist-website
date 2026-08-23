@@ -58,3 +58,25 @@ test("the public model is unnumbered unless its explicit URL option is present",
   assert.match(model, /numbering \? \[\{ name: 'number'/)
   assert.match(model, /modelOptions\.preview/)
 })
+
+test("the product viewer loads a valid static GLB on a transparent stage", async () => {
+  const [viewer, model] = await Promise.all([
+    readFile("components/chordlink-model-viewer.tsx", "utf8"),
+    readFile("public/models/chordlink.glb"),
+  ])
+
+  assert.equal(model.subarray(0, 4).toString("ascii"), "glTF")
+  assert.match(viewer, /alpha: true/)
+  assert.match(viewer, /setClearColor\(0x000000, 0\)/)
+  assert.match(viewer, /\/models\/chordlink\.glb/)
+  assert.doesNotMatch(viewer, /ground|toolbar/)
+})
+
+test("the DIY page offers one model action without discussing model numbering", async () => {
+  const page = await readFile("components/chordlink-diy-page.tsx", "utf8")
+
+  assert.match(page, /openModel: "Generate model"/)
+  assert.match(page, /openModel: "Modell generieren"/)
+  assert.equal(page.match(/href="\/model\.html\?nfc=1"/g)?.length, 1)
+  assert.doesNotMatch(page, /custom numbering|About numbering|Nummerierung|nummeriert/i)
+})
