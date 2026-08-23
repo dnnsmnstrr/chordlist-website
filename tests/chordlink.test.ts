@@ -105,6 +105,17 @@ test("the public model is unnumbered unless its explicit URL option is present",
   assert.match(model, /modelOptions\.preview/)
 })
 
+test("the stage toolbar downloads the print formats, not OBJ and GLB", async () => {
+  const model = await readFile("public/model.html", "utf8")
+  // The stage's own OBJ/GLB buttons are replaced, so the swap has to survive a
+  // bundle re-export -- replaceModelSource throws when its anchor has moved.
+  assert.match(model, /stage\.shadowRoot\.querySelector\('\.toolbar'\)/)
+  assert.match(
+    model,
+    /stageToolbar\.replaceChildren\(document\.getElementById\('stl'\), document\.getElementById\('stl-parts'\)\)/
+  )
+})
+
 test("the product viewer loads a valid static GLB on a transparent stage", async () => {
   const [viewer, model] = await Promise.all([
     readFile("components/chordlink-model-viewer.tsx", "utf8"),

@@ -134,6 +134,10 @@ document.addEventListener('DOMContentLoaded', async function() {
       [
         "    { name: `chordlist-tile-${n}-plate.stl`, data: new Uint8Array(stlBuffer(o => !isAccent(o))) },\n    { name: `chordlist-tile-${n}-accent.stl`, data: new Uint8Array(stlBuffer(isAccent)) }\n  ]), `chordlist-tile-${n}-2colour.zip`);",
         "    { name: exportName('-plate') + '.stl', data: new Uint8Array(stlBuffer(o => !isAccent(o))) },\n    { name: exportName('-accent') + '.stl', data: new Uint8Array(stlBuffer(isAccent)) }\n  ]), exportName('-2colour') + '.zip');"
+      ],
+      [
+        '// --- STORE-only ZIP writer, so a numbered range lands as one download ---',
+        "// The stage's toolbar exports OBJ and GLB, which are no use to someone printing\n// this tile, so the STL downloads take their place and inherit its button rules.\n// This has to run after both listeners are attached: the buttons leave the\n// document when they move into the shadow root, so getElementById stops\n// finding them.\nconst stageToolbar = stage.shadowRoot && stage.shadowRoot.querySelector('.toolbar');\nif (stageToolbar) {\n  stageToolbar.style.flexWrap = 'wrap';\n  stageToolbar.style.justifyContent = 'flex-end';\n  stageToolbar.style.maxWidth = 'max(200px, calc(100% - 260px))';\n  stageToolbar.replaceChildren(document.getElementById('stl'), document.getElementById('stl-parts'));\n}\n\n// --- STORE-only ZIP writer, so a numbered range lands as one download ---"
       ]
     ];
     for (const [before, after] of modelReplacements) {
