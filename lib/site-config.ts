@@ -2,6 +2,12 @@ export const siteConfig = {
   projectName: "chordlist-website",
   name: "chordlist",
   operator: "makerer studio",
+  businessAddress: {
+    street: "Frauenlobplatz 2",
+    postalCode: "55118",
+    city: "Mainz",
+    countryCode: "DE",
+  },
   url: "https://chordlist.app",
   launchDate: "2026-09-09",
   minimumOSVersion: 18,
@@ -39,28 +45,22 @@ export const siteConfig = {
     saleQuantity: 10,
     shippingRegion: "DE",
     shippingIncluded: true,
-    // Keep null until the reviewed live Payment Link exists. The page renders a
-    // disabled launch state when any readiness flag below is false.
-    stripePaymentLink: null as string | null,
-    stripePaymentLinkId: null as string | null,
-    sellerAddressConfirmed: false,
-    legalTextReviewed: false,
-    postageDimensionsConfirmed: false,
+    // The server-side Stripe key and Price ID are environment variables. The
+    // page renders a disabled launch state until these operational checks pass.
+    sellerAddressConfirmed: true,
+    legalTextReviewed: true,
+    postageDimensionsConfirmed: true,
   },
 } as const
 
 type ChordlinkCheckoutReadiness = {
-  stripePaymentLink: string | null
-  stripePaymentLinkId: string | null
   sellerAddressConfirmed: boolean
   legalTextReviewed: boolean
   postageDimensionsConfirmed: boolean
 }
 
 export function isChordlinkCheckoutReady(readiness: ChordlinkCheckoutReadiness): boolean {
-  return readiness.stripePaymentLink !== null
-    && readiness.stripePaymentLinkId !== null
-    && readiness.sellerAddressConfirmed
+  return readiness.sellerAddressConfirmed
     && readiness.legalTextReviewed
     && readiness.postageDimensionsConfirmed
 }

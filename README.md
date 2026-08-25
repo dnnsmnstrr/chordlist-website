@@ -191,23 +191,28 @@ The public product routes are `/chordlink` and `/de/chordlink`; shared setup rou
 three-digit edition rule and generic fallback are data, so a future two-digit dark-edition rule can
 be inserted without changing an NFC URL.
 
-`siteConfig.chordlink` is the only checkout switch. The Payment Link remains disabled until all of
-`sellerAddressConfirmed`, `legalTextReviewed`, and `postageDimensionsConfirmed` are true and both a
-live `stripePaymentLink` and its `stripePaymentLinkId` are present. Before changing those values:
+`siteConfig.chordlink` holds the legal and postage launch gates. Checkout remains disabled until all
+of `sellerAddressConfirmed`, `legalTextReviewed`, and `postageDimensionsConfirmed` are true and the
+server has both `STRIPE_SECRET_KEY` and `CHORDLINK_STRIPE_PRICE_ID`. Before changing those values:
 
 1. Have the bilingual seller, withdrawal, return-cost, and §19 UStG wording reviewed and replace the
    launch-gate notice with the complete postal identity and return address.
 2. Confirm that the packaged chordlink fits the intended Deutsche Post letter product.
-3. In Stripe, create `chordlink — first edition` at EUR 9.99 including German postage, fix quantity
-   at one, require a German delivery address, and cap the Payment Link at ten completed payments.
-4. Set the completion URL to
-   `https://chordlist.app/chordlink/complete?session_id={CHECKOUT_SESSION_ID}`. The server retrieves
-   that session before showing the localized confirmation page; invalid or unpaid sessions return
-   to the product page.
-5. Put the live Payment Link URL and `plink_…` ID in site/backend configuration. Add a dedicated
-   `STRIPE_CHECKOUT_SESSION_READ_KEY` sensitive environment variable with read-only Checkout Session
-   access, configure the signed Supabase webhook, test one delayed-payment event, and only then
-   enable the readiness flags.
+3. In Stripe, create `chordlink — first edition` at EUR 9.99 including German postage and put its
+   live `price_…` ID in `CHORDLINK_STRIPE_PRICE_ID` on Vercel.
+4. Add `STRIPE_SECRET_KEY` as a Vercel sensitive environment variable. Prefer a dedicated `rk_…`
+   restricted key with Checkout Sessions write access and only the additional read permissions
+   Stripe reports as required; never expose it through a `NEXT_PUBLIC_` variable.
+5. Register the Supabase `chordlink-stripe-webhook` function as a Stripe webhook destination for
+   `checkout.session.completed` and `checkout.session.async_payment_succeeded`, configure its
+   signing secret, test one immediate and one delayed-payment event, and only then enable the
+   readiness flags.
+
+The buy form creates a fresh hosted Checkout Session with the configured Price, quantity one, and a
+German shipping address. Its success URL includes `{CHECKOUT_SESSION_ID}`. The server retrieves that
+session before showing the localized confirmation page; invalid or unpaid sessions return to the
+product page. The signed webhook separately allocates the physical unit, so the browser redirect is
+never treated as fulfillment proof.
 
 Never add a unit number, Checkout Session, buyer email, delivery address, or Apple offer code to
 Vercel Analytics. Individual `/link/*` requests redirect to the shared setup route and are noindex.

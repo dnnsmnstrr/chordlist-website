@@ -5,16 +5,18 @@ import { SiteHeader } from "@/components/site-header"
 import { siteConfig } from "@/lib/site-config"
 import type { Language } from "@/locales"
 
+const sellerAddress = `${siteConfig.businessAddress.street}, ${siteConfig.businessAddress.postalCode} ${siteConfig.businessAddress.city}, Germany`
+
 const copy = {
   en: {
     title: "Physical-product terms",
-    status: "Sales are not open yet. The final seller address and reviewed legal text will be published before checkout is enabled.",
+    status: "These terms apply to purchases of the physical chordlink product.",
     sections: [
-      ["Seller", `${siteConfig.operator}, contact: ${siteConfig.contact.support}. The complete postal address will appear here before sales open.`],
+      ["Seller", `${siteConfig.operator}, ${sellerAddress}. Contact: ${siteConfig.contact.support}.`],
       ["Product and price", `One numbered chordlink first-edition NFC tag for ${siteConfig.chordlink.price.display}. Postage within Germany is included. Quantity is limited to one per checkout.`],
-      ["Delivery", "Delivery is limited to addresses in Germany. The dispatch estimate and final letter dimensions will be confirmed before sales open."],
+      ["Delivery", "Delivery is limited to addresses in Germany. Postage is included in the displayed price."],
       ["3D printing and NFC functionality", "Small cosmetic layer lines, marks, and variations can occur during 3D printing. These characteristics are inherent to the production method and are not considered product defects. If the NFC function is faulty, chordlink will repair or replace the unit. This does not limit statutory warranty or withdrawal rights."],
-      ["Withdrawal and returns", "Consumers generally have 14 days after receiving the goods to withdraw from a distance-sale contract. Before checkout opens, this page will include the reviewed withdrawal instructions, model form, return address, and information about return costs."],
+      ["Withdrawal and returns", `Consumers generally have 14 days after receiving the goods to withdraw from a distance-sale contract. Send a clear withdrawal statement to ${siteConfig.contact.support} or ${sellerAddress}. Return the product to that address within 14 days after declaring withdrawal. The buyer bears the direct return postage. Refunds include the original standard delivery cost and may be withheld until the product or proof of return is received.`],
       ["VAT", "The final invoice wording will reflect the confirmed small-business treatment under §19 UStG; VAT will not be shown separately when that treatment applies."],
       ["chordlist unlimited", "A unique Apple offer-code redemption link is supplied separately. The public NFC number is not an entitlement credential."],
       ["Order data and privacy", "Stripe processes payment, buyer email, and the German delivery address. chordlist stores only the Checkout Session reference with the private unit record; email and address remain in Stripe. See the website privacy policy for details."],
@@ -22,13 +24,13 @@ const copy = {
   },
   de: {
     title: "Bedingungen für physische Produkte",
-    status: "Der Verkauf ist noch nicht geöffnet. Die vollständige Anbieteranschrift und der geprüfte Rechtstext werden veröffentlicht, bevor der Checkout aktiviert wird.",
+    status: "Diese Bedingungen gelten für Käufe des physischen chordlink-Produkts.",
     sections: [
-      ["Verkäufer", `${siteConfig.operator}, Kontakt: ${siteConfig.contact.support}. Die vollständige Postanschrift erscheint hier vor Verkaufsstart.`],
+      ["Verkäufer", `${siteConfig.operator}, ${siteConfig.businessAddress.street}, ${siteConfig.businessAddress.postalCode} ${siteConfig.businessAddress.city}, Deutschland. Kontakt: ${siteConfig.contact.support}.`],
       ["Produkt und Preis", `Ein nummerierter NFC-Tag der ersten chordlink-Edition für ${siteConfig.chordlink.price.display}. Der Versand innerhalb Deutschlands ist enthalten. Pro Checkout kann ein Stück bestellt werden.`],
-      ["Lieferung", "Die Lieferung ist auf Adressen in Deutschland beschränkt. Versandzeit und endgültige Briefformate werden vor Verkaufsstart bestätigt."],
+      ["Lieferung", "Die Lieferung ist auf Adressen in Deutschland beschränkt. Der Versand ist im angezeigten Preis enthalten."],
       ["3D-Druck und NFC-Funktion", "Beim 3D-Druck können kleine kosmetische Schichtlinien, Spuren und Abweichungen entstehen. Diese Merkmale sind herstellungsbedingt und gelten nicht als Produktmangel. Ist die NFC-Funktion fehlerhaft, wird der chordlink repariert oder ersetzt. Gesetzliche Gewährleistungs- und Widerrufsrechte werden dadurch nicht eingeschränkt."],
-      ["Widerruf und Rückgabe", "Verbraucher haben bei Fernabsatzverträgen grundsätzlich 14 Tage ab Erhalt der Ware Zeit für den Widerruf. Vor Verkaufsstart ergänzt diese Seite die geprüfte Widerrufsbelehrung, das Musterformular, die Rücksendeanschrift und Angaben zu Rücksendekosten."],
+      ["Widerruf und Rückgabe", `Verbraucher haben bei Fernabsatzverträgen grundsätzlich 14 Tage ab Erhalt der Ware Zeit für den Widerruf. Sende eine eindeutige Widerrufserklärung an ${siteConfig.contact.support} oder an ${siteConfig.businessAddress.street}, ${siteConfig.businessAddress.postalCode} ${siteConfig.businessAddress.city}. Sende das Produkt innerhalb von 14 Tagen nach dem Widerruf an diese Anschrift zurück. Die unmittelbaren Rücksendekosten trägt der Käufer. Die Erstattung umfasst die ursprünglichen Kosten der Standardlieferung und kann zurückgehalten werden, bis das Produkt oder ein Rücksendenachweis eingegangen ist.`],
       ["Umsatzsteuer", "Die endgültige Rechnungsformulierung folgt der bestätigten Kleinunternehmerregelung nach §19 UStG; bei Anwendung wird keine Umsatzsteuer gesondert ausgewiesen."],
       ["chordlist unlimited", "Ein individueller Apple-Einlöse-Link wird separat bereitgestellt. Die öffentliche NFC-Nummer ist kein Berechtigungsnachweis."],
       ["Bestelldaten und Datenschutz", "Stripe verarbeitet Zahlung, E-Mail-Adresse und deutsche Lieferanschrift. chordlist speichert beim privaten Datensatz der Einheit nur die Checkout-Session-Referenz; E-Mail- und Lieferadresse bleiben bei Stripe. Details stehen in der Datenschutzerklärung der Website."],

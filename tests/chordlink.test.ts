@@ -9,7 +9,11 @@ import {
   resolveChordlinkFallbackPath,
   type ChordlinkEditionDefinition,
 } from "../lib/chordlink"
-import { isCompletedChordlinkCheckoutSession } from "../lib/chordlink-checkout"
+import {
+  chordlinkCheckoutSessionParameters,
+  chordlinkStripeCheckoutReference,
+  isCompletedChordlinkCheckoutSession,
+} from "../lib/chordlink-checkout"
 import { chordlinkCheckoutEnabled, isChordlinkCheckoutReady, siteConfig } from "../lib/site-config"
 
 test("public chordlink IDs preserve the two- through six-digit namespace", () => {
@@ -48,21 +52,40 @@ test("the AASA file names only chordlink universal-link paths", async () => {
   assert.equal(body.applinks.details[0].components[0]["/"], "/link/*")
 })
 
-test("pilot checkout stays gated until every legal and postage prerequisite is explicit", () => {
+test("pilot checkout opens only after every legal and postage prerequisite is explicit", () => {
   assert.equal(siteConfig.chordlink.price.amount, 999)
   assert.equal(siteConfig.chordlink.saleQuantity, 10)
   assert.equal(siteConfig.chordlink.shippingRegion, "DE")
-  assert.equal(chordlinkCheckoutEnabled, false)
+  assert.equal(siteConfig.businessAddress.street, "Frauenlobplatz 2")
+  assert.equal(chordlinkCheckoutEnabled, true)
 
   const ready = {
-    stripePaymentLink: "https://buy.stripe.com/example",
-    stripePaymentLinkId: "plink_example",
     sellerAddressConfirmed: true,
     legalTextReviewed: true,
     postageDimensionsConfirmed: true,
   }
   assert.equal(isChordlinkCheckoutReady(ready), true)
-  assert.equal(isChordlinkCheckoutReady({ ...ready, stripePaymentLinkId: null }), false)
+  assert.equal(isChordlinkCheckoutReady({ ...ready, legalTextReviewed: false }), false)
+})
+
+test("Checkout creation uses the configured Price for one German shipment", () => {
+  const parameters = chordlinkCheckoutSessionParameters({
+    baseUrl: "https://chordlist.app/",
+    language: "de",
+    priceId: "price_chordlink",
+  })
+
+  assert.deepEqual(parameters.line_items, [{ price: "price_chordlink", quantity: 1 }])
+  assert.equal(parameters.mode, "payment")
+  assert.equal(parameters.client_reference_id, chordlinkStripeCheckoutReference)
+  assert.equal(parameters.metadata.chordlink_order, chordlinkStripeCheckoutReference)
+  assert.deepEqual(parameters.shipping_address_collection.allowed_countries, ["DE"])
+  assert.equal(parameters.locale, "de")
+  assert.equal(parameters.cancel_url, "https://chordlist.app/de/chordlink")
+  assert.equal(
+    parameters.success_url,
+    "https://chordlist.app/chordlink/complete?session_id={CHECKOUT_SESSION_ID}&language=de",
+  )
 })
 
 test("completion requires the expected paid Stripe Checkout Session", () => {
@@ -74,11 +97,12 @@ test("completion requires the expected paid Stripe Checkout Session", () => {
     payment_status: "paid",
     amount_total: 999,
     currency: "eur",
-    payment_link: "plink_chordlink",
+    client_reference_id: chordlinkStripeCheckoutReference,
+    metadata: { chordlink_order: chordlinkStripeCheckoutReference },
   }
   const expected = {
     sessionId: session.id,
-    paymentLinkId: "plink_chordlink",
+    checkoutReference: chordlinkStripeCheckoutReference,
     amount: 999,
     currency: "EUR",
   }
@@ -87,7 +111,8 @@ test("completion requires the expected paid Stripe Checkout Session", () => {
   assert.equal(isCompletedChordlinkCheckoutSession({ ...session, status: "open" }, expected), false)
   assert.equal(isCompletedChordlinkCheckoutSession({ ...session, payment_status: "unpaid" }, expected), false)
   assert.equal(isCompletedChordlinkCheckoutSession({ ...session, amount_total: 1099 }, expected), false)
-  assert.equal(isCompletedChordlinkCheckoutSession({ ...session, payment_link: "plink_other" }, expected), false)
+  assert.equal(isCompletedChordlinkCheckoutSession({ ...session, client_reference_id: "other" }, expected), false)
+  assert.equal(isCompletedChordlinkCheckoutSession({ ...session, metadata: {} }, expected), false)
   assert.equal(isCompletedChordlinkCheckoutSession({ ...session, id: "cs_test_other" }, expected), false)
 })
 

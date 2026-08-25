@@ -12,6 +12,10 @@ export const metadata: Metadata = pageMetadata({
   extra: { alternates: { languages: { en: "/chordlink", de: "/de/chordlink", "x-default": "/chordlink" } } },
 })
 
-export default function Page() {
-  return <ChordlinkPage language="en" />
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: Promise<{ checkout?: string }>
+}) {
+  return <ChordlinkPage checkoutUnavailable={(await searchParams).checkout === "unavailable"} language="en" />
 }

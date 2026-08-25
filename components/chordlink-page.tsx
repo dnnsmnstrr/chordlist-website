@@ -2,11 +2,13 @@ import type { Route } from "next"
 import Link from "next/link"
 import { FileDigit, Gift, Nfc, PackageCheck, Printer, Smartphone } from "lucide-react"
 
+import { startChordlinkCheckout } from "@/app/chordlink/actions"
 import { ChordlinkModelViewer } from "@/components/chordlink-model-viewer"
 import { SiteFooter } from "@/components/site-footer"
 import { SiteHeader } from "@/components/site-header"
 import { buttonVariants } from "@/components/ui/button"
 import { chordlinkCheckoutEnabled, siteConfig } from "@/lib/site-config"
+import { isChordlinkStripeConfigured } from "@/lib/server/stripe-chordlink"
 import { cn } from "@/lib/utils"
 import type { Language } from "@/locales"
 
@@ -18,6 +20,7 @@ const copy = {
     priceSuffix: "including postage within Germany",
     buy: "Buy chordlink",
     unavailable: "Limited sale coming soon",
+    checkoutUnavailable: "Checkout is temporarily unavailable. Please try again later.",
     availability: "10 available · numbered 001–010",
     unlimited: "Includes chordlist unlimited",
     howTitle: "One tap, your choice",
@@ -44,6 +47,7 @@ const copy = {
     priceSuffix: "inklusive Versand innerhalb Deutschlands",
     buy: "chordlink kaufen",
     unavailable: "Limitierter Verkauf startet bald",
+    checkoutUnavailable: "Der Checkout ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.",
     availability: "10 verfügbar · nummeriert 001–010",
     unlimited: "chordlist unlimited inklusive",
     howTitle: "Ein Scan, deine Songs",
@@ -65,7 +69,13 @@ const copy = {
   },
 } as const
 
-export function ChordlinkPage({ language }: { language: Language }) {
+export function ChordlinkPage({
+  checkoutUnavailable = false,
+  language,
+}: {
+  checkoutUnavailable?: boolean
+  language: Language
+}) {
   const text = copy[language]
   const paths = language === "de"
     ? { en: "/chordlink" as Route, de: "/de/chordlink" as Route, terms: "/de/chordlink/terms" as Route, diy: "/de/chordlink/diy" as Route }
@@ -82,10 +92,13 @@ export function ChordlinkPage({ language }: { language: Language }) {
           <p className="mt-6 max-w-2xl text-pretty text-lg leading-8 text-muted-foreground">{text.intro}</p>
 
           <div className="mt-8 flex flex-wrap items-center gap-4">
-            {chordlinkCheckoutEnabled && siteConfig.chordlink.stripePaymentLink ? (
-              <a className={cn(buttonVariants({ size: "lg" }), "h-11 px-5")} href={siteConfig.chordlink.stripePaymentLink}>
-                {text.buy}
-              </a>
+            {chordlinkCheckoutEnabled && isChordlinkStripeConfigured() ? (
+              <form action={startChordlinkCheckout}>
+                <input name="language" type="hidden" value={language} />
+                <button className={cn(buttonVariants({ size: "lg" }), "h-11 px-5")} type="submit">
+                  {text.buy}
+                </button>
+              </form>
             ) : (
               <button className={cn(buttonVariants({ size: "lg" }), "h-11 px-5")} disabled>
                 {text.unavailable}
@@ -93,6 +106,10 @@ export function ChordlinkPage({ language }: { language: Language }) {
             )}
             <span className="text-sm text-muted-foreground">{text.availability}</span>
           </div>
+
+          {checkoutUnavailable ? (
+            <p className="mt-3 text-sm text-destructive" role="alert">{text.checkoutUnavailable}</p>
+          ) : null}
 
           <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
             <span className="font-medium text-foreground">{siteConfig.chordlink.price.display}</span>
