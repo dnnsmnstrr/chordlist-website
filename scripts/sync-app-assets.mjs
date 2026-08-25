@@ -1,4 +1,6 @@
-import { access, copyFile, mkdir, readFile, readdir, rm } from "node:fs/promises"
+import { createHash } from "node:crypto"
+import { createReadStream } from "node:fs"
+import { access, copyFile, mkdir, readFile, readdir, rm, stat, utimes } from "node:fs/promises"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
 
@@ -30,6 +32,39 @@ async function exists(filePath) {
   }
 }
 
+async function digest(filePath) {
+  return new Promise((resolve, reject) => {
+    const hash = createHash("sha256")
+    const stream = createReadStream(filePath)
+    stream.on("error", reject)
+    stream.on("data", (chunk) => hash.update(chunk))
+    stream.on("end", () => resolve(hash.digest("hex")))
+  })
+}
+
+async function copyIfChanged(source, destination) {
+  const sourceInfo = await stat(source)
+
+  if (await exists(destination)) {
+    const destinationInfo = await stat(destination)
+    const sameTimestamp = Math.abs(sourceInfo.mtimeMs - destinationInfo.mtimeMs) < 1
+    if (sourceInfo.size === destinationInfo.size && sameTimestamp) return false
+
+    if (sourceInfo.size === destinationInfo.size) {
+      const [sourceDigest, destinationDigest] = await Promise.all([digest(source), digest(destination)])
+      if (sourceDigest === destinationDigest) {
+        await utimes(destination, sourceInfo.atime, sourceInfo.mtime)
+        return false
+      }
+    }
+  }
+
+  await mkdir(path.dirname(destination), { recursive: true })
+  await copyFile(source, destination)
+  await utimes(destination, sourceInfo.atime, sourceInfo.mtime)
+  return true
+}
+
 async function syncScreenshots(sourceDirectory, destinationDirectory) {
   if (!(await exists(sourceDirectory))) return 0
 
@@ -40,7 +75,7 @@ async function syncScreenshots(sourceDirectory, destinationDirectory) {
     const source = path.join(sourceDirectory, name)
     if (!(await exists(source))) continue
 
-    await copyFile(source, path.join(destinationDirectory, name))
+    await copyIfChanged(source, path.join(destinationDirectory, name))
     copied += 1
   }
 
@@ -106,16 +141,14 @@ const vocabularySource = path.join(appRoot, "vocabulary.json")
 let vocabularyTerms = 0
 if (await exists(vocabularySource)) {
   const destination = path.join(websiteRoot, "locales", "vocabulary.json")
-  await mkdir(path.dirname(destination), { recursive: true })
-  await copyFile(vocabularySource, destination)
+  await copyIfChanged(vocabularySource, destination)
   vocabularyTerms = JSON.parse(await readFile(destination, "utf8")).terms.length
 }
 
 const pressArchiveSource = path.join(appRoot, "build", "press-kit", "chordlist-press-kit.zip")
 if (await exists(pressArchiveSource)) {
   const pressDirectory = path.join(websiteRoot, "public", "press")
-  await mkdir(pressDirectory, { recursive: true })
-  await copyFile(pressArchiveSource, path.join(pressDirectory, "chordlist-press-kit.zip"))
+  await copyIfChanged(pressArchiveSource, path.join(pressDirectory, "chordlist-press-kit.zip"))
 }
 
 const summary = [...new Set(synced.map((entry) => entry.language))]

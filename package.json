@@ -20,7 +20,6 @@
     "video:render:both": "pnpm video:render:light && pnpm video:render:dark",
     "prebuild:screens": "pnpm sync:assets",
     "build:screens": "node scripts/build-app-store-screenshots.mjs",
-    "predev": "pnpm sync:assets",
     "dev": "next dev",
     "prebuild": "pnpm sync:assets",
     "build": "next build",

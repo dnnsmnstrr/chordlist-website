@@ -13,7 +13,7 @@ const copy = {
   en: {
     eyebrow: "DIY chordlink",
     title: "Print and program your own.",
-    intro: "The chordlink model and browser-based STL generator are free to use for a personal tag you make at home. The model stays on your device while you configure and export it.",
+    intro: "The chordlink model and browser-based STL generator are free for personal use to make your own tag at home. They may not be used for commercial purposes.",
     openModel: "Generate model",
     includedTitle: "What you need",
     included: [
@@ -44,7 +44,7 @@ const copy = {
   de: {
     eyebrow: "DIY-chordlink",
     title: "Drucke und programmiere deinen eigenen chordlink.",
-    intro: "Das chordlink-Modell und der STL-Generator im Browser sind für einen persönlichen Tag, den du zu Hause herstellst, kostenlos nutzbar.",
+    intro: "Das chordlink-Modell und der STL-Generator im Browser sind für die persönlichen Verwendung kostenlos. Sie dürfen nicht für kommerzielle Zwecke genutzt werden.",
     openModel: "Modell generieren",
     includedTitle: "Was du brauchst",
     included: [
