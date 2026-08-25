@@ -10,6 +10,7 @@ import {
   type ChordlinkEditionDefinition,
 } from "../lib/chordlink"
 import {
+  chordlinkCheckoutBaseUrl,
   chordlinkCheckoutSessionParameters,
   chordlinkStripeCheckoutReference,
   isCompletedChordlinkCheckoutSession,
@@ -86,6 +87,39 @@ test("Checkout creation uses the configured Price for one German shipment", () =
     parameters.success_url,
     "https://chordlist.app/chordlink/complete?session_id={CHECKOUT_SESSION_ID}&language=de",
   )
+})
+
+test("local development Checkout returns to the local confirmation route", () => {
+  assert.equal(
+    chordlinkCheckoutBaseUrl({
+      isDevelopment: true,
+      productionUrl: "https://chordlist.app",
+      requestHost: "localhost:3000",
+    }),
+    "http://localhost:3000",
+  )
+  assert.equal(
+    chordlinkCheckoutBaseUrl({
+      isDevelopment: true,
+      productionUrl: "https://chordlist.app",
+      requestHost: "127.0.0.1:3100",
+    }),
+    "http://127.0.0.1:3100",
+  )
+})
+
+test("production Checkout ignores untrusted request hosts", () => {
+  for (const options of [
+    { isDevelopment: false, requestHost: "localhost:3000" },
+    { isDevelopment: true, requestHost: "example.com" },
+    { isDevelopment: true, requestHost: "localhost.evil.example" },
+    { isDevelopment: true, requestHost: null },
+  ]) {
+    assert.equal(
+      chordlinkCheckoutBaseUrl({ ...options, productionUrl: "https://chordlist.app" }),
+      "https://chordlist.app",
+    )
+  }
 })
 
 test("completion requires the expected paid Stripe Checkout Session", () => {

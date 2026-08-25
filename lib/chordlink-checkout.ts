@@ -31,6 +31,30 @@ type ChordlinkCheckoutParametersOptions = {
   priceId: string
 }
 
+type ChordlinkCheckoutBaseUrlOptions = {
+  isDevelopment: boolean
+  productionUrl: string
+  requestHost: string | null
+}
+
+export function chordlinkCheckoutBaseUrl({
+  isDevelopment,
+  productionUrl,
+  requestHost,
+}: ChordlinkCheckoutBaseUrlOptions): string {
+  if (!isDevelopment || !requestHost) return productionUrl
+
+  try {
+    const localUrl = new URL(`http://${requestHost}`)
+    const isLoopback = localUrl.hostname === "localhost"
+      || localUrl.hostname === "127.0.0.1"
+      || localUrl.hostname === "[::1]"
+    return isLoopback ? localUrl.origin : productionUrl
+  } catch {
+    return productionUrl
+  }
+}
+
 export function chordlinkCheckoutSessionParameters({
   baseUrl,
   language,

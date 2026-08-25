@@ -26,14 +26,17 @@ export function isChordlinkStripeConfigured(): boolean {
   return stripeConfiguration() !== null
 }
 
-export async function createChordlinkCheckoutUrl(language: Language): Promise<string | null> {
+export async function createChordlinkCheckoutUrl(
+  language: Language,
+  baseUrl: string = siteConfig.url,
+): Promise<string | null> {
   const configuration = stripeConfiguration()
   if (!configuration) return null
 
   const stripe = new Stripe(configuration.secretKey)
   const session = await stripe.checkout.sessions.create(
     chordlinkCheckoutSessionParameters({
-      baseUrl: siteConfig.url,
+      baseUrl,
       language,
       priceId: configuration.priceId,
     }),
