@@ -31,3 +31,19 @@ export function parseChordlinkAvailability(value: unknown): ChordlinkAvailabilit
 export function mayOpenChordlinkCheckout(availability: ChordlinkAvailability | null): boolean {
   return availability === null || !availability.soldOut
 }
+
+/** What the product page tells a buyer who was just turned away, and why. */
+export type ChordlinkCheckoutNotice = "unavailable" | "sold-out" | null
+
+export function chordlinkCheckoutNotice(value: string | undefined): ChordlinkCheckoutNotice {
+  return value === "sold-out" || value === "unavailable" ? value : null
+}
+
+/**
+ * The visible numbering of the sale run, derived rather than written down, so the line under the
+ * buy button cannot drift from the batch the backend actually seeded.
+ */
+export function chordlinkNumberingRange(saleQuantity: number, width = 3): string {
+  if (!Number.isInteger(saleQuantity) || saleQuantity < 1) return ""
+  return `${"1".padStart(width, "0")}\u2013${String(saleQuantity).padStart(width, "0")}`
+}

@@ -3,6 +3,11 @@ import Link from "next/link"
 import { FileDigit, Gift, Nfc, PackageCheck, Printer, Smartphone } from "lucide-react"
 
 import { startChordlinkCheckout } from "@/app/chordlink/actions"
+import {
+  type ChordlinkAvailability,
+  type ChordlinkCheckoutNotice,
+  chordlinkNumberingRange,
+} from "@/lib/chordlink-availability"
 import { ChordlinkModelViewer } from "@/components/chordlink-model-viewer"
 import { SiteFooter } from "@/components/site-footer"
 import { SiteHeader } from "@/components/site-header"
@@ -12,6 +17,8 @@ import { isChordlinkStripeConfigured } from "@/lib/server/stripe-chordlink"
 import { cn } from "@/lib/utils"
 import type { Language } from "@/locales"
 
+const numbering = chordlinkNumberingRange(siteConfig.chordlink.saleQuantity)
+
 const copy = {
   en: {
     eyebrow: "chordlink · first edition",
@@ -20,8 +27,14 @@ const copy = {
     priceSuffix: "including postage within Germany",
     buy: "Buy chordlink",
     unavailable: "Limited sale coming soon",
+    soldOut: "Sold out",
     checkoutUnavailable: "Checkout is temporarily unavailable. Please try again later.",
-    availability: "10 available · numbered 001–010",
+    soldOutNotice: "The first edition is sold out. Every numbered chordlink has found an owner.",
+    availability: (available: number) => `${available} available · numbered ${numbering}`,
+    availabilitySoldOut: `Sold out · numbered ${numbering}`,
+    // Shown when the count cannot be read. Stating the run without a number is the one claim that
+    // is still true during an outage.
+    availabilityUnknown: `Numbered ${numbering}`,
     unlimited: "Includes chordlist unlimited",
     howTitle: "One tap, your choice",
     how: [
@@ -47,8 +60,12 @@ const copy = {
     priceSuffix: "inklusive Versand innerhalb Deutschlands",
     buy: "chordlink kaufen",
     unavailable: "Limitierter Verkauf startet bald",
+    soldOut: "Ausverkauft",
     checkoutUnavailable: "Der Checkout ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.",
-    availability: "10 verfügbar · nummeriert 001–010",
+    soldOutNotice: "Die erste Edition ist ausverkauft. Jeder nummerierte chordlink hat seinen Platz gefunden.",
+    availability: (available: number) => `${available} verfügbar · nummeriert ${numbering}`,
+    availabilitySoldOut: `Ausverkauft · nummeriert ${numbering}`,
+    availabilityUnknown: `Nummeriert ${numbering}`,
     unlimited: "chordlist unlimited inklusive",
     howTitle: "Ein Scan, deine Songs",
     how: [
@@ -70,13 +87,16 @@ const copy = {
 } as const
 
 export function ChordlinkPage({
-  checkoutUnavailable = false,
+  availability = null,
+  checkoutNotice = null,
   language,
 }: {
-  checkoutUnavailable?: boolean
+  availability?: ChordlinkAvailability | null
+  checkoutNotice?: ChordlinkCheckoutNotice
   language: Language
 }) {
   const text = copy[language]
+  const soldOut = availability?.soldOut === true
   const paths = language === "de"
     ? { en: "/chordlink" as Route, de: "/de/chordlink" as Route, terms: "/de/chordlink/terms" as Route, diy: "/de/chordlink/diy" as Route }
     : { en: "/chordlink" as Route, de: "/de/chordlink" as Route, terms: "/chordlink/terms" as Route, diy: "/chordlink/diy" as Route }
@@ -92,7 +112,7 @@ export function ChordlinkPage({
           <p className="mt-6 max-w-2xl text-pretty text-lg leading-8 text-muted-foreground">{text.intro}</p>
 
           <div className="mt-8 flex flex-wrap items-center gap-4">
-            {chordlinkCheckoutEnabled && isChordlinkStripeConfigured() ? (
+            {chordlinkCheckoutEnabled && isChordlinkStripeConfigured() && !soldOut ? (
               <form action={startChordlinkCheckout}>
                 <input name="language" type="hidden" value={language} />
                 <button className={cn(buttonVariants({ size: "lg" }), "h-11 px-5")} type="submit">
@@ -100,15 +120,24 @@ export function ChordlinkPage({
                 </button>
               </form>
             ) : (
+              // Sold out is shown on the button itself, so nobody clicks Buy to find out.
               <button className={cn(buttonVariants({ size: "lg" }), "h-11 px-5")} disabled>
-                {text.unavailable}
+                {soldOut ? text.soldOut : text.unavailable}
               </button>
             )}
-            <span className="text-sm text-muted-foreground">{text.availability}</span>
+            <span className="text-sm text-muted-foreground">
+              {availability === null
+                ? text.availabilityUnknown
+                : availability.soldOut
+                ? text.availabilitySoldOut
+                : text.availability(availability.available)}
+            </span>
           </div>
 
-          {checkoutUnavailable ? (
-            <p className="mt-3 text-sm text-destructive" role="alert">{text.checkoutUnavailable}</p>
+          {checkoutNotice ? (
+            <p className="mt-3 text-sm text-destructive" role="alert">
+              {checkoutNotice === "sold-out" ? text.soldOutNotice : text.checkoutUnavailable}
+            </p>
           ) : null}
 
           <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">

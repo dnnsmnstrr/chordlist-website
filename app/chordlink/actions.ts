@@ -19,8 +19,9 @@ export async function startChordlinkCheckout(formData: FormData): Promise<never>
   // Checked before the session is created, because a unit is only allocated after payment: an
   // order taken past the last unit can be refunded, but not fulfilled.
   const availability = await fetchChordlinkAvailability()
+  const soldOut = !mayOpenChordlinkCheckout(availability)
 
-  if (chordlinkCheckoutEnabled && mayOpenChordlinkCheckout(availability)) {
+  if (chordlinkCheckoutEnabled && !soldOut) {
     try {
       const requestHeaders = await headers()
       const baseUrl = chordlinkCheckoutBaseUrl({
@@ -34,5 +35,8 @@ export async function startChordlinkCheckout(formData: FormData): Promise<never>
     }
   }
 
-  redirect((checkoutUrl ?? `${productPath}?checkout=unavailable`) as Route)
+  // Being sold out is not the same as the checkout being down, and telling someone to try again
+  // later for a unit that will never exist is worse than telling them nothing.
+  const notice = soldOut ? "sold-out" : "unavailable"
+  redirect((checkoutUrl ?? `${productPath}?checkout=${notice}`) as Route)
 }

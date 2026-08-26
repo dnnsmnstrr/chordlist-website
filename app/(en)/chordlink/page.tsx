@@ -1,6 +1,8 @@
 import type { Metadata } from "next"
 
 import { ChordlinkPage } from "@/components/chordlink-page"
+import { chordlinkCheckoutNotice } from "@/lib/chordlink-availability"
+import { fetchChordlinkAvailability } from "@/lib/server/chordlink-availability"
 import { pageMetadata } from "@/lib/page-metadata"
 
 export const metadata: Metadata = pageMetadata({
@@ -17,5 +19,16 @@ export default async function Page({
 }: {
   searchParams: Promise<{ checkout?: string }>
 }) {
-  return <ChordlinkPage checkoutUnavailable={(await searchParams).checkout === "unavailable"} language="en" />
+  const [{ checkout }, availability] = await Promise.all([
+    searchParams,
+    fetchChordlinkAvailability(),
+  ])
+
+  return (
+    <ChordlinkPage
+      availability={availability}
+      checkoutNotice={chordlinkCheckoutNotice(checkout)}
+      language="en"
+    />
+  )
 }
