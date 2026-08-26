@@ -48,8 +48,8 @@ export const siteConfig = {
     // The server-side Stripe key and Price ID are environment variables. The
     // page renders a disabled launch state until these operational checks pass.
     sellerAddressConfirmed: true,
-    legalTextReviewed: true,
     postageDimensionsConfirmed: true,
+    legalTextReviewed: false,
   },
 } as const
 
@@ -62,6 +62,7 @@ type ChordlinkCheckoutReadiness = {
 export function isChordlinkCheckoutReady(readiness: ChordlinkCheckoutReadiness): boolean {
   return readiness.sellerAddressConfirmed
     && readiness.legalTextReviewed
+    && readiness.postageDimensionsConfirmed
     && readiness.postageDimensionsConfirmed
 }
 
