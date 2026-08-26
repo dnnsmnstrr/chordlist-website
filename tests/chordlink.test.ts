@@ -78,6 +78,7 @@ test("Checkout creation uses the configured Price for one German shipment", () =
 
   assert.deepEqual(parameters.line_items, [{ price: "price_chordlink", quantity: 1 }])
   assert.equal(parameters.mode, "payment")
+  assert.equal(parameters.allow_promotion_codes, true)
   assert.equal(parameters.client_reference_id, chordlinkStripeCheckoutReference)
   assert.equal(parameters.metadata.chordlink_order, chordlinkStripeCheckoutReference)
   assert.deepEqual(parameters.shipping_address_collection.allowed_countries, ["DE"])
@@ -129,6 +130,7 @@ test("completion requires the expected paid Stripe Checkout Session", () => {
     mode: "payment",
     status: "complete",
     payment_status: "paid",
+    amount_subtotal: 999,
     amount_total: 999,
     currency: "eur",
     client_reference_id: chordlinkStripeCheckoutReference,
@@ -142,8 +144,15 @@ test("completion requires the expected paid Stripe Checkout Session", () => {
   }
 
   assert.equal(isCompletedChordlinkCheckoutSession(session, expected), true)
+  assert.equal(isCompletedChordlinkCheckoutSession({ ...session, amount_total: 799 }, expected), true)
+  assert.equal(isCompletedChordlinkCheckoutSession({
+    ...session,
+    payment_status: "no_payment_required",
+    amount_total: 0,
+  }, expected), true)
   assert.equal(isCompletedChordlinkCheckoutSession({ ...session, status: "open" }, expected), false)
   assert.equal(isCompletedChordlinkCheckoutSession({ ...session, payment_status: "unpaid" }, expected), false)
+  assert.equal(isCompletedChordlinkCheckoutSession({ ...session, amount_subtotal: 1099 }, expected), false)
   assert.equal(isCompletedChordlinkCheckoutSession({ ...session, amount_total: 1099 }, expected), false)
   assert.equal(isCompletedChordlinkCheckoutSession({ ...session, client_reference_id: "other" }, expected), false)
   assert.equal(isCompletedChordlinkCheckoutSession({ ...session, metadata: {} }, expected), false)

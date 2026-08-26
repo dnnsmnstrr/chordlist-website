@@ -12,6 +12,7 @@ export type ChordlinkCheckoutSession = {
   mode: string
   status: string | null
   payment_status: string
+  amount_subtotal: number | null
   amount_total: number | null
   currency: string | null
   client_reference_id: string | null
@@ -66,6 +67,7 @@ export function chordlinkCheckoutSessionParameters({
   return {
     line_items: [{ price: priceId, quantity: 1 }],
     mode: "payment" as const,
+    allow_promotion_codes: true,
     success_url: `${origin}/chordlink/complete?session_id={CHECKOUT_SESSION_ID}&language=${language}`,
     cancel_url: `${origin}${productPath}`,
     client_reference_id: chordlinkStripeCheckoutReference,
@@ -80,12 +82,18 @@ export function isCompletedChordlinkCheckoutSession(
   session: ChordlinkCheckoutSession,
   expected: ChordlinkCheckoutExpectation,
 ): boolean {
+  const hasSettledPayment = session.payment_status === "paid"
+    || (session.payment_status === "no_payment_required" && session.amount_total === 0)
+
   return session.object === "checkout.session"
     && session.id === expected.sessionId
     && session.mode === "payment"
     && session.status === "complete"
-    && session.payment_status === "paid"
-    && session.amount_total === expected.amount
+    && hasSettledPayment
+    && session.amount_subtotal === expected.amount
+    && session.amount_total !== null
+    && session.amount_total >= 0
+    && session.amount_total <= session.amount_subtotal
     && session.currency?.toUpperCase() === expected.currency.toUpperCase()
     && session.client_reference_id === expected.checkoutReference
     && session.metadata?.chordlink_order === expected.checkoutReference
