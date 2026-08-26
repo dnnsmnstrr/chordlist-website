@@ -207,6 +207,10 @@ server has both `STRIPE_SECRET_KEY` and `CHORDLINK_STRIPE_PRICE_ID`. Before chan
    `checkout.session.completed` and `checkout.session.async_payment_succeeded`, configure its
    signing secret, test one immediate and one delayed-payment event, and only then enable the
    readiness flags.
+6. Set `CHORDLINK_AVAILABILITY_URL` to the backend's public `chordlink-availability` endpoint. The
+   buy form reads it before creating a session and sends the buyer to `?checkout=unavailable`
+   once the edition is gone. It is optional and fails open: without it, or during an outage, a
+   sold-out order is caught after payment by the webhook and refunded by hand instead.
 
 The buy form creates a fresh hosted Checkout Session with the configured Price, quantity one, and a
 German shipping address. Its success URL includes `{CHECKOUT_SESSION_ID}`. The server retrieves that
