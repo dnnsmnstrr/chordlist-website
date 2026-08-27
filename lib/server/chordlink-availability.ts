@@ -6,7 +6,7 @@ const requestTimeoutMilliseconds = 2_000
 
 /**
  * Reads the backend's public availability endpoint. Returns `null` whenever the answer cannot be
- * trusted — unconfigured, unreachable, slow, or malformed — which callers treat as "carry on", see
+ * trusted — unconfigured, unreachable, slow, or malformed — which callers treat as "closed", see
  * `mayOpenChordlinkCheckout`.
  */
 export async function fetchChordlinkAvailability(): Promise<ChordlinkAvailability | null> {
@@ -15,9 +15,10 @@ export async function fetchChordlinkAvailability(): Promise<ChordlinkAvailabilit
 
   try {
     const response = await fetch(endpoint, {
-      // A checkout must not wait on inventory. The page's own display can be a little stale.
+      // The operator switch is authoritative, so neither pages nor checkout actions reuse a stale
+      // enabled response after sales have been closed.
+      cache: "no-store",
       signal: AbortSignal.timeout(requestTimeoutMilliseconds),
-      next: { revalidate: 30 },
     })
     if (!response.ok) return null
     return parseChordlinkAvailability(await response.json())

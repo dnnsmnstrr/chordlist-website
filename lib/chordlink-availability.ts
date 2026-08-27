@@ -10,6 +10,7 @@ export type ChordlinkAvailability = {
   editionKey: string
   available: number
   soldOut: boolean
+  salesEnabled: boolean
 }
 
 export function parseChordlinkAvailability(value: unknown): ChordlinkAvailability | null {
@@ -17,19 +18,19 @@ export function parseChordlinkAvailability(value: unknown): ChordlinkAvailabilit
   const body = value as Record<string, unknown>
   const editionKey = body.editionKey
   const available = body.available
+  const salesEnabled = body.salesEnabled
   if (typeof editionKey !== "string" || !editionKey) return null
   if (typeof available !== "number" || !Number.isInteger(available) || available < 0) return null
-  return { editionKey, available, soldOut: available === 0 }
+  if (typeof salesEnabled !== "boolean") return null
+  return { editionKey, available, soldOut: available === 0, salesEnabled }
 }
 
 /**
- * Fails open on purpose. A missing or unreachable availability endpoint must not close the shop:
- * the webhook now answers a sold-out allocation with `sold_out` rather than an endless retry, so
- * the worst case of an optimistic checkout is one visible refund, while the worst case of a
- * pessimistic one is every sale lost for as long as the blip lasts.
+ * Fails closed because the backend switch is authoritative. Missing or malformed configuration
+ * must never be interpreted as permission to sell.
  */
 export function mayOpenChordlinkCheckout(availability: ChordlinkAvailability | null): boolean {
-  return availability === null || !availability.soldOut
+  return availability !== null && availability.salesEnabled && !availability.soldOut
 }
 
 /** What the product page tells a buyer who was just turned away, and why. */

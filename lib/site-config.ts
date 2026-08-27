@@ -45,28 +45,8 @@ export const siteConfig = {
     saleQuantity: 10,
     shippingRegion: "DE",
     shippingIncluded: true,
-    // The server-side Stripe key and Price ID are environment variables. The
-    // page renders a disabled launch state until these operational checks pass.
-    sellerAddressConfirmed: true,
-    postageDimensionsConfirmed: true,
-    legalTextReviewed: false,
   },
 } as const
-
-type ChordlinkCheckoutReadiness = {
-  sellerAddressConfirmed: boolean
-  legalTextReviewed: boolean
-  postageDimensionsConfirmed: boolean
-}
-
-export function isChordlinkCheckoutReady(readiness: ChordlinkCheckoutReadiness): boolean {
-  return readiness.sellerAddressConfirmed
-    && readiness.legalTextReviewed
-    && readiness.postageDimensionsConfirmed
-    && readiness.postageDimensionsConfirmed
-}
-
-export const chordlinkCheckoutEnabled = isChordlinkCheckoutReady(siteConfig.chordlink)
 
 /**
  * The strongest offer we can make, in order: buying it beats reserving it, and

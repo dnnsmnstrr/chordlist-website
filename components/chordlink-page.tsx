@@ -7,12 +7,13 @@ import {
   type ChordlinkAvailability,
   type ChordlinkCheckoutNotice,
   chordlinkNumberingRange,
+  mayOpenChordlinkCheckout,
 } from "@/lib/chordlink-availability"
 import { ChordlinkModelViewer } from "@/components/chordlink-model-viewer"
 import { SiteFooter } from "@/components/site-footer"
 import { SiteHeader } from "@/components/site-header"
 import { buttonVariants } from "@/components/ui/button"
-import { chordlinkCheckoutEnabled, siteConfig } from "@/lib/site-config"
+import { siteConfig } from "@/lib/site-config"
 import { isChordlinkStripeConfigured } from "@/lib/server/stripe-chordlink"
 import { cn } from "@/lib/utils"
 import type { Language } from "@/locales"
@@ -97,6 +98,7 @@ export function ChordlinkPage({
 }) {
   const text = copy[language]
   const soldOut = availability?.soldOut === true
+  const checkoutAllowed = mayOpenChordlinkCheckout(availability)
   const paths = language === "de"
     ? { en: "/chordlink" as Route, de: "/de/chordlink" as Route, terms: "/de/chordlink/terms" as Route, diy: "/de/chordlink/diy" as Route }
     : { en: "/chordlink" as Route, de: "/de/chordlink" as Route, terms: "/chordlink/terms" as Route, diy: "/chordlink/diy" as Route }
@@ -112,7 +114,7 @@ export function ChordlinkPage({
           <p className="mt-6 max-w-2xl text-pretty text-lg leading-8 text-muted-foreground">{text.intro}</p>
 
           <div className="mt-8 flex flex-wrap items-center gap-4">
-            {chordlinkCheckoutEnabled && isChordlinkStripeConfigured() && !soldOut ? (
+            {checkoutAllowed && isChordlinkStripeConfigured() ? (
               <form action={startChordlinkCheckout}>
                 <input name="language" type="hidden" value={language} />
                 <button className={cn(buttonVariants({ size: "lg" }), "h-11 px-5")} type="submit">

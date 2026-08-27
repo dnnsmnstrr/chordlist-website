@@ -6,7 +6,7 @@ import { redirect } from "next/navigation"
 
 import { mayOpenChordlinkCheckout } from "@/lib/chordlink-availability"
 import { chordlinkCheckoutBaseUrl } from "@/lib/chordlink-checkout"
-import { chordlinkCheckoutEnabled, siteConfig } from "@/lib/site-config"
+import { siteConfig } from "@/lib/site-config"
 import { fetchChordlinkAvailability } from "@/lib/server/chordlink-availability"
 import { createChordlinkCheckoutUrl } from "@/lib/server/stripe-chordlink"
 import type { Language } from "@/locales"
@@ -19,9 +19,10 @@ export async function startChordlinkCheckout(formData: FormData): Promise<never>
   // Checked before the session is created, because a unit is only allocated after payment: an
   // order taken past the last unit can be refunded, but not fulfilled.
   const availability = await fetchChordlinkAvailability()
-  const soldOut = !mayOpenChordlinkCheckout(availability)
+  const soldOut = availability?.soldOut === true
+  const checkoutAllowed = mayOpenChordlinkCheckout(availability)
 
-  if (chordlinkCheckoutEnabled && !soldOut) {
+  if (checkoutAllowed) {
     try {
       const requestHeaders = await headers()
       const baseUrl = chordlinkCheckoutBaseUrl({

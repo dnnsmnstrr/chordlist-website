@@ -191,9 +191,10 @@ The public product routes are `/chordlink` and `/de/chordlink`; shared setup rou
 three-digit edition rule and generic fallback are data, so a future two-digit dark-edition rule can
 be inserted without changing an NFC URL.
 
-`siteConfig.chordlink` holds the legal and postage launch gates. Checkout remains disabled until all
-of `sellerAddressConfirmed`, `legalTextReviewed`, and `postageDimensionsConfirmed` are true and the
-server has both `STRIPE_SECRET_KEY` and `CHORDLINK_STRIPE_PRICE_ID`. Before changing those values:
+The backend's private `chordlink_storefront_settings.sales_enabled` value is the authoritative
+launch gate. The header switch in the protected chordlink admin changes it. Checkout remains
+disabled unless the availability response explicitly enables sales, stock remains, and the server
+has both `STRIPE_SECRET_KEY` and `CHORDLINK_STRIPE_PRICE_ID`. Before enabling sales:
 
 1. Have the bilingual seller, withdrawal, return-cost, and §19 UStG wording reviewed and replace the
    launch-gate notice with the complete postal identity and return address.
@@ -205,12 +206,14 @@ server has both `STRIPE_SECRET_KEY` and `CHORDLINK_STRIPE_PRICE_ID`. Before chan
    Stripe reports as required; never expose it through a `NEXT_PUBLIC_` variable.
 5. Register the Supabase `chordlink-stripe-webhook` function as a Stripe webhook destination for
    `checkout.session.completed` and `checkout.session.async_payment_succeeded`, configure its
-   signing secret, test one immediate and one delayed-payment event, and only then enable the
-   readiness flags.
+   signing secret, and test one immediate and one delayed-payment event.
 6. Set `CHORDLINK_AVAILABILITY_URL` to the backend's public `chordlink-availability` endpoint. The
-   buy form reads it before creating a session and sends the buyer to `?checkout=unavailable`
-   once the edition is gone. It is optional and fails open: without it, or during an outage, a
-   sold-out order is caught after payment by the webhook and refunded by hand instead.
+   page and buy form read its `salesEnabled` flag before creating a session. The check fails closed:
+   without a valid response, while sales are disabled, or once the edition is gone, Checkout cannot
+   open. The request bypasses Next.js caching so closing the switch takes effect on the next page or
+   form request.
+7. Open sales with the switch in the protected chordlink admin. This database value replaces the
+   former readiness booleans in `siteConfig.chordlink`; do not add a second launch flag there.
 
 The buy form creates a fresh hosted Checkout Session with the configured Price, quantity one, and a
 German shipping address. Its success URL includes `{CHECKOUT_SESSION_ID}`. The server retrieves that

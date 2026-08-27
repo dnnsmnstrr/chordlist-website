@@ -15,7 +15,7 @@ import {
   chordlinkStripeCheckoutReference,
   isCompletedChordlinkCheckoutSession,
 } from "../lib/chordlink-checkout"
-import { chordlinkCheckoutEnabled, isChordlinkCheckoutReady, siteConfig } from "../lib/site-config"
+import { siteConfig } from "../lib/site-config"
 
 test("public chordlink IDs preserve the two- through six-digit namespace", () => {
   for (const value of ["01", "001", "0001", "00001", "000001"]) assert.equal(isChordlinkPublicId(value), true)
@@ -53,20 +53,11 @@ test("the AASA file names only chordlink universal-link paths", async () => {
   assert.equal(body.applinks.details[0].components[0]["/"], "/link/*")
 })
 
-test("pilot checkout opens only after every legal and postage prerequisite is explicit", () => {
+test("pilot checkout keeps its price, run size, and shipping facts in site configuration", () => {
   assert.equal(siteConfig.chordlink.price.amount, 999)
   assert.equal(siteConfig.chordlink.saleQuantity, 10)
   assert.equal(siteConfig.chordlink.shippingRegion, "DE")
   assert.equal(siteConfig.businessAddress.street, "Frauenlobplatz 2")
-  assert.equal(chordlinkCheckoutEnabled, true)
-
-  const ready = {
-    sellerAddressConfirmed: true,
-    legalTextReviewed: true,
-    postageDimensionsConfirmed: true,
-  }
-  assert.equal(isChordlinkCheckoutReady(ready), true)
-  assert.equal(isChordlinkCheckoutReady({ ...ready, legalTextReviewed: false }), false)
 })
 
 test("Checkout creation uses the configured Price for one German shipment", () => {
