@@ -3,6 +3,7 @@ import { Download, Library, Music2, Nfc, Shuffle } from "lucide-react"
 
 import { SiteFooter } from "@/components/site-footer"
 import { SiteHeader } from "@/components/site-header"
+import { InstantNfcSetup } from "@/components/instant-nfc-setup"
 import { buttonVariants } from "@/components/ui/button"
 import { primaryAppLink } from "@/lib/site-config"
 import { cn } from "@/lib/utils"
@@ -12,20 +13,20 @@ const copy = {
   en: {
     eyebrow: "Set up chordlink",
     title: "Open the link on your iPhone",
-    intro: "If chordlist is installed, scanning your chordlink opens the app and asks what this tag should do. Your choice stays on your device and can be changed in Settings.",
+    intro: "If chordlist is installed, scanning your chordlink shows an iOS notification. Tap it to open the app and choose what this tag should do. Your choice stays on your device and can be changed in Settings.",
     app: "Get chordlist",
-    scan: "Then scan your chordlink again",
+    scan: "Then scan your chordlink again and tap the notification",
     options: ["Open the library", "Shuffle your songs", "Add a song"],
-    note: "The printed number identifies the physical chordlink. It is not a password and does not unlock chordlist by itself.",
+    note: "The printed number identifies the physical chordlink. It is not a password and does not unlock chordlist unlimited by itself.",
   },
   de: {
     eyebrow: "chordlink einrichten",
     title: "Öffne den Link auf deinem iPhone",
-    intro: "Wenn chordlist installiert ist, öffnet der Scan die App und fragt, was dieser Tag tun soll. Deine Auswahl bleibt auf deinem Gerät und lässt sich in den Einstellungen ändern.",
+    intro: "Wenn chordlist installiert ist, zeigt der Scan eine iOS-Mitteilung. Tippe darauf, um die App zu öffnen und festzulegen, was dieser Tag tun soll. Deine Auswahl bleibt auf deinem Gerät und lässt sich in den Einstellungen ändern.",
     app: "chordlist laden",
-    scan: "Scanne deinen chordlink danach erneut",
+    scan: "Scanne deinen chordlink danach erneut und tippe auf die Mitteilung",
     options: ["Bibliothek öffnen", "Songs zufällig öffnen", "Song hinzufügen"],
-    note: "Die aufgedruckte Nummer identifiziert den physischen chordlink. Sie ist kein Passwort und schaltet chordlist nicht selbst frei.",
+    note: "Die aufgedruckte Nummer identifiziert den physischen chordlink. Sie ist kein Passwort und schaltet chordlist unlimited nicht selbst frei.",
   },
 } as const
 
@@ -52,6 +53,7 @@ export function ChordlinkSetupPage({ language }: { language: Language }) {
 
         {primaryAppLink ? <a href={primaryAppLink} className={cn(buttonVariants({ size: "lg" }), "mt-10 h-11 px-5")}><Download />{text.app}</a> : null}
         <p className="mt-5 font-medium">{text.scan}</p>
+        <InstantNfcSetup className="mt-10" language={language} />
         <p className="mt-8 rounded-2xl bg-muted p-5 text-sm leading-6 text-muted-foreground">{text.note}</p>
       </article>
       <SiteFooter compact language={language} alternates={paths} />

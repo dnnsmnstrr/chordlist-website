@@ -3,6 +3,7 @@ import Link from "next/link"
 import { Box, ExternalLink, Nfc, Printer, ShieldCheck, Smartphone } from "lucide-react"
 
 import { ChordlinkPersonalLink } from "@/components/chordlink-personal-link"
+import { InstantNfcSetup } from "@/components/instant-nfc-setup"
 import { SiteFooter } from "@/components/site-footer"
 import { SiteHeader } from "@/components/site-header"
 import { buttonVariants } from "@/components/ui/button"
@@ -28,7 +29,7 @@ const copy = {
       ["Print", "Export one STL or the aligned two-colour parts. A sealed pocket requires a correctly timed slicer pause and a tag rated for the temperatures involved; use the open recess unless you have tested that workflow."],
       ["Choose a link", "Generate a six-digit personal link below. Use a different link for each chordlink if you want different actions on the same device."],
       ["Program and test", "Write the complete HTTPS link to the NFC tag. Test it before locking the tag, covering the recess, or attaching chordlink to anything."],
-      ["Set up chordlist", "Scan the finished tag on your iPhone. chordlist asks whether it should open the library, shuffle, or add a song; later scans repeat that choice immediately."],
+      ["Set up chordlist", "Scan the finished tag on your iPhone and tap the iOS notification. chordlist asks whether it should open the library, shuffle, or add a song; later scans repeat that choice."],
     ],
     personalTitle: "Create a personal chordlink URL",
     generate: "Generate link",
@@ -59,7 +60,7 @@ const copy = {
       ["Drucken", "Exportiere eine STL-Datei oder die ausgerichteten Teile für den Zweifarbdruck. Ein eingeschlossenes Tag erfordert eine passend gesetzte Druckpause und einen Tag, der die Temperaturen verträgt."],
       ["Link auswählen", "Erzeuge unten einen persönlichen sechsstelligen Link. Verwende für jeden chordlink, der auf demselben Gerät eine andere Aktion ausführen soll, einen eigenen Link."],
       ["Programmieren und testen", "Schreibe den vollständigen HTTPS-Link auf den NFC-Tag. Teste ihn, bevor du den Tag sperrst, die Aussparung abdeckst oder den chordlink befestigst."],
-      ["chordlist einrichten", "Scanne den fertigen Tag mit deinem iPhone. chordlist fragt, ob Bibliothek, Zufallswiedergabe oder Song hinzufügen geöffnet werden soll; weitere Scans wiederholen diese Auswahl sofort."],
+      ["chordlist einrichten", "Scanne den fertigen Tag mit deinem iPhone und tippe auf die iOS-Mitteilung. chordlist fragt, ob Bibliothek, Zufallswiedergabe oder Song hinzufügen geöffnet werden soll; weitere Scans wiederholen diese Auswahl."],
     ],
     personalTitle: "Persönliche chordlink-URL erstellen",
     generate: "Link erzeugen",
@@ -123,6 +124,8 @@ export function ChordlinkDiyPage({ language }: { language: Language }) {
             />
           </div>
         </section>
+
+        <InstantNfcSetup className="mt-12" language={language} />
 
         <section className="mt-12">
           <div className="rounded-2xl bg-muted p-6"><h2 className="font-semibold">{text.safetyTitle}</h2><p className="mt-3 text-sm leading-6 text-muted-foreground">{text.safety}</p></div>

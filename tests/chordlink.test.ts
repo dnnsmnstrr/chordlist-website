@@ -5,6 +5,7 @@ import test from "node:test"
 import {
   chordlinkFallbackPath,
   isChordlinkPublicId,
+  normalizeChordlinkPublicId,
   preferredChordlinkLanguage,
   resolveChordlinkFallbackPath,
   type ChordlinkEditionDefinition,
@@ -17,16 +18,31 @@ import {
 } from "../lib/chordlink-checkout"
 import { siteConfig } from "../lib/site-config"
 
-test("public chordlink IDs preserve the two- through six-digit namespace", () => {
+test("the printed numbers keep working now that named IDs are allowed beside them", () => {
   for (const value of ["01", "001", "0001", "00001", "000001"]) assert.equal(isChordlinkPublicId(value), true)
-  for (const value of ["1", "0000001", "+01", "-01", " 01", "01a", "١٢"]) assert.equal(isChordlinkPublicId(value), false)
+  for (const value of ["tour-2026", "dennis", "01a", "a1", "band-practice-2026"]) {
+    assert.equal(isChordlinkPublicId(value), true)
+  }
+  for (const value of ["1", "a", "", "+01", "-01", "01-", "to--ur", "my tag", "tag_1", "münchen", "١٢"]) {
+    assert.equal(isChordlinkPublicId(value), false)
+  }
+  assert.equal(isChordlinkPublicId("a".repeat(32)), true)
+  assert.equal(isChordlinkPublicId("a".repeat(33)), false)
 })
 
-test("three-digit first-edition links and unlaunched two-digit links resolve safely", () => {
+test("one canonical lowercase form means a retyped link is not a second chordlink", () => {
+  assert.equal(normalizeChordlinkPublicId("Tour-2026"), "tour-2026")
+  assert.equal(normalizeChordlinkPublicId("  DENNIS  "), "dennis")
+  assert.equal(normalizeChordlinkPublicId("001"), "001")
+  assert.equal(normalizeChordlinkPublicId("-nope"), null)
+})
+
+test("three-digit first-edition links, unlaunched two-digit links, and named links resolve safely", () => {
   assert.equal(chordlinkFallbackPath("001", "en"), "/chordlink/setup")
   assert.equal(chordlinkFallbackPath("001", "de"), "/de/chordlink/setup")
   assert.equal(chordlinkFallbackPath("01", "en"), "/chordlink/setup")
-  assert.equal(chordlinkFallbackPath("x01", "en"), null)
+  assert.equal(chordlinkFallbackPath("tour-2026", "de"), "/de/chordlink/setup")
+  assert.equal(chordlinkFallbackPath("x 01", "en"), null)
 })
 
 test("a future dark-edition rule can claim two digits without changing the public route", () => {
@@ -37,6 +53,7 @@ test("a future dark-edition rule can claim two digits without changing the publi
   }
   assert.equal(resolveChordlinkFallbackPath("01", "de", [dark]), "/de/chordlink/dark")
   assert.equal(resolveChordlinkFallbackPath("001", "de", [dark]), "/de/chordlink/setup")
+  assert.equal(resolveChordlinkFallbackPath("tour-2026", "de", [dark]), "/de/chordlink/setup")
 })
 
 test("Accept-Language selects the supported language with the highest quality", () => {
@@ -45,6 +62,15 @@ test("Accept-Language selects the supported language with the highest quality", 
   assert.equal(preferredChordlinkLanguage("en-US,en;q=1,de;q=0"), "en")
   assert.equal(preferredChordlinkLanguage("fr-FR, de;q=0.8"), "de")
   assert.equal(preferredChordlinkLanguage("fr-FR, *;q=0.7"), "en")
+})
+
+test("a bare /link lands on the setup page rather than a 404", async () => {
+  const route = await readFile("app/link/route.ts", "utf8")
+
+  assert.match(route, /genericChordlinkFallbackPaths\[language\]/)
+  assert.match(route, /preferredChordlinkLanguage\(requestHeaders\.get\("accept-language"\)\)/)
+  assert.match(route, /status: 307/)
+  assert.match(route, /"x-robots-tag": "noindex, nofollow"/)
 })
 
 test("the AASA file names only chordlink universal-link paths", async () => {
