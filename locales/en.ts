@@ -167,8 +167,8 @@ export const homeCopy = {
         body: `${siteConfig.name} does not upload your song library. Choose where the files live and share them only when you decide to.`,
       },
       {
-        title: "No lock-in",
-        body: "Export and move your files anytime. Open them in any editor — the data always belongs to you.",
+        title: "Matching progressions",
+        body: "Finish a song and see what else you can already play. Songs sharing a chord progression are automatically recognized and suggested.",
       },
     ],
   },

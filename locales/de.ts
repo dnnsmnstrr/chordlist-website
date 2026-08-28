@@ -179,8 +179,8 @@ export const homeCopy: Localized<typeof enHome> = {
         body: `${siteConfig.name} lädt deine Song-Bibliothek nicht hoch. Du bestimmst, wo die Dateien liegen, und teilst sie nur, wenn du es willst.`,
       },
       {
-        title: "Kein Lock-in",
-        body: "Exportiere und verschiebe deine Dateien jederzeit. Öffne sie in jedem Editor – die Daten gehören immer dir.",
+        title: "Passende Akkordfolgen",
+        body: "Spiel einen Song zu Ende und sieh, was du sonst schon spielen kannst. Songs mit derselben Akkordfolge werden automatisch erkannt und vorgeschlagen.",
       },
     ],
   },

@@ -1,4 +1,4 @@
-import { ArrowRightLeft, FileText, FolderHeart, HardDrive } from "lucide-react"
+import { FileText, FolderHeart, HardDrive, Waypoints } from "lucide-react"
 
 import { defaultLanguage, dictionary, type Language } from "@/locales"
 
@@ -11,7 +11,7 @@ export function Features({ language = defaultLanguage }: { language?: Language }
     { ...homeCopy.features.items[0], icon: FileText },
     { ...homeCopy.features.items[1], icon: HardDrive },
     { ...homeCopy.features.items[2], icon: FolderHeart },
-    { ...homeCopy.features.items[3], icon: ArrowRightLeft },
+    { ...homeCopy.features.items[3], icon: Waypoints },
   ] as const
 
   return (
