@@ -2,6 +2,7 @@ export const siteConfig = {
   projectName: "chordlist-website",
   name: "chordlist",
   operator: "makerer studio",
+  legalName: "Dennis Muensterer",
   businessAddress: {
     street: "Frauenlobplatz 2",
     postalCode: "55118",

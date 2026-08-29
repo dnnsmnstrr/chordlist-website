@@ -1,5 +1,6 @@
 import type { Route } from "next"
 
+import { activeCopyVariant, copyVariants, homeCopyFor, type CopyVariant } from "@/locales/copy-variants"
 import * as de from "@/locales/de"
 import * as en from "@/locales/en"
 import type { Localized } from "@/locales/types"
@@ -37,16 +38,17 @@ export type Dictionary = {
   readonly common: Localized<typeof en.commonCopy>
   readonly metadata: Localized<typeof en.metadataCopy>
   readonly home: Localized<typeof en.homeCopy>
+  readonly imprint: Localized<typeof en.imprintCopy>
   readonly piano: Localized<typeof en.pianoCopy>
   readonly screenshotGallery: Localized<typeof en.screenshotGalleryCopy>
 }
 
-const dictionaries: Record<Language, Dictionary> = {
+const chrome = {
   en: {
     locale: en.locale,
     common: en.commonCopy,
     metadata: en.metadataCopy,
-    home: en.homeCopy,
+    imprint: en.imprintCopy,
     piano: en.pianoCopy,
     screenshotGallery: en.screenshotGalleryCopy,
   },
@@ -54,23 +56,39 @@ const dictionaries: Record<Language, Dictionary> = {
     locale: de.locale,
     common: de.commonCopy,
     metadata: de.metadataCopy,
-    home: de.homeCopy,
+    imprint: de.imprintCopy,
     piano: de.pianoCopy,
     screenshotGallery: de.screenshotGalleryCopy,
   },
-}
+} as const satisfies Record<Language, Omit<Dictionary, "home">>
 
-/** The copy for one language. Server-side and synchronous — the files are ordinary modules. */
-export function dictionary(language: Language): Dictionary {
-  return dictionaries[language]
+// Every language crossed with every copy variant, built once at module load. Only `home` differs
+// between variants — see locales/copy-variants.ts for why the chrome deliberately does not.
+const dictionaries = Object.fromEntries(
+  languages.map((language) => [
+    language,
+    Object.fromEntries(
+      copyVariants.map((variant) => [variant, { ...chrome[language], home: homeCopyFor(language, variant) }]),
+    ),
+  ]),
+) as Record<Language, Record<CopyVariant, Dictionary>>
+
+/**
+ * The copy for one language. Server-side and synchronous — the files are ordinary modules.
+ *
+ * `variant` defaults to whichever one this build ships, so every component that asks for a
+ * dictionary gets the active wording without knowing variants exist. Passing one explicitly is for
+ * `/copy`, which has to render all of them side by side to be worth looking at.
+ */
+export function dictionary(language: Language, variant: CopyVariant = activeCopyVariant): Dictionary {
+  return dictionaries[language][variant]
 }
 
 /**
  * Where the home page lives in each language.
  *
- * The only route that exists in more than one language so far, which is why this is a map of one
- * page rather than a path-rewriting function: there is nothing yet for a general rule to be right
- * about, and a rule would imply `/de/docs` exists.
+ * The home page paths in each language. Other translated routes keep their own explicit maps so a
+ * general path-rewriting rule never implies that an untranslated page exists.
  */
 export const homeHref = {
   en: "/",
@@ -82,3 +100,5 @@ export const languageNames = {
   en: "English",
   de: "Deutsch",
 } as const satisfies Record<Language, string>
+
+export { activeCopyVariant, copyVariants, defaultCopyVariant, isCopyVariant, type CopyVariant } from "@/locales/copy-variants"

@@ -1,30 +1,30 @@
 import type { Metadata } from "next"
 
+import { imprintHref } from "@/lib/legal-routes"
 import { siteConfig } from "@/lib/site-config"
 import { defaultLanguage, dictionary, homeHref, languages, type Language } from "@/locales"
 
-/** The paths that are the same page in a different language, rather than a different page. */
-const translatedPaths = new Set<string>(Object.values(homeHref))
+/** Route sets whose entries are translations of the same page. */
+const translatedRoutes: ReadonlyArray<Record<Language, string>> = [homeHref, imprintHref]
 
 /**
  * The `hreflang` set for one route.
  *
  * A route that exists in more than one language lists every one of them, so a
  * crawler serves a German reader `/de` instead of guessing. Everything else is a
- * self-reference plus `x-default` — still worth emitting, because it says this
- * URL is the version for every locale rather than leaving a translation to be
- * inferred. Since only the home page is translated so far, `translatedPaths`
- * holds exactly the home hrefs; widening `homeHref` widens this with it.
+ * self-reference plus `x-default` — still worth emitting, because it says this URL is the version
+ * for every locale rather than leaving a translation to be inferred.
  */
 export function siteAlternateLanguages(path: string) {
-  if (!translatedPaths.has(path)) {
+  const translatedRoute = translatedRoutes.find((routes) => Object.values(routes).includes(path))
+  if (!translatedRoute) {
     return { [dictionary(defaultLanguage).locale.htmlLang]: path, "x-default": path }
   }
 
   const translations = Object.fromEntries(
-    languages.map((language) => [dictionary(language).locale.htmlLang, homeHref[language]]),
+    languages.map((language) => [dictionary(language).locale.htmlLang, translatedRoute[language]]),
   )
-  return { ...translations, "x-default": homeHref[defaultLanguage] }
+  return { ...translations, "x-default": translatedRoute[defaultLanguage] }
 }
 
 /** The blog feed, advertised site-wide so a reader finds it from any page. */
@@ -38,7 +38,7 @@ type PageMetadataOptions = {
   /** Overrides the generated card. Site-relative, like "/og.png". */
   image?: string
   imageAlt?: string
-  /** The language the page renders in. Only the home page has more than one so far. */
+  /** The language the page renders in. */
   language?: Language
   /**
    * Fields merged on top — `robots`, an RSS `alternates.types`, and so on. The

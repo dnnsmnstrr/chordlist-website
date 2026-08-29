@@ -160,6 +160,28 @@ Draft and future-dated posts appear in local and Vercel preview builds but stay 
 Scheduled posts become public through hourly revalidation without requiring a new deployment. See
 [Blog editorial guidelines](docs/blog-editorial-guidelines.md) before publishing.
 
+### Switch the home page copy
+
+Three wordings of the home page live in [`locales/copy-variants.ts`](locales/copy-variants.ts) and are
+readable side by side at `/copy`, an unlisted `noindex` review page:
+
+| Variant | Leads with |
+| --- | --- |
+| `files` *(default)* | Ownership — plain Markdown, offline, your files stay yours |
+| `progressions` | *Finish a song and see what else you can already play* |
+| `setlist` | *Find a song, play it, keep moving* |
+
+A variant replaces whole sections of `homeCopy`, in every language, so the page is never half
+rewritten. Select one at build time:
+
+```bash
+NEXT_PUBLIC_COPY_VARIANT=setlist pnpm build
+```
+
+Unset ships the default; an unknown value fails the build. On Vercel it is an environment variable on
+a preview branch, so a variant can be read on a real URL before it is promoted. See
+[Marketing plan](docs/marketing-plan.md#positioning-the-copy-experiment) for which one to ship when.
+
 ## Project map
 
 ```text

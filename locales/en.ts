@@ -34,6 +34,7 @@ export const commonCopy = {
     screens: "Screens",
     socialPosts: "Social posts",
     privacy: "Privacy",
+    imprint: "Imprint",
     x: "X",
     instagram: "Instagram",
   },
@@ -508,7 +509,7 @@ export const privacyCopy = {
     description: `How ${siteConfig.name} handles song files, optional analytics, imports, purchases, and website visits.`,
   },
   title: "Privacy Policy",
-  lastUpdated: "Last updated: 23 August 2026",
+  lastUpdated: "Last updated: 29 August 2026",
   sections: {
     shortVersion: {
       title: "The short version",
@@ -529,9 +530,11 @@ export const privacyCopy = {
       ],
     },
     analytics: {
-      title: "Anonymous app analytics",
+      title: "Optional app analytics",
       paragraphs: [
-        `Anonymous analytics are enabled by default and can be disabled at any time in the app's Settings. When enabled, ${siteConfig.name} uses TelemetryDeck to send app interaction events such as viewing the song list, shuffling, transposing, creating, or editing a song.`,
+        `Analytics are off by default. After onboarding, ${siteConfig.name} asks whether you want to allow usage analytics. No analytics are sent unless you choose “Allow Analytics”. You can change the choice at any time in the app's Settings.`,
+        "The app stores your choice and the version of the consent notice on your device. Declining analytics does not limit the app's features.",
+        `When enabled, ${siteConfig.name} uses TelemetryDeck to send app interaction events such as viewing the song list, shuffling, transposing, creating, or editing a song. Song files, lyrics, titles, artists, and chord data are not included in usage analytics.`,
         "TelemetryDeck may process an anonymized installation identifier, the event, an hour-level timestamp, and device or app metadata such as device type, operating-system version, app version, and build information. TelemetryDeck states that it does not store IP addresses or personally identifiable information for app analytics.",
       ],
       linkPrefix: "Learn more in the",
@@ -607,6 +610,26 @@ export const privacyCopy = {
         "This policy may be updated when the app, website, or service providers change. Material changes will be reflected here with a new “Last updated” date.",
       ],
     },
+  },
+} as const
+
+export const imprintCopy = {
+  metadata: {
+    title: "Imprint",
+    description: `Provider and contact information for ${siteConfig.name}.`,
+  },
+  eyebrow: siteConfig.name,
+  title: "Imprint",
+  provider: {
+    title: "Provider information under Section 5 DDG",
+    tradingAs: `trading as ${siteConfig.operator}`,
+    country: "Germany",
+    contactLabel: "Email",
+  },
+  editorial: {
+    title: "Responsibility for editorial content",
+    introduction: "Responsible under Section 18(2) of the German State Media Treaty:",
+    addressReference: "Address as above.",
   },
 } as const
 
@@ -727,4 +750,58 @@ export const pianoCopy = {
   playNote: (note: string) => `Play note ${note}`,
   chordModeHint: "Press A–G three times quickly to enter chord mode",
   chordModeActive: "Chord mode · Shift for minor · Esc to exit",
+} as const
+
+export const copyReviewCopy = {
+  metadata: {
+    title: "Copy variants",
+    description: `The alternative home page wordings ${siteConfig.name} can ship, side by side.`,
+  },
+  eyebrow: "Unlisted · review",
+  title: "Home page copy variants",
+  introduction:
+    "Three wordings of the same home page, held in locales/copy-variants.ts. A variant replaces whole sections rather than single lines, so the page never argues with itself. The headline and the feature order are the same in all three — the headline is the shared tagline, and the feature cards are paired to their icons by position.",
+  activeLabel: "Shipping now",
+  switchTitle: "Switching",
+  switchBody:
+    "Set NEXT_PUBLIC_COPY_VARIANT on the deployment and rebuild. Unset ships the default. An unknown value fails the build rather than quietly shipping the default, which would look exactly like a variant that did not work.",
+  languageLabel: "Language",
+  unchangedLabel: "unchanged",
+  unchangedHint: "Grey cells repeat the shipping wording.",
+  variants: {
+    files: {
+      name: "Files",
+      role: "Shipping",
+      summary:
+        "Ownership first: plain Markdown, offline, your files stay yours. Written for someone who has already been burned by a subscription songbook, and the reason the blog and the Obsidian audience work.",
+      risk: "Answers four objections a stranger has not raised yet.",
+    },
+    progressions: {
+      name: "Progressions",
+      role: "Alternative",
+      summary:
+        "Leads with the only feature no competitor has, and with the question a stranger actually arrives with: I do not know what to play. The file story moves down into the feature grid, where it is an answer rather than an opening argument.",
+      risk: "Spends the hero on one feature, and reads as a learning tool rather than a songbook to anyone with a library already.",
+    },
+    setlist: {
+      name: "Set list",
+      role: "Alternative",
+      summary:
+        "Promotes the strongest sentence on the site out of the carousel header and into the hero, and rewrites the showcase around it so the line is not on the page twice. Aimed at the player about to perform rather than the reader about to be convinced.",
+      risk: "Sells speed rather than ownership, which is the part the press and the plain-text audience respond to.",
+    },
+  },
+  fields: {
+    heroEyebrow: "Hero · eyebrow",
+    heroSubheadline: "Hero · subheadline",
+    heroDescription: "Hero · description",
+    showcaseEyebrow: "Showcase · eyebrow",
+    showcaseTitle: "Showcase · title",
+    showcaseDescription: "Showcase · description",
+    featuresTitle: "Features · title",
+    featureTitle: (position: number) => `Feature ${position} · title`,
+    featureBody: (position: number) => `Feature ${position} · body`,
+    closingCtaTitle: "Closing CTA · title",
+    closingCtaDescription: "Closing CTA · description",
+  },
 } as const

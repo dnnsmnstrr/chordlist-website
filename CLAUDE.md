@@ -61,6 +61,7 @@ lib/frontmatter.ts   Splits a YAML frontmatter block from a Markdown body
 lib/utils.ts         `cn()` — clsx + tailwind-merge
 locales/en.ts        Single source of truth for all user-facing copy
 locales/index.ts     Language registry: languages, dictionary(), homeHref
+locales/copy-variants.ts  Alternative home-page wordings, selected by NEXT_PUBLIC_COPY_VARIANT
 scripts/             Node build scripts (.mjs, run directly, no bundler)
   lib/chordlist-mark.mjs   Shared logo geometry for icon + OG builds
   lib/social-templates.mjs Layouts, shared frame, and type fitting for the social build
@@ -88,6 +89,21 @@ is a contract.
 Components on a translated route read `dictionary(language)` from `@/locales` instead of importing
 `@/locales/en` directly — see Localization. Everything else still imports `@/locales/en`, which is
 correct for a page that only exists in English.
+
+#### Copy variants
+
+`locales/copy-variants.ts` holds alternative wordings of the home page — currently `files`
+(shipping), `progressions`, and `setlist` — and `dictionary()` applies the one named by
+`NEXT_PUBLIC_COPY_VARIANT` at build time. Every component is unchanged by this: it asks for a
+dictionary and gets the active wording. `/copy` renders all of them side by side.
+
+A variant replaces **whole sections** of `homeCopy`, never single strings, so a half-rewritten page
+is impossible to produce by accident. Two things are deliberately out of reach: the `<h1>`, which
+renders `commonCopy.tagline` from `VOCABULARY.md` and is checked by `scripts/build-og-image.mjs`; and
+the order of `features.items`, whose positions are paired to icons in `components/features.tsx`.
+Variants are `Record<Language, …>`, so a new language does not compile until its variants are written
+— the same honesty rule as `Dictionary`. An unknown env value throws rather than falling back.
+[Marketing plan](docs/marketing-plan.md) is why the alternatives exist and which to ship when.
 
 **Blog posts are the one carve-out, and it is about chrome vs. content, not an exception to the
 rule.** `locales/en.ts` owns every string the site renders *around* content — including all the blog

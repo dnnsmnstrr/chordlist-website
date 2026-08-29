@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { LanguageSwitcher } from "@/components/language-switcher"
 
+import { imprintHref } from "@/lib/legal-routes"
 import { siteConfig } from "@/lib/site-config"
 import { defaultLanguage, dictionary, homeHref, type Language } from "@/locales"
 import type { Route } from "next"
@@ -50,6 +51,9 @@ export function SiteFooter({
         </Link> */}
         <Link href="/privacy" className="transition-colors hover:text-foreground">
           {common.navigation.privacy}
+        </Link>
+        <Link href={imprintHref[language]} className="transition-colors hover:text-foreground">
+          {common.navigation.imprint}
         </Link>
         <a
           href={siteConfig.social.x.url}

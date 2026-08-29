@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next"
 
 import { getPublishedPosts } from "@/lib/blog"
+import { imprintHref } from "@/lib/legal-routes"
 import { siteConfig } from "@/lib/site-config"
 import { defaultLanguage, dictionary, homeHref, languages } from "@/locales"
 
@@ -35,6 +36,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const englishHome = pages[0]
   if (englishHome) englishHome.alternates = { languages: homeAlternates }
 
+  const imprintAlternates = Object.fromEntries(
+    languages.map((language) => [dictionary(language).locale.htmlLang, `${siteConfig.url}${imprintHref[language]}`]),
+  )
+  const imprintPages: MetadataRoute.Sitemap = languages.map((language) => ({
+    url: `${siteConfig.url}${imprintHref[language]}`,
+    changeFrequency: "yearly",
+    priority: 0.5,
+    alternates: { languages: imprintAlternates },
+  }))
+
   const chordlinkAlternates = {
     en: `${siteConfig.url}/chordlink`,
     de: `${siteConfig.url}/de/chordlink`,
@@ -65,5 +76,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.5,
   }))
 
-  return [...pages, ...translatedHomes, ...chordlinkPages, ...postPages]
+  return [...pages, ...translatedHomes, ...imprintPages, ...chordlinkPages, ...postPages]
 }

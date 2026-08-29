@@ -7,6 +7,12 @@ against the 9 September launch.
 
 Nothing here replaces the social calendar. Everything scheduled there stays as it is.
 
+**This document decides; three others carry it out.** [Marketing plan](marketing-plan.md) turns the
+channels below into what gets sent and how it is measured, [Marketing checklist](marketing-checklist.md)
+is the dated tracker with priorities, and [Video scripts and storyboards](video-scripts.md) scripts
+the video section. Where the twelve-day table below and the checklist disagree, the checklist is
+right — it carries two corrections, noted at its end.
+
 ## Where the site and the campaign disagree
 
 Two coherent positionings exist, and the site picked one of them.

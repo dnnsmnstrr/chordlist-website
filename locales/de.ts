@@ -2,6 +2,7 @@ import { siteConfig } from "@/lib/site-config"
 import {
   commonCopy as en,
   homeCopy as enHome,
+  imprintCopy as enImprint,
   locale as enLocale,
   metadataCopy as enMetadata,
   pianoCopy as enPiano,
@@ -14,7 +15,7 @@ import { phrase } from "@/locales/vocabulary"
 ///
 /// **Partial, and deliberately shaped around the home page.** Everything the home page and the
 /// chrome around it render is translated: `locale`, `commonCopy`, `metadataCopy`, `homeCopy`,
-/// `pianoCopy` and `screenshotGalleryCopy`. `docsCopy`, `faqCopy`, `pressCopy`, `screensCopy`,
+/// `imprintCopy`, `pianoCopy` and `screenshotGalleryCopy`. `docsCopy`, `faqCopy`, `pressCopy`, `screensCopy`,
 /// `privacyCopy`, `blogCopy` and `galleryCopy` are not, so those pages are English-only and are
 /// still linked at their English URLs from the German header and footer. `locales/index.ts` is
 /// the registry that decides which of these a route gets; adding a page to the German site means
@@ -61,6 +62,7 @@ export const commonCopy: Localized<typeof en> = {
     screens: "Screens",
     socialPosts: "Social Posts",
     privacy: "Datenschutz",
+    imprint: "Impressum",
     x: "X",
     instagram: "Instagram",
   },
@@ -87,6 +89,26 @@ export const commonCopy: Localized<typeof en> = {
     title: "Seite nicht gefunden",
     description: "Diese Seite wurde verschoben oder hat es nie gegeben. Das Songbook gibt es weiterhin.",
     backHome: "Zurück zur Startseite",
+  },
+} as const
+
+export const imprintCopy: Localized<typeof enImprint> = {
+  metadata: {
+    title: "Impressum",
+    description: `Anbieterkennzeichnung und Kontaktdaten für ${siteConfig.name}.`,
+  },
+  eyebrow: siteConfig.name,
+  title: "Impressum",
+  provider: {
+    title: "Angaben gemäß § 5 DDG",
+    tradingAs: `handelnd unter ${siteConfig.operator}`,
+    country: "Deutschland",
+    contactLabel: "E-Mail",
+  },
+  editorial: {
+    title: "Verantwortlich für journalistisch-redaktionelle Inhalte",
+    introduction: "Verantwortlich gemäß § 18 Abs. 2 MStV:",
+    addressReference: "Anschrift wie oben.",
   },
 } as const
 
