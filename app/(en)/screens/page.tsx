@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button"
 import { pageMetadata } from "@/lib/page-metadata"
 import { cn } from "@/lib/utils"
 import { screensCopy } from "@/locales/en"
+import { requireAdmin } from "@/lib/server/admin-auth"
 
 type ScreenshotVariant = "classic" | "analog"
 type ScreenshotDevice = "iphone" | "ipad"
@@ -104,6 +105,7 @@ type ScreensPageProps = {
 }
 
 export default async function ScreensPage({ searchParams }: ScreensPageProps) {
+  await requireAdmin("/screens")
   const screenshots = await readManifest()
   const languages = [...new Set(screenshots.map((screenshot) => screenshot.language))]
   const requested = (await searchParams).language

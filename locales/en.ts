@@ -569,8 +569,25 @@ export const privacyCopy = {
       paragraphs: [
         `When chordlink sales open, Stripe will process the checkout, buyer email, payment, and German delivery address. ${siteConfig.operator} will use that information to fulfil the physical order and send the individual Apple offer-code redemption link. Payment-card and bank-account details remain with Stripe.`,
         "The private chordlink inventory stores only the Stripe Checkout Session reference, the unit's public number and edition metadata, fulfillment state, an optional operator note, and its assigned Apple offer code. The public NFC number is not used as an entitlement secret. Buyer email and delivery address are not copied into the chordlist database.",
+        `That inventory is a Postgres database hosted by Supabase, which stores and processes it as a service provider on behalf of ${siteConfig.operator} and under its instructions. Supabase may also process the connection, request, and security information needed to operate the database and the functions that read it.`,
+        "The database is located in Supabase's Ireland region, so these records are stored in the European Union. Supabase is a company based in the United States, and it may access stored data from outside the European Union where that is necessary to operate, secure, and support the service, under the terms and transfer safeguards of its data-processing agreement.",
         "Individual /link/ URLs redirect to a shared setup page without carrying the unit number into page analytics. Hosting infrastructure may still process the requested URL in ordinary security and delivery logs.",
       ],
+      stripeLinkPrefix: "Stripe describes its handling of checkout data in its",
+      stripeLinkLabel: "privacy policy",
+      supabaseLinkPrefix: "Supabase describes its handling of data it stores for its customers in its",
+      supabaseLinkLabel: "privacy policy",
+    },
+    chordlinkNotifications: {
+      title: "chordlink availability notifications",
+      paragraphs: [
+        `While chordlink is not on sale, the product page offers to notify you by email when it becomes available. Giving your address is voluntary and is never required to read the site or use the app. ${siteConfig.operator} uses it for that one purpose and does not sell, rent, or share it for anyone else's marketing.`,
+        "The list uses confirmed opt-in: submitting the form sends one confirmation email, and you are added only when you select the link in it. An address that is never confirmed is never written to again. Every message includes an unsubscribe link, and unsubscribing removes you from the list.",
+        `The list is operated by Brevo, a company based in France, which sends the confirmation and later messages, records the confirmation as proof of consent, and handles unsubscribes. It stores the email address, the language the form was submitted in, whether you signed up before the first sale or after it sold out, and the technical record of your confirmation. Brevo stores this data on servers in the European Union and processes it as a service provider on behalf of ${siteConfig.operator}.`,
+        "The notification list is kept separate from the chordlink order inventory: an address given here is not added to the order database, and buying a chordlink does not add you to this list.",
+      ],
+      linkPrefix: "Brevo describes its handling of this data in its",
+      linkLabel: "privacy policy",
     },
     support: {
       title: "Support and feedback",

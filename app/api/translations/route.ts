@@ -12,6 +12,7 @@ import {
   writeVocabulary,
   type Vocabulary,
 } from "@/lib/translations/store"
+import { refuseUnlessAdmin } from "@/lib/server/admin-auth"
 
 /// The translation editor's data, read and written on the local filesystem.
 ///
@@ -28,6 +29,9 @@ function failure(error: unknown) {
 }
 
 export async function GET() {
+  const refusal = await refuseUnlessAdmin()
+  if (refusal) return refusal
+
   try {
     await assertEditable()
 
@@ -54,6 +58,9 @@ type Edit =
   | { kind: "vocabulary"; vocabulary: Vocabulary }
 
 export async function PATCH(request: Request) {
+  const refusal = await refuseUnlessAdmin()
+  if (refusal) return refusal
+
   try {
     await assertEditable()
     const edit = (await request.json()) as Edit

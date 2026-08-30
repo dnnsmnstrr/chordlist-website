@@ -35,6 +35,7 @@ elsewhere, set `CHORDLIST_APP_REPO` to its absolute path.
 | `pnpm build:icons` | Regenerate the favicon, app icon, and related icon assets in `public/`. |
 | `pnpm build:og` | Regenerate the site, page, and blog Open Graph images. |
 | `pnpm build:social` | Render social images and their manifest from `content/social/`. |
+| `pnpm build:emails` | Render the email templates and their manifest from `content/emails/`. |
 | `pnpm build:screens` | Sync app captures, then generate the iPhone and iPad App Store upload sets. |
 | `pnpm video:studio` | Sync current demo clips and open the interactive Remotion editor. |
 | `pnpm video:render:campaign` | Render the short, standard, and documentary light promo cuts. |
@@ -89,6 +90,7 @@ pnpm build:all
 pnpm build:icons
 pnpm build:og
 pnpm build:social
+pnpm build:emails
 ```
 
 `pnpm build:all` is the release-oriented one-shot workflow. It syncs app inputs before any generator
@@ -245,6 +247,121 @@ never treated as fulfillment proof.
 
 Never add a unit number, Checkout Session, buyer email, delivery address, or Apple offer code to
 Vercel Analytics. Individual `/link/*` requests redirect to the shared setup route and are noindex.
+
+### Internal tools and sign-in
+
+`/emails`, `/screens`, `/copy`, `/gallery`, `/social/posts`, `/social/editor`, `/translations`, and
+the `/api/translations` endpoints are internal tools, not part of the marketing site. They sit
+behind a Supabase Auth login at `/login`; `/logout` signs out.
+
+Two checks, and they are not the same check:
+
+1. **`proxy.ts`** (Next 16's rename of `middleware.ts`) refreshes the Supabase session cookie and
+   turns an expired one into a redirect. It is *not* the authorization. Next's own documentation
+   warns that Server Functions are POSTs to the route that defines them, so a matcher change or a
+   refactor can move one out from under the proxy without anything failing loudly.
+2. **`requireAdmin()`** runs inside every protected page, and `refuseUnlessAdmin()` inside every
+   protected route handler. This is what actually decides access. It calls `supabase.auth.getUser()`
+   rather than `getSession()`, because the session comes from a cookie the browser sent and
+   revalidating the token with Supabase is what makes the answer worth acting on.
+
+**Being signed in is not enough.** A Supabase project accepts new sign-ups by default, so
+authenticating proves only that somebody made an account. `ADMIN_EMAILS` is a comma-separated
+allowlist, and an unset value means *nobody* — never everybody.
+
+To set it up:
+
+1. Create the administrator account yourself in the Supabase dashboard (Authentication → Users →
+   Add user). Consider turning off public sign-ups for the project while you are there; the
+   allowlist already covers it, but two locks are cheap.
+2. Set `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, and `ADMIN_EMAILS` on
+   Vercel and in `.env.local`. The first two are safe in the browser; the secret key is never used
+   by this site.
+
+The proxy matcher is scoped to those paths alone, so every marketing page still renders statically
+and never pays for a proxy hop. Note that guarded pages are necessarily **dynamic** — see the
+ordering comment in `lib/supabase/server.ts` for why `cookies()` is read before the configuration
+check, and `tests/admin-routes.test.ts` for the test that keeps it that way.
+
+Static files under `public/` are **not** covered — `/emails/*.html` and `/social/*` are served
+directly by the CDN. The pages that index them are behind the login; the generated files themselves
+stay reachable to anyone who knows the URL.
+
+### chordlink availability notifications
+
+While chordlink is not on sale, the product page offers a "Get notified" form in place of the buy
+button. The list lives at **Brevo** rather than in the backend: its double opt-in sends the
+confirmation, records the consent that German law expects to be produced on demand, and owns
+unsubscribing. No email address is stored on this site or in the chordlink inventory, and the two
+are deliberately kept apart — buying a chordlink does not add anyone to the list.
+
+There are two lists, chosen by the same availability response that gates checkout:
+
+| State | List | Mailed when |
+| --- | --- | --- |
+| Sales not open yet | `BREVO_INTEREST_LIST_ID` | the switch opens |
+| Edition sold out | `BREVO_WAITLIST_LIST_ID` | a further batch is seeded |
+
+Which list a signup lands on is decided on the server from the backend's own answer, never from the
+submitted form, so nobody can put themselves on the restock list while the first edition is selling.
+
+To turn it on:
+
+1. In Brevo, create the two contact lists and a **double opt-in template**, and add a `LANGUAGE` and
+   a `SIGNUP_REASON` contact attribute so a later campaign can segment on them.
+2. Point the template's confirmation button at the site; the request sends the localized
+   `redirectionUrl` (`/chordlink/notified`, `/de/chordlink/notified`), which is where a confirmed
+   subscriber lands.
+3. Set `BREVO_API_KEY` as a Vercel sensitive environment variable, plus
+   `BREVO_INTEREST_DOI_TEMPLATE_ID`, `BREVO_INTEREST_LIST_ID`, and `BREVO_WAITLIST_LIST_ID`.
+4. Sign Brevo's data-processing agreement and keep `privacyCopy.sections.chordlinkNotifications`
+   accurate if what is stored changes.
+
+The form fails closed the same way checkout does: it is rendered only when the key, the template,
+and the list for the *current* state are all configured, and only when availability could actually
+be read. An outage shows no form, because a form that takes an address and drops it is worse than
+none — the visitor leaves believing they will hear from us. A submission that Brevo rejects says so
+rather than thanking anybody. An address already on the list is reported as a fresh success, so the
+form cannot be used to test whether a given person is subscribed.
+
+Measurement is deliberately the free path: `/chordlink` page views in Vercel Web Analytics at the
+top of the funnel and confirmed Brevo contacts at the bottom. Vercel custom events are a Pro
+feature, so nothing here depends on them.
+
+### Email templates
+
+Emails are built from `content/emails/` rather than written in Brevo's editor, so the wording is
+reviewed in a pull request and the layout is fixed once instead of per campaign:
+
+```bash
+pnpm build:emails
+```
+
+One definition per language — `<slug>.<language>.md`, frontmatter plus a Markdown body — produces
+`public/emails/<slug>/<language>.{html,txt}` and a `manifest.json`. `/emails` previews every one in
+an iframe at the width a client renders it. Paste the HTML into Brevo and keep the `.txt` beside it
+as the plain-text alternative; a message with no text part scores worse with spam filters and some
+readers never see anything else.
+
+A slug must exist in **every** language before the build passes, and the frontmatter `language` must
+match the filename. That is the same honesty rule the `Dictionary` type enforces on the site: a
+half-translated campaign is not something to discover at send time, with half the list already
+mailed in the wrong language.
+
+Four definitions ship. `chordlink-confirm` is the double opt-in mail and is the one the signup flow
+actually depends on — its button must keep the `{{ doubleoptin }}` merge field, which is what Brevo
+replaces with the confirmation link. `chordlink-on-sale` and `chordlink-restock` are the campaigns
+for the two lists. `chordlist-announcement` is a deliberately empty skeleton to copy for the next
+announcement.
+
+Layout lives in `scripts/lib/email-templates.mjs` and is shaped by three constraints rather than
+taste: Outlook on Windows renders with Word, so structure is tables and there is no flexbox or
+`border-radius`; several clients strip `<style>`, so everything that must render is inlined and the
+`<style>` block carries only the dark palette and the narrow breakpoint; and images are blocked by
+default on first open, so **nothing in these emails is an image** — the lockup is the wordmark in
+the same mono voice the site uses. Campaign mail carries `{{ unsubscribe }}`; transactional mail
+does not, because a confirmation message has nothing to unsubscribe from yet. Every footer carries
+the operator, legal name, and postal address, which a commercial email from Germany has to state.
 
 ### Public chordlink model
 

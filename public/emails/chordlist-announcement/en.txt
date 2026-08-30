@@ -1,0 +1,26 @@
+chordlist
+
+Something new in chordlist
+
+This one is a skeleton, not a message. Copy the pair to a new slug, rewrite both languages,
+and delete this quote. It exists so a future announcement starts from the reviewed layout instead
+of a blank Brevo editor.
+
+Open with the change itself in one sentence — what is different now, not how long it took to build.
+
+Then one short paragraph on why it matters to the person reading. If there is nothing to say here, there is probably no email to send.
+
+- Keep lists to three items or fewer.
+- Put the single most useful link in the button, not in the prose.
+- Say what is not changing when a change might worry someone.
+
+Read more: https://chordlist.app/blog
+
+—
+You are receiving this because you asked to be notified about chordlink availability.
+Unsubscribe: {{ unsubscribe }}
+
+makerer studio · Dennis Muensterer
+Frauenlobplatz 2, 55118 Mainz, Germany
+Imprint: https://chordlist.app/imprint
+Privacy: https://chordlist.app/privacy

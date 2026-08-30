@@ -29,6 +29,7 @@ yarn lockfiles).
 | `pnpm build:icons` | Regenerate every favicon asset in `public/` |
 | `pnpm build:og` | Regenerate `public/og.png`, one card per static page in `public/og/`, **and** one per blog post in `public/blog/og/` |
 | `pnpm build:social` | Regenerate every social asset in `public/social/` from `content/social/` |
+| `pnpm build:emails` | Regenerate every email in `public/emails/` from `content/emails/` |
 
 There is no test suite. `pnpm check` is the gate.
 
@@ -188,6 +189,13 @@ Five categories of files in `public/` are **outputs — edit the generator, not 
   definition prunes its images on the next run. `docs/social-media-system.md` is the design source of
   truth, `docs/social-media-plan.md` is the posting calendar, and `.agents/skills/social-asset/SKILL.md`
   carries the workflow.
+- **Email templates** (`public/emails/<slug>/<language>.{html,txt}` plus `manifest.json`) —
+  `pnpm build:emails`, which renders every definition in `content/emails/`. Layout and the
+  email-client workarounds live in `scripts/lib/email-templates.mjs`; the footer, languages, and
+  site facts live in the script's `CONFIG` block. A slug must exist in every language and the
+  frontmatter `language` must match the filename, so a half-translated campaign fails the build
+  rather than reaching an inbox. `/emails` previews each one. Nothing in these emails is an image:
+  clients block images by default, so the lockup is the wordmark as text.
 - **App screenshots** (`public/app-screenshots/{light,dark}/`, plus `<code>/` for every other
   language) and `public/press/chordlist-press-kit.zip` — produced by the iOS app repository's
   automated screenshot tests and copied in by `pnpm sync:assets`, which `predev`/`prebuild` run for
@@ -284,6 +292,22 @@ lazy `<img>` and bypass `next/image`. Only a `cover` goes through `next/image`. 
 `content/blog` is invisible to the bundle tracer, which is why `next.config.mjs` carries
 `outputFileTracingIncludes` for the four blog-aware routes — remove it and production breaks on the
 first revalidation.
+
+## Internal tools and sign-in
+
+`/emails`, `/screens`, `/copy`, `/gallery`, `/social/posts`, `/social/editor`, `/translations`, and
+`/api/translations/*` are behind a Supabase Auth login at `/login` (`/logout` signs out).
+`lib/admin-routes.ts` is the single list of protected prefixes and the `ADMIN_EMAILS` allowlist.
+
+`proxy.ts` refreshes the session and redirects; it is **not** the authorization, because a proxy
+matcher does not reliably cover Server Functions. Every protected page calls `requireAdmin()` and
+every protected route handler calls `refuseUnlessAdmin()` — `tests/admin-routes.test.ts` fails if
+one of them stops. Adding a tool means adding its prefix to `lib/admin-routes.ts`, both matcher
+forms to `proxy.ts`, the guard to the page, and the file to that test.
+
+Being signed in is not sufficient: Supabase accepts sign-ups by default, so `ADMIN_EMAILS` decides
+who gets in and an unset value means nobody. Guarded pages are dynamic by construction — read the
+ordering comment in `lib/supabase/server.ts` before touching it.
 
 ## Content accuracy
 

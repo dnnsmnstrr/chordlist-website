@@ -6,6 +6,7 @@ import {
   SocialPostGallery,
   type SocialManifestEntry,
 } from "@/components/social-post-gallery"
+import { requireAdmin } from "@/lib/server/admin-auth"
 
 export const metadata: Metadata = {
   title: "Social posts",
@@ -20,6 +21,7 @@ async function getSocialPosts() {
 }
 
 export default async function SocialPostsPage() {
+  await requireAdmin("/social/posts")
   const posts = await getSocialPosts()
 
   return <SocialPostGallery posts={posts} />

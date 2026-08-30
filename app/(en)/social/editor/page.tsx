@@ -4,6 +4,7 @@ import path from "node:path"
 import type { Metadata } from "next"
 
 import { SocialPostEditor } from "@/components/social-post-editor"
+import { requireAdmin } from "@/lib/server/admin-auth"
 
 export const metadata: Metadata = {
   title: "Social post editor",
@@ -34,6 +35,7 @@ async function loadConfigForSlug(slug: string): Promise<string | null> {
 }
 
 export default async function SocialEditorPage({ searchParams }: Props) {
+  await requireAdmin("/social/editor")
   const { slug, config } = await searchParams
   const configMarkdown = config
     ? decodeConfigParam(config)

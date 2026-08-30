@@ -18,6 +18,7 @@ import {
   type Dictionary,
 } from "@/locales"
 import { copyReviewCopy } from "@/locales/en"
+import { requireAdmin } from "@/lib/server/admin-auth"
 
 export const metadata: Metadata = pageMetadata({
   path: "/copy",
@@ -72,7 +73,8 @@ const columns = copyVariants.map((variant) => ({
   active: variant === activeCopyVariant,
 }))
 
-export default function Page() {
+export default async function Page() {
+  await requireAdmin("/copy")
   return (
     <main className="min-h-screen bg-background text-foreground">
       <SiteHeader />

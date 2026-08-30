@@ -1,0 +1,122 @@
+[
+  {
+    "slug": "chordlink-confirm",
+    "language": "en",
+    "kind": "transactional",
+    "subject": "Confirm your chordlink notification",
+    "preheader": "One click and you are on the list — we will not write again until you do.",
+    "heading": "Confirm your email address",
+    "cta": {
+      "label": "Confirm my address",
+      "url": "{{ doubleoptin }}"
+    },
+    "html": "/emails/chordlink-confirm/en.html",
+    "text": "/emails/chordlink-confirm/en.txt",
+    "bytes": 8159
+  },
+  {
+    "slug": "chordlink-confirm",
+    "language": "de",
+    "kind": "transactional",
+    "subject": "Bestätige deine chordlink-Benachrichtigung",
+    "preheader": "Ein Klick und du stehst auf der Liste — vorher schreiben wir nicht wieder.",
+    "heading": "Bestätige deine E-Mail-Adresse",
+    "cta": {
+      "label": "Adresse bestätigen",
+      "url": "{{ doubleoptin }}"
+    },
+    "html": "/emails/chordlink-confirm/de.html",
+    "text": "/emails/chordlink-confirm/de.txt",
+    "bytes": 8240
+  },
+  {
+    "slug": "chordlink-on-sale",
+    "language": "en",
+    "kind": "campaign",
+    "subject": "chordlink is on sale — 10 numbered pieces",
+    "preheader": "The first edition is 10 numbered pieces. Here is the link, as promised.",
+    "heading": "It is on sale",
+    "cta": {
+      "label": "See chordlink",
+      "url": "https://chordlist.app/chordlink"
+    },
+    "html": "/emails/chordlink-on-sale/en.html",
+    "text": "/emails/chordlink-on-sale/en.txt",
+    "bytes": 9372
+  },
+  {
+    "slug": "chordlink-on-sale",
+    "language": "de",
+    "kind": "campaign",
+    "subject": "chordlink ist im Verkauf — 10 nummerierte Stück",
+    "preheader": "Die erste Edition umfasst 10 nummerierte Stück. Hier ist der Link, wie versprochen.",
+    "heading": "Ab sofort erhältlich",
+    "cta": {
+      "label": "chordlink ansehen",
+      "url": "https://chordlist.app/de/chordlink"
+    },
+    "html": "/emails/chordlink-on-sale/de.html",
+    "text": "/emails/chordlink-on-sale/de.txt",
+    "bytes": 9539
+  },
+  {
+    "slug": "chordlink-restock",
+    "language": "en",
+    "kind": "campaign",
+    "subject": "A new batch of chordlink",
+    "preheader": "You asked to hear when there were more. There are more.",
+    "heading": "There is a new batch",
+    "cta": {
+      "label": "See chordlink",
+      "url": "https://chordlist.app/chordlink"
+    },
+    "html": "/emails/chordlink-restock/en.html",
+    "text": "/emails/chordlink-restock/en.txt",
+    "bytes": 8659
+  },
+  {
+    "slug": "chordlink-restock",
+    "language": "de",
+    "kind": "campaign",
+    "subject": "Eine neue Charge chordlink",
+    "preheader": "Du wolltest wissen, wenn es wieder welche gibt. Es gibt wieder welche.",
+    "heading": "Es gibt eine neue Charge",
+    "cta": {
+      "label": "chordlink ansehen",
+      "url": "https://chordlist.app/de/chordlink"
+    },
+    "html": "/emails/chordlink-restock/de.html",
+    "text": "/emails/chordlink-restock/de.txt",
+    "bytes": 8780
+  },
+  {
+    "slug": "chordlist-announcement",
+    "language": "en",
+    "kind": "campaign",
+    "subject": "Something new in chordlist",
+    "preheader": "A short note about what changed, and why it might matter to you.",
+    "heading": "Something new in chordlist",
+    "cta": {
+      "label": "Read more",
+      "url": "https://chordlist.app/blog"
+    },
+    "html": "/emails/chordlist-announcement/en.html",
+    "text": "/emails/chordlist-announcement/en.txt",
+    "bytes": 9332
+  },
+  {
+    "slug": "chordlist-announcement",
+    "language": "de",
+    "kind": "campaign",
+    "subject": "Neues in chordlist",
+    "preheader": "Eine kurze Notiz dazu, was sich geändert hat und warum es dich betreffen könnte.",
+    "heading": "Neues in chordlist",
+    "cta": {
+      "label": "Mehr lesen",
+      "url": "https://chordlist.app/blog"
+    },
+    "html": "/emails/chordlist-announcement/de.html",
+    "text": "/emails/chordlist-announcement/de.txt",
+    "bytes": 9461
+  }
+]

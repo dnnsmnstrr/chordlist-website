@@ -3,6 +3,7 @@ import test from "node:test"
 
 import {
   chordlinkCheckoutNotice,
+  chordlinkInterestReason,
   chordlinkNumberingRange,
   mayOpenChordlinkCheckout,
   parseChordlinkAvailability,
@@ -82,5 +83,45 @@ test("only the two notices the page can explain are accepted", () => {
   // A query string is user input: anything else must not reach the copy lookup.
   for (const value of [undefined, "", "SOLD-OUT", "true", "<script>"]) {
     assert.equal(chordlinkCheckoutNotice(value), null)
+  }
+})
+
+test("interest is collected only where being turned away means something", () => {
+  const edition = { editionKey: "first", available: 0, soldOut: true, salesEnabled: true }
+  assert.equal(chordlinkInterestReason(edition), "sold-out")
+  assert.equal(
+    chordlinkInterestReason({ editionKey: "first", available: 5, soldOut: false, salesEnabled: false }),
+    "prelaunch",
+  )
+  // Sold out outranks the switch: the batch is gone either way, and a second edition is what that
+  // visitor is actually waiting for.
+  assert.equal(
+    chordlinkInterestReason({ editionKey: "first", available: 0, soldOut: true, salesEnabled: false }),
+    "sold-out",
+  )
+})
+
+test("nothing is collected when there is something to buy, or nothing to trust", () => {
+  assert.equal(
+    chordlinkInterestReason({ editionKey: "first", available: 5, soldOut: false, salesEnabled: true }),
+    null,
+  )
+  // An unreadable response is an outage rather than a state of the product: sales may be open
+  // behind it, so neither a count nor a promise to notify would be honest.
+  assert.equal(chordlinkInterestReason(null), null)
+})
+
+test("interest and checkout never both apply", () => {
+  for (const availability of [
+    { editionKey: "first", available: 5, soldOut: false, salesEnabled: true },
+    { editionKey: "first", available: 5, soldOut: false, salesEnabled: false },
+    { editionKey: "first", available: 0, soldOut: true, salesEnabled: true },
+    { editionKey: "first", available: 0, soldOut: true, salesEnabled: false },
+    null,
+  ]) {
+    assert.equal(
+      mayOpenChordlinkCheckout(availability) && chordlinkInterestReason(availability) !== null,
+      false,
+    )
   }
 })

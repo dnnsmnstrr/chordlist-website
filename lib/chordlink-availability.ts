@@ -48,3 +48,29 @@ export function chordlinkNumberingRange(saleQuantity: number, width = 3): string
   if (!Number.isInteger(saleQuantity) || saleQuantity < 1) return ""
   return `${"1".padStart(width, "0")}\u2013${String(saleQuantity).padStart(width, "0")}`
 }
+
+/**
+ * Why a visitor who wants a chordlink cannot have one right now.
+ *
+ * `prelaunch` and `sold-out` are the two states worth measuring separately, and later worth
+ * mailing separately: the first group is waiting for the switch to open, the second is waiting for
+ * a batch that does not exist yet.
+ */
+export type ChordlinkInterestReason = "prelaunch" | "sold-out"
+
+/**
+ * Which interest signal, if any, the product page should collect.
+ *
+ * `null` when there is nothing to collect: either checkout is open, or — the case worth spelling
+ * out — the availability response could not be read at all. That state is an outage, not a state
+ * of the product, and sales may well be open behind it. Counting it as pre-launch interest would
+ * inflate the signal with people a failure turned away, and would offer to notify them about a
+ * launch that has already happened.
+ */
+export function chordlinkInterestReason(
+  availability: ChordlinkAvailability | null,
+): ChordlinkInterestReason | null {
+  if (availability === null) return null
+  if (availability.soldOut) return "sold-out"
+  return availability.salesEnabled ? null : "prelaunch"
+}

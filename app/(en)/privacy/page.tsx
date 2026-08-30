@@ -82,8 +82,29 @@ export default function PrivacyPage() {
           <PolicySection title={sections.chordlinkOrders.title}>
             <PolicyParagraphs paragraphs={sections.chordlinkOrders.paragraphs} />
             <p>
-              Stripe describes its handling of checkout data in its{" "}
-              <PolicyLink href="https://stripe.com/privacy">privacy policy</PolicyLink>.
+              {sections.chordlinkOrders.stripeLinkPrefix}{" "}
+              <PolicyLink href="https://stripe.com/privacy">
+                {sections.chordlinkOrders.stripeLinkLabel}
+              </PolicyLink>
+              .
+            </p>
+            <p>
+              {sections.chordlinkOrders.supabaseLinkPrefix}{" "}
+              <PolicyLink href="https://supabase.com/privacy">
+                {sections.chordlinkOrders.supabaseLinkLabel}
+              </PolicyLink>
+              .
+            </p>
+          </PolicySection>
+
+          <PolicySection title={sections.chordlinkNotifications.title}>
+            <PolicyParagraphs paragraphs={sections.chordlinkNotifications.paragraphs} />
+            <p>
+              {sections.chordlinkNotifications.linkPrefix}{" "}
+              <PolicyLink href="https://www.brevo.com/legal/privacypolicy/">
+                {sections.chordlinkNotifications.linkLabel}
+              </PolicyLink>
+              .
             </p>
           </PolicySection>
 

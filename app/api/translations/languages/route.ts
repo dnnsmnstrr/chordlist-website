@@ -12,6 +12,7 @@ import {
   writeLanguage,
   writeVocabulary,
 } from "@/lib/translations/store"
+import { refuseUnlessAdmin } from "@/lib/server/admin-auth"
 
 export const dynamic = "force-dynamic"
 
@@ -29,6 +30,9 @@ export const dynamic = "force-dynamic"
 /// key is visible — `apply-translations.py` lists it and the build fails — whereas a plausible
 /// wrong translation is not.
 export async function POST(request: Request) {
+  const refusal = await refuseUnlessAdmin()
+  if (refusal) return refusal
+
   try {
     await assertEditable()
 
