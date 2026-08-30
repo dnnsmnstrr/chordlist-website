@@ -6,14 +6,17 @@ import { startChordlinkCheckout } from "@/app/chordlink/actions"
 import {
   type ChordlinkAvailability,
   type ChordlinkCheckoutNotice,
+  chordlinkInterestReason,
   chordlinkNumberingRange,
   mayOpenChordlinkCheckout,
 } from "@/lib/chordlink-availability"
 import { ChordlinkModelViewer } from "@/components/chordlink-model-viewer"
+import { ChordlinkNotifyForm } from "@/components/chordlink-notify-form"
 import { SiteFooter } from "@/components/site-footer"
 import { SiteHeader } from "@/components/site-header"
 import { buttonVariants } from "@/components/ui/button"
 import { siteConfig } from "@/lib/site-config"
+import { isChordlinkInterestConfigured } from "@/lib/server/brevo-interest"
 import { isChordlinkStripeConfigured } from "@/lib/server/stripe-chordlink"
 import { cn } from "@/lib/utils"
 import type { Language } from "@/locales"
@@ -52,6 +55,24 @@ const copy = {
     diyBody: "The browser-based model generator is free to use for a personal chordlink. Add your own NFC tag and program its link at home.",
     diyAction: "See the DIY instructions",
     manufacturingNote: "Because every chordlink is 3D-printed, small cosmetic layer lines, marks, or variations can occur. These are part of the production method and are not considered defects. Your statutory warranty and withdrawal rights remain unaffected.",
+    notify: {
+      prelaunch: {
+        title: "Not on sale yet",
+        body: "Leave your email and you will hear from us once the first edition goes on sale. Nothing else is sent to that address.",
+      },
+      "sold-out": {
+        title: "Want the next one?",
+        body: "The first edition is gone. Leave your email and you will hear from us when the next batch is made.",
+      },
+      label: "Email address",
+      placeholder: "you@example.com",
+      action: "Get notified",
+      pending: "Sending…",
+      consent: "You will receive one confirmation email; you are only on the list once you click the link in it. We use your address only to tell you about chordlink availability, and every message has an unsubscribe link.",
+      sent: "Almost there — check your inbox and click the link in the confirmation email. You are on the list only once you have.",
+      invalidEmail: "That does not look like an email address. Please check it and try again.",
+      unavailable: "The signup is temporarily unavailable. Please try again later.",
+    },
     legal: "Physical-product terms and withdrawal information",
   },
   de: {
@@ -83,6 +104,24 @@ const copy = {
     diyBody: "Der Modellgenerator im Browser ist für einen persönlichen chordlink kostenlos nutzbar. Ergänze zu Hause deinen eigenen NFC-Tag und programmiere den Link.",
     diyAction: "Zur DIY-Anleitung",
     manufacturingNote: "Da jeder chordlink 3D-gedruckt wird, können kleine kosmetische Schichtlinien, Spuren oder Abweichungen entstehen. Sie sind Teil des Herstellungsverfahrens und gelten nicht als Mangel. Deine gesetzlichen Gewährleistungs- und Widerrufsrechte bleiben unberührt.",
+    notify: {
+      prelaunch: {
+        title: "Noch nicht im Verkauf",
+        body: "Hinterlasse deine E-Mail-Adresse und wir melden uns, sobald die erste Edition in den Verkauf geht. Mehr wird an diese Adresse nicht geschickt.",
+      },
+      "sold-out": {
+        title: "Du willst den nächsten?",
+        body: "Die erste Edition ist vergriffen. Hinterlasse deine E-Mail-Adresse und wir melden uns, sobald die nächste Charge gefertigt wird.",
+      },
+      label: "E-Mail-Adresse",
+      placeholder: "du@beispiel.de",
+      action: "Benachrichtigen",
+      pending: "Wird gesendet…",
+      consent: "Du erhältst eine Bestätigungs-E-Mail; erst wenn du den Link darin anklickst, stehst du auf der Liste. Wir nutzen deine Adresse ausschließlich, um dich über die Verfügbarkeit von chordlink zu informieren, und jede Nachricht enthält einen Abmeldelink.",
+      sent: "Fast geschafft — sieh in dein Postfach und klicke den Link in der Bestätigungs-E-Mail. Erst danach stehst du auf der Liste.",
+      invalidEmail: "Das sieht nicht nach einer E-Mail-Adresse aus. Bitte prüfe sie und versuche es erneut.",
+      unavailable: "Die Anmeldung ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.",
+    },
     legal: "Bedingungen und Widerrufsbelehrung für physische Produkte",
   },
 } as const
@@ -99,6 +138,14 @@ export function ChordlinkPage({
   const text = copy[language]
   const soldOut = availability?.soldOut === true
   const checkoutAllowed = mayOpenChordlinkCheckout(availability)
+  const unavailableLabel = soldOut ? text.soldOut : text.unavailable
+  // Only offered where being turned away is a fact about the product rather than about an outage,
+  // and only where the list can actually be reached — a form that quietly drops an address is worse
+  // than no form, because the visitor leaves believing they will hear from us.
+  const interestReason = chordlinkInterestReason(availability)
+  const notify = interestReason && isChordlinkInterestConfigured(interestReason)
+    ? { reason: interestReason, ...text.notify[interestReason] }
+    : null
   const paths = language === "de"
     ? { en: "/chordlink" as Route, de: "/de/chordlink" as Route, terms: "/de/chordlink/terms" as Route, diy: "/de/chordlink/diy" as Route }
     : { en: "/chordlink" as Route, de: "/de/chordlink" as Route, terms: "/chordlink/terms" as Route, diy: "/chordlink/diy" as Route }
@@ -124,7 +171,7 @@ export function ChordlinkPage({
             ) : (
               // Sold out is shown on the button itself, so nobody clicks Buy to find out.
               <button className={cn(buttonVariants({ size: "lg" }), "h-11 px-5")} disabled>
-                {soldOut ? text.soldOut : text.unavailable}
+                {unavailableLabel}
               </button>
             )}
             <span className="text-sm text-muted-foreground">
@@ -140,6 +187,14 @@ export function ChordlinkPage({
             <p className="mt-3 text-sm text-destructive" role="alert">
               {checkoutNotice === "sold-out" ? text.soldOutNotice : text.checkoutUnavailable}
             </p>
+          ) : null}
+
+          {notify ? (
+            <section aria-labelledby="chordlink-notify" className="mt-8 rounded-2xl border border-border bg-card/60 p-5">
+              <h2 className="text-lg font-semibold tracking-tight" id="chordlink-notify">{notify.title}</h2>
+              <p className="mt-2 max-w-md text-pretty text-sm leading-6 text-muted-foreground">{notify.body}</p>
+              <ChordlinkNotifyForm copy={text.notify} language={language} />
+            </section>
           ) : null}
 
           <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">

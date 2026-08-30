@@ -1,0 +1,19 @@
+chordlist
+
+Bestätige deine E-Mail-Adresse
+
+Du möchtest erfahren, wann chordlink verfügbar ist — der 3D-gedruckte NFC-Tag, der dein Songbook öffnet. Ein Klick bestätigt das.
+
+Wir schreiben dir, wenn es etwas zu sagen gibt: wenn die erste Edition in den Verkauf geht oder wenn eine neue Charge gefertigt wird. Sonst nichts.
+
+Adresse bestätigen: {{ doubleoptin }}
+
+Wenn du das nicht angefordert hast, ignoriere diese E-Mail einfach. Ohne die Bestätigung oben wird deine Adresse nicht aufgenommen und du hörst nichts mehr von uns.
+
+—
+Du erhältst diese E-Mail, weil du dich über die Verfügbarkeit von chordlink informieren lassen wolltest.
+
+makerer studio · Dennis Muensterer
+Frauenlobplatz 2, 55118 Mainz, Germany
+Impressum: https://chordlist.app/de/impressum
+Datenschutz: https://chordlist.app/privacy

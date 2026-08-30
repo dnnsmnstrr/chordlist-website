@@ -9,6 +9,7 @@ import {
   readLanguage,
   readVocabulary,
 } from "@/lib/translations/store"
+import { requireAdmin } from "@/lib/server/admin-auth"
 
 /// The translation editor.
 ///
@@ -27,6 +28,7 @@ export const metadata = {
 }
 
 export default async function TranslationsPage() {
+  await requireAdmin("/translations")
   if (process.env.NODE_ENV === "production") {
     notFound()
   }

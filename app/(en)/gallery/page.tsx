@@ -5,6 +5,7 @@ import { SiteFooter } from "@/components/site-footer"
 import { SiteHeader } from "@/components/site-header"
 import { pageMetadata } from "@/lib/page-metadata"
 import { galleryCopy } from "@/locales/en"
+import { requireAdmin } from "@/lib/server/admin-auth"
 
 export const metadata: Metadata = pageMetadata({
   path: "/gallery",
@@ -53,7 +54,8 @@ const media: readonly GalleryMedia[] = [
   },
 ]
 
-export default function GalleryPage() {
+export default async function GalleryPage() {
+  await requireAdmin("/gallery")
   return (
     <main className="min-h-screen bg-background text-foreground">
       <SiteHeader />

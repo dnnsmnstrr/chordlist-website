@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en" dir="ltr" style="margin:0;padding:0;">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <!-- Without these two a client that supports dark mode inverts the colours itself, usually
+         badly: the button loses its contrast and the muted grey turns unreadable. -->
+    <meta name="color-scheme" content="light dark" />
+    <meta name="supported-color-schemes" content="light dark" />
+    <title>Confirm your chordlink notification</title>
+    <style>
+      /* Enhancement only. Everything that must render is inline above. */
+      @media (prefers-color-scheme: dark) {
+        .email-page { background-color: #09090B !important; }
+        .email-surface { background-color: #131316 !important; border-color: #27272A !important; }
+        .email-text, .email-surface h2, .email-surface h3, .email-surface h4,
+        .email-surface p, .email-surface li, .email-surface strong, .email-surface a { color: #FAFAFA !important; }
+        /* Descendant selectors on purpose: ".email-surface p" above outranks a bare ".email-muted",
+           so without these the eyebrow and the footnote would come back at full contrast in dark
+           mode and the button's label would end up the same colour as its own background. */
+        .email-muted, .email-muted a,
+        .email-surface .email-muted, .email-surface .email-muted a { color: #A1A1AA !important; }
+        .email-button, .email-surface .email-button { background-color: #FAFAFA !important; }
+        .email-button a, .email-surface .email-button a { color: #18181B !important; }
+        .email-rule, .email-surface .email-rule { border-color: #27272A !important; }
+      }
+      @media only screen and (max-width: 620px) {
+        .email-shell { width: 100% !important; }
+        .email-pad { padding-left: 18px !important; padding-right: 18px !important; }
+      }
+      /* Stops iOS and some Android clients turning dates and addresses into blue links. */
+      a[x-apple-data-detectors], .unstyle-auto-detected-links a { color: inherit !important; text-decoration: none !important; }
+    </style>
+  </head>
+  <body class="email-page" style="margin:0;padding:0;width:100%;background-color:#F4F4F5;">
+    <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;font-size:1px;line-height:1px;color:transparent;">One click and you are on the list — we will not write again until you do.&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;</div>
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" class="email-page" style="background-color:#F4F4F5;">
+      <tr>
+        <td align="center" style="padding:32px 24px;">
+          <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="600" class="email-shell" style="width:600px;max-width:100%;">
+            <tr>
+              <td class="email-pad" style="padding:0 4px 18px 4px;">
+                <span class="email-text" style="font-family:ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;font-size:16px;font-weight:600;letter-spacing:-0.01em;color:#18181B;">chordlist</span>
+              </td>
+            </tr>
+            <tr>
+              <td class="email-surface email-pad" style="background-color:#FFFFFF;border:1px solid #E4E4E7;border-radius:16px;padding:32px 24px;">
+              <p class="email-muted" style="margin:0 0 10px 0;font-family:ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;font-size:12px;letter-spacing:0.12em;text-transform:uppercase;line-height:18px;color:#71717A;">chordlink</p>
+                <h1 class="email-text" style="margin:0 0 16px 0;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:26px;line-height:34px;font-weight:600;letter-spacing:-0.01em;color:#18181B;">Confirm your email address</h1>
+                <p style="margin:0 0 16px 0;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:16px;line-height:26px;color:#18181B;">You asked to hear from us when <strong style="font-weight:600;color:#18181B;">chordlink</strong> — the 3D-printed NFC tag that opens your songbook — becomes available. One click confirms it.</p>
+<p style="margin:0 0 16px 0;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:16px;line-height:26px;color:#18181B;">We will email you when there is something to tell you: when the first edition goes on sale, or when a new batch is made. Nothing else.</p>
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:8px 0 4px 0;">
+                <tr>
+                  <td class="email-button" bgcolor="#18181B" style="border-radius:8px;background-color:#18181B;">
+                    <a href="{{ doubleoptin }}" style="display:inline-block;padding:13px 22px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;font-weight:600;line-height:20px;color:#FAFAFA;text-decoration:none;border-radius:8px;">Confirm my address</a>
+                  </td>
+                </tr>
+              </table>
+              <p class="email-muted" style="margin:20px 0 0 0;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:13px;line-height:22px;color:#71717A;">If you did not ask for this, ignore this email. Without the confirmation above your address is never added and you will not hear from us again.</p>
+              </td>
+            </tr>
+            <tr>
+              <td class="email-muted email-pad" style="padding:22px 4px 0 4px;">
+              <hr class="email-rule" style="border:0;border-top:1px solid #E4E4E7;margin:0 0 20px 0;" />
+              <p style="margin:0 0 10px 0;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:12px;line-height:20px;color:#71717A;">
+                You are receiving this because you asked to be notified about chordlink availability.
+              </p>
+              <p style="margin:0 0 10px 0;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:12px;line-height:20px;color:#71717A;">
+                makerer studio · Dennis Muensterer<br />
+                Frauenlobplatz 2, 55118 Mainz, Germany
+              </p>
+              <p style="margin:0;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:12px;line-height:20px;color:#71717A;">
+                <a href="https://chordlist.app/imprint" style="color:#71717A;text-decoration:underline;">Imprint</a>
+                &nbsp;·&nbsp;
+                <a href="https://chordlist.app/privacy" style="color:#71717A;text-decoration:underline;">Privacy</a>
+              </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
