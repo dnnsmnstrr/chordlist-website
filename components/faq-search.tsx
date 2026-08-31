@@ -10,13 +10,16 @@ import { cn } from "@/lib/utils"
 import { dictionary, type Language } from "@/locales"
 
 type FaqSearchProps = {
-  title: string
   items: readonly FaqEntry[]
   language: Language
+  /** Rendered beside the field. Omitted on a page whose whole heading is already the questions. */
+  title?: string
+  /** A sentence under the empty state, where a page has somewhere better to send a reader. */
+  emptyHint?: string
 }
 
 /**
- * The question list with a search field beside its heading.
+ * The question list with a search field, beside its heading where the page has one.
  *
  * Searching covers the answers and each question's aliases, not just the questions themselves:
  * someone arriving with "unlock", "money back", or a filename in mind is describing what they read
@@ -28,10 +31,12 @@ type FaqSearchProps = {
  *
  * Copy is read here from the dictionary rather than handed down as a prop, which is the house
  * pattern for a client component and is also the only thing that works: `resultCount` is a
- * function, and a function cannot cross the server-to-client boundary as a prop.
+ * function, and a function cannot cross the server-to-client boundary as a prop. It comes from
+ * `commonCopy` because this is chrome — the same widget and the same words on /faq and /support —
+ * while the per-page sentences that differ arrive as plain string props.
  */
-export function FaqSearch({ title, items, language }: FaqSearchProps) {
-  const copy = dictionary(language).support.search
+export function FaqSearch({ items, language, title, emptyHint }: FaqSearchProps) {
+  const copy = dictionary(language).common.faqSearch
   const inputId = useId()
   const countId = useId()
   const [query, setQuery] = useState("")
@@ -43,9 +48,11 @@ export function FaqSearch({ title, items, language }: FaqSearchProps) {
   return (
     <div className="mt-12 flex flex-col gap-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <h2 className="text-lg font-semibold tracking-tight">{title}</h2>
+        {title ? <h2 className="text-lg font-semibold tracking-tight">{title}</h2> : null}
 
-        <div className="relative sm:w-64">
+        {/* Beside a heading the field is a control on a section; without one it is the whole row,
+            and a full-width field reads as the way into the list rather than as an afterthought. */}
+        <div className={cn("relative", title ? "sm:w-64" : "w-full")}>
           <label htmlFor={inputId} className="sr-only">
             {copy.label}
           </label>
@@ -90,6 +97,7 @@ export function FaqSearch({ title, items, language }: FaqSearchProps) {
       {matches.length === 0 ? (
         <p className="rounded-xl border border-border bg-muted/40 p-8 text-center text-sm text-muted-foreground">
           {copy.empty}
+          {emptyHint ? <> {emptyHint}</> : null}
         </p>
       ) : (
         // Keyed by the query so a new set of matches mounts fresh: while searching every match

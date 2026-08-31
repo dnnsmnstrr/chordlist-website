@@ -45,7 +45,12 @@ export function SupportPage({ language }: SupportPageProps) {
           </p>
         </section>
 
-        <FaqSearch title={copy.questionsTitle} items={copy.questions} language={language} />
+        <FaqSearch
+          items={copy.questions}
+          language={language}
+          title={copy.questionsTitle}
+          emptyHint={copy.searchEmptyHint}
+        />
 
         <p className="mt-10 text-sm text-muted-foreground">
           {copy.faq.prefix}{" "}

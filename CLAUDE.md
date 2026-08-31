@@ -110,15 +110,23 @@ description, an `aria-label` — pass them through `plainInlineText()`, which st
 `components/structured-data.tsx` does this for the FAQ, so a rich result quotes the page rather than
 its markup.
 
-#### Search aliases
+#### The question search and its aliases
 
-Each support question carries a `keywords` list — words a reader might search for that the answer
-does not use ("money back", "subscription", "abo"). Nothing renders them; `lib/faq.ts` folds them
-into what the search matches on, and `tests/faq-search.test.ts` asserts that a set of plausible
-queries still reaches the question it is about, in both languages. They are search terms rather
-than claims, so "subscription" belongs on the one-time purchase answer: it is the word a reader who
-believes otherwise will type. `searchAliases()` in `locales/en.ts` widens each list to `string[]`,
-because a tuple would force every translation to invent exactly as many synonyms as English has.
+`/faq` and `/support` render the same `FaqSearch`, whose own words live in `commonCopy.faqSearch`
+— it is chrome, so both pages and both languages share them. A page passes what differs as plain
+string props: a `title` to sit beside the field, and an `emptyHint` where it has somewhere better
+to send a reader than "nothing matched".
+
+Every question in both lists carries a `keywords` list — words a reader might search for that the
+answer does not use ("money back", "subscription", "telemetry", "abo"). Nothing renders them;
+`lib/faq.ts` folds them into what the search matches on, and `tests/faq-search.test.ts` asserts that
+plausible queries still reach the question they are about. They are search terms rather than claims,
+so "subscription" belongs on the one-time purchase answer: it is the word a reader who believes
+otherwise will type, and the answer they land on is what corrects them. The German lists also carry
+the key English terms — "refund", "unlock", "shipping" — because a German reader who knows the app's
+English wording should not have to translate their own question first. `searchAliases()` in
+`locales/en.ts` widens each list to `string[]`, because a tuple would force every translation to
+invent exactly as many synonyms as English has.
 
 #### Copy variants
 

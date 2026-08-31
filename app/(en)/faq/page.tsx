@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 
-import { FaqList } from "@/components/faq-list"
+import { FaqSearch } from "@/components/faq-search"
 import { SiteFooter } from "@/components/site-footer"
 import { SiteHeader } from "@/components/site-header"
 import { FaqStructuredData } from "@/components/structured-data"
@@ -29,7 +29,7 @@ export default function FAQPage() {
           </p>
         </header>
 
-        <FaqList items={faqCopy.questions} />
+        <FaqSearch items={faqCopy.questions} language="en" />
 
         <p className="mt-10 text-sm text-muted-foreground">
           {faqCopy.contactPrefix}{" "}

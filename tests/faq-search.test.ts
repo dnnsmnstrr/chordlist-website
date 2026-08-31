@@ -3,7 +3,7 @@ import test from "node:test"
 
 import { faqSearchText, matchingFaqEntries } from "../lib/faq"
 import { supportCopy as de } from "../locales/de"
-import { supportCopy as en } from "../locales/en"
+import { faqCopy, supportCopy as en } from "../locales/en"
 
 /** The question a query should find, named by a distinctive word in it. */
 const englishQueries: ReadonlyArray<[query: string, questionContains: string]> = [
@@ -32,16 +32,47 @@ const germanQueries: ReadonlyArray<[query: string, questionContains: string]> = 
   ["absturz", "Fehler"],
 ]
 
-test("every support question carries aliases, in both languages", () => {
-  for (const [language, copy] of [
-    ["en", en],
-    ["de", de],
-  ] as const) {
-    for (const question of copy.questions) {
-      assert.ok(
-        (question.keywords?.length ?? 0) > 0,
-        `${language}: "${question.question}" has no search aliases`,
-      )
+/** Both searchable lists, so neither can lose its aliases quietly. */
+const searchableQuestions = [
+  ["support (en)", en.questions],
+  ["support (de)", de.questions],
+  ["faq", faqCopy.questions],
+] as const
+
+const faqQueries: ReadonlyArray<[query: string, questionContains: string]> = [
+  ["where are my files", "Where are my songs stored"],
+  ["icloud drive", "Where are my songs stored"],
+  ["export", "without"],
+  ["obsidian", "without"],
+  ["airplane mode", "offline"],
+  ["privacy", "analytics"],
+  ["telemetry", "analytics"],
+  ["opt out", "analytics"],
+  ["release date", "When is it out"],
+  ["price", "cost"],
+  ["subscription", "cost"],
+  ["ipad", "devices"],
+  ["android", "Android"],
+]
+
+/**
+ * A German reader who knows the app's English wording — or who read the App Store listing — should
+ * not have to translate their own question before searching.
+ */
+const englishQueriesOnGermanCopy: ReadonlyArray<[query: string, questionContains: string]> = [
+  ["refund", "Geld zurück"],
+  ["money back", "Geld zurück"],
+  ["unlock", "freigeschaltet"],
+  ["restore purchases", "freigeschaltet"],
+  ["shipping", "chordlink-Bestellung"],
+  ["crash", "Fehler"],
+  ["import", "Songs in"],
+]
+
+test("every searchable question carries aliases", () => {
+  for (const [label, questions] of searchableQuestions) {
+    for (const question of questions) {
+      assert.ok((question.keywords?.length ?? 0) > 0, `${label}: "${question.question}" has no aliases`)
     }
   }
 })
@@ -62,6 +93,26 @@ test("German queries reach the question they are about, umlauts optional", () =>
     assert.ok(
       matches.some((match) => match.question.includes(questionContains)),
       `"${query}" did not find the question about "${questionContains}"`,
+    )
+  }
+})
+
+test("FAQ queries reach the question they are about", () => {
+  for (const [query, questionContains] of faqQueries) {
+    const matches = matchingFaqEntries(faqCopy.questions, query)
+    assert.ok(
+      matches.some((match) => match.question.includes(questionContains)),
+      `"${query}" did not find the FAQ question about "${questionContains}"`,
+    )
+  }
+})
+
+test("English queries reach the German question they are about", () => {
+  for (const [query, questionContains] of englishQueriesOnGermanCopy) {
+    const matches = matchingFaqEntries(de.questions, query)
+    assert.ok(
+      matches.some((match) => match.question.includes(questionContains)),
+      `"${query}" did not find the German question about "${questionContains}"`,
     )
   }
 })
