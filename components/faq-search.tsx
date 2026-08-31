@@ -3,9 +3,9 @@
 import { useId, useMemo, useState } from "react"
 import { Search, X } from "lucide-react"
 
-import { FaqList, type FaqEntry } from "@/components/faq-list"
-import { plainInlineText } from "@/lib/inline-markup"
-import { matchesSearchTokens, searchTokens } from "@/lib/text-search"
+import { FaqList } from "@/components/faq-list"
+import { matchingFaqEntries, type FaqEntry } from "@/lib/faq"
+import { searchTokens } from "@/lib/text-search"
 import { cn } from "@/lib/utils"
 import { dictionary, type Language } from "@/locales"
 
@@ -18,10 +18,9 @@ type FaqSearchProps = {
 /**
  * The question list with a search field beside its heading.
  *
- * Searching covers the answers, not just the questions: someone arriving with "unlock" or a
- * filename in mind is describing what they read on screen, not how the question was worded. The
- * answer text is stripped of its inline markup first, so a `<code>` tag can never sit between a
- * query and its match.
+ * Searching covers the answers and each question's aliases, not just the questions themselves:
+ * someone arriving with "unlock", "money back", or a filename in mind is describing what they read
+ * on screen, or what they call it, rather than how the question was worded. See `lib/faq.ts`.
  *
  * Filtering is local state rather than a `?q=` parameter — the blog syncs to the URL because a
  * filtered reading list is worth sharing, while a support search is something a reader does once,
@@ -37,15 +36,7 @@ export function FaqSearch({ title, items, language }: FaqSearchProps) {
   const countId = useId()
   const [query, setQuery] = useState("")
 
-  const matches = useMemo(() => {
-    const tokens = searchTokens(query)
-    if (tokens.length === 0) return items
-
-    return items.filter((item) => {
-      const haystack = plainInlineText(`${item.question} ${item.answer} ${item.link?.label ?? ""}`)
-      return matchesSearchTokens(haystack, tokens)
-    })
-  }, [items, query])
+  const matches = useMemo(() => matchingFaqEntries(items, query), [items, query])
 
   const isSearching = searchTokens(query).length > 0
 

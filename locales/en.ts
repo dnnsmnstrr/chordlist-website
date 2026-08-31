@@ -386,6 +386,17 @@ export const faqCopy = {
   contactPrefix: "Still have a question? Email",
 } as const
 
+/**
+ * Extra words a support question should match in the search, and that nothing renders.
+ *
+ * Widened to `string[]` on purpose: `as const` would make each list a tuple, and `Localized` maps a
+ * tuple element by element, which would force every translation to invent exactly as many aliases
+ * as English has. Synonyms do not translate one for one.
+ */
+function searchAliases(...values: string[]): readonly string[] {
+  return values
+}
+
 export const supportCopy = {
   metadata: {
     title: "Support",
@@ -409,30 +420,135 @@ export const supportCopy = {
   questions: [
     {
       question: "How do I get my songs into chordlist?",
+      keywords: searchAliases(
+        "import",
+        "importing",
+        "add a song",
+        "new song",
+        "create a song",
+        "move my library",
+        "transfer",
+        "migrate",
+        "share sheet",
+        "share extension",
+        "paste a link",
+        "url",
+        "ultimate guitar",
+        "genius",
+        "azlyrics",
+        "tab",
+        "getting started",
+        "first launch",
+        "choose a folder",
+      ),
       answer: `Choose the folder your library lives in when you first open the app. It can be changed later under <code>Settings → Songs Folder</code>. Then add songs whichever way suits: write your own in the app, paste a lyrics or tab URL, share a supported page to ${siteConfig.name} from another app, or copy <code>Artist/Song Title.md</code> files into the folder with Files or Finder and pull down on the library to rescan.`,
       link: { href: "/docs#adding-songs", label: "How adding and importing songs works" },
     },
     {
       question: "My songs are not showing up.",
+      keywords: searchAliases(
+        "missing",
+        "disappeared",
+        "empty library",
+        "not listed",
+        "cannot find my songs",
+        "nothing shows",
+        "sync",
+        "syncing",
+        "icloud",
+        "offline",
+        "download",
+        "refresh",
+        "reload",
+        "subfolder",
+        "nested",
+        "folder structure",
+        "obsidian",
+        "vault",
+      ),
       answer: `${siteConfig.name} reads Markdown files one level below the songs folder, so a song has to sit in an artist folder as <code>Artist/Song Title.md</code> — a file directly in the folder, or nested deeper, is not listed. Pull down on the library to rescan after editing files elsewhere. If the folder is in iCloud Drive, its contents can still be in the cloud rather than on the device; mark it <code>Keep Downloaded</code> in Files before a rehearsal.`,
       link: { href: "/docs#offline", label: "Keep an iCloud folder available offline" },
     },
     {
       question: "I paid and Unlimited Songs did not unlock.",
+      keywords: searchAliases(
+        "unlock",
+        "locked",
+        "purchase",
+        "bought",
+        "paid",
+        "restore",
+        "in-app purchase",
+        "iap",
+        "subscription",
+        "upgrade",
+        "pro",
+        "premium",
+        "unlimited",
+        "song limit",
+        "apple account",
+        "wrong account",
+        "another device",
+        "new iphone",
+      ),
       answer: `Open <code>Settings → ${siteConfig.name} unlimited → Unlock Unlimited Songs</code>, then tap <code>Restore Purchases</code> on the screen that appears. The unlock belongs to the App Store account that bought it rather than to a device, so restoring works anywhere that account is signed in — check the device is signed in with the right one. If it stays locked, email ${siteConfig.contact.support} with the App Store receipt and we will look into it.`,
     },
     {
       question: "I want a refund.",
+      keywords: searchAliases(
+        "refund",
+        "money back",
+        "cancel",
+        "cancellation",
+        "charged",
+        "charged twice",
+        "billing",
+        "invoice",
+        "receipt",
+        "report a problem",
+        "apple support",
+      ),
       answer: `Purchases in the app are made through the App Store, and only Apple can refund them: ask at reportaproblem.apple.com with the Apple Account that made the purchase. If something is not working, email ${siteConfig.contact.support} first — a fix usually arrives sooner than a refund does.`,
       link: { href: "https://reportaproblem.apple.com", label: "Request a refund from Apple" },
     },
     {
       question: "I have a question about a chordlink order.",
+      keywords: searchAliases(
+        "order",
+        "shipping",
+        "delivery",
+        "tracking",
+        "parcel",
+        "not arrived",
+        "return",
+        "withdrawal",
+        "stripe",
+        "redeem",
+        "redemption link",
+        "nfc",
+        "tag",
+        "sticker",
+      ),
       answer: `chordlink is a physical product bought through Stripe and delivered to addresses in Germany, so its orders, deliveries, returns, and refunds are handled by email rather than by Apple — including the redemption link for ${siteConfig.name} unlimited that arrives after an order. Write to ${siteConfig.contact.support} from the address you ordered with.`,
       link: { href: "/chordlink/terms", label: "chordlink terms, withdrawal, and returns" },
     },
     {
       question: "How do I report a bug or ask for a feature?",
+      keywords: searchAliases(
+        "bug",
+        "crash",
+        "crashing",
+        "freeze",
+        "broken",
+        "not working",
+        "feature request",
+        "suggestion",
+        "idea",
+        "feedback",
+        "beta",
+        "testflight",
+        "contact the developer",
+      ),
       answer: `<code>Settings → Send Feedback</code> opens an email to ${siteConfig.contact.feedback} with your app version and iOS version already filled in. From a TestFlight build you can also use <code>Send Beta Feedback</code> in the TestFlight app, which attaches a screenshot and the device details for you.`,
       link: { href: `mailto:${siteConfig.contact.feedback}`, label: "Send feedback by email" },
     },

@@ -110,6 +110,16 @@ description, an `aria-label` — pass them through `plainInlineText()`, which st
 `components/structured-data.tsx` does this for the FAQ, so a rich result quotes the page rather than
 its markup.
 
+#### Search aliases
+
+Each support question carries a `keywords` list — words a reader might search for that the answer
+does not use ("money back", "subscription", "abo"). Nothing renders them; `lib/faq.ts` folds them
+into what the search matches on, and `tests/faq-search.test.ts` asserts that a set of plausible
+queries still reaches the question it is about, in both languages. They are search terms rather
+than claims, so "subscription" belongs on the one-time purchase answer: it is the word a reader who
+believes otherwise will type. `searchAliases()` in `locales/en.ts` widens each list to `string[]`,
+because a tuple would force every translation to invent exactly as many synonyms as English has.
+
 #### Copy variants
 
 `locales/copy-variants.ts` holds alternative wordings of the home page — currently `files`

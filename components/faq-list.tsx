@@ -3,17 +3,7 @@ import Link from "next/link"
 
 import { CollapsibleSection } from "@/components/collapsible-section"
 import { InlineMarkup } from "@/components/inline-markup"
-
-export type FaqEntry = {
-  question: string
-  answer: string
-  /**
-   * Rendered under the answer. The href travels with the label because a translated answer points
-   * at a translated target — /de/chordlink/terms rather than /chordlink/terms — so the two cannot
-   * be split without pairing them again per language.
-   */
-  link?: { href: string; label: string }
-}
+import type { FaqEntry } from "@/lib/faq"
 
 /**
  * A question-and-answer list, one collapsible section per entry, first one open.
