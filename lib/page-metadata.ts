@@ -1,12 +1,13 @@
 import type { Metadata } from "next"
 
+import { faqHref } from "@/lib/faq-routes"
 import { imprintHref } from "@/lib/legal-routes"
 import { siteConfig } from "@/lib/site-config"
 import { supportHref } from "@/lib/support-routes"
 import { defaultLanguage, dictionary, homeHref, languages, type Language } from "@/locales"
 
 /** Route sets whose entries are translations of the same page. */
-const translatedRoutes: ReadonlyArray<Record<Language, string>> = [homeHref, imprintHref, supportHref]
+const translatedRoutes: ReadonlyArray<Record<Language, string>> = [homeHref, imprintHref, supportHref, faqHref]
 
 /**
  * The `hreflang` set for one route.

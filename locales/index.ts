@@ -40,6 +40,7 @@ export type Dictionary = {
   readonly home: Localized<typeof en.homeCopy>
   readonly imprint: Localized<typeof en.imprintCopy>
   readonly support: Localized<typeof en.supportCopy>
+  readonly faq: Localized<typeof en.faqCopy>
   readonly piano: Localized<typeof en.pianoCopy>
   readonly screenshotGallery: Localized<typeof en.screenshotGalleryCopy>
 }
@@ -51,6 +52,7 @@ const chrome = {
     metadata: en.metadataCopy,
     imprint: en.imprintCopy,
     support: en.supportCopy,
+    faq: en.faqCopy,
     piano: en.pianoCopy,
     screenshotGallery: en.screenshotGalleryCopy,
   },
@@ -60,6 +62,7 @@ const chrome = {
     metadata: de.metadataCopy,
     imprint: de.imprintCopy,
     support: de.supportCopy,
+    faq: de.faqCopy,
     piano: de.pianoCopy,
     screenshotGallery: de.screenshotGalleryCopy,
   },

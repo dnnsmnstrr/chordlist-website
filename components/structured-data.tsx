@@ -1,8 +1,9 @@
 import type { PostMeta } from "@/lib/blog"
+import { faqHref } from "@/lib/faq-routes"
 import { plainInlineText } from "@/lib/inline-markup"
 import { primaryAppLink, siteConfig } from "@/lib/site-config"
 import { defaultLanguage, dictionary, homeHref, type Language } from "@/locales"
-import { blogCopy, faqCopy } from "@/locales/en"
+import { blogCopy } from "@/locales/en"
 
 const organizationId = `${siteConfig.url}#organization`
 const websiteId = `${siteConfig.url}#website`
@@ -103,37 +104,42 @@ export function StructuredData({ language = defaultLanguage }: { language?: Lang
 }
 
 /**
- * The FAQ page's questions and answers as schema.org data.
+ * The FAQ page's questions and answers as schema.org data, in the language it renders in.
  *
- * Built from the same `faqCopy.questions` the page renders, which is what keeps
- * this honest: a rich result or an AI answer quoting it is quoting the page.
+ * Built from the same questions the page renders, which is what keeps this honest: a rich result or
+ * an AI answer quoting it is quoting the page. The German page carries its own block, at its own
+ * URL and with `inLanguage` to match — one FAQPage node claiming both would describe neither.
  */
-const faqStructuredData = {
-  "@context": "https://schema.org",
-  "@graph": [
-    organizationNode,
-    websiteNode(defaultLanguage),
-    {
-      "@type": "FAQPage",
-      "@id": `${siteConfig.url}/faq#faq`,
-      name: faqCopy.metadata.title,
-      description: faqCopy.metadata.description,
-      inLanguage: dictionary(defaultLanguage).locale.htmlLang,
-      isPartOf: { "@id": websiteId },
-      publisher: { "@id": organizationId },
-      // Stripped rather than rendered: an answer may carry the inline markers copy is allowed to
-      // use, and a backtick reaching a rich result would misquote the page.
-      mainEntity: faqCopy.questions.map((item) => ({
-        "@type": "Question",
-        name: plainInlineText(item.question),
-        acceptedAnswer: { "@type": "Answer", text: plainInlineText(item.answer) },
-      })),
-    },
-  ],
+function faqStructuredData(language: Language) {
+  const copy = dictionary(language).faq
+
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      organizationNode,
+      websiteNode(language),
+      {
+        "@type": "FAQPage",
+        "@id": `${siteConfig.url}${faqHref[language]}#faq`,
+        name: copy.metadata.title,
+        description: copy.metadata.description,
+        inLanguage: dictionary(language).locale.htmlLang,
+        isPartOf: { "@id": websiteId },
+        publisher: { "@id": organizationId },
+        // Stripped rather than rendered: an answer may carry the inline markup copy is allowed to
+        // use, and a tag reaching a rich result would misquote the page.
+        mainEntity: copy.questions.map((item) => ({
+          "@type": "Question",
+          name: plainInlineText(item.question),
+          acceptedAnswer: { "@type": "Answer", text: plainInlineText(item.answer) },
+        })),
+      },
+    ],
+  }
 }
 
-export function FaqStructuredData() {
-  return <JsonLd data={faqStructuredData} />
+export function FaqStructuredData({ language = defaultLanguage }: { language?: Language }) {
+  return <JsonLd data={faqStructuredData(language)} />
 }
 
 /**

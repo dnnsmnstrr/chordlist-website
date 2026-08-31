@@ -419,7 +419,7 @@ export const faqCopy = {
         "chord sharing",
       ),
       answer:
-        "The app can send anonymous usage and device information through TelemetryDeck. You can disable this in Settings. Sharing song titles, artists, and chord progressions is a separate opt-in setting; lyrics and tags are never included.",
+        "Only if you allow it. Analytics are off until you say yes to the question the app asks after onboarding, and the choice can be changed at any time in Settings. When they are on, anonymous usage and device information is sent through TelemetryDeck. Sharing song titles, artists, and chord progressions is a separate opt-in; lyrics and tags are never included.",
     },
     {
       question: "When is it out?",

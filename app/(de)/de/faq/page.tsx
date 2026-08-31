@@ -5,14 +5,16 @@ import { faqHref } from "@/lib/faq-routes"
 import { pageMetadata } from "@/lib/page-metadata"
 import { dictionary } from "@/locales"
 
-const copy = dictionary("en").faq
+const copy = dictionary("de").faq
 
 export const metadata: Metadata = pageMetadata({
-  path: faqHref.en,
+  path: faqHref.de,
   title: copy.metadata.title,
   description: copy.metadata.description,
+  image: "/og-de.png",
+  language: "de",
 })
 
 export default function Page() {
-  return <FaqPage language="en" />
+  return <FaqPage language="de" />
 }

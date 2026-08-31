@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { LanguageSwitcher } from "@/components/language-switcher"
 
+import { faqHref } from "@/lib/faq-routes"
 import { imprintHref } from "@/lib/legal-routes"
 import { siteConfig } from "@/lib/site-config"
 import { supportHref } from "@/lib/support-routes"
@@ -38,7 +39,7 @@ export function SiteFooter({
         <Link href={supportHref[language]} className="transition-colors hover:text-foreground">
           {common.navigation.support}
         </Link>
-        <Link href="/faq" className="transition-colors hover:text-foreground">
+        <Link href={faqHref[language]} className="transition-colors hover:text-foreground">
           {common.navigation.faq}
         </Link>
         <Link href="/press" className="transition-colors hover:text-foreground">

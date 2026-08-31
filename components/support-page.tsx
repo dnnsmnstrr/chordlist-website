@@ -4,6 +4,7 @@ import { FaqSearch } from "@/components/faq-search"
 import { InlineMarkup } from "@/components/inline-markup"
 import { SiteFooter } from "@/components/site-footer"
 import { SiteHeader } from "@/components/site-header"
+import { faqHref } from "@/lib/faq-routes"
 import { siteConfig } from "@/lib/site-config"
 import { supportHref } from "@/lib/support-routes"
 import { dictionary, type Language } from "@/locales"
@@ -54,7 +55,7 @@ export function SupportPage({ language }: SupportPageProps) {
 
         <p className="mt-10 text-sm text-muted-foreground">
           {copy.faq.prefix}{" "}
-          <Link href="/faq" className="font-medium text-foreground underline underline-offset-4">
+          <Link href={faqHref[language]} className="font-medium text-foreground underline underline-offset-4">
             {copy.faq.link}
           </Link>
           {copy.faq.suffix}

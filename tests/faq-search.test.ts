@@ -2,8 +2,8 @@ import assert from "node:assert/strict"
 import test from "node:test"
 
 import { faqSearchText, matchingFaqEntries } from "../lib/faq"
-import { supportCopy as de } from "../locales/de"
-import { faqCopy, supportCopy as en } from "../locales/en"
+import { faqCopy as faqDe, supportCopy as de } from "../locales/de"
+import { faqCopy as faqEn, supportCopy as en } from "../locales/en"
 
 /** The question a query should find, named by a distinctive word in it. */
 const englishQueries: ReadonlyArray<[query: string, questionContains: string]> = [
@@ -36,7 +36,8 @@ const germanQueries: ReadonlyArray<[query: string, questionContains: string]> = 
 const searchableQuestions = [
   ["support (en)", en.questions],
   ["support (de)", de.questions],
-  ["faq", faqCopy.questions],
+  ["faq (en)", faqEn.questions],
+  ["faq (de)", faqDe.questions],
 ] as const
 
 const faqQueries: ReadonlyArray<[query: string, questionContains: string]> = [
@@ -101,10 +102,33 @@ test("German queries reach the question they are about, umlauts optional", () =>
 
 test("FAQ queries reach the question they are about", () => {
   for (const [query, questionContains] of faqQueries) {
-    const matches = matchingFaqEntries(faqCopy.questions, query)
+    const matches = matchingFaqEntries(faqEn.questions, query)
     assert.ok(
       matches.some((match) => match.question.includes(questionContains)),
       `"${query}" did not find the FAQ question about "${questionContains}"`,
+    )
+  }
+})
+
+const germanFaqQueries: ReadonlyArray<[query: string, questionContains: string]> = [
+  ["speicherort", "Wo werden meine Songs"],
+  ["icloud", "Wo werden meine Songs"],
+  ["export", "ohne"],
+  ["flugmodus", "offline"],
+  ["datenschutz", "Analysedaten"],
+  ["telemetry", "Analysedaten"],
+  ["preis", "kosten"],
+  ["abo", "kosten"],
+  ["nfc", "chordlink"],
+  ["android", "Android"],
+]
+
+test("German FAQ queries reach the question they are about", () => {
+  for (const [query, questionContains] of germanFaqQueries) {
+    const matches = matchingFaqEntries(faqDe.questions, query)
+    assert.ok(
+      matches.some((match) => match.question.includes(questionContains)),
+      `"${query}" did not find the German FAQ question about "${questionContains}"`,
     )
   }
 })

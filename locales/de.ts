@@ -1,6 +1,7 @@
 import { siteConfig } from "@/lib/site-config"
 import {
   commonCopy as en,
+  faqCopy as enFaq,
   homeCopy as enHome,
   imprintCopy as enImprint,
   locale as enLocale,
@@ -14,9 +15,10 @@ import { phrase, term } from "@/locales/vocabulary"
 
 /// German copy for the site.
 ///
-/// **Partial, and deliberately shaped around the home page.** Everything the home page and the
-/// chrome around it render is translated: `locale`, `commonCopy`, `metadataCopy`, `homeCopy`,
-/// `imprintCopy`, `pianoCopy` and `screenshotGalleryCopy`. `docsCopy`, `faqCopy`, `pressCopy`, `screensCopy`,
+/// **Partial, and deliberately shaped around the home page and the pages a reader is sent to from
+/// outside the site.** Translated: `locale`, `commonCopy`, `metadataCopy`, `homeCopy`,
+/// `imprintCopy`, `supportCopy`, `faqCopy`, `pianoCopy` and `screenshotGalleryCopy`. `docsCopy`,
+/// `pressCopy`, `screensCopy`,
 /// `privacyCopy`, `blogCopy` and `galleryCopy` are not, so those pages are English-only and are
 /// still linked at their English URLs from the German header and footer. `locales/index.ts` is
 /// the registry that decides which of these a route gets; adding a page to the German site means
@@ -232,6 +234,172 @@ export const homeCopy: Localized<typeof enHome> = {
 } as const
 
 
+
+export const faqCopy: Localized<typeof enFaq> = {
+  metadata: {
+    title: "Häufige Fragen",
+    description: `Antworten zu Dateien, Datenschutz, Preis, Kompatibilität und Verfügbarkeit von ${siteConfig.name}.`,
+  },
+  title: "Häufige Fragen",
+  introduction: "Die praktischen Details zu deinen Dateien, zum Datenschutz, zur Kompatibilität und zum Start.",
+  questions: [
+    {
+      question: "Wo werden meine Songs gespeichert?",
+      keywords: [
+        "Speicherort",
+        "wo liegen meine Dateien",
+        "Pfad",
+        "auf meinem iPhone",
+        "iCloud Drive",
+        "Dateianbieter",
+        "lokal",
+        "Backup",
+        "Sicherung",
+        "Synchronisierung",
+        "storage",
+        "location",
+        "icloud",
+        "sync",
+        "backup",
+      ],
+      answer: `In einem ${term("folder", "de")}, den du selbst über die Dateien-Auswahl bestimmst. ${siteConfig.name} liest und schreibt die ${term("Markdown", "de")}-Dateien in diesem Ordner und lädt deine ${term("library", "de")} nirgendwohin hoch. Wählst du einen Ordner, den iCloud Drive oder ein anderer Anbieter verwaltet, kann dieser Anbieter ihn nach deinen Einstellungen synchronisieren.`,
+    },
+    {
+      question: `Kann ich meine Songs auch ohne ${siteConfig.name} öffnen?`,
+      keywords: [
+        "Export",
+        "exportieren",
+        "portabel",
+        "Lock-in",
+        "andere Apps",
+        "Markdown-Editor",
+        "Texteditor",
+        "Obsidian",
+        "Klartext",
+        "woanders öffnen",
+        "export",
+        "other apps",
+        "plain text",
+      ],
+      answer: `Ja. Jeder Song ist eine gewöhnliche ${term("Markdown", "de")}-Datei mit Titel, ${term("artist", "de")}, ${term("chord progression", "de")}, ${term("tag", "de")}s und ${term("lyrics", "de")}. Du kannst diese Dateien mit jeder anderen kompatiblen App öffnen, kopieren, verschieben, sichern oder bearbeiten.`,
+    },
+    {
+      question: "Funktioniert die App offline?",
+      keywords: [
+        "offline",
+        "kein Internet",
+        "kein Empfang",
+        "Flugmodus",
+        "ohne WLAN",
+        "im Flugzeug",
+        "Probe",
+        "Auftritt",
+        "no internet",
+        "airplane mode",
+      ],
+      answer: `Ja. Du kannst offline stöbern, bearbeiten, suchen, ${term("transpose", "de")} und aus deiner lokalen ${term("library", "de")} spielen. Nur der Import eines Songs von einer Webseite braucht eine Verbindung, um die angeforderte Seite zu laden.`,
+    },
+    {
+      question: `Sammelt ${siteConfig.name} Analysedaten?`,
+      keywords: [
+        "Datenschutz",
+        "Tracking",
+        "Telemetrie",
+        "TelemetryDeck",
+        "Datenerhebung",
+        "DSGVO",
+        "Analyse abschalten",
+        "personenbezogene Daten",
+        "Akkorddaten teilen",
+        "privacy",
+        "analytics",
+        "opt out",
+        "gdpr",
+      ],
+      answer: `Nur wenn du es erlaubst. Analysedaten sind aus, bis du die Frage bejahst, die die App nach dem Einstieg stellt; die Entscheidung lässt sich jederzeit in den Einstellungen ändern. Sind sie an, werden anonyme Nutzungs- und Geräteinformationen über TelemetryDeck gesendet. Das Teilen von Songtiteln, ${term("artist", "de")}s und ${term("chord progression", "de")}n ist eine getrennte Zustimmung; ${term("lyrics", "de")} und ${term("tag", "de")}s sind nie dabei.`,
+    },
+    {
+      question: "Wann erscheint die App?",
+      keywords: [
+        "Release",
+        "Erscheinungsdatum",
+        "Start",
+        "verfügbar",
+        "Verfügbarkeit",
+        "Vorbestellung",
+        "vorbestellen",
+        "TestFlight",
+        "Beta",
+        "release date",
+        "launch",
+        "preorder",
+      ],
+      answer: `${siteConfig.name} erscheint am ${launchDate} und lässt sich im App Store schon vorbestellen. Eine Vorbestellung lädt die App am Erscheinungstag automatisch auf dein Gerät. Bis dahin läuft eine kostenlose öffentliche Beta über TestFlight.`,
+    },
+    {
+      question: "Was wird die App kosten?",
+      keywords: [
+        "Preis",
+        "Kosten",
+        "kostenlos",
+        "gratis",
+        "bezahlen",
+        "In-App-Kauf",
+        "einmalig",
+        "Abo",
+        "Songlimit",
+        "price",
+        "cost",
+        "free",
+        "subscription",
+      ],
+      answer: `Geplant ist ein kostenloser Download für bis zu ${siteConfig.freeSongLimit} Songs, mit einem optionalen einmaligen Kauf für „${term("unlimited songs", "de")}“.`,
+    },
+    {
+      question: "Was ist chordlink?",
+      keywords: [
+        "chordlink",
+        "NFC",
+        "Tag",
+        "Aufkleber",
+        "Zubehör",
+        "Hardware",
+        "3D-Druck",
+        "DIY",
+        "Geschenk",
+        "kaufen",
+        "nfc tag",
+        "buy",
+      ],
+      answer: `Ein nummerierter, 3D-gedruckter NFC-Tag, den du an dein Instrument oder dessen Koffer setzt. Beim ersten Scannen legst du fest, was er tut – die ${term("library", "de")} öffnen, zufällig einen Song wählen oder einen Song anlegen – und jedes weitere Antippen führt sofort dorthin. Die erste Edition kostet ${siteConfig.chordlink.price.display} inklusive Versand innerhalb Deutschlands und enthält ${siteConfig.name} unlimited. Mit einem eigenen 3D-Drucker kannst du den Modellgenerator und die Anleitung zum Programmieren eines Tags kostenlos nutzen.`,
+      link: { href: "/de/chordlink", label: "chordlink ansehen" },
+    },
+    {
+      question: "Welche Geräte werden unterstützt?",
+      keywords: [
+        "Kompatibilität",
+        "Voraussetzungen",
+        "iPhone",
+        "iPad",
+        "iPadOS",
+        "iOS-Version",
+        "altes iPhone",
+        "Mac",
+        "unterstützte Geräte",
+        "compatibility",
+        "requirements",
+      ],
+      answer: `${siteConfig.name} ist für iPhone und iPad gemacht und setzt iOS oder iPadOS ${siteConfig.minimumOSVersion} oder neuer voraus.`,
+    },
+    {
+      question: "Wird es eine Android-Version geben?",
+      keywords: ["Android", "Samsung", "Pixel", "Google Play", "Windows", "Web-Version", "Browser", "Desktop"],
+      answer: "Eine Android-Version ist derzeit nicht geplant.",
+    },
+  ],
+  contactPrefix: "Noch eine Frage? Schreib an",
+} as const
+
 export const supportCopy: Localized<typeof enSupport> = {
   metadata: {
     title: "Support",
@@ -423,7 +591,7 @@ export const supportCopy: Localized<typeof enSupport> = {
   faq: {
     prefix: "Suchst du eher Produktinfos als Hilfe? Die",
     link: "häufig gestellten Fragen",
-    suffix: " beantworten Fragen zu Dateien, Datenschutz, Preis, Kompatibilität und Verfügbarkeit (auf Englisch).",
+    suffix: " beantworten Fragen zu Dateien, Datenschutz, Preis, Kompatibilität und Verfügbarkeit.",
   },
 } as const
 
