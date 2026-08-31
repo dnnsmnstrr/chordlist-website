@@ -11,15 +11,28 @@ import type { FaqEntry } from "@/lib/faq"
  * Shared by /faq and /support: the two pages ask different questions, but a reader who arrives at
  * either from the App Store should not be able to tell them apart by their behaviour.
  *
- * `allOpen` is for a filtered list — see components/faq-search.tsx.
+ * `allOpen` and `highlight` are for a filtered list — see components/faq-search.tsx.
  */
-export function FaqList({ items, allOpen = false }: { items: readonly FaqEntry[]; allOpen?: boolean }) {
+export function FaqList({
+  items,
+  allOpen = false,
+  highlight,
+}: {
+  items: readonly FaqEntry[]
+  allOpen?: boolean
+  /** Tokens of an active search, marked wherever they appear in a question or its answer. */
+  highlight?: readonly string[]
+}) {
   return (
     <div className="mt-4 flex flex-col">
       {items.map((item, index) => (
-        <CollapsibleSection key={item.question} title={item.question} defaultOpen={allOpen || index === 0}>
+        <CollapsibleSection
+          key={item.question}
+          title={<InlineMarkup text={item.question} highlight={highlight} />}
+          defaultOpen={allOpen || index === 0}
+        >
           <p className="text-sm leading-relaxed text-muted-foreground">
-            <InlineMarkup text={item.answer} />
+            <InlineMarkup text={item.answer} highlight={highlight} />
           </p>
           {item.link ? <AnswerLink href={item.link.href} label={item.link.label} /> : null}
         </CollapsibleSection>

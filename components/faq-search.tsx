@@ -42,8 +42,9 @@ export function FaqSearch({ items, language, title, emptyHint }: FaqSearchProps)
   const [query, setQuery] = useState("")
 
   const matches = useMemo(() => matchingFaqEntries(items, query), [items, query])
+  const tokens = useMemo(() => searchTokens(query), [query])
 
-  const isSearching = searchTokens(query).length > 0
+  const isSearching = tokens.length > 0
 
   return (
     <div className="mt-12 flex flex-col gap-4">
@@ -102,7 +103,7 @@ export function FaqSearch({ items, language, title, emptyHint }: FaqSearchProps)
       ) : (
         // Keyed by the query so a new set of matches mounts fresh: while searching every match
         // opens, because the words that matched are usually in the answer rather than the question.
-        <FaqList key={query} items={matches} allOpen={isSearching} />
+        <FaqList key={query} items={matches} allOpen={isSearching} highlight={tokens} />
       )}
     </div>
   )

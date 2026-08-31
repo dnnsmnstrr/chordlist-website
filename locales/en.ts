@@ -455,6 +455,23 @@ export const faqCopy = {
       answer: `The app is planned as a free download for libraries of up to ${siteConfig.freeSongLimit} songs, with an optional one-time purchase for unlimited songs.`,
     },
     {
+      question: "What is chordlink?",
+      keywords: searchAliases(
+        "chordlink",
+        "nfc",
+        "tag",
+        "sticker",
+        "accessory",
+        "hardware",
+        "3d print",
+        "diy",
+        "gift",
+        "buy",
+      ),
+      answer: `A numbered, 3D-printed NFC tag you attach to an instrument or its case. Scanning it the first time is where you choose what it does — open the library, shuffle, or add a song — and every later tap goes straight there. The first edition is ${siteConfig.chordlink.price.display} including postage within Germany and comes with ${siteConfig.name} unlimited. If you have a 3D printer of your own, the model generator and the instructions for programming a tag are free.`,
+      link: { href: "/chordlink", label: "See chordlink" },
+    },
+    {
       question: "Which devices are supported?",
       keywords: searchAliases(
         "compatibility",

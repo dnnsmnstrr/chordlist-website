@@ -1,7 +1,8 @@
 import { ChevronDown } from "lucide-react"
 
 type CollapsibleSectionProps = {
-  title: string
+  /** A node rather than a string, so a filtered list can hand it a highlighted question. */
+  title: React.ReactNode
   meta?: string
   defaultOpen?: boolean
   children: React.ReactNode

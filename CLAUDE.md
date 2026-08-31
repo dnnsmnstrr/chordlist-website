@@ -117,6 +117,12 @@ its markup.
 string props: a `title` to sit beside the field, and an `emptyHint` where it has somewhere better
 to send a reader than "nothing matched".
 
+While a search is active every match opens and the matched words are wrapped in a `<mark>`,
+including inside a `<code>` span. `findSearchMatches()` in `lib/text-search.ts` folds one character
+at a time and records where each came from, so a query for "kaufe" highlights the "Käufe" actually
+on screen — reusing `normalizeForSearch` there would decompose the umlaut and shift every offset
+after it.
+
 Every question in both lists carries a `keywords` list — words a reader might search for that the
 answer does not use ("money back", "subscription", "telemetry", "abo"). Nothing renders them;
 `lib/faq.ts` folds them into what the search matches on, and `tests/faq-search.test.ts` asserts that

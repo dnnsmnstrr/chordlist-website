@@ -53,6 +53,8 @@ const faqQueries: ReadonlyArray<[query: string, questionContains: string]> = [
   ["subscription", "cost"],
   ["ipad", "devices"],
   ["android", "Android"],
+  ["nfc tag", "chordlink"],
+  ["chordlink", "chordlink"],
 ]
 
 /**
