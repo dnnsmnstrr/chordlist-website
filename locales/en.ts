@@ -399,6 +399,13 @@ export const supportCopy = {
     hint: `Mention what you expected and what happened instead. Please include your device, its iOS version, and the app version shown at the bottom of Settings. <code>Settings → Send Feedback</code> opens a message with those details already filled in.`,
   },
   questionsTitle: "Common questions",
+  search: {
+    label: "Search the questions",
+    placeholder: "Search",
+    clear: "Clear the search",
+    resultCount: (count: number) => (count === 1 ? "1 question" : `${count} questions`),
+    empty: "No question matches that search. The address above still reaches a person.",
+  },
   questions: [
     {
       question: "How do I get my songs into chordlist?",
@@ -427,6 +434,7 @@ export const supportCopy = {
     {
       question: "How do I report a bug or ask for a feature?",
       answer: `<code>Settings → Send Feedback</code> opens an email to ${siteConfig.contact.feedback} with your app version and iOS version already filled in. From a TestFlight build you can also use <code>Send Beta Feedback</code> in the TestFlight app, which attaches a screenshot and the device details for you.`,
+      link: { href: `mailto:${siteConfig.contact.feedback}`, label: "Send feedback by email" },
     },
   ],
   faq: {

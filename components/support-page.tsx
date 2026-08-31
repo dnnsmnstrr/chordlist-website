@@ -1,6 +1,6 @@
 import Link from "next/link"
 
-import { FaqList } from "@/components/faq-list"
+import { FaqSearch } from "@/components/faq-search"
 import { InlineMarkup } from "@/components/inline-markup"
 import { SiteFooter } from "@/components/site-footer"
 import { SiteHeader } from "@/components/site-header"
@@ -45,8 +45,7 @@ export function SupportPage({ language }: SupportPageProps) {
           </p>
         </section>
 
-        <h2 className="mt-12 text-lg font-semibold tracking-tight">{copy.questionsTitle}</h2>
-        <FaqList items={copy.questions} />
+        <FaqSearch title={copy.questionsTitle} items={copy.questions} language={language} />
 
         <p className="mt-10 text-sm text-muted-foreground">
           {copy.faq.prefix}{" "}
