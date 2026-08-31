@@ -1,6 +1,7 @@
 import Link from "next/link"
 
 import { FaqList } from "@/components/faq-list"
+import { InlineMarkup } from "@/components/inline-markup"
 import { SiteFooter } from "@/components/site-footer"
 import { SiteHeader } from "@/components/site-header"
 import { siteConfig } from "@/lib/site-config"
@@ -22,7 +23,9 @@ export function SupportPage({ language }: SupportPageProps) {
         <header className="border-b border-border pb-8">
           <p className="font-mono text-sm text-muted-foreground">{siteConfig.name}</p>
           <h1 className="mt-3 text-balance text-4xl font-semibold tracking-tight sm:text-5xl">{copy.title}</h1>
-          <p className="mt-4 max-w-xl text-pretty leading-relaxed text-muted-foreground">{copy.introduction}</p>
+          <p className="mt-4 max-w-xl text-pretty leading-relaxed text-muted-foreground">
+            <InlineMarkup text={copy.introduction} />
+          </p>
         </header>
 
         {/* Above the questions on purpose: someone who arrives from the App Store with a problem no
@@ -37,7 +40,9 @@ export function SupportPage({ language }: SupportPageProps) {
           >
             {siteConfig.contact.support}
           </a>
-          <p className="mt-3 text-pretty text-sm leading-relaxed text-muted-foreground">{copy.contact.hint}</p>
+          <p className="mt-3 text-pretty text-sm leading-relaxed text-muted-foreground">
+            <InlineMarkup text={copy.contact.hint} />
+          </p>
         </section>
 
         <h2 className="mt-12 text-lg font-semibold tracking-tight">{copy.questionsTitle}</h2>

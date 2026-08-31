@@ -1,4 +1,5 @@
 import type { PostMeta } from "@/lib/blog"
+import { plainInlineText } from "@/lib/inline-markup"
 import { primaryAppLink, siteConfig } from "@/lib/site-config"
 import { defaultLanguage, dictionary, homeHref, type Language } from "@/locales"
 import { blogCopy, faqCopy } from "@/locales/en"
@@ -120,10 +121,12 @@ const faqStructuredData = {
       inLanguage: dictionary(defaultLanguage).locale.htmlLang,
       isPartOf: { "@id": websiteId },
       publisher: { "@id": organizationId },
+      // Stripped rather than rendered: an answer may carry the inline markers copy is allowed to
+      // use, and a backtick reaching a rich result would misquote the page.
       mainEntity: faqCopy.questions.map((item) => ({
         "@type": "Question",
-        name: item.question,
-        acceptedAnswer: { "@type": "Answer", text: item.answer },
+        name: plainInlineText(item.question),
+        acceptedAnswer: { "@type": "Answer", text: plainInlineText(item.answer) },
       })),
     },
   ],

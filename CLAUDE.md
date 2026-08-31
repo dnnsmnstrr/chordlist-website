@@ -92,6 +92,24 @@ Components on a translated route read `dictionary(language)` from `@/locales` in
 `@/locales/en` directly — see Localization. Everything else still imports `@/locales/en`, which is
 correct for a page that only exists in English.
 
+#### Inline markup in copy
+
+Copy strings may carry three tags and nothing else: `<code>` for something the reader has to find
+or type — a menu path, a filename, a button label — plus `<strong>` and `<em>`. `lib/inline-markup.ts`
+turns a string into tokens and `components/inline-markup.tsx` renders them as React elements, so a
+copy string can only ever produce those three elements; everything else in it is text, and React
+escapes it. Nothing here goes near `dangerouslySetInnerHTML` — `lib/markdown.ts` is the tool for
+authored Markdown, and it is far too much authority for one sentence of UI copy.
+
+Tags rather than Markdown backticks because most copy strings are template literals interpolating
+`siteConfig`, and a backtick inside one would end the string. An unknown or unclosed tag renders as
+itself rather than swallowing the sentence.
+
+Wherever those words are needed as words rather than elements — JSON-LD, a `<title>`, an Open Graph
+description, an `aria-label` — pass them through `plainInlineText()`, which strips the tags.
+`components/structured-data.tsx` does this for the FAQ, so a rich result quotes the page rather than
+its markup.
+
 #### Copy variants
 
 `locales/copy-variants.ts` holds alternative wordings of the home page — currently `files`

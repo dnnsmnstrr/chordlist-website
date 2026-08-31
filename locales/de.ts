@@ -235,23 +235,23 @@ export const supportCopy: Localized<typeof enSupport> = {
     "Sieh zuerst nach, ob deine Frage unten schon beantwortet ist. Passt keine davon, erreichst du über diese Adresse jemanden, der sich das ansieht.",
   contact: {
     label: "Support per E-Mail",
-    hint: "Nenne, was du erwartet hast und was stattdessen passiert ist. Gib bitte auch dein Gerät, dessen iOS-Version und die App-Version unten in den Einstellungen an. „Einstellungen → Feedback senden“ öffnet eine Nachricht, in der diese Angaben schon stehen.",
+    hint: "Nenne, was du erwartet hast und was stattdessen passiert ist. Gib bitte auch dein Gerät, dessen iOS-Version und die App-Version unten in den Einstellungen an. <code>Einstellungen → Feedback senden</code> öffnet eine Nachricht, in der diese Angaben schon stehen.",
   },
   questionsTitle: "Häufige Fragen",
   questions: [
     {
       question: `Wie bekomme ich meine Songs in ${siteConfig.name}?`,
-      answer: `Wähle beim ersten Öffnen der App den ${term("folder", "de")}, in dem deine ${term("library", "de")} liegt. Später lässt er sich unter „Einstellungen → Song-Ordner“ ändern. Danach kannst du Songs auf mehreren Wegen hinzufügen: in der App schreiben, eine ${term("lyrics", "de")}- oder Tab-URL einfügen, eine unterstützte Seite aus einer anderen App an ${siteConfig.name} teilen oder Dateien als Artist/Songtitel.md mit „Dateien“ oder dem Finder in den Ordner kopieren und die ${term("library", "de")} durch Herunterziehen neu einlesen.`,
+      answer: `Wähle beim ersten Öffnen der App den ${term("folder", "de")}, in dem deine ${term("library", "de")} liegt. Später lässt er sich unter <code>Einstellungen → Song-Ordner</code> ändern. Danach kannst du Songs auf mehreren Wegen hinzufügen: in der App schreiben, eine ${term("lyrics", "de")}- oder Tab-URL einfügen, eine unterstützte Seite aus einer anderen App an ${siteConfig.name} teilen oder Dateien als <code>Artist/Songtitel.md</code> mit „Dateien“ oder dem Finder in den Ordner kopieren und die ${term("library", "de")} durch Herunterziehen neu einlesen.`,
       link: { href: "/docs#adding-songs", label: "Wie Hinzufügen und Importieren funktioniert (auf Englisch)" },
     },
     {
       question: "Meine Songs tauchen nicht auf.",
-      answer: `${siteConfig.name} liest ${term("Markdown", "de")}-Dateien genau eine Ebene unter dem Song-Ordner: Ein Song muss also in einem Artist-Ordner als Artist/Songtitel.md liegen – eine Datei direkt im Ordner oder tiefer verschachtelt taucht nicht auf. Zieh die ${term("library", "de")} nach unten, um sie neu einzulesen, wenn du Dateien woanders bearbeitet hast. Liegt der Ordner in iCloud Drive, kann sein Inhalt noch in der Cloud statt auf dem Gerät liegen; markiere ihn in „Dateien“ mit „Heruntergeladen behalten“, bevor du zur Probe aufbrichst.`,
+      answer: `${siteConfig.name} liest ${term("Markdown", "de")}-Dateien genau eine Ebene unter dem Song-Ordner: Ein Song muss also in einem Artist-Ordner als <code>Artist/Songtitel.md</code> liegen – eine Datei direkt im Ordner oder tiefer verschachtelt taucht nicht auf. Zieh die ${term("library", "de")} nach unten, um sie neu einzulesen, wenn du Dateien woanders bearbeitet hast. Liegt der Ordner in iCloud Drive, kann sein Inhalt noch in der Cloud statt auf dem Gerät liegen; markiere ihn in „Dateien“ mit <code>Heruntergeladen behalten</code>, bevor du zur Probe aufbrichst.`,
       link: { href: "/docs#offline", label: "iCloud-Ordner offline verfügbar halten (auf Englisch)" },
     },
     {
       question: `„${term("unlimited songs", "de")}“ wurde nach dem Kauf nicht freigeschaltet.`,
-      answer: `Öffne „Einstellungen → ${siteConfig.name} unlimited → ${term("unlimited songs", "de")} freischalten“ und tippe auf dem Bildschirm, der sich öffnet, auf „Käufe wiederherstellen“. Die Freischaltung gehört zum App-Store-Account, der sie gekauft hat, und nicht zum Gerät – sie lässt sich also überall wiederherstellen, wo dieser Account angemeldet ist. Prüfe deshalb zuerst, ob auf dem Gerät der richtige Account angemeldet ist. Bleibt es gesperrt, schreib mit dem Beleg aus dem App Store an ${siteConfig.contact.support}; wir sehen es uns an.`,
+      answer: `Öffne <code>Einstellungen → ${siteConfig.name} unlimited → ${term("unlimited songs", "de")} freischalten</code> und tippe auf dem Bildschirm, der sich öffnet, auf <code>Käufe wiederherstellen</code>. Die Freischaltung gehört zum App-Store-Account, der sie gekauft hat, und nicht zum Gerät – sie lässt sich also überall wiederherstellen, wo dieser Account angemeldet ist. Prüfe deshalb zuerst, ob auf dem Gerät der richtige Account angemeldet ist. Bleibt es gesperrt, schreib mit dem Beleg aus dem App Store an ${siteConfig.contact.support}; wir sehen es uns an.`,
     },
     {
       question: "Ich möchte mein Geld zurück.",
@@ -265,7 +265,7 @@ export const supportCopy: Localized<typeof enSupport> = {
     },
     {
       question: "Wie melde ich einen Fehler oder wünsche mir eine Funktion?",
-      answer: `„Einstellungen → Feedback senden“ öffnet eine E-Mail an ${siteConfig.contact.feedback}, in der App- und iOS-Version schon eingetragen sind. Aus einer TestFlight-Version kannst du zusätzlich „Beta-Feedback senden“ in der TestFlight-App nutzen; das hängt einen Screenshot und die Gerätedaten an.`,
+      answer: `<code>Einstellungen → Feedback senden</code> öffnet eine E-Mail an ${siteConfig.contact.feedback}, in der App- und iOS-Version schon eingetragen sind. Aus einer TestFlight-Version kannst du zusätzlich <code>Beta-Feedback senden</code> in der TestFlight-App nutzen; das hängt einen Screenshot und die Gerätedaten an.`,
     },
   ],
   faq: {

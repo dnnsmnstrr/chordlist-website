@@ -2,6 +2,7 @@ import type { Route } from "next"
 import Link from "next/link"
 
 import { CollapsibleSection } from "@/components/collapsible-section"
+import { InlineMarkup } from "@/components/inline-markup"
 
 export type FaqEntry = {
   question: string
@@ -25,7 +26,9 @@ export function FaqList({ items }: { items: readonly FaqEntry[] }) {
     <div className="mt-4 flex flex-col">
       {items.map((item, index) => (
         <CollapsibleSection key={item.question} title={item.question} defaultOpen={index === 0}>
-          <p className="text-sm leading-relaxed text-muted-foreground">{item.answer}</p>
+          <p className="text-sm leading-relaxed text-muted-foreground">
+            <InlineMarkup text={item.answer} />
+          </p>
           {item.link ? <AnswerLink href={item.link.href} label={item.link.label} /> : null}
         </CollapsibleSection>
       ))}
