@@ -7,9 +7,10 @@ import {
   metadataCopy as enMetadata,
   pianoCopy as enPiano,
   screenshotGalleryCopy as enScreenshotGallery,
+  supportCopy as enSupport,
 } from "@/locales/en"
 import type { Localized } from "@/locales/types"
-import { phrase } from "@/locales/vocabulary"
+import { phrase, term } from "@/locales/vocabulary"
 
 /// German copy for the site.
 ///
@@ -220,6 +221,57 @@ export const homeCopy: Localized<typeof enHome> = {
   closingCta: {
     title: `Starte dein Songbook ${isEvening ? "heute Abend" : "heute"}.`,
     description: `Zeig ${siteConfig.name} einen Ordner, und dein erster Song ist schon eine Datei, die dir gehört – lesbar, portabel und überallhin mitzunehmen.`,
+  },
+} as const
+
+
+export const supportCopy: Localized<typeof enSupport> = {
+  metadata: {
+    title: "Support",
+    description: `Hilfe zu ${siteConfig.name}: Songs hinzufügen, fehlgeschlagene Käufe, Rückerstattungen und wie du jemanden erreichst.`,
+  },
+  title: "Support",
+  introduction:
+    "Sieh zuerst nach, ob deine Frage unten schon beantwortet ist. Passt keine davon, erreichst du über diese Adresse jemanden, der sich das ansieht.",
+  contact: {
+    label: "Support per E-Mail",
+    hint: "Nenne, was du erwartet hast und was stattdessen passiert ist. Gib bitte auch dein Gerät, dessen iOS-Version und die App-Version unten in den Einstellungen an. „Einstellungen → Feedback senden“ öffnet eine Nachricht, in der diese Angaben schon stehen.",
+  },
+  questionsTitle: "Häufige Fragen",
+  questions: [
+    {
+      question: `Wie bekomme ich meine Songs in ${siteConfig.name}?`,
+      answer: `Wähle beim ersten Öffnen der App den ${term("folder", "de")}, in dem deine ${term("library", "de")} liegt. Später lässt er sich unter „Einstellungen → Song-Ordner“ ändern. Danach kannst du Songs auf mehreren Wegen hinzufügen: in der App schreiben, eine ${term("lyrics", "de")}- oder Tab-URL einfügen, eine unterstützte Seite aus einer anderen App an ${siteConfig.name} teilen oder Dateien als Artist/Songtitel.md mit „Dateien“ oder dem Finder in den Ordner kopieren und die ${term("library", "de")} durch Herunterziehen neu einlesen.`,
+      link: { href: "/docs#adding-songs", label: "Wie Hinzufügen und Importieren funktioniert (auf Englisch)" },
+    },
+    {
+      question: "Meine Songs tauchen nicht auf.",
+      answer: `${siteConfig.name} liest ${term("Markdown", "de")}-Dateien genau eine Ebene unter dem Song-Ordner: Ein Song muss also in einem Artist-Ordner als Artist/Songtitel.md liegen – eine Datei direkt im Ordner oder tiefer verschachtelt taucht nicht auf. Zieh die ${term("library", "de")} nach unten, um sie neu einzulesen, wenn du Dateien woanders bearbeitet hast. Liegt der Ordner in iCloud Drive, kann sein Inhalt noch in der Cloud statt auf dem Gerät liegen; markiere ihn in „Dateien“ mit „Heruntergeladen behalten“, bevor du zur Probe aufbrichst.`,
+      link: { href: "/docs#offline", label: "iCloud-Ordner offline verfügbar halten (auf Englisch)" },
+    },
+    {
+      question: `„${term("unlimited songs", "de")}“ wurde nach dem Kauf nicht freigeschaltet.`,
+      answer: `Öffne „Einstellungen → ${siteConfig.name} unlimited → ${term("unlimited songs", "de")} freischalten“ und tippe auf dem Bildschirm, der sich öffnet, auf „Käufe wiederherstellen“. Die Freischaltung gehört zum App-Store-Account, der sie gekauft hat, und nicht zum Gerät – sie lässt sich also überall wiederherstellen, wo dieser Account angemeldet ist. Prüfe deshalb zuerst, ob auf dem Gerät der richtige Account angemeldet ist. Bleibt es gesperrt, schreib mit dem Beleg aus dem App Store an ${siteConfig.contact.support}; wir sehen es uns an.`,
+    },
+    {
+      question: "Ich möchte mein Geld zurück.",
+      answer: `Käufe in der App laufen über den App Store, und nur Apple kann sie erstatten: Stell die Anfrage auf reportaproblem.apple.com mit dem Apple-Account, der den Kauf getätigt hat. Wenn etwas nicht funktioniert, schreib zuerst an ${siteConfig.contact.support} – eine Lösung ist meist schneller da als eine Rückerstattung.`,
+      link: { href: "https://reportaproblem.apple.com", label: "Rückerstattung bei Apple anfragen" },
+    },
+    {
+      question: "Ich habe eine Frage zu einer chordlink-Bestellung.",
+      answer: `chordlink ist ein physisches Produkt, das über Stripe verkauft und an Adressen in Deutschland geliefert wird. Bestellung, Lieferung, Widerruf und Rückerstattung laufen deshalb per E-Mail statt über Apple – auch der Einlöse-Link für ${siteConfig.name} unlimited, der nach der Bestellung kommt. Schreib von der Adresse, mit der du bestellt hast, an ${siteConfig.contact.support}.`,
+      link: { href: "/de/chordlink/terms", label: "chordlink: Bedingungen, Widerruf und Rückgabe" },
+    },
+    {
+      question: "Wie melde ich einen Fehler oder wünsche mir eine Funktion?",
+      answer: `„Einstellungen → Feedback senden“ öffnet eine E-Mail an ${siteConfig.contact.feedback}, in der App- und iOS-Version schon eingetragen sind. Aus einer TestFlight-Version kannst du zusätzlich „Beta-Feedback senden“ in der TestFlight-App nutzen; das hängt einen Screenshot und die Gerätedaten an.`,
+    },
+  ],
+  faq: {
+    prefix: "Suchst du eher Produktinfos als Hilfe? Die",
+    link: "häufig gestellten Fragen",
+    suffix: " beantworten Fragen zu Dateien, Datenschutz, Preis, Kompatibilität und Verfügbarkeit (auf Englisch).",
   },
 } as const
 

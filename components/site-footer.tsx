@@ -3,6 +3,7 @@ import { LanguageSwitcher } from "@/components/language-switcher"
 
 import { imprintHref } from "@/lib/legal-routes"
 import { siteConfig } from "@/lib/site-config"
+import { supportHref } from "@/lib/support-routes"
 import { defaultLanguage, dictionary, homeHref, type Language } from "@/locales"
 import type { Route } from "next"
 
@@ -34,9 +35,9 @@ export function SiteFooter({
         aria-label={common.navigation.footerLabel}
         className="flex flex-wrap items-center justify-center gap-x-5 gap-y-3"
       >
-        <a href={`mailto:${siteConfig.contact.support}`} className="transition-colors hover:text-foreground">
+        <Link href={supportHref[language]} className="transition-colors hover:text-foreground">
           {common.navigation.support}
-        </a>
+        </Link>
         <Link href="/faq" className="transition-colors hover:text-foreground">
           {common.navigation.faq}
         </Link>

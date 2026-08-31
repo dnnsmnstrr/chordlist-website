@@ -3,6 +3,7 @@ import type { MetadataRoute } from "next"
 import { getPublishedPosts } from "@/lib/blog"
 import { imprintHref } from "@/lib/legal-routes"
 import { siteConfig } from "@/lib/site-config"
+import { supportHref } from "@/lib/support-routes"
 import { defaultLanguage, dictionary, homeHref, languages } from "@/locales"
 
 /** Matches the blog routes, so a scheduled post enters the sitemap when it goes live. */
@@ -46,6 +47,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     alternates: { languages: imprintAlternates },
   }))
 
+  const supportAlternates = Object.fromEntries(
+    languages.map((language) => [dictionary(language).locale.htmlLang, `${siteConfig.url}${supportHref[language]}`]),
+  )
+  const supportPages: MetadataRoute.Sitemap = languages.map((language) => ({
+    url: `${siteConfig.url}${supportHref[language]}`,
+    changeFrequency: "yearly",
+    priority: 0.6,
+    alternates: { languages: supportAlternates },
+  }))
+
   const chordlinkAlternates = {
     en: `${siteConfig.url}/chordlink`,
     de: `${siteConfig.url}/de/chordlink`,
@@ -76,5 +87,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.5,
   }))
 
-  return [...pages, ...translatedHomes, ...imprintPages, ...chordlinkPages, ...postPages]
+  return [...pages, ...translatedHomes, ...imprintPages, ...supportPages, ...chordlinkPages, ...postPages]
 }

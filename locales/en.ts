@@ -386,6 +386,56 @@ export const faqCopy = {
   contactPrefix: "Still have a question? Email",
 } as const
 
+export const supportCopy = {
+  metadata: {
+    title: "Support",
+    description: `Help with ${siteConfig.name}: adding songs, failed purchases, refunds, and how to reach someone.`,
+  },
+  title: "Support",
+  introduction:
+    "Start by checking if your question is answered below. Should none of them fit, this address reaches a person who can look at it.",
+  contact: {
+    label: "Email support",
+    hint: `Mention what you expected and what happened instead. Please include your device, its iOS version, and the app version shown at the bottom of Settings. Settings → Send Feedback opens a message with those details already filled in.`,
+  },
+  questionsTitle: "Common questions",
+  questions: [
+    {
+      question: "How do I get my songs into chordlist?",
+      answer: `Choose the folder your library lives in when you first open the app. It can be changed later under Settings → Songs Folder. Then add songs whichever way suits: write your own in the app, paste a lyrics or tab URL, share a supported page to ${siteConfig.name} from another app, or copy Artist/Song Title.md files into the folder with Files or Finder and pull down on the library to rescan.`,
+      link: { href: "/docs#adding-songs", label: "How adding and importing songs works" },
+    },
+    {
+      question: "My songs are not showing up.",
+      answer: `${siteConfig.name} reads Markdown files one level below the songs folder, so a song has to sit in an artist folder as Artist/Song Title.md — a file directly in the folder, or nested deeper, is not listed. Pull down on the library to rescan after editing files elsewhere. If the folder is in iCloud Drive, its contents can still be in the cloud rather than on the device; mark it Keep Downloaded in Files before a rehearsal.`,
+      link: { href: "/docs#offline", label: "Keep an iCloud folder available offline" },
+    },
+    {
+      question: "I paid and Unlimited Songs did not unlock.",
+      answer: `Open Settings → ${siteConfig.name} unlimited → Unlock Unlimited Songs, then tap Restore Purchases on the screen that appears. The unlock belongs to the App Store account that bought it rather than to a device, so restoring works anywhere that account is signed in — check the device is signed in with the right one. If it stays locked, email ${siteConfig.contact.support} with the App Store receipt and we will look into it.`,
+    },
+    {
+      question: "I want a refund.",
+      answer: `Purchases in the app are made through the App Store, and only Apple can refund them: ask at reportaproblem.apple.com with the Apple Account that made the purchase. If something is not working, email ${siteConfig.contact.support} first — a fix usually arrives sooner than a refund does.`,
+      link: { href: "https://reportaproblem.apple.com", label: "Request a refund from Apple" },
+    },
+    {
+      question: "I have a question about a chordlink order.",
+      answer: `chordlink is a physical product bought through Stripe and delivered to addresses in Germany, so its orders, deliveries, returns, and refunds are handled by email rather than by Apple — including the redemption link for ${siteConfig.name} unlimited that arrives after an order. Write to ${siteConfig.contact.support} from the address you ordered with.`,
+      link: { href: "/chordlink/terms", label: "chordlink terms, withdrawal, and returns" },
+    },
+    {
+      question: "How do I report a bug or ask for a feature?",
+      answer: `Settings → Send Feedback opens an email to ${siteConfig.contact.feedback} with your app version and iOS version already filled in. From a TestFlight build you can also use Send Beta Feedback in the TestFlight app, which attaches a screenshot and the device details for you.`,
+    },
+  ],
+  faq: {
+    prefix: "Looking for product details rather than help? The",
+    link: "frequently asked questions",
+    suffix: " cover files, privacy, pricing, compatibility, and availability.",
+  },
+} as const
+
 export const pressCopy = {
   metadata: {
     title: "Press Kit",

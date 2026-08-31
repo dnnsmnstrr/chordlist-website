@@ -59,6 +59,11 @@ const CONFIG = {
       description: "Files, privacy, pricing, compatibility, and availability.",
     },
     {
+      slug: "support",
+      title: "Support",
+      description: "Adding songs, a purchase that did not unlock, refunds, and how to reach a person.",
+    },
+    {
       slug: "press",
       title: "Press Kit",
       description: "Product details, screenshots, and press contacts.",

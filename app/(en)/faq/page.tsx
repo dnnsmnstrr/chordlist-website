@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 
-import { CollapsibleSection } from "@/components/collapsible-section"
+import { FaqList } from "@/components/faq-list"
 import { SiteFooter } from "@/components/site-footer"
 import { SiteHeader } from "@/components/site-header"
 import { FaqStructuredData } from "@/components/structured-data"
@@ -29,13 +29,7 @@ export default function FAQPage() {
           </p>
         </header>
 
-        <div className="mt-4 flex flex-col">
-          {faqCopy.questions.map((item, index) => (
-            <CollapsibleSection key={item.question} title={item.question} defaultOpen={index === 0}>
-              <p className="text-sm leading-relaxed text-muted-foreground">{item.answer}</p>
-            </CollapsibleSection>
-          ))}
-        </div>
+        <FaqList items={faqCopy.questions} />
 
         <p className="mt-10 text-sm text-muted-foreground">
           {faqCopy.contactPrefix}{" "}

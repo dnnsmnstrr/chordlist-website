@@ -40,11 +40,12 @@ app/                 App Router pages (all server components unless noted)
   (en)/              English route group — everything except the German home
     layout.tsx       English root layout: rootMetadata("en") around <RootShell>
     page.tsx         Home page — three lines around <HomePage language="en" />
-    docs/  faq/  press/  privacy/    One page.tsx each
+    docs/  faq/  support/  press/  privacy/    One page.tsx each
     blog/            Index, [slug] post page, and rss.xml route handler
   (de)/              German route group
     layout.tsx       German root layout: rootMetadata("de") around <RootShell>
     de/page.tsx      The German home page, at /de
+    de/support/      The German support page, at /de/support
   global-not-found.tsx  The 404, with its own document — see Localization
   sitemap.ts  robots.ts            Metadata routes, driven by siteConfig.url
   globals.css        Tailwind v4 entry + design tokens + the .post-body block
@@ -311,7 +312,8 @@ ordering comment in `lib/supabase/server.ts` before touching it.
 
 ## Content accuracy
 
-`app/privacy/page.tsx`, `app/faq/page.tsx`, and `app/press/page.tsx` describe real product
+`app/privacy/page.tsx`, `app/faq/page.tsx`, `app/press/page.tsx`, and `supportCopy` in every
+language describe real product
 behaviour: local file storage, TelemetryDeck analytics, optional chord-data contribution, StoreKit
 and RevenueCat purchases, Vercel hosting and Web Analytics. Do not invent, soften, or embellish
 claims about data handling, pricing, or availability — those strings are legal and press copy.
@@ -331,10 +333,12 @@ credentials.
 ## Localization
 
 Copy lives in `locales/`. `en.ts` is the whole site; `de.ts` covers **the home page and the chrome
-around it** — `locale`, `commonCopy`, `metadataCopy`, `homeCopy`, `pianoCopy` and
+around it**, plus the two pages a reader can be sent to from outside the site — `locale`,
+`commonCopy`, `metadataCopy`, `homeCopy`, `imprintCopy`, `supportCopy`, `pianoCopy` and
 `screenshotGalleryCopy`. `docsCopy`, `faqCopy`, `pressCopy`, `screensCopy`, `privacyCopy`,
 `blogCopy` and `galleryCopy` are English only, so those pages exist at their English URLs and
-nothing links a reader to a translation that is not there.
+nothing links a reader to a translation that is not there. A German answer that has to link into
+one of them says so in the link's own label rather than pretending a translation exists.
 
 Each German object is typed `Localized<typeof …>` (see `locales/types.ts`): the English shape with
 its wording set free, and functions mapped to a function of the same arguments returning a `string`
@@ -361,8 +365,10 @@ The default is `defaultLanguage`, so the English pages that render `<SiteHeader 
 are unchanged.
 
 **Routing is subpath-based.** English is at `/`, every other language hangs off `homeHref` —
-currently `{ en: "/", de: "/de" }`. Only the home page is translated, so `homeHref` is a map of one
-page rather than a path-rewriting rule; a rule would imply `/de/docs` exists. `siteAlternateLanguages()`
+currently `{ en: "/", de: "/de" }`. Each further translated page keeps its own map beside it —
+`imprintHref` in `lib/legal-routes.ts`, `supportHref` in `lib/support-routes.ts` — rather than one
+path-rewriting rule, which would imply `/de/docs` exists. `translatedRoutes` in
+`lib/page-metadata.ts` is the list of those maps. `siteAlternateLanguages()`
 in `lib/page-metadata.ts` reads it, so widening `homeHref` widens the `hreflang` set, the sitemap
 entries, and the language switcher together.
 
