@@ -46,7 +46,7 @@ export function ChordlinkWithdrawalPage({ language }: { language: Language }) {
 
   return (
     <main className="min-h-screen bg-background text-foreground">
-      <article className="mx-auto w-full max-w-2xl px-6 py-16">
+      <article className="mx-auto w-full max-w-2xl px-6 py-16" id="main-content" tabIndex={-1}>
         <p className="font-mono text-sm text-muted-foreground">{text.eyebrow}</p>
         <h1 className="mt-3 text-4xl font-semibold tracking-tight sm:text-5xl">{text.title}</h1>
         <p className="mt-5 leading-7 text-muted-foreground">{text.intro}</p>

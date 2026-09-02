@@ -87,7 +87,7 @@ export function ChordlinkCheckoutPage({
 
   return (
     <main className="min-h-screen bg-background text-foreground">
-      <div className="mx-auto w-full max-w-3xl px-6 py-12 sm:py-16">
+      <div className="mx-auto w-full max-w-3xl px-6 py-12 sm:py-16" id="main-content" tabIndex={-1}>
         <Link className="text-sm text-muted-foreground underline underline-offset-4" href={productPath}>{text.back}</Link>
         <p className="mt-10 font-mono text-sm text-muted-foreground">{text.eyebrow}</p>
         <h1 className="mt-3 text-4xl font-semibold tracking-tight sm:text-5xl">{text.title}</h1>
