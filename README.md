@@ -287,6 +287,43 @@ Static files under `public/` are **not** covered — `/emails/*.html` and `/soci
 directly by the CDN. The pages that index them are behind the login; the generated files themselves
 stay reachable to anyone who knows the URL.
 
+#### Resetting that password
+
+A Supabase recovery email sends the administrator back to the site with an **implicit-flow**
+fragment on the end of the URL: `#access_token=…&refresh_token=…&type=recovery`. A fragment is
+never sent to a server, so Next only ever sees the path — which is why this is handled entirely in
+the browser, and why there is no server action anywhere that takes an access token. That token is a
+bearer credential for the account; the only thing that holds it is Supabase's own client, for the
+few seconds it takes to set a new password, and the fragment is scrubbed out of the address on
+every path through the flow.
+
+Three pieces:
+
+- **`lib/supabase/password-recovery.ts`** decides what a fragment is — a recovery link, an expired
+  or reused one, or an ordinary `#anchor` — and whether a new password is acceptable. It is pure,
+  and it deliberately returns a *verdict* rather than the tokens it read, so there is no way to get
+  one out of it and into component state or a request body. `tests/password-recovery.test.ts`.
+- **`components/password-recovery-gate.tsx`** rides along in `components/root-shell.tsx`, so it is
+  on every page in both languages. Recovery emails sent before this existed point at `/`, and those
+  still work: the gate notices the fragment wherever it lands and floats the form over the page.
+  It renders nothing otherwise, and the panel — with supabase-js behind it — is loaded on demand,
+  so an ordinary visit never pays for any of it.
+- **`app/(en)/account/update-password/page.tsx`** is where new links should point. It is `noindex`
+  and nothing links to it; opened without a fragment it says the link has expired, rather than
+  showing a page that appears to ignore the link somebody just clicked.
+
+The panel is a client component and talks to Supabase directly, with `createClient` from
+**`@supabase/supabase-js`** — not `createBrowserClient` from `@supabase/ssr`, which pins
+`flowType: "pkce"` and would refuse every link already sitting in an inbox. The session is created
+with `persistSession: false` and `autoRefreshToken: false`: it exists to carry one
+`updateUser({ password })` call and is signed out immediately afterwards, so it never reaches local
+storage and closing the tab is enough to end it.
+
+In the Supabase dashboard, under **Authentication → URL Configuration**, add
+`https://chordlist.app/account/update-password` to the redirect allow-list (Vercel preview URLs
+too, if you want to test one), and pass it as the `redirectTo` of `resetPasswordForEmail`. Nothing
+needs to change in `.env` — the flow uses the same two `NEXT_PUBLIC_SUPABASE_*` values as the login.
+
 ### chordlink availability notifications
 
 While chordlink is not on sale, the product page offers a "Get notified" form in place of the buy

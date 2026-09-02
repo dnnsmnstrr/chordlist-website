@@ -2,6 +2,7 @@ import { Geist, Geist_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 
 import { AmbientBackground } from "@/components/ambient-background"
+import { PasswordRecoveryGate } from "@/components/password-recovery-gate"
 import { dictionary, type Language } from "@/locales"
 
 import "@/app/globals.css"
@@ -37,6 +38,10 @@ export function RootShell({ language, children }: { language: Language; children
         </a>
         <AmbientBackground />
         <div className="site-content">{children}</div>
+        {/* Renders nothing unless the URL carries a password-recovery fragment. It has to sit here
+            rather than on one route because a fragment never reaches the server, and the recovery
+            emails already in people's inboxes point at the site root. */}
+        <PasswordRecoveryGate />
         {process.env.NODE_ENV === "production" ? <Analytics /> : null}
       </body>
     </html>
