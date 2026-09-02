@@ -46,6 +46,10 @@ export const siteConfig = {
     saleQuantity: 10,
     shippingRegion: "DE",
     shippingIncluded: true,
+    deliveryTime: {
+      en: "within 5 working days after receipt of payment",
+      de: "innerhalb von 5 Werktagen nach Zahlungseingang",
+    },
   },
 } as const
 

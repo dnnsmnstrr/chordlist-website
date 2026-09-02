@@ -218,16 +218,20 @@ be inserted without changing an NFC URL.
 The backend's private `chordlink_storefront_settings.sales_enabled` value is the authoritative
 launch gate. The header switch in the protected chordlink admin changes it. Checkout remains
 disabled unless the availability response explicitly enables sales, stock remains, and the server
-has both `STRIPE_SECRET_KEY` and `CHORDLINK_STRIPE_PRICE_ID`. Before enabling sales:
+has `STRIPE_SECRET_KEY`, `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`, `CHORDLINK_STRIPE_PRICE_ID`, and
+`BREVO_API_KEY`. The Brevo key is part of the sales gate because the online withdrawal function
+must immediately confirm receipt by email. Before enabling sales:
 
-1. Have the bilingual seller, withdrawal, return-cost, and §19 UStG wording reviewed and replace the
-   launch-gate notice with the complete postal identity and return address.
+1. Have the bilingual seller identity, delivery promise, total-price, withdrawal, model form,
+   return-cost, and §19 UStG wording reviewed. The ten-unit run is still a distance sale.
 2. Confirm that the packaged chordlink fits the intended Deutsche Post letter product.
 3. In Stripe, create `chordlink — first edition` at EUR 9.99 including German postage and put its
    live `price_…` ID in `CHORDLINK_STRIPE_PRICE_ID` on Vercel.
-4. Add `STRIPE_SECRET_KEY` as a Vercel sensitive environment variable. Prefer a dedicated `rk_…`
-   restricted key with Checkout Sessions write access and only the additional read permissions
-   Stripe reports as required; never expose it through a `NEXT_PUBLIC_` variable.
+4. Add `STRIPE_SECRET_KEY` as a Vercel sensitive environment variable and
+   `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` as the corresponding public key. Prefer a dedicated `rk_…`
+   restricted key with Checkout Sessions write access and Prices read access; the checkout verifies
+   the live Price still says EUR 9.99 before it creates a session. Never expose the secret key
+   through a `NEXT_PUBLIC_` variable.
 5. Register the Supabase `chordlink-stripe-webhook` function as a Stripe webhook destination for
    `checkout.session.completed` and `checkout.session.async_payment_succeeded`, configure its
    signing secret, and test one immediate and one delayed-payment event.
@@ -236,14 +240,19 @@ has both `STRIPE_SECRET_KEY` and `CHORDLINK_STRIPE_PRICE_ID`. Before enabling sa
    without a valid response, while sales are disabled, or once the edition is gone, Checkout cannot
    open. The request bypasses Next.js caching so closing the switch takes effect on the next page or
    form request.
-7. Open sales with the switch in the protected chordlink admin. This database value replaces the
+7. Confirm `BREVO_API_KEY` can send from `support@chordlist.app`. Submit a test through
+   `/de/chordlink/widerruf` and verify that both the operator notice and the immediate customer
+   confirmation contain the declaration timestamp.
+8. Open sales with the switch in the protected chordlink admin. This database value replaces the
    former readiness booleans in `siteConfig.chordlink`; do not add a second launch flag there.
 
-The buy form creates a fresh hosted Checkout Session with the configured Price, quantity one, and a
-German shipping address. Its success URL includes `{CHECKOUT_SESSION_ID}`. The server retrieves that
-session before showing the localized confirmation page; invalid or unpaid sessions return to the
-product page. The signed webhook separately allocates the physical unit, so the browser redirect is
-never treated as fulfillment proof.
+The buy link opens a local order page backed by a custom Checkout Session and Stripe Elements. It
+collects one German shipping address and payment details, then puts the product, seller, delivery
+time, and €9.99 total including postage immediately above a button whose complete label is
+`zahlungspflichtig bestellen`. Its return URL includes `{CHECKOUT_SESSION_ID}`. The server retrieves
+that session before showing the localized confirmation page; invalid or unpaid sessions return to
+the product page. The signed webhook separately allocates the physical unit, so the browser redirect
+is never treated as fulfillment proof.
 
 Never add a unit number, Checkout Session, buyer email, delivery address, or Apple offer code to
 Vercel Analytics. Individual `/link/*` requests redirect to the shared setup route and are noindex.

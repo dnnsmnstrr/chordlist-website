@@ -2,7 +2,6 @@ import type { Route } from "next"
 import Link from "next/link"
 import { FileDigit, Gift, Nfc, PackageCheck, Printer, Smartphone } from "lucide-react"
 
-import { startChordlinkCheckout } from "@/app/chordlink/actions"
 import {
   type ChordlinkAvailability,
   type ChordlinkCheckoutNotice,
@@ -29,6 +28,8 @@ const copy = {
     title: "Tap your instrument. Open your songbook.",
     intro: "A 3D-printed NFC tag that opens chordlist exactly where you want it.",
     priceSuffix: "including postage within Germany",
+    delivery: `Delivery ${siteConfig.chordlink.deliveryTime.en}`,
+    vat: "Pursuant to § 19 UStG, no VAT is charged.",
     buy: "Buy chordlink",
     unavailable: "Coming soon",
     soldOut: "Sold out",
@@ -80,6 +81,8 @@ const copy = {
     title: "Instrument antippen. Songbook öffnen.",
     intro: "Ein 3D-gedruckter NFC-Tag, der chordlist genau dort öffnet, wo du hinwillst.",
     priceSuffix: "inklusive Versand innerhalb Deutschlands",
+    delivery: `Lieferung ${siteConfig.chordlink.deliveryTime.de}`,
+    vat: "Gemäß § 19 UStG wird keine Umsatzsteuer berechnet.",
     buy: "chordlink kaufen",
     unavailable: "Bald verfügbar",
     soldOut: "Ausverkauft",
@@ -147,8 +150,8 @@ export function ChordlinkPage({
     ? { reason: interestReason, ...text.notify[interestReason] }
     : null
   const paths = language === "de"
-    ? { en: "/chordlink" as Route, de: "/de/chordlink" as Route, terms: "/de/chordlink/terms" as Route, diy: "/de/chordlink/diy" as Route }
-    : { en: "/chordlink" as Route, de: "/de/chordlink" as Route, terms: "/chordlink/terms" as Route, diy: "/chordlink/diy" as Route }
+    ? { en: "/chordlink" as Route, de: "/de/chordlink" as Route, terms: "/de/chordlink/terms" as Route, diy: "/de/chordlink/diy" as Route, checkout: "/de/chordlink/checkout" as Route }
+    : { en: "/chordlink" as Route, de: "/de/chordlink" as Route, terms: "/chordlink/terms" as Route, diy: "/chordlink/diy" as Route, checkout: "/chordlink/checkout" as Route }
 
   return (
     <main className="min-h-screen text-foreground">
@@ -162,12 +165,9 @@ export function ChordlinkPage({
 
           <div className="mt-8 flex flex-wrap items-center gap-4">
             {checkoutAllowed && isChordlinkStripeConfigured() ? (
-              <form action={startChordlinkCheckout}>
-                <input name="language" type="hidden" value={language} />
-                <button className={cn(buttonVariants({ size: "lg" }), "h-11 px-5")} type="submit">
-                  {text.buy}
-                </button>
-              </form>
+              <Link className={cn(buttonVariants({ size: "lg" }), "h-11 px-5")} href={paths.checkout}>
+                {text.buy}
+              </Link>
             ) : (
               // Sold out is shown on the button itself, so nobody clicks Buy to find out.
               <button className={cn(buttonVariants({ size: "lg" }), "h-11 px-5")} disabled>
@@ -200,8 +200,10 @@ export function ChordlinkPage({
           <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
             <span className="font-medium text-foreground">{siteConfig.chordlink.price.display}</span>
             <span>{text.priceSuffix}</span>
+            <span>{text.delivery}</span>
             <span className="inline-flex items-center gap-2"><Gift className="size-4" />{text.unlimited}</span>
           </div>
+          <p className="mt-2 text-xs text-muted-foreground">{text.vat}</p>
         </div>
 
         <div className="mx-auto aspect-square w-full max-w-md">

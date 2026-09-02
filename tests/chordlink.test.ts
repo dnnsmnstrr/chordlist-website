@@ -16,6 +16,7 @@ import {
   chordlinkStripeCheckoutReference,
   isCompletedChordlinkCheckoutSession,
 } from "../lib/chordlink-checkout"
+import { parseChordlinkWithdrawal } from "../lib/chordlink-withdrawal"
 import { siteConfig } from "../lib/site-config"
 
 test("the printed numbers keep working now that named IDs are allowed beside them", () => {
@@ -86,7 +87,7 @@ test("pilot checkout keeps its price, run size, and shipping facts in site confi
   assert.equal(siteConfig.businessAddress.street, "Frauenlobplatz 2")
 })
 
-test("Checkout creation uses the configured Price for one German shipment", () => {
+test("custom Checkout keeps payment collection on the compliant local order page", () => {
   const parameters = chordlinkCheckoutSessionParameters({
     baseUrl: "https://chordlist.app/",
     language: "de",
@@ -95,16 +96,24 @@ test("Checkout creation uses the configured Price for one German shipment", () =
 
   assert.deepEqual(parameters.line_items, [{ price: "price_chordlink", quantity: 1 }])
   assert.equal(parameters.mode, "payment")
-  assert.equal(parameters.allow_promotion_codes, true)
+  assert.equal(parameters.ui_mode, "custom")
   assert.equal(parameters.client_reference_id, chordlinkStripeCheckoutReference)
   assert.equal(parameters.metadata.chordlink_order, chordlinkStripeCheckoutReference)
   assert.deepEqual(parameters.shipping_address_collection.allowed_countries, ["DE"])
   assert.equal(parameters.locale, "de")
-  assert.equal(parameters.cancel_url, "https://chordlist.app/de/chordlink")
   assert.equal(
-    parameters.success_url,
+    parameters.return_url,
     "https://chordlist.app/chordlink/complete?session_id={CHECKOUT_SESSION_ID}&language=de",
   )
+})
+
+test("the server fails closed if Stripe's live Price no longer matches the advertised total", async () => {
+  const server = await readFile("lib/server/stripe-chordlink.ts", "utf8")
+
+  assert.match(server, /stripe\.prices\.retrieve\(configuration\.priceId\)/)
+  assert.match(server, /price\.unit_amount === siteConfig\.chordlink\.price\.amount/)
+  assert.match(server, /price\.currency\.toUpperCase\(\) === siteConfig\.chordlink\.price\.currency/)
+  assert.match(server, /if \(!configuredPriceMatches\) return null/)
 })
 
 test("local development Checkout returns to the local confirmation route", () => {
@@ -161,12 +170,7 @@ test("completion requires the expected paid Stripe Checkout Session", () => {
   }
 
   assert.equal(isCompletedChordlinkCheckoutSession(session, expected), true)
-  assert.equal(isCompletedChordlinkCheckoutSession({ ...session, amount_total: 799 }, expected), true)
-  assert.equal(isCompletedChordlinkCheckoutSession({
-    ...session,
-    payment_status: "no_payment_required",
-    amount_total: 0,
-  }, expected), true)
+  assert.equal(isCompletedChordlinkCheckoutSession({ ...session, amount_total: 799 }, expected), false)
   assert.equal(isCompletedChordlinkCheckoutSession({ ...session, status: "open" }, expected), false)
   assert.equal(isCompletedChordlinkCheckoutSession({ ...session, payment_status: "unpaid" }, expected), false)
   assert.equal(isCompletedChordlinkCheckoutSession({ ...session, amount_subtotal: 1099 }, expected), false)
@@ -174,6 +178,54 @@ test("completion requires the expected paid Stripe Checkout Session", () => {
   assert.equal(isCompletedChordlinkCheckoutSession({ ...session, client_reference_id: "other" }, expected), false)
   assert.equal(isCompletedChordlinkCheckoutSession({ ...session, metadata: {} }, expected), false)
   assert.equal(isCompletedChordlinkCheckoutSession({ ...session, id: "cs_test_other" }, expected), false)
+})
+
+test("the German order review contains every consumer-contract fact immediately before the exact button", async () => {
+  const [checkout, terms, config] = await Promise.all([
+    readFile("components/chordlink-checkout-page.tsx", "utf8"),
+    readFile("components/chordlink-terms-page.tsx", "utf8"),
+    readFile("lib/site-config.ts", "utf8"),
+  ])
+
+  assert.match(checkout, />\s*zahlungspflichtig bestellen\s*</)
+  assert.equal(checkout.match(/zahlungspflichtig bestellen/g)?.length, 1)
+  for (const required of [
+    "Gesamtpreis inklusive Versand",
+    "Identität des Verkäufers",
+    "Gemäß § 19 UStG wird keine Umsatzsteuer berechnet.",
+    "unmittelbaren Kosten der Rücksendung",
+  ]) assert.match(checkout + terms, new RegExp(required.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")))
+  assert.match(config, /deliveryTime:/)
+  assert.match(terms, /Muster-Widerrufsformular/)
+  assert.match(terms, /zehn Stück des ersten Verkaufs/)
+})
+
+test("the 2026 online withdrawal function has the two statutory button labels", async () => {
+  const [footer, form] = await Promise.all([
+    readFile("components/site-footer.tsx", "utf8"),
+    readFile("components/chordlink-withdrawal-page.tsx", "utf8"),
+  ])
+
+  assert.match(footer, /Vertrag widerrufen/)
+  assert.match(form, /Widerruf bestätigen/)
+})
+
+test("online withdrawals require the details needed to identify and confirm them", () => {
+  const form = new FormData()
+  form.set("language", "de")
+  form.set("name", "Erika Mustermann")
+  form.set("email", "ERIKA@example.de")
+  form.set("orderReference", "Bestellung vom 1. September 2026")
+
+  assert.deepEqual(parseChordlinkWithdrawal(form, new Date("2026-09-01T12:00:00Z")), {
+    language: "de",
+    name: "Erika Mustermann",
+    email: "erika@example.de",
+    orderReference: "Bestellung vom 1. September 2026",
+    receivedAt: "2026-09-01T12:00:00.000Z",
+  })
+  form.set("email", "invalid")
+  assert.equal(parseChordlinkWithdrawal(form), null)
 })
 
 test("the public model is unnumbered unless its explicit URL option is present", async () => {
