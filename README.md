@@ -243,8 +243,41 @@ must immediately confirm receipt by email. Before enabling sales:
 7. Confirm `BREVO_API_KEY` can send from `support@chordlist.app`. Submit a test through
    `/de/chordlink/widerruf` and verify that both the operator notice and the immediate customer
    confirmation contain the declaration timestamp.
-8. Open sales with the switch in the protected chordlink admin. This database value replaces the
+8. Rate-limit the withdrawal form in the Vercel firewall **before** opening sales — see below.
+9. Open sales with the switch in the protected chordlink admin. This database value replaces the
    former readiness booleans in `siteConfig.chordlink`; do not add a second launch flag there.
+
+#### Why the withdrawal form needs a firewall rule
+
+`sendChordlinkWithdrawal` is unauthenticated by necessity: § 356 BGB wants the declaration easy to
+make, and the form asks for a name, a contact address, and "order number, order date, or order email
+address" — free text, because the model form accepts a date. There is nothing to look up and nothing
+to authenticate against, so an automated caller can mail an arbitrary recipient from this domain and
+flood `support@` at the same time. That is a real abuse path, and it cannot be closed in application
+code without breaking the statutory form.
+
+It is closed in the firewall instead. Both pages render a Server Action, and a Server Action POSTs
+to the URL of the page it is on, so the rule matches `POST` to the two page paths — not a separate
+API route, and not `GET`, which would rate-limit people merely reading the page:
+
+```bash
+vercel firewall rules add "Throttle chordlink withdrawals" \
+  --condition '{"type":"path","op":"inc","value":["/chordlink/withdraw","/de/chordlink/widerruf"]}' \
+  --condition '{"type":"method","op":"eq","value":"POST"}' \
+  --action rate_limit \
+  --rate-limit-window 600 \
+  --rate-limit-requests 5 \
+  --rate-limit-keys ip \
+  --rate-limit-action deny \
+  --yes
+```
+
+Five submissions per ten minutes per IP is far above anything a person withdrawing from one order
+does, and far below what makes the endpoint worth abusing. `rules add` only stages a draft — run
+`vercel firewall diff` to review it and `vercel firewall publish --yes` to make it live. Counters are
+per region, so the effective ceiling is roughly five times the number of regions serving traffic.
+
+If this rule is ever removed, the abuse path is open again. Do not delete it without replacing it.
 
 The buy link opens a local order page backed by a custom Checkout Session and Stripe Elements. It
 collects one German shipping address and payment details, then puts the product, seller, delivery
