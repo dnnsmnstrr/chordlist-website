@@ -36,8 +36,11 @@ const copy = {
   successTitle: "Password changed",
   successBody: "The temporary reset session has been signed out. Sign in with the new password.",
   invalidTitle: "That link is no longer valid",
+  // Says where a replacement actually comes from. There is no self-service reset on this site —
+  // the one administrator account is made by hand in the Supabase dashboard — so sending somebody
+  // to the sign-in page to "ask for another one" would be sending them to a form that cannot.
   invalidBody:
-    "Password reset links can only be used once and expire after a short while. Ask for another one from the sign-in page.",
+    "Password reset links can only be used once and expire after a short while. There is no self-service reset here: send yourself a new link from the Supabase dashboard, under Authentication → Users.",
   unconfiguredTitle: "Sign-in is not configured on this deployment",
   unconfiguredBody: "This build has no Supabase project set, so a password cannot be changed here.",
   signIn: "Go to sign in",
@@ -74,51 +77,50 @@ let resolution: Promise<Resolution> | null = null
 function resolveRecovery(): Promise<Resolution> {
   resolution ??= (async () => {
     const fragment = classifyRecoveryFragment(window.location.hash)
-    if (fragment.kind === "none") return { status: "idle", client: null }
+    if (fragment.kind === "none") return { status: "idle" as const, client: null }
 
-    // Everything past this line has credentials or an error in the URL, so the address is cleaned
-    // on every path out — including the ones that never create a client.
-    if (fragment.kind === "error") {
-      scrubFragment()
-      return { status: "invalid", client: null }
-    }
-
-    const config = supabaseBrowserConfig()
-    if (!config) {
-      scrubFragment()
-      return { status: "unconfigured", client: null }
-    }
-
-    // Loaded on demand. This module is mounted on every page of the site through
-    // `components/root-shell.tsx`, and supabase-js is far too large to ship to a reader who came
-    // for the home page. Nothing is fetched until a recovery fragment is actually present.
-    const { createClient } = await import("@supabase/supabase-js")
-
-    const client = createClient(config.url, config.key, {
-      auth: {
-        // The link in the email is an implicit-flow one: the tokens arrive in the fragment rather
-        // than as a PKCE code. This is why `createBrowserClient` from @supabase/ssr cannot be used
-        // here — it pins `flowType: "pkce"` and rejects the link outright.
-        flowType: "implicit",
-        // Reads the fragment, validates the access token, builds the session, and clears the hash.
-        detectSessionInUrl: true,
-        // The recovery session only has to live long enough to set one password. Not persisting it
-        // keeps a bearer token for the account out of local storage, and makes closing the tab
-        // enough to end it; there is nothing to refresh in that window either.
-        persistSession: false,
-        autoRefreshToken: false,
-      },
-    })
-
+    // Everything past this line has credentials or an error in the address, so all of it sits
+    // inside one block whose `finally` cleans the address — including the steps that can throw
+    // rather than return. A chunk that will not load, or a malformed NEXT_PUBLIC_SUPABASE_URL that
+    // makes `createClient` raise, must not be the path where the tokens are left in the address bar
+    // and the panel spins forever.
     try {
+      if (fragment.kind === "error") return { status: "invalid" as const, client: null }
+
+      const config = supabaseBrowserConfig()
+      if (!config) return { status: "unconfigured" as const, client: null }
+
+      // Loaded on demand. This module is mounted on every page of the site through
+      // `components/root-shell.tsx`, and supabase-js is far too large to ship to a reader who came
+      // for the home page. Nothing is fetched until a recovery fragment is actually present.
+      const { createClient } = await import("@supabase/supabase-js")
+
+      const client = createClient(config.url, config.key, {
+        auth: {
+          // The link in the email is an implicit-flow one: the tokens arrive in the fragment rather
+          // than as a PKCE code. This is why `createBrowserClient` from @supabase/ssr cannot be
+          // used here — it pins `flowType: "pkce"` and rejects the link outright.
+          flowType: "implicit",
+          // Reads the fragment, validates the access token, builds the session, clears the hash.
+          detectSessionInUrl: true,
+          // The recovery session only has to live long enough to set one password. Not persisting
+          // it keeps a bearer token for the account out of local storage, and makes closing the tab
+          // enough to end it; there is nothing to refresh in that window either.
+          persistSession: false,
+          autoRefreshToken: false,
+        },
+      })
+
       // `getSession()` waits for the client's own initialisation, which is what reads the fragment.
       const { data } = await client.auth.getSession()
-      return data.session ? { status: "ready", client } : { status: "invalid", client: null }
+      return data.session ? { status: "ready" as const, client } : { status: "invalid" as const, client: null }
     } catch {
-      return { status: "invalid", client: null }
+      // Whatever went wrong, there is no client to reach the account with, so as far as the reader
+      // is concerned this link does not work.
+      return { status: "invalid" as const, client: null }
     } finally {
-      // Supabase clears the hash once it has read the tokens, but not on the paths where it
-      // refused them, and it leaves a bare `#` behind when it does.
+      // Supabase clears the hash once it has read the tokens, but not on the paths where it refused
+      // them, and it leaves a bare `#` behind when it does.
       scrubFragment()
     }
   })()
@@ -153,11 +155,18 @@ export function PasswordRecoveryPanel({ standalone = false }: { standalone?: boo
   useEffect(() => {
     let cancelled = false
 
-    resolveRecovery().then((resolved) => {
-      if (cancelled) return
-      clientRef.current = resolved.client
-      setStatus(resolved.status)
-    })
+    resolveRecovery().then(
+      (resolved) => {
+        if (cancelled) return
+        clientRef.current = resolved.client
+        setStatus(resolved.status)
+      },
+      // `resolveRecovery` is written not to reject, so this is the backstop rather than the plan —
+      // but a panel with no rejection path spins on "Checking the link…" forever if it ever does.
+      () => {
+        if (!cancelled) setStatus("invalid")
+      },
+    )
 
     return () => {
       cancelled = true

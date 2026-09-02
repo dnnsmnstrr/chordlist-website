@@ -119,3 +119,21 @@ test("the fragment stays in the browser", () => {
   assert.equal(panel.includes('flowType: "implicit"'), true)
   assert.equal(panel.includes("persistSession: false"), true)
 })
+
+test("nothing that can throw sits outside the block that cleans the address", () => {
+  const panel = readFileSync(new URL("../components/password-recovery-panel.tsx", import.meta.url), "utf8")
+
+  // The bug this is here for: the dynamic import and `createClient` were once above the try/finally,
+  // so a chunk that would not load, or a malformed project URL, left the panel spinning on
+  // "Checking the link…" with the recovery tokens still in the address bar and the history.
+  // Positional and crude, but it is the shape of the mistake — the steps that can raise have to sit
+  // inside the block whose `finally` scrubs the fragment.
+  const guardOpens = panel.indexOf("    try {")
+  const guardCloses = panel.indexOf("    } finally {")
+  const clientBuilt = panel.indexOf('await import("@supabase/supabase-js")')
+  const scrubbed = panel.indexOf("scrubFragment()", guardCloses)
+
+  assert.ok(guardOpens > 0 && guardCloses > guardOpens, "expected a try/finally around the recovery")
+  assert.ok(clientBuilt > guardOpens && clientBuilt < guardCloses, "client is built outside the guard")
+  assert.ok(scrubbed > guardCloses, "the finally does not scrub the fragment")
+})

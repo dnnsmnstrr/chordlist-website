@@ -333,6 +333,13 @@ In the Supabase dashboard, under **Authentication → URL Configuration**, add
 too, if you want to test one), and pass it as the `redirectTo` of `resetPasswordForEmail`. Nothing
 needs to change in `.env` — the flow uses the same two `NEXT_PUBLIC_SUPABASE_*` values as the login.
 
+Nothing in this repository *sends* a reset email, and that is deliberate rather than missing: there
+is one administrator account and it is created by hand, so a new link is sent from the dashboard
+under **Authentication → Users**. The expired-link message says so, rather than sending somebody to
+a sign-in page that has no such form. If a self-service "forgot password" field on `/login` is ever
+wanted, `resetPasswordForEmail` with this path as its `redirectTo` is the call it would make, and
+the flow above already handles what comes back.
+
 ### chordlink availability notifications
 
 While chordlink is not on sale, the product page offers a "Get notified" form in place of the buy
