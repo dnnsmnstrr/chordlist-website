@@ -218,16 +218,20 @@ be inserted without changing an NFC URL.
 The backend's private `chordlink_storefront_settings.sales_enabled` value is the authoritative
 launch gate. The header switch in the protected chordlink admin changes it. Checkout remains
 disabled unless the availability response explicitly enables sales, stock remains, and the server
-has both `STRIPE_SECRET_KEY` and `CHORDLINK_STRIPE_PRICE_ID`. Before enabling sales:
+has `STRIPE_SECRET_KEY`, `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`, `CHORDLINK_STRIPE_PRICE_ID`, and
+`BREVO_API_KEY`. The Brevo key is part of the sales gate because the online withdrawal function
+must immediately confirm receipt by email. Before enabling sales:
 
-1. Have the bilingual seller, withdrawal, return-cost, and §19 UStG wording reviewed and replace the
-   launch-gate notice with the complete postal identity and return address.
+1. Have the bilingual seller identity, delivery promise, total-price, withdrawal, model form,
+   return-cost, and §19 UStG wording reviewed. The ten-unit run is still a distance sale.
 2. Confirm that the packaged chordlink fits the intended Deutsche Post letter product.
 3. In Stripe, create `chordlink — first edition` at EUR 9.99 including German postage and put its
    live `price_…` ID in `CHORDLINK_STRIPE_PRICE_ID` on Vercel.
-4. Add `STRIPE_SECRET_KEY` as a Vercel sensitive environment variable. Prefer a dedicated `rk_…`
-   restricted key with Checkout Sessions write access and only the additional read permissions
-   Stripe reports as required; never expose it through a `NEXT_PUBLIC_` variable.
+4. Add `STRIPE_SECRET_KEY` as a Vercel sensitive environment variable and
+   `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` as the corresponding public key. Prefer a dedicated `rk_…`
+   restricted key with Checkout Sessions write access and Prices read access; the checkout verifies
+   the live Price still says EUR 9.99 before it creates a session. Never expose the secret key
+   through a `NEXT_PUBLIC_` variable.
 5. Register the Supabase `chordlink-stripe-webhook` function as a Stripe webhook destination for
    `checkout.session.completed` and `checkout.session.async_payment_succeeded`, configure its
    signing secret, and test one immediate and one delayed-payment event.
@@ -236,14 +240,52 @@ has both `STRIPE_SECRET_KEY` and `CHORDLINK_STRIPE_PRICE_ID`. Before enabling sa
    without a valid response, while sales are disabled, or once the edition is gone, Checkout cannot
    open. The request bypasses Next.js caching so closing the switch takes effect on the next page or
    form request.
-7. Open sales with the switch in the protected chordlink admin. This database value replaces the
+7. Confirm `BREVO_API_KEY` can send from `support@chordlist.app`. Submit a test through
+   `/de/chordlink/widerruf` and verify that both the operator notice and the immediate customer
+   confirmation contain the declaration timestamp.
+8. Rate-limit the withdrawal form in the Vercel firewall **before** opening sales — see below.
+9. Open sales with the switch in the protected chordlink admin. This database value replaces the
    former readiness booleans in `siteConfig.chordlink`; do not add a second launch flag there.
 
-The buy form creates a fresh hosted Checkout Session with the configured Price, quantity one, and a
-German shipping address. Its success URL includes `{CHECKOUT_SESSION_ID}`. The server retrieves that
-session before showing the localized confirmation page; invalid or unpaid sessions return to the
-product page. The signed webhook separately allocates the physical unit, so the browser redirect is
-never treated as fulfillment proof.
+#### Why the withdrawal form needs a firewall rule
+
+`sendChordlinkWithdrawal` is unauthenticated by necessity: § 356 BGB wants the declaration easy to
+make, and the form asks for a name, a contact address, and "order number, order date, or order email
+address" — free text, because the model form accepts a date. There is nothing to look up and nothing
+to authenticate against, so an automated caller can mail an arbitrary recipient from this domain and
+flood `support@` at the same time. That is a real abuse path, and it cannot be closed in application
+code without breaking the statutory form.
+
+It is closed in the firewall instead. Both pages render a Server Action, and a Server Action POSTs
+to the URL of the page it is on, so the rule matches `POST` to the two page paths — not a separate
+API route, and not `GET`, which would rate-limit people merely reading the page:
+
+```bash
+vercel firewall rules add "Throttle chordlink withdrawals" \
+  --condition '{"type":"path","op":"inc","value":["/chordlink/withdraw","/de/chordlink/widerruf"]}' \
+  --condition '{"type":"method","op":"eq","value":"POST"}' \
+  --action rate_limit \
+  --rate-limit-window 600 \
+  --rate-limit-requests 5 \
+  --rate-limit-keys ip \
+  --rate-limit-action deny \
+  --yes
+```
+
+Five submissions per ten minutes per IP is far above anything a person withdrawing from one order
+does, and far below what makes the endpoint worth abusing. `rules add` only stages a draft — run
+`vercel firewall diff` to review it and `vercel firewall publish --yes` to make it live. Counters are
+per region, so the effective ceiling is roughly five times the number of regions serving traffic.
+
+If this rule is ever removed, the abuse path is open again. Do not delete it without replacing it.
+
+The buy link opens a local order page backed by a custom Checkout Session and Stripe Elements. It
+collects one German shipping address and payment details, then puts the product, seller, delivery
+time, and €9.99 total including postage immediately above a button whose complete label is
+`zahlungspflichtig bestellen`. Its return URL includes `{CHECKOUT_SESSION_ID}`. The server retrieves
+that session before showing the localized confirmation page; invalid or unpaid sessions return to
+the product page. The signed webhook separately allocates the physical unit, so the browser redirect
+is never treated as fulfillment proof.
 
 Never add a unit number, Checkout Session, buyer email, delivery address, or Apple offer code to
 Vercel Analytics. Individual `/link/*` requests redirect to the shared setup route and are noindex.
@@ -286,6 +328,50 @@ check, and `tests/admin-routes.test.ts` for the test that keeps it that way.
 Static files under `public/` are **not** covered — `/emails/*.html` and `/social/*` are served
 directly by the CDN. The pages that index them are behind the login; the generated files themselves
 stay reachable to anyone who knows the URL.
+
+#### Resetting that password
+
+A Supabase recovery email sends the administrator back to the site with an **implicit-flow**
+fragment on the end of the URL: `#access_token=…&refresh_token=…&type=recovery`. A fragment is
+never sent to a server, so Next only ever sees the path — which is why this is handled entirely in
+the browser, and why there is no server action anywhere that takes an access token. That token is a
+bearer credential for the account; the only thing that holds it is Supabase's own client, for the
+few seconds it takes to set a new password, and the fragment is scrubbed out of the address on
+every path through the flow.
+
+Three pieces:
+
+- **`lib/supabase/password-recovery.ts`** decides what a fragment is — a recovery link, an expired
+  or reused one, or an ordinary `#anchor` — and whether a new password is acceptable. It is pure,
+  and it deliberately returns a *verdict* rather than the tokens it read, so there is no way to get
+  one out of it and into component state or a request body. `tests/password-recovery.test.ts`.
+- **`components/password-recovery-gate.tsx`** rides along in `components/root-shell.tsx`, so it is
+  on every page in both languages. Recovery emails sent before this existed point at `/`, and those
+  still work: the gate notices the fragment wherever it lands and floats the form over the page.
+  It renders nothing otherwise, and the panel — with supabase-js behind it — is loaded on demand,
+  so an ordinary visit never pays for any of it.
+- **`app/(en)/account/update-password/page.tsx`** is where new links should point. It is `noindex`
+  and nothing links to it; opened without a fragment it says the link has expired, rather than
+  showing a page that appears to ignore the link somebody just clicked.
+
+The panel is a client component and talks to Supabase directly, with `createClient` from
+**`@supabase/supabase-js`** — not `createBrowserClient` from `@supabase/ssr`, which pins
+`flowType: "pkce"` and would refuse every link already sitting in an inbox. The session is created
+with `persistSession: false` and `autoRefreshToken: false`: it exists to carry one
+`updateUser({ password })` call and is signed out immediately afterwards, so it never reaches local
+storage and closing the tab is enough to end it.
+
+In the Supabase dashboard, under **Authentication → URL Configuration**, add
+`https://chordlist.app/account/update-password` to the redirect allow-list (Vercel preview URLs
+too, if you want to test one), and pass it as the `redirectTo` of `resetPasswordForEmail`. Nothing
+needs to change in `.env` — the flow uses the same two `NEXT_PUBLIC_SUPABASE_*` values as the login.
+
+Nothing in this repository *sends* a reset email, and that is deliberate rather than missing: there
+is one administrator account and it is created by hand, so a new link is sent from the dashboard
+under **Authentication → Users**. The expired-link message says so, rather than sending somebody to
+a sign-in page that has no such form. If a self-service "forgot password" field on `/login` is ever
+wanted, `resetPasswordForEmail` with this path as its `redirectTo` is the call it would make, and
+the flow above already handles what comes back.
 
 ### chordlink availability notifications
 

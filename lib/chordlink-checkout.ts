@@ -62,14 +62,12 @@ export function chordlinkCheckoutSessionParameters({
   priceId,
 }: ChordlinkCheckoutParametersOptions) {
   const origin = baseUrl.replace(/\/$/u, "")
-  const productPath = language === "de" ? "/de/chordlink" : "/chordlink"
 
   return {
     line_items: [{ price: priceId, quantity: 1 }],
     mode: "payment" as const,
-    allow_promotion_codes: true,
-    success_url: `${origin}/chordlink/complete?session_id={CHECKOUT_SESSION_ID}&language=${language}`,
-    cancel_url: `${origin}${productPath}`,
+    ui_mode: "custom" as const,
+    return_url: `${origin}/chordlink/complete?session_id={CHECKOUT_SESSION_ID}&language=${language}`,
     client_reference_id: chordlinkStripeCheckoutReference,
     metadata: { chordlink_order: chordlinkStripeCheckoutReference },
     shipping_address_collection: { allowed_countries: ["DE"] as ["DE"] },
@@ -91,9 +89,7 @@ export function isCompletedChordlinkCheckoutSession(
     && session.status === "complete"
     && hasSettledPayment
     && session.amount_subtotal === expected.amount
-    && session.amount_total !== null
-    && session.amount_total >= 0
-    && session.amount_total <= session.amount_subtotal
+    && session.amount_total === expected.amount
     && session.currency?.toUpperCase() === expected.currency.toUpperCase()
     && session.client_reference_id === expected.checkoutReference
     && session.metadata?.chordlink_order === expected.checkoutReference

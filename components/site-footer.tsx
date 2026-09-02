@@ -2,7 +2,7 @@ import Link from "next/link"
 import { LanguageSwitcher } from "@/components/language-switcher"
 
 import { faqHref } from "@/lib/faq-routes"
-import { imprintHref } from "@/lib/legal-routes"
+import { chordlinkWithdrawalHref, imprintHref } from "@/lib/legal-routes"
 import { siteConfig } from "@/lib/site-config"
 import { supportHref } from "@/lib/support-routes"
 import { defaultLanguage, dictionary, homeHref, type Language } from "@/locales"
@@ -36,6 +36,12 @@ export function SiteFooter({
         aria-label={common.navigation.footerLabel}
         className="flex flex-wrap items-center justify-center gap-x-5 gap-y-3"
       >
+        <Link
+          href={chordlinkWithdrawalHref[language]}
+          className="rounded-md border border-foreground px-3 py-2 font-medium text-foreground transition-colors hover:bg-foreground hover:text-background"
+        >
+          {language === "de" ? "Vertrag widerrufen" : "Withdraw from contract"}
+        </Link>
         <Link href={supportHref[language]} className="transition-colors hover:text-foreground">
           {common.navigation.support}
         </Link>
