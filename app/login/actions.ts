@@ -1,5 +1,8 @@
 "use server"
 
+// The pages that call these live in `app/(en)/login` and `app/(en)/logout`, where they pick up a
+// root layout; the actions stay outside the route group, as `app/chordlink/*-actions.ts` do.
+
 import type { Route } from "next"
 import { redirect } from "next/navigation"
 

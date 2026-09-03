@@ -14,6 +14,7 @@ import { ChordlinkNotifyForm } from "@/components/chordlink-notify-form"
 import { SiteFooter } from "@/components/site-footer"
 import { SiteHeader } from "@/components/site-header"
 import { buttonVariants } from "@/components/ui/button"
+import { chordlinkWithdrawalHref } from "@/lib/legal-routes"
 import { siteConfig } from "@/lib/site-config"
 import { isChordlinkInterestConfigured } from "@/lib/server/brevo-interest"
 import { isChordlinkStripeConfigured } from "@/lib/server/stripe-chordlink"
@@ -75,6 +76,7 @@ const copy = {
       unavailable: "The signup is temporarily unavailable. Please try again later.",
     },
     legal: "Physical-product terms and withdrawal information",
+    withdraw: "Withdraw from contract",
   },
   de: {
     eyebrow: "chordlink · first edition",
@@ -126,6 +128,7 @@ const copy = {
       unavailable: "Die Anmeldung ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.",
     },
     legal: "Bedingungen und Widerrufsbelehrung für physische Produkte",
+    withdraw: "Vertrag widerrufen",
   },
 } as const
 
@@ -260,8 +263,14 @@ export function ChordlinkPage({
         </div>
       </section>
 
-      <div className="mx-auto max-w-5xl px-6 pt-8 text-center text-sm text-muted-foreground">
+      <div className="mx-auto flex max-w-5xl flex-col items-center gap-4 px-6 pt-8 text-center text-sm text-muted-foreground">
         <Link className="underline underline-offset-4" href={paths.terms}>{text.legal}</Link>
+        <Link
+          className="rounded-md border border-foreground px-3 py-2 font-medium text-foreground transition-colors hover:bg-foreground hover:text-background"
+          href={chordlinkWithdrawalHref[language]}
+        >
+          {text.withdraw}
+        </Link>
       </div>
       <SiteFooter language={language} alternates={{ en: paths.en, de: paths.de }} />
     </main>

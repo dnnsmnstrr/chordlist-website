@@ -1,5 +1,5 @@
 import assert from "node:assert/strict"
-import { readFileSync } from "node:fs"
+import { existsSync, readFileSync } from "node:fs"
 import test from "node:test"
 
 import {
@@ -20,6 +20,14 @@ test("the internal tools are behind the login and the marketing site is not", ()
   }
 })
 
+test("the App Store screenshot sets are public", () => {
+  // /press links a journalist to /screens for the sets and the archives. A login in front of it
+  // turns that link into a dead end, and there is nothing behind it the press kit does not show.
+  assert.equal(isAdminRoute("/screens"), false)
+  const press = readFileSync(new URL("../app/(en)/press/page.tsx", import.meta.url), "utf8")
+  assert.ok(press.includes('href="/screens"'), "press no longer links /screens — is it still public?")
+})
+
 test("a prefix does not capture a route that merely starts with the same letters", () => {
   // /copywriting is not /copy, and /emails-archive is not /emails.
   assert.equal(isAdminRoute("/copywriting"), false)
@@ -31,6 +39,18 @@ test("a prefix does not capture a route that merely starts with the same letters
 test("the login is reachable without being logged in", () => {
   assert.equal(isAdminRoute("/login"), true)
   assert.equal(isProtectedRoute("/login"), false)
+})
+
+test("the sign-in and sign-out pages sit inside a language group", () => {
+  // A page outside (en) and (de) belongs to neither root layout, so Next renders it into a bare
+  // document: no stylesheet, no fonts, no `<html lang>`. /login shipped exactly that until it moved,
+  // which is why the route group — invisible in the URL — is the thing being asserted here.
+  for (const file of ["app/(en)/login/page.tsx", "app/(en)/logout/page.tsx"]) {
+    assert.ok(existsSync(new URL(`../${file}`, import.meta.url)), `${file} is missing`)
+  }
+  for (const file of ["app/login/page.tsx", "app/logout/page.tsx"]) {
+    assert.equal(existsSync(new URL(`../${file}`, import.meta.url)), false, `${file} has no root layout`)
+  }
 })
 
 test("nobody is an administrator until ADMIN_EMAILS says so", () => {
@@ -82,7 +102,6 @@ test("every protected page actually calls the guard", () => {
     "app/(en)/copy/page.tsx": "requireAdmin",
     "app/(en)/emails/page.tsx": "requireAdmin",
     "app/(en)/gallery/page.tsx": "requireAdmin",
-    "app/(en)/screens/page.tsx": "requireAdmin",
     "app/(en)/social-editor/page.tsx": "requireAdmin",
     "app/(en)/social/editor/page.tsx": "requireAdmin",
     "app/(en)/social/posts/page.tsx": "requireAdmin",

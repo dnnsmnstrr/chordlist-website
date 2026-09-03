@@ -68,8 +68,6 @@ export const config = {
     "/gallery/:path*",
     "/login",
     "/login/:path*",
-    "/screens",
-    "/screens/:path*",
     "/social-editor",
     "/social-editor/:path*",
     "/social/editor",

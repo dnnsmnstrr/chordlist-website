@@ -5,9 +5,10 @@
  * than a check written into each page: a new tool added under one of these paths is protected the
  * moment it exists, and forgetting to add the guard is the failure mode that matters here.
  *
- * None of these are linked from the public site — the `/screens` and `/social/posts` links in
- * `components/site-footer.tsx` are commented out — so protecting them removes nothing a visitor
- * can reach today.
+ * None of these are linked from the public site — the `/social/posts` link in
+ * `components/site-footer.tsx` is commented out — so protecting them removes nothing a visitor
+ * can reach today. `/screens` is deliberately absent: `/press` sends journalists there for the
+ * App Store sets, so it is part of the public site and a login in front of it is a dead link.
  */
 export const adminRoutePrefixes = [
   "/api/translations",
@@ -15,7 +16,6 @@ export const adminRoutePrefixes = [
   "/emails",
   "/gallery",
   "/login",
-  "/screens",
   "/social-editor",
   "/social/editor",
   "/social/posts",
