@@ -20,8 +20,12 @@ const copy = {
   unconfigured: "Sign-in is not configured on this deployment.",
 } as const
 
+// The admin console's controls: an 8px radius over the page background, with the label above it in
+// the same uppercase monospace it uses for its toolbar labels.
 const fieldClass =
-  "mt-2 h-11 w-full rounded-lg border border-border bg-background px-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+  "mt-2 h-11 w-full rounded-md border border-border bg-background px-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+
+const labelClass = "block font-mono text-xs uppercase tracking-[0.06em] text-muted-foreground"
 
 export function AdminLoginForm({ next }: { next: string }) {
   const [state, formAction, isPending] = useActionState(signIn, emptyAdminLoginState)
@@ -31,15 +35,15 @@ export function AdminLoginForm({ next }: { next: string }) {
   const message = state.error ? copy[state.error] : null
 
   return (
-    <form action={formAction} className="mt-8">
+    <form action={formAction} className="mt-6">
       <input name="next" type="hidden" value={next} />
 
-      <label className="block text-sm font-medium" htmlFor={emailId}>
+      <label className={labelClass} htmlFor={emailId}>
         {copy.email}
       </label>
       <input autoComplete="username" className={fieldClass} id={emailId} name="email" required type="email" />
 
-      <label className="mt-5 block text-sm font-medium" htmlFor={passwordId}>
+      <label className={cn(labelClass, "mt-5")} htmlFor={passwordId}>
         {copy.password}
       </label>
       <input
