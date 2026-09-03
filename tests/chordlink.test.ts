@@ -197,16 +197,20 @@ test("the German order review contains every consumer-contract fact immediately 
   ]) assert.match(checkout + terms, new RegExp(required.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")))
   assert.match(config, /deliveryTime:/)
   assert.match(terms, /Muster-Widerrufsformular/)
-  assert.match(terms, /zehn Stück des ersten Verkaufs/)
 })
 
+// The entry point sits where the contract is — on the chordlink page and at the top of the
+// withdrawal information — rather than in the site-wide footer, where it followed every reader
+// who never bought anything.
 test("the 2026 online withdrawal function has the two statutory button labels", async () => {
-  const [footer, form] = await Promise.all([
-    readFile("components/site-footer.tsx", "utf8"),
+  const [product, terms, form] = await Promise.all([
+    readFile("components/chordlink-page.tsx", "utf8"),
+    readFile("components/chordlink-terms-page.tsx", "utf8"),
     readFile("components/chordlink-withdrawal-page.tsx", "utf8"),
   ])
 
-  assert.match(footer, /Vertrag widerrufen/)
+  assert.match(product, /Vertrag widerrufen/)
+  assert.match(terms, /Vertrag widerrufen/)
   assert.match(form, /Widerruf bestätigen/)
 })
 

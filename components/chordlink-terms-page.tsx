@@ -13,7 +13,8 @@ const seller = `${siteConfig.legalName}, handelnd unter ${siteConfig.operator}, 
 const copy = {
   en: {
     title: "Physical-product terms and withdrawal information",
-    status: "These terms apply to distance-sales purchases of the physical chordlink product, including the ten units in the first sale run.",
+    status: "These terms apply to distance-sales purchases of the physical chordlink product.",
+    withdraw: "Withdraw from contract",
     sellerTitle: "Seller identity",
     sellerBody: `${seller}. Email: ${siteConfig.contact.support}.`,
     productTitle: "Product and total price",
@@ -54,11 +55,13 @@ const copy = {
       "(*) Delete as appropriate.",
     ],
     dataTitle: "Order data and privacy",
-    dataBody: "Stripe processes payment, buyer email, and the German delivery address. chordlist stores only the Checkout Session reference with the private unit record; email and address remain in Stripe. The online withdrawal function sends the declaration and its immediate confirmation through Brevo. See the website privacy policy for details.",
+    dataBody: "Stripe processes payment, buyer email, and the German delivery address. chordlist stores only the Checkout Session reference with the private unit record; email and address remain in Stripe. The online withdrawal function sends the declaration and its immediate confirmation through Brevo.",
+    dataPrivacy: { before: "See the website ", link: "privacy policy", after: " for details." },
   },
   de: {
     title: "Bedingungen und Widerrufsbelehrung für physische Produkte",
-    status: "Diese Bedingungen gelten für Fernabsatzkäufe des physischen chordlink-Produkts – auch für die zehn Stück des ersten Verkaufs.",
+    status: "Diese Bedingungen gelten für Fernabsatzkäufe des physischen chordlink-Produkts.",
+    withdraw: "Vertrag widerrufen",
     sellerTitle: "Identität des Verkäufers",
     sellerBody: `${seller}. E-Mail: ${siteConfig.contact.support}.`,
     productTitle: "Produkt und Gesamtpreis",
@@ -99,7 +102,8 @@ const copy = {
       "(*) Unzutreffendes streichen.",
     ],
     dataTitle: "Bestelldaten und Datenschutz",
-    dataBody: "Stripe verarbeitet Zahlung, E-Mail-Adresse und deutsche Lieferanschrift. chordlist speichert beim privaten Datensatz der Einheit nur die Checkout-Session-Referenz; E-Mail- und Lieferadresse bleiben bei Stripe. Die Online-Widerrufsfunktion versendet die Erklärung und ihre unverzügliche Eingangsbestätigung über Brevo. Details stehen in der Datenschutzerklärung der Website.",
+    dataBody: "Stripe verarbeitet Zahlung, E-Mail-Adresse und deutsche Lieferanschrift. chordlist speichert beim privaten Datensatz der Einheit nur die Checkout-Session-Referenz; E-Mail- und Lieferadresse bleiben bei Stripe. Die Online-Widerrufsfunktion versendet die Erklärung und ihre unverzügliche Eingangsbestätigung über Brevo.",
+    dataPrivacy: { before: "Details stehen in der ", link: "Datenschutzerklärung der Website", after: "." },
   },
 } as const
 
@@ -112,7 +116,15 @@ export function ChordlinkTermsPage({ language }: { language: Language }) {
       <SiteHeader language={language} alternates={paths} />
       <article id="main-content" tabIndex={-1} className="mx-auto w-full max-w-3xl px-6 py-16">
         <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">{text.title}</h1>
-        <p className="mt-6 rounded-2xl border border-border bg-muted p-5 text-sm leading-6">{text.status}</p>
+        <div className="mt-6 rounded-2xl border border-border bg-muted p-5 text-sm leading-6">
+          <p>{text.status}</p>
+          <Link
+            className="mt-4 inline-flex rounded-md border border-foreground px-4 py-2 font-medium transition-colors hover:bg-foreground hover:text-background"
+            href={chordlinkWithdrawalHref[language]}
+          >
+            {text.withdraw}
+          </Link>
+        </div>
 
         <div className="mt-10 space-y-10">
           <TextSection title={text.sellerTitle} body={text.sellerBody} />
@@ -143,7 +155,16 @@ export function ChordlinkTermsPage({ language }: { language: Language }) {
             </div>
           </section>
 
-          <TextSection title={text.dataTitle} body={text.dataBody} />
+          <section>
+            <h2 className="text-xl font-semibold">{text.dataTitle}</h2>
+            <p className="mt-3 leading-7 text-muted-foreground">
+              {text.dataBody} {text.dataPrivacy.before}
+              <Link className="underline underline-offset-4 hover:text-foreground" href="/privacy">
+                {text.dataPrivacy.link}
+              </Link>
+              {text.dataPrivacy.after}
+            </p>
+          </section>
         </div>
       </article>
       <SiteFooter compact language={language} alternates={paths} />
