@@ -221,8 +221,8 @@ Five categories of files in `public/` are **outputs — edit the generator, not 
   because every untranslated page falls back to it, and each translation gets an `og-<code>.png`
   beside it, which `rootMetadata()` names from the language code. Each card's headline is checked
   against the tagline in `VOCABULARY.md` and the build fails if they have drifted apart.
-  Shared logo geometry lives in `scripts/lib/chordlist-mark.mjs` and mirrors
-  `components/chordlist-icon.tsx` — change the mark in both, or the header logo and the favicons
+  Shared logo geometry lives in `design/mark.json`, consumed by
+  `scripts/lib/chordlist-mark.mjs` and `components/chordlist-icon.tsx`. Sync the canonical bundle before regenerating assets, or the header logo and favicons
   drift apart. Each script has a `CONFIG` block at the top for copy, colors, and sizing.
 - **Social assets** (`public/social/<slug>/<format>.png` plus `manifest.json`) — `pnpm build:social`,
   which renders every definition in `content/social/` into the `card`, `post`, and `story` formats it
@@ -477,7 +477,7 @@ visible and fails the build, a plausible wrong one is not.
 
 ### Shared wording
 
-Terms the app and the site both use — *Songtext*, *Akkordfolge*, *Interpret*, the tagline, the
+Terms the app and the site both use — *Songtext*, *Akkordfolge*, *Artist*, the tagline, the
 product description — are not retyped here. They come from `VOCABULARY.md` in the chordlist-app
 repository, which is the single source of truth for wording across the app, this site, the App
 Store listing and the press kit.
@@ -488,7 +488,7 @@ screenshots, and `locales/vocabulary.ts` exposes it:
 ```ts
 import { phrase, term } from "@/locales/vocabulary"
 
-phrase("tagline", "de")   // Deine Songtexte und Akkorde – als Dateien in deiner Tasche.
+phrase("tagline", "de")   // Deine Songtexte und Akkorde – immer mit dabei.
 term("lyrics", "de")      // Songtext
 ```
 
@@ -500,3 +500,7 @@ build without the app repository checked out still works.
 `scripts/lib/vocabulary.mjs` is the same reader for the Node build scripts, which is how translated
 image copy — currently the App Store sets in `scripts/lib/app-store-copy.mjs` — stays in step with
 the app without a second glossary.
+
+## Design contract
+
+Follow `DESIGN.md`. Palette and mark data are vendored in `design/`; run `pnpm design:check`.

@@ -29,7 +29,9 @@
     "lint": "eslint . --max-warnings=0",
     "test": "tsx --test tests/**/*.test.ts",
     "typecheck": "tsc --noEmit",
-    "check": "pnpm lint && pnpm typecheck && pnpm build"
+    "check": "pnpm design:check && pnpm lint && pnpm typecheck && pnpm build",
+    "design:check": "python3 design/build.py --check",
+    "design:build": "python3 design/build.py"
   },
   "dependencies": {
     "@base-ui/react": "^1.5.0",

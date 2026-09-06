@@ -1,3 +1,4 @@
+import { tokens } from './design-tokens.mjs'
 /**
  * Layout and type for the transactional and campaign emails built by scripts/build-emails.mjs.
  *
@@ -38,25 +39,25 @@ export const TOKENS = {
   },
 
   light: {
-    page: "#F4F4F5",
-    surface: "#FFFFFF",
-    text: "#18181B",
-    muted: "#71717A",
-    border: "#E4E4E7",
-    buttonBackground: "#18181B",
-    buttonText: "#FAFAFA",
-    quoteRule: "#D4D4D8",
+    page: tokens.core.light["muted"],
+    surface: tokens.core.light["card"],
+    text: tokens.core.light["foreground"],
+    muted: tokens.core.light["muted-foreground"],
+    border: tokens.core.light["border"],
+    buttonBackground: tokens.core.light["primary"],
+    buttonText: tokens.core.light["primary-foreground"],
+    quoteRule: tokens.core.light["input"],
   },
 
   dark: {
-    page: "#09090B",
-    surface: "#131316",
-    text: "#FAFAFA",
-    muted: "#A1A1AA",
-    border: "#27272A",
-    buttonBackground: "#FAFAFA",
-    buttonText: "#18181B",
-    quoteRule: "#3F3F46",
+    page: tokens.core.dark["background"],
+    surface: tokens.core.dark["card"],
+    text: tokens.core.dark["foreground"],
+    muted: tokens.core.dark["muted-foreground"],
+    border: tokens.core.dark["border"],
+    buttonBackground: tokens.core.dark["primary"],
+    buttonText: tokens.core.dark["primary-foreground"],
+    quoteRule: tokens.core.dark["input"],
   },
 }
 

@@ -1,3 +1,4 @@
+import { campaign } from './lib/design-tokens.mjs'
 /**
  * Builds the site's Open Graph cards — public/og.png, plus one og-<code>.png per language the home
  * page is translated into.
@@ -64,19 +65,12 @@ const CONFIG = {
     },
   ],
 
-  colors: {
-    background: "#0A0A0A",
-    text: "#FAFAFA",
-    muted: "#A1A1AA",
-    // The squircle mirrors the dark-mode header logo: light tile, dark glyph.
-    iconTile: "#FAFAFA",
-    iconGlyph: "#0A0A0A",
-  },
+  colors: campaign('ink'),
 
   layout: {
     padding: 80,
     columnGap: 72,
-    wordmarkSize: 96,
+    wordmarkSize: 76,
     // Default for a card that does not override it; see CONFIG.cards.
     headlineSize: 50,
     footnoteSize: 24,
@@ -105,8 +99,8 @@ function buildElement(iconUri, card) {
     "div",
     {
       style: {
-        fontFamily: "Geist",
-        fontWeight: 700,
+        fontFamily: "Geist Mono",
+        fontWeight: 400,
         fontSize: layout.wordmarkSize,
         letterSpacing: "-0.035em",
         lineHeight: 1,

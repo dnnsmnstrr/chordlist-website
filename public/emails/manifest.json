@@ -12,7 +12,7 @@
     },
     "html": "/emails/chordlink-confirm/en.html",
     "text": "/emails/chordlink-confirm/en.txt",
-    "bytes": 8159
+    "bytes": 8189
   },
   {
     "slug": "chordlink-confirm",
@@ -27,7 +27,7 @@
     },
     "html": "/emails/chordlink-confirm/de.html",
     "text": "/emails/chordlink-confirm/de.txt",
-    "bytes": 8240
+    "bytes": 8270
   },
   {
     "slug": "chordlink-on-sale",
@@ -42,7 +42,7 @@
     },
     "html": "/emails/chordlink-on-sale/en.html",
     "text": "/emails/chordlink-on-sale/en.txt",
-    "bytes": 9372
+    "bytes": 9402
   },
   {
     "slug": "chordlink-on-sale",
@@ -57,7 +57,7 @@
     },
     "html": "/emails/chordlink-on-sale/de.html",
     "text": "/emails/chordlink-on-sale/de.txt",
-    "bytes": 9539
+    "bytes": 9569
   },
   {
     "slug": "chordlink-restock",
@@ -72,7 +72,7 @@
     },
     "html": "/emails/chordlink-restock/en.html",
     "text": "/emails/chordlink-restock/en.txt",
-    "bytes": 8659
+    "bytes": 8689
   },
   {
     "slug": "chordlink-restock",
@@ -87,7 +87,7 @@
     },
     "html": "/emails/chordlink-restock/de.html",
     "text": "/emails/chordlink-restock/de.txt",
-    "bytes": 8780
+    "bytes": 8810
   },
   {
     "slug": "chordlist-announcement",
@@ -102,7 +102,7 @@
     },
     "html": "/emails/chordlist-announcement/en.html",
     "text": "/emails/chordlist-announcement/en.txt",
-    "bytes": 9332
+    "bytes": 9362
   },
   {
     "slug": "chordlist-announcement",
@@ -117,6 +117,6 @@
     },
     "html": "/emails/chordlist-announcement/de.html",
     "text": "/emails/chordlist-announcement/de.txt",
-    "bytes": 9461
+    "bytes": 9491
   }
 ]

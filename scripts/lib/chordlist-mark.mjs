@@ -7,17 +7,9 @@
  * logo, the icons, and the social card never drift apart.
  */
 
-/** Two rounded key bars, each with a thin descending stem. */
-export const GLYPH = {
-  width: 270,
-  height: 613,
-  rects: [
-    { x: 0, y: 0, width: 76, height: 375, rx: 10 },
-    { x: 35.5, y: 307, width: 5, height: 306, rx: 0 },
-    { x: 194, y: 0, width: 76, height: 375, rx: 10 },
-    { x: 229.5, y: 307, width: 5, height: 306, rx: 0 },
-  ],
-}
+import mark from '../../design/mark.json' with { type: 'json' }
+
+export const GLYPH = { width: 270, height: 613, shapes: mark.shapes }
 
 /**
  * Traces a superellipse (|x/r|^n + |y/r|^n = 1) as an SVG path — the "squircle"
@@ -63,9 +55,9 @@ export function glyphTransform(size, glyphInset = 0) {
 }
 
 function glyphRects() {
-  return GLYPH.rects
-    .map((r) => `<rect x="${r.x}" y="${r.y}" width="${r.width}" height="${r.height}" rx="${r.rx}"/>`)
-    .join("")
+  return GLYPH.shapes.map(({ tag, ...attributes }) =>
+    `<${tag} ${Object.entries(attributes).map(([key, value]) => `${key}="${value}"`).join(' ')}/>`
+  ).join('')
 }
 
 /**
