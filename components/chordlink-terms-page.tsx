@@ -146,7 +146,7 @@ export function ChordlinkTermsPage({ language }: { language: Language }) {
           <TextSection title={text.dataTitle} body={text.dataBody} />
         </div>
       </article>
-      <SiteFooter compact language={language} alternates={paths} />
+      <SiteFooter compact showWithdrawal language={language} alternates={paths} />
     </main>
   )
 }

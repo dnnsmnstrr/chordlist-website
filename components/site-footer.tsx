@@ -12,10 +12,12 @@ export function SiteFooter({
   compact = false,
   language = defaultLanguage,
   alternates,
+  showWithdrawal = false,
 }: {
   compact?: boolean
   language?: Language
   alternates?: Partial<Record<Language, Route>>
+  showWithdrawal?: boolean
 }) {
   const { common } = dictionary(language)
 
@@ -36,12 +38,14 @@ export function SiteFooter({
         aria-label={common.navigation.footerLabel}
         className="flex flex-wrap items-center justify-center gap-x-5 gap-y-3"
       >
-        <Link
-          href={chordlinkWithdrawalHref[language]}
-          className="rounded-md border border-foreground px-3 py-2 font-medium text-foreground transition-colors hover:bg-foreground hover:text-background"
-        >
-          {language === "de" ? "Vertrag widerrufen" : "Withdraw from contract"}
-        </Link>
+        {showWithdrawal ? (
+          <Link
+            href={chordlinkWithdrawalHref[language]}
+            className="rounded-md border border-foreground px-3 py-2 font-medium text-foreground transition-colors hover:bg-foreground hover:text-background"
+          >
+            {language === "de" ? "Vertrag widerrufen" : "Withdraw from contract"}
+          </Link>
+        ) : null}
         <Link href={supportHref[language]} className="transition-colors hover:text-foreground">
           {common.navigation.support}
         </Link>

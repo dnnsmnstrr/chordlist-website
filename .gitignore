@@ -38,3 +38,5 @@ video/public/manual/*
 .env
 .env.*
 !.env.example
+.vercel
+.env*

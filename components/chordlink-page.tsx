@@ -263,7 +263,7 @@ export function ChordlinkPage({
       <div className="mx-auto max-w-5xl px-6 pt-8 text-center text-sm text-muted-foreground">
         <Link className="underline underline-offset-4" href={paths.terms}>{text.legal}</Link>
       </div>
-      <SiteFooter language={language} alternates={{ en: paths.en, de: paths.de }} />
+      <SiteFooter showWithdrawal language={language} alternates={{ en: paths.en, de: paths.de }} />
     </main>
   )
 }

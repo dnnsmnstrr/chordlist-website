@@ -134,7 +134,7 @@ export function ChordlinkDiyPage({ language }: { language: Language }) {
         <p className="mt-8 border-t border-border pt-6 text-xs leading-5 text-muted-foreground">{text.editionNote}</p>
         <Link className={cn(buttonVariants({ variant: "link" }), "mt-6 px-0")} href={productPath}>{text.back}</Link>
       </article>
-      <SiteFooter compact language={language} alternates={paths} />
+      <SiteFooter compact showWithdrawal language={language} alternates={paths} />
     </main>
   )
 }

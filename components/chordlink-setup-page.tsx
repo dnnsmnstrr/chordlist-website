@@ -56,7 +56,7 @@ export function ChordlinkSetupPage({ language }: { language: Language }) {
         <InstantNfcSetup className="mt-10" language={language} />
         <p className="mt-8 rounded-2xl bg-muted p-5 text-sm leading-6 text-muted-foreground">{text.note}</p>
       </article>
-      <SiteFooter compact language={language} alternates={paths} />
+      <SiteFooter compact showWithdrawal language={language} alternates={paths} />
     </main>
   )
 }

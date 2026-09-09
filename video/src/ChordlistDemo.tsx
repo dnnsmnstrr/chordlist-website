@@ -12,6 +12,7 @@ import {
   OffthreadVideo,
   Series,
   Solid,
+  getRemotionEnvironment,
   interpolate,
   spring,
   staticFile,
@@ -350,6 +351,42 @@ const EmptyScene: React.FC<{
   </AbsoluteFill>
 );
 
+// App Store Connect rejects an app preview longer than 30 seconds. Every control that can push a
+// cut past it — `sceneDurationSeconds`, `maxSecondsPerClip`, enabling a scene — lives in the Props
+// panel, but the length itself was only visible as a frame count on the timeline, so going over was
+// something you found out at upload. The app repository's capture script calls the same limit out
+// on every run; this is the editor's version of that.
+const APP_PREVIEW_SECONDS = 30;
+
+const LengthBadge: React.FC<{
+  durationInFrames: number;
+  fps: number;
+}> = ({durationInFrames, fps}) => {
+  const seconds = durationInFrames / fps;
+  const overCap = seconds > APP_PREVIEW_SECONDS;
+
+  return (
+    <AbsoluteFill style={{alignItems: 'flex-start', justifyContent: 'flex-start'}}>
+      <div
+        style={{
+          margin: 24,
+          padding: '10px 16px',
+          borderRadius: 999,
+          fontFamily: monoFont,
+          fontSize: 22,
+          color: overCap ? '#1B1200' : '#FAFAF8',
+          backgroundColor: overCap ? '#F5B301' : 'rgba(0, 0, 0, 0.55)',
+        }}
+      >
+        {seconds.toFixed(1)}s
+        {overCap
+          ? ` — over the ${APP_PREVIEW_SECONDS}s app-preview cap`
+          : ''}
+      </div>
+    </AbsoluteFill>
+  );
+};
+
 const ProductScene: React.FC<{
   scene: ResolvedScene;
   index: number;
@@ -581,6 +618,7 @@ const transition = (key: string, durationInFrames: number): ReactNode => (
 );
 
 export const ChordlistDemo: React.FC<VideoProps> = (props) => {
+  const {durationInFrames, fps} = useVideoConfig();
   const scenes = resolveScenes(props);
   const copy = resolveCopy(props.copyVariant, props.copyMode, props.customCopy);
   const palette = paletteFor();
@@ -661,6 +699,9 @@ export const ChordlistDemo: React.FC<VideoProps> = (props) => {
           src={staticFile(`audio/${props.voiceoverFile}`)}
           volume={props.voiceoverVolume}
         />
+      ) : null}
+      {getRemotionEnvironment().isStudio ? (
+        <LengthBadge durationInFrames={durationInFrames} fps={fps} />
       ) : null}
     </AbsoluteFill>
   );
