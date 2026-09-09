@@ -1,5 +1,8 @@
 "use client"
 
+import designTokens from "@/design/tokens.json"
+import designMark from "@/design/mark.json"
+
 import { useCallback, useEffect, useMemo, useRef, useState, type ComponentType } from "react"
 import Link from "next/link"
 import { Menu } from "@base-ui/react/menu"
@@ -69,33 +72,9 @@ const formats = {
 } as const
 
 const themes = {
-  ink: {
-    label: "Ink",
-    background: "#0A0A0A",
-    text: "#FAFAFA",
-    muted: "#A1A1AA",
-    rule: "#3F3F46",
-    tile: "#FAFAFA",
-    glyph: "#0A0A0A",
-  },
-  paper: {
-    label: "Paper",
-    background: "#F3F0E8",
-    text: "#171717",
-    muted: "#67635B",
-    rule: "#C8C1B4",
-    tile: "#171717",
-    glyph: "#F3F0E8",
-  },
-  blueprint: {
-    label: "Blueprint",
-    background: "#102131",
-    text: "#F7F9FB",
-    muted: "#A7B5C1",
-    rule: "#395064",
-    tile: "#F7F9FB",
-    glyph: "#102131",
-  },
+  ink: { label: 'Ink', ...designTokens.campaigns.ink, tile: designTokens.brand.tile, glyph: designTokens.brand.glyph },
+  paper: { label: 'Paper', ...designTokens.campaigns.paper, tile: designTokens.brand.tile, glyph: designTokens.brand.glyph },
+  blueprint: { label: 'Blueprint', ...designTokens.campaigns.blueprint, tile: designTokens.brand.tile, glyph: designTokens.brand.glyph },
 } as const
 
 const templates: { name: TemplateName; label: string; description: string }[] = [
@@ -262,15 +241,20 @@ function drawMark(
   context.roundRect(x, y, size, size, size * 0.22)
   context.fill()
 
-  const glyphHeight = size
-  const glyphWidth = (270 / 613) * glyphHeight
-  const left = x + (size - glyphWidth) / 2
-  const unit = glyphHeight / 613
+  context.save()
+  context.clip()
+  const unit = size / 613
+  context.translate(x + (size - 270 * unit) / 2, y)
+  context.scale(unit, unit)
   context.fillStyle = glyph
-  context.fillRect(left, y, 76 * unit, 375 * unit)
-  context.fillRect(left + 35.5 * unit, y + 307 * unit, 5 * unit, 306 * unit)
-  context.fillRect(left + 194 * unit, y, 76 * unit, 375 * unit)
-  context.fillRect(left + 229.5 * unit, y + 307 * unit, 5 * unit, 306 * unit)
+  for (const shape of designMark.shapes) {
+    if (shape.tag === 'path' && shape.d) {
+      context.fill(new Path2D(shape.d))
+    } else if (shape.tag === 'rect') {
+      context.fillRect(Number(shape.x), Number(shape.y), Number(shape.width), Number(shape.height))
+    }
+  }
+  context.restore()
 }
 
 function drawCover(
@@ -448,7 +432,7 @@ async function renderPost(
   const markSize = Math.round(56 * scale)
   drawMark(context, padding, top, markSize, activeTheme.tile, activeTheme.glyph)
   context.fillStyle = activeTheme.text
-  context.font = `700 ${Math.round(34 * scale)}px ${sans}`
+  context.font = `400 ${Math.round(34 * scale)}px ${mono}`
   context.textBaseline = "middle"
   context.fillText("chordlist", padding + markSize + Math.round(18 * scale), top + markSize / 2)
   if (config.eyebrow.trim()) {

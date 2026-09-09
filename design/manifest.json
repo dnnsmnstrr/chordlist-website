@@ -1,0 +1,11 @@
+{
+  "version": "1.0.0",
+  "source": "https://github.com/dnnsmnstrr/chordlist",
+  "sha256": {
+    "DESIGN.md": "9e88f61268b41a5fe6a43df52c5910b166249400c95fdbdbecf7e112ab737278",
+    "design/tokens.json": "d72c0ec74b59ea32866fbb3e3061f8d1c5fa8f2abc667a27d02b841c3c78b48b",
+    "design/mark.json": "efa32c1f2e8c2848b9b610941a0173967f92a037a9594c97c17790aaf905d0fc",
+    "design/build.py": "99014b2594651e5d23dfb3db5821a3eab43958d99a7f6a298663af10710a4e81",
+    "design/sync.py": "c3320f28ef8df4de647b60289e84d982e0f640ba4b79dc2842a9ab0022ba9bb8"
+  }
+}

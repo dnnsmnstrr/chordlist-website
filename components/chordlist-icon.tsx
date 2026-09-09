@@ -1,26 +1,14 @@
-import type { SVGProps } from "react"
+import type { SVGProps } from 'react'
+import mark from '@/design/mark.json'
 
-/**
- * chordlist mark — two rounded "key" bars each with a thin descending stem.
- * Rebuilt from the provided design export. Uses currentColor so it inherits
- * the surrounding text color and adapts to light/dark themes.
- */
+/** Geometry vendored from the canonical app icon by design/sync.py. */
 export function ChordlistIcon(props: SVGProps<SVGSVGElement>) {
   return (
-    <svg
-      viewBox="0 0 270 613"
-      fill="currentColor"
-      preserveAspectRatio="xMidYMid meet"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden="true"
-      {...props}
-    >
-      {/* left key */}
-      <rect x="0" y="0" width="76" height="375" rx="10" />
-      <rect x="35.5" y="307" width="5" height="306" />
-      {/* right key */}
-      <rect x="194" y="0" width="76" height="375" rx="10" />
-      <rect x="229.5" y="307" width="5" height="306" />
+    <svg viewBox={mark.viewBox} fill="currentColor" preserveAspectRatio="xMidYMid meet"
+      xmlns="http://www.w3.org/2000/svg" aria-hidden="true" {...props}>
+      {mark.shapes.map(({ tag, ...attributes }, index) =>
+        tag === 'path' ? <path key={index} {...attributes} /> : <rect key={index} {...attributes} />
+      )}
     </svg>
   )
 }

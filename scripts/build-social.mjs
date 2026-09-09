@@ -1,3 +1,4 @@
+import { campaign } from './lib/design-tokens.mjs'
 /**
  * Builds every social asset declared in content/social into public/social/.
  *
@@ -76,17 +77,7 @@ const CONFIG = {
   },
 
   colors: {
-    background: "#0A0A0A",
-    text: "#FAFAFA",
-    muted: "#A1A1AA",
-    // Quotation mark and other non-text furniture: present, never competing.
-    rule: "#3F3F46",
-    // The squircle mirrors the dark-mode header logo: light tile, dark glyph.
-    iconTile: "#FAFAFA",
-    iconGlyph: "#0A0A0A",
-    // Laid over editorial photography so type stays legible against blown
-    // highlights. Heaviest at the top and bottom, where the lockup and the
-    // footnote sit; lightest across the middle, so the picture still reads.
+    ...campaign('ink'),
     scrim:
       "linear-gradient(180deg, rgba(10,10,10,0.88) 0%, rgba(10,10,10,0.55) 38%," +
       " rgba(10,10,10,0.62) 62%, rgba(10,10,10,0.92) 100%)",
@@ -94,23 +85,9 @@ const CONFIG = {
 
   /** Optional per-definition colour systems. `ink` preserves the original. */
   themes: {
-    ink: {},
-    paper: {
-      background: "#F3F0E8",
-      text: "#171717",
-      muted: "#67635B",
-      rule: "#C8C1B4",
-      iconTile: "#171717",
-      iconGlyph: "#F3F0E8",
-    },
-    blueprint: {
-      background: "#102131",
-      text: "#F7F9FB",
-      muted: "#A7B5C1",
-      rule: "#395064",
-      iconTile: "#F7F9FB",
-      iconGlyph: "#102131",
-    },
+    ink: campaign('ink'),
+    paper: campaign('paper'),
+    blueprint: campaign('blueprint'),
   },
 
   /** The same quiet analog textures used by the website's ambient layer. */

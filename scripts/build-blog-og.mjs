@@ -1,3 +1,4 @@
+import { campaign } from './lib/design-tokens.mjs'
 /**
  * Builds one Open Graph card per blog post at public/blog/og/<slug>.png.
  *
@@ -39,13 +40,7 @@ const CONFIG = {
     eyebrow: "Blog",
   },
 
-  colors: {
-    background: "#0A0A0A",
-    text: "#FAFAFA",
-    muted: "#A1A1AA",
-    iconTile: "#FAFAFA",
-    iconGlyph: "#0A0A0A",
-  },
+  colors: campaign('ink'),
 
   layout: {
     padding: 80,
@@ -93,8 +88,8 @@ function buildElement({ title, meta, iconUri }) {
         "div",
         {
           style: {
-            fontFamily: "Geist",
-            fontWeight: 700,
+            fontFamily: "Geist Mono",
+            fontWeight: 400,
             fontSize: layout.wordmarkSize,
             letterSpacing: "-0.03em",
             color: colors.text,

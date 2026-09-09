@@ -1,5 +1,7 @@
 # Visual language
 
+Shared identity and tokens: [DESIGN.md](../DESIGN.md).
+
 ## Purpose
 
 Chordlist's editorial photography should feel like a fragment of a rehearsal, performance, or

@@ -1,5 +1,7 @@
 # Social media system
 
+Shared identity and tokens: [DESIGN.md](../DESIGN.md).
+
 ## Purpose
 
 Social assets are generated from committed definitions, not drawn one at a time. A post's copy,
@@ -62,7 +64,7 @@ Two cropping rules the build cannot enforce for you:
 
 ## Templates
 
-Pick the template that matches what the asset is actually saying. Adding a sixth template is a
+Pick the template that matches what the asset is actually saying. Adding a new template is a
 change to the system; reaching for an existing one is the normal case.
 
 **`statement`** — one short claim, set large. The workhorse: launch notes, feature announcements,
@@ -200,7 +202,7 @@ whoever posts it is not rewriting copy that was already reviewed.
 
 | Field | Required | Rules |
 | --- | --- | --- |
-| `template` | yes | One of the five above. An unknown name fails the build. |
+| `template` | yes | One of the six above. An unknown name fails the build. |
 | `alt` | yes | Describes the visible asset. Never empty — these are published images. |
 | `headline` | per template | One list entry per rendered line. Line breaks are an editorial decision. |
 | `formats` | no | Defaults to `card` and `post`. |

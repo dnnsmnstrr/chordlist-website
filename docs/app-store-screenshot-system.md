@@ -1,5 +1,7 @@
 # App Store screenshot system
 
+Shared identity and tokens: [DESIGN.md](../DESIGN.md).
+
 The App Store images are generated from the same simulator captures used by the press kit and social posts. Nothing
 in `public/app-store-screenshots/` should be edited by hand.
 

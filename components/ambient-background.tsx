@@ -65,7 +65,6 @@ export function AmbientBackground() {
     layer.dataset.ready = "true"
 
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)")
-    if (reducedMotion.matches) return
 
     let animationFrame = 0
     let lastTimestamp = 0
@@ -118,7 +117,7 @@ export function AmbientBackground() {
       if (settled) {
         pointerX = targetPointerX
         pointerY = targetPointerY
-        scrollY = targetScrollY
+        scrollY = reducedMotion.matches ? 0 : targetScrollY
         animationFrame = 0
         lastTimestamp = 0
       } else {
@@ -129,7 +128,7 @@ export function AmbientBackground() {
     }
 
     const startMovement = () => {
-      if (animationFrame !== 0) return
+      if (animationFrame !== 0 || reducedMotion.matches) return
       lastTimestamp = 0
       animationFrame = window.requestAnimationFrame(step)
     }
@@ -145,9 +144,24 @@ export function AmbientBackground() {
       startMovement()
     }
 
+    const handleMotionChange = () => {
+      if (animationFrame !== 0) window.cancelAnimationFrame(animationFrame)
+      animationFrame = 0
+      lastTimestamp = 0
+      if (reducedMotion.matches) {
+        pointerX = 0
+        pointerY = 0
+        scrollY = 0
+        write()
+      } else {
+        startMovement()
+      }
+    }
+
+    reducedMotion.addEventListener("change", handleMotionChange)
     measureScrollSpan()
     targetScrollY = readScrollTarget()
-    scrollY = targetScrollY
+    scrollY = reducedMotion.matches ? 0 : targetScrollY
     write()
 
     // The document grows as images and fonts land, which moves the scroll span.
@@ -159,6 +173,7 @@ export function AmbientBackground() {
     window.addEventListener("resize", handleResize, { passive: true })
 
     return () => {
+      reducedMotion.removeEventListener("change", handleMotionChange)
       window.removeEventListener("pointermove", handlePointerMove)
       window.removeEventListener("scroll", startMovement)
       window.removeEventListener("resize", handleResize)

@@ -1,3 +1,4 @@
+import { tokens } from './lib/design-tokens.mjs'
 /**
  * Builds every favicon asset in public/ from one shared definition of the mark.
  *
@@ -26,8 +27,8 @@ const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "
 
 const CONFIG = {
   // Matches the site's --background / --foreground tokens.
-  dark: "#0A0A0A",
-  light: "#FAFAFA",
+  dark: tokens.brand.glyph,
+  light: tokens.brand.tile,
 
   // Superellipse exponent for the tile. Raise for boxier corners.
   squircleExponent: 5,
@@ -55,9 +56,9 @@ const VARIANTS = {
 const OUTPUTS = {
   favicon: { file: "public/favicon.ico", variant: "lightTile" },
   svg: { file: "public/icon.svg" },
-  pngLightScheme: { file: "public/icon-light-32x32.png", variant: "darkTile", size: 32 },
+  pngLightScheme: { file: "public/icon-light-32x32.png", variant: "lightTile", size: 32 },
   pngDarkScheme: { file: "public/icon-dark-32x32.png", variant: "lightTile", size: 32 },
-  appleTouch: { file: "public/apple-icon.png", variant: "darkTile", size: 180 },
+  appleTouch: { file: "public/apple-icon.png", variant: "lightTile", size: 180 },
 }
 
 /* ───────────────────────────── END CONFIG ───────────────────────────── */
@@ -128,9 +129,9 @@ async function main() {
       size: 180,
       exponent: CONFIG.squircleExponent,
       glyphInset: CONFIG.glyphInset,
-      tileColor: CONFIG.dark,
-      glyphColor: CONFIG.light,
-      themed: true,
+      tileColor: CONFIG.light,
+      glyphColor: CONFIG.dark,
+      themed: false,
     })}\n`,
   )
 

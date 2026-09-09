@@ -1,3 +1,5 @@
+import designTokens from '../../design/tokens.json';
+import {ChordlistIcon} from '../../components/chordlist-icon';
 import {linearTiming, TransitionSeries} from '@remotion/transitions';
 import {fade} from '@remotion/transitions/fade';
 import {loadFont as loadGeist} from '@remotion/google-fonts/Geist';
@@ -38,14 +40,17 @@ type Palette = {
   shadow: string;
 };
 
-const paletteFor = (): Palette => ({
-  background: '#161411',
-  panel: '#25221D',
-  text: '#FAFAF8',
-  secondaryText: '#A6A29A',
-  border: 'rgba(255, 255, 255, 0.11)',
-  shadow: 'rgba(0, 0, 0, 0.62)',
-});
+function paletteFor(): Palette {
+  const theme = designTokens.campaigns['warm-stage'];
+  return {
+    background: theme.background,
+    panel: theme.panel,
+    text: theme.text,
+    secondaryText: theme.muted,
+    border: designTokens.core.dark.border,
+    shadow: 'rgba(0, 0, 0, 0.62)',
+  };
+}
 
 const {fontFamily: baseFont} = loadGeist('normal', {
   weights: ['400', '500', '600', '700'],
@@ -65,9 +70,9 @@ const Background: React.FC<{
   const {height, width} = useVideoConfig();
 
   return (
-    <AbsoluteFill style={{backgroundColor: '#161411', overflow: 'hidden'}}>
+    <AbsoluteFill style={{backgroundColor: designTokens.campaigns['warm-stage'].background, overflow: 'hidden'}}>
       <Solid
-        color="#161411"
+        color={designTokens.campaigns['warm-stage'].background}
         width={width}
         height={height}
         effects={[
@@ -113,26 +118,16 @@ const BrandMark: React.FC<{
         width: 44,
         height: 44,
         borderRadius: 10,
-        backgroundColor: palette.text,
-        color: palette.background,
-        boxShadow: '0 0 0 1px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.22)',
+        backgroundColor: designTokens.brand.tile,
+        color: designTokens.brand.glyph,
+        boxShadow: designTokens.shadow.logo,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         overflow: 'hidden',
       }}
     >
-      <svg
-        viewBox="0 0 270 613"
-        fill="currentColor"
-        aria-hidden="true"
-        style={{width: 22, height: 32}}
-      >
-        <rect x="0" y="0" width="76" height="375" rx="10" />
-        <rect x="35.5" y="307" width="5" height="306" />
-        <rect x="194" y="0" width="76" height="375" rx="10" />
-        <rect x="229.5" y="307" width="5" height="306" />
-      </svg>
+      <ChordlistIcon style={{width: '100%', height: '100%'}} />
     </span>
     chordlist
   </div>
@@ -584,6 +579,9 @@ export const ChordlistDemo: React.FC<VideoProps> = (props) => {
   const scenes = resolveScenes(props);
   const copy = resolveCopy(props.copyVariant, props.copyMode, props.customCopy);
   const palette = paletteFor();
+  const accentColor = props.accentPreset && props.accentPreset !== 'custom'
+    ? designTokens.accents[props.accentPreset]
+    : props.accentColor;
   const timing = getTimingProfile(props.cut);
   const timeline: ReactNode[] = [
     <TransitionSeries.Sequence
@@ -595,7 +593,7 @@ export const ChordlistDemo: React.FC<VideoProps> = (props) => {
         text={copy.openingHook}
         footer={copy.openingFooter}
         palette={palette}
-        accentColor={props.accentColor}
+        accentColor={accentColor}
         paperSeed={props.paperSeed}
       />
     </TransitionSeries.Sequence>,
@@ -619,7 +617,7 @@ export const ChordlistDemo: React.FC<VideoProps> = (props) => {
           index={index}
           total={scenes.length}
           palette={palette}
-          accentColor={props.accentColor}
+          accentColor={accentColor}
           mediaPadding={props.mediaPadding}
           showShotLabels={props.showShotLabels}
           showExplanation={props.cut === 'documentary'}
@@ -640,7 +638,7 @@ export const ChordlistDemo: React.FC<VideoProps> = (props) => {
         endLine={copy.endLine}
         releaseLine={copy.releaseLine}
         palette={palette}
-        accentColor={props.accentColor}
+        accentColor={accentColor}
         paperSeed={props.paperSeed}
       />
     </TransitionSeries.Sequence>,

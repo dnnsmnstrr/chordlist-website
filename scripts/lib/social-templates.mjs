@@ -196,8 +196,8 @@ function lockup({ tokens, scale, iconUri, label }) {
       {
         key: "name",
         style: {
-          fontFamily: "Geist",
-          fontWeight: 700,
+          fontFamily: "Geist Mono",
+          fontWeight: 400,
           fontSize: Math.round(tokens.type.wordmark * scale),
           letterSpacing: "-0.03em",
           color: tokens.colors.text,
