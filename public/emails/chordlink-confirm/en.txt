@@ -6,7 +6,7 @@ You asked to hear from us when chordlink — the 3D-printed NFC tag that opens y
 
 We will email you when there is something to tell you: when the first edition goes on sale, or when a new batch is made. Nothing else.
 
-Confirm my address: {{ doubleoptin }}
+Confirm my address: {{ params.DOIurl }}
 
 If you did not ask for this, ignore this email. Without the confirmation above your address is never added and you will not hear from us again.
 

@@ -6,7 +6,7 @@ Du möchtest erfahren, wann chordlink verfügbar ist — der 3D-gedruckte NFC-Ta
 
 Wir schreiben dir, wenn es etwas zu sagen gibt: wenn die erste Edition in den Verkauf geht oder wenn eine neue Charge gefertigt wird. Sonst nichts.
 
-Adresse bestätigen: {{ doubleoptin }}
+Adresse bestätigen: {{ params.DOIurl }}
 
 Wenn du das nicht angefordert hast, ignoriere diese E-Mail einfach. Ohne die Bestätigung oben wird deine Adresse nicht aufgenommen und du hörst nichts mehr von uns.
 

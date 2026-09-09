@@ -79,8 +79,15 @@ export async function submitChordlinkInterest({
     // `chordlinkInterestOutcome` deliberately reads as success rather than leaking membership.
     const body: unknown = await response.json().catch(() => null)
     const code = typeof body === "object" && body !== null ? (body as { code?: unknown }).code : undefined
+    console.error("Brevo double-opt-in request failed", {
+      status: response.status,
+      code: typeof code === "string" ? code : "unknown",
+    })
     return chordlinkInterestOutcome(response.status, typeof code === "string" ? code : undefined)
-  } catch {
+  } catch (error) {
+    console.error("Brevo double-opt-in request did not complete", {
+      error: error instanceof Error ? error.name : "unknown",
+    })
     return "unavailable"
   }
 }

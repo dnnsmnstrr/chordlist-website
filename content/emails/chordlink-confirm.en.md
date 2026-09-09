@@ -7,7 +7,7 @@ eyebrow: "chordlink"
 heading: "Confirm your email address"
 cta:
   label: "Confirm my address"
-  url: "{{ doubleoptin }}"
+  url: "{{ params.DOIurl }}"
 footnote: "If you did not ask for this, ignore this email. Without the confirmation above your address is never added and you will not hear from us again."
 ---
 

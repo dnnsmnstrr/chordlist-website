@@ -8,11 +8,11 @@
     "heading": "Confirm your email address",
     "cta": {
       "label": "Confirm my address",
-      "url": "{{ doubleoptin }}"
+      "url": "{{ params.DOIurl }}"
     },
     "html": "/emails/chordlink-confirm/en.html",
     "text": "/emails/chordlink-confirm/en.txt",
-    "bytes": 8189
+    "bytes": 8191
   },
   {
     "slug": "chordlink-confirm",
@@ -23,11 +23,11 @@
     "heading": "Bestätige deine E-Mail-Adresse",
     "cta": {
       "label": "Adresse bestätigen",
-      "url": "{{ doubleoptin }}"
+      "url": "{{ params.DOIurl }}"
     },
     "html": "/emails/chordlink-confirm/de.html",
     "text": "/emails/chordlink-confirm/de.txt",
-    "bytes": 8270
+    "bytes": 8272
   },
   {
     "slug": "chordlink-on-sale",

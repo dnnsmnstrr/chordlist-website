@@ -139,6 +139,9 @@ async function main() {
     if (definition.language !== language) {
       fail(file, `frontmatter says language "${definition.language}" but the filename says "${language}"`)
     }
+    if (slug === "chordlink-confirm" && definition.cta?.url !== "{{ params.DOIurl }}") {
+      fail(file, 'the Brevo API double-opt-in button must use "{{ params.DOIurl }}"')
+    }
 
     if (!bySlug.has(slug)) bySlug.set(slug, new Map())
     bySlug.get(slug).set(language, definition)

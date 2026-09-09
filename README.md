@@ -435,8 +435,9 @@ half-translated campaign is not something to discover at send time, with half th
 mailed in the wrong language.
 
 Four definitions ship. `chordlink-confirm` is the double opt-in mail and is the one the signup flow
-actually depends on — its button must keep the `{{ doubleoptin }}` merge field, which is what Brevo
-replaces with the confirmation link. `chordlink-on-sale` and `chordlink-restock` are the campaigns
+actually depends on — its button must keep the `{{ params.DOIurl }}` merge field, which Brevo's
+API-based double-opt-in flow replaces with the confirmation link. `chordlink-on-sale` and
+`chordlink-restock` are the campaigns
 for the two lists. `chordlist-announcement` is a deliberately empty skeleton to copy for the next
 announcement.
 
