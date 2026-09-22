@@ -45,6 +45,9 @@ export const siteConfig = {
     firstEditionSize: 20,
     saleQuantity: 10,
     shippingRegion: "DE",
+    // The shared iCloud Shortcut chordlinks run. The backend's default setting is authoritative;
+    // this is only what /chordlink/automation serves when the backend cannot be read.
+    automationShortcut: "https://www.icloud.com/shortcuts/2c3d5942480b4c2489cdea0f7b8fcde2",
     shippingIncluded: true,
     deliveryTime: {
       en: "within 5 working days after receipt of payment",
