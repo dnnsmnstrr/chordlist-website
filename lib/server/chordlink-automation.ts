@@ -1,30 +1,23 @@
 import "server-only"
 
-import { parseChordlinkAutomationUrl } from "@/lib/chordlink-automation"
+import { automationOverridePublicId, parseChordlinkAutomationUrl } from "@/lib/chordlink-automation"
+import { siteConfig } from "@/lib/site-config"
 
 const requestTimeoutMilliseconds = 2_000
-// The backend serves the same URL with `max-age=300`, so matching it here keeps the two from
-// disagreeing about how stale the installer link may be.
-const revalidateSeconds = 300
 
-/**
- * Reads the backend's public automation endpoint for the storefront's shared Shortcut.
- *
- * Called without a `publicId`, which is the honest shape of the question: `/chordlink/setup` is
- * reached through a redirect that deliberately drops the unit's serial, and a self-printed
- * chordlink on `/chordlink/diy` has no inventory row to name at all. Both want the default the
- * operator configured, which is exactly what the bare endpoint answers.
- *
- * Returns `null` whenever the answer cannot be trusted — unconfigured, unreachable, slow, or
- * malformed. Callers hide the install button rather than render one that goes nowhere.
- */
-export async function fetchChordlinkAutomationUrl(): Promise<string | null> {
-  const endpoint = process.env.CHORDLINK_AUTOMATION_URL?.trim()
-  if (!endpoint) return null
+function automationEndpoint(): string | null {
+  const configured = process.env.CHORDLINK_AUTOMATION_URL?.trim()
+  if (configured) return configured
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim().replace(/\/+$/, "")
+  return supabaseUrl ? `${supabaseUrl}/functions/v1/chordlink-automation` : null
+}
 
+async function fetchAutomationUrl(endpoint: string, publicId: string | null): Promise<string | null> {
+  const url = new URL(endpoint)
+  if (publicId) url.searchParams.set("publicId", publicId)
   try {
-    const response = await fetch(endpoint, {
-      next: { revalidate: revalidateSeconds },
+    const response = await fetch(url, {
+      next: { revalidate: 300 },
       signal: AbortSignal.timeout(requestTimeoutMilliseconds),
     })
     if (!response.ok) return null
@@ -32,4 +25,23 @@ export async function fetchChordlinkAutomationUrl(): Promise<string | null> {
   } catch {
     return null
   }
+}
+
+/**
+ * The Shortcut a chordlink should install. Never fails: a unit's own override comes first, then the
+ * backend's shared default, then the copy in the site config, so a tag that is not in the inventory
+ * or a backend outage still ends somewhere installable.
+ */
+export async function resolveChordlinkAutomationUrl(publicId: string | null): Promise<string> {
+  const endpoint = automationEndpoint()
+  if (endpoint) {
+    const overridePublicId = automationOverridePublicId(publicId)
+    if (overridePublicId) {
+      const override = await fetchAutomationUrl(endpoint, overridePublicId)
+      if (override) return override
+    }
+    const shared = await fetchAutomationUrl(endpoint, null)
+    if (shared) return shared
+  }
+  return siteConfig.chordlink.automationShortcut
 }

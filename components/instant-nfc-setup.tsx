@@ -1,7 +1,6 @@
 import { ExternalLink, Zap } from "lucide-react"
 
 import { buttonVariants } from "@/components/ui/button"
-import { fetchChordlinkAutomationUrl } from "@/lib/server/chordlink-automation"
 import { cn } from "@/lib/utils"
 import type { Language } from "@/locales"
 
@@ -11,7 +10,7 @@ const copy = {
     title: "Open chordlist instantly",
     intro: "A direct NFC link works without Shortcuts. iOS shows a notification that you tap to open chordlist. To open it immediately when you scan, add a personal automation:",
     install: "Add the Shortcut",
-    installNote: "Opens the ready-made Shortcut in iCloud. Add it on your iPhone, then pick your tag as its trigger.",
+    installNote: "Opens the ready-made Shortcut. Add it on your iPhone, then pick your tag as its trigger.",
     manual: "Or build the automation yourself:",
     steps: [
       <>Create a new <strong>NFC</strong>-triggered automation in Shortcuts.</>,
@@ -26,7 +25,7 @@ const copy = {
     title: "chordlist sofort öffnen",
     intro: "Ein direkter NFC-Link funktioniert ohne Kurzbefehle. iOS zeigt eine Mitteilung, die du antippst, um chordlist zu öffnen. Damit die App direkt beim Scan geöffnet wird, erstelle eine persönliche Automation:",
     install: "Kurzbefehl hinzufügen",
-    installNote: "Öffnet den fertigen Kurzbefehl in iCloud. Füge ihn auf deinem iPhone hinzu und wähle dann deinen Tag als Auslöser.",
+    installNote: "Öffnet den fertigen Kurzbefehl. Füge ihn auf deinem iPhone hinzu und wähle dann deinen Tag als Auslöser.",
     manual: "Oder erstelle die Automation selbst:",
     steps: [
       <>Erstelle in Kurzbefehle eine neue Automation mit dem Auslöser <strong>NFC</strong>.</>,
@@ -38,11 +37,14 @@ const copy = {
   },
 } as const
 
-export async function InstantNfcSetup({ language, className = "" }: { language: Language; className?: string }) {
+// The button points at /chordlink/automation rather than at the Shortcut itself, so the page stays
+// static and the link is resolved when someone taps it: change the Shortcut in the chordlink admin
+// and the next tap already goes to the new one. The route always answers, so the button is always
+// worth showing — the hand-built steps below it are for people who want their own automation.
+const automationPath = "/chordlink/automation"
+
+export function InstantNfcSetup({ language, className = "" }: { language: Language; className?: string }) {
   const text = copy[language]
-  // No configured Shortcut, and no reachable backend, both render the hand-built steps alone. A
-  // button that cannot say where it goes is worse than the instructions that were here before it.
-  const automationUrl = await fetchChordlinkAutomationUrl()
 
   return (
     <aside className={cn("rounded-2xl border border-border bg-muted/50 p-6", className)}>
@@ -56,15 +58,13 @@ export async function InstantNfcSetup({ language, className = "" }: { language: 
         </div>
       </div>
       <p className="mt-4 text-sm leading-6 text-muted-foreground">{text.intro}</p>
-      {automationUrl ? (
-        <div className="mt-5">
-          <a className={buttonVariants()} href={automationUrl} rel="noreferrer" target="_blank">
-            {text.install}<ExternalLink aria-hidden="true" />
-          </a>
-          <p className="mt-3 text-sm leading-6 text-muted-foreground">{text.installNote}</p>
-          <p className="mt-5 text-sm font-medium leading-6 text-foreground">{text.manual}</p>
-        </div>
-      ) : null}
+      <div className="mt-5">
+        <a className={buttonVariants()} href={automationPath} rel="noreferrer" target="_blank">
+          {text.install}<ExternalLink aria-hidden="true" />
+        </a>
+        <p className="mt-3 text-sm leading-6 text-muted-foreground">{text.installNote}</p>
+        <p className="mt-5 text-sm font-medium leading-6 text-foreground">{text.manual}</p>
+      </div>
       <ol className="mt-4 list-decimal space-y-2 pl-5 text-sm leading-6 text-muted-foreground marker:font-medium marker:text-foreground">
         {text.steps.map((step, index) => (
           <li key={index} className="pl-1 [&_code]:break-all [&_code]:font-mono [&_code]:text-xs [&_code]:text-foreground [&_strong]:font-medium [&_strong]:text-foreground">

@@ -241,12 +241,13 @@ must immediately confirm receipt by email. Before enabling sales:
    open. The request bypasses Next.js caching so closing the switch takes effect on the next page or
    form request.
 7. Optionally set `CHORDLINK_AUTOMATION_URL` to the backend's public `chordlink-automation`
-   endpoint. Called without a `publicId` it answers the shared iCloud Shortcut set in the chordlink
-   admin, which the setup and DIY pages turn into an install button. The URL is read at request
-   time and revalidated every five minutes, matching the endpoint's own cache header, so changing
-   the Shortcut in the admin reaches the site without a deploy. Leaving it unset, or any response
-   that is not a valid iCloud Shortcut link, hides the button and leaves the hand-built automation
-   steps in place.
+   endpoint; it defaults to that function under `NEXT_PUBLIC_SUPABASE_URL`. `/chordlink/automation`
+   redirects to the shared iCloud Shortcut and `/chordlink/automation.json` returns it for the app,
+   both taking an optional `publicId` for a unit's override. The install button in the NFC aside on
+   the chordlink setup and DIY pages links to that route rather than to iCloud, so the Shortcut is
+   resolved when someone taps it and changing it in the chordlink admin needs no deploy. The route
+   always answers: a unit's override first, then the backend's shared default, then
+   `siteConfig.chordlink.automationShortcut`.
 8. Confirm `BREVO_API_KEY` can send from `support@chordlist.app`. Submit a test through
    `/de/chordlink/widerruf` and verify that both the operator notice and the immediate customer
    confirmation contain the declaration timestamp.
