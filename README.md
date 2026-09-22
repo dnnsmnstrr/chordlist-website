@@ -240,11 +240,19 @@ must immediately confirm receipt by email. Before enabling sales:
    without a valid response, while sales are disabled, or once the edition is gone, Checkout cannot
    open. The request bypasses Next.js caching so closing the switch takes effect on the next page or
    form request.
-7. Confirm `BREVO_API_KEY` can send from `support@chordlist.app`. Submit a test through
+7. Optionally set `CHORDLINK_AUTOMATION_URL` to the backend's public `chordlink-automation`
+   endpoint; it defaults to that function under `NEXT_PUBLIC_SUPABASE_URL`. `/chordlink/automation`
+   redirects to the shared iCloud Shortcut and `/chordlink/automation.json` returns it for the app,
+   both taking an optional `publicId` for a unit's override. The install button in the NFC aside on
+   the chordlink setup and DIY pages links to that route rather than to iCloud, so the Shortcut is
+   resolved when someone taps it and changing it in the chordlink admin needs no deploy. The route
+   always answers: a unit's override first, then the backend's shared default, then
+   `siteConfig.chordlink.automationShortcut`.
+8. Confirm `BREVO_API_KEY` can send from `support@chordlist.app`. Submit a test through
    `/de/chordlink/widerruf` and verify that both the operator notice and the immediate customer
    confirmation contain the declaration timestamp.
-8. Rate-limit the withdrawal form in the Vercel firewall **before** opening sales — see below.
-9. Open sales with the switch in the protected chordlink admin. This database value replaces the
+9. Rate-limit the withdrawal form in the Vercel firewall **before** opening sales — see below.
+10. Open sales with the switch in the protected chordlink admin. This database value replaces the
    former readiness booleans in `siteConfig.chordlink`; do not add a second launch flag there.
 
 #### Why the withdrawal form needs a firewall rule
