@@ -78,10 +78,15 @@ export async function submitChordlinkInterest({
     // Brevo reports an address that is already a contact as a 400 with a code, which
     // `chordlinkInterestOutcome` deliberately reads as success rather than leaking membership.
     const body: unknown = await response.json().catch(() => null)
-    const code = typeof body === "object" && body !== null ? (body as { code?: unknown }).code : undefined
+    const { code, message } = typeof body === "object" && body !== null
+      ? (body as { code?: unknown; message?: unknown })
+      : {}
+    // Brevo's `message` names the parameter it rejected ("invalid_parameter" alone does not). It
+    // describes the request, not the visitor, so it is safe to log where the address is not.
     console.error("Brevo double-opt-in request failed", {
       status: response.status,
       code: typeof code === "string" ? code : "unknown",
+      message: typeof message === "string" ? message : "unknown",
     })
     return chordlinkInterestOutcome(response.status, typeof code === "string" ? code : undefined)
   } catch (error) {
