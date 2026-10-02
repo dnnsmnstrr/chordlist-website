@@ -999,7 +999,7 @@ export const blogCopy = {
   author: {
     byline: (name: string) => `By ${name}`,
     title: "About the author",
-    bio: `${siteConfig.author.name} is the solo developer behind ${siteConfig.name}, based in ${siteConfig.author.city}. Every post on this blog is written and approved by ${siteConfig.author.firstName}.`,
+    bio: `${siteConfig.author.firstName} is the solo developer behind ${siteConfig.name}. He created the app to help him play his favorite songs on the piano.`,
     contact: "Questions, corrections, or a topic you would like covered?",
     contactLink: `Write to ${siteConfig.contact.feedback}`,
   },
