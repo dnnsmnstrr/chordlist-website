@@ -18,7 +18,7 @@ yarn lockfiles).
 
 | Command | What it does |
 | --- | --- |
-| `pnpm dev` | Dev server on http://localhost:3000 (runs `sync:assets` first via `predev`) |
+| `pnpm dev` | Dev server on http://localhost:3000, via `scripts/dev.mjs`, which restarts it past `DEV_MEMORY_LIMIT_GB` (default 4, `0` disables) — React's dev-only async debugging leaks a few MB per render and save (react/react#36836) |
 | `pnpm build` | Production build (runs `sync:assets` first via `prebuild`) |
 | `pnpm build:all` | Sync app inputs, regenerate all visual assets and App Store sets, then build the site |
 | `pnpm start` | Serve the production build |
@@ -54,9 +54,14 @@ components/          Section and widget components (kebab-case files)
   home-page.tsx      The home page tree, taking a language
   ui/button.tsx      The only shadcn/base-ui primitive currently vendored
 content/blog/        Blog posts as Markdown + frontmatter — the filename is the URL
+content/blog-schedule.json  The blog's release cadence — see Blog
+content/blog-archive/  Old machine-drafted versions of reset posts — reference only, read by nothing
 content/social/      Social asset definitions — frontmatter builds the image, body is the caption
 lib/site-config.ts   Single source of truth for facts about the product
 lib/blog.ts          Reads content/blog: validation, visibility, tags, related posts
+lib/blog-approval.ts The approval digest — what "approved" means for a post
+lib/editorial-schedule.ts  Cadence slots and reflow for the blog plan (pure, client-safe)
+lib/editorial/store.ts     /editorial's reads and writes of content/blog
 lib/markdown.ts      marked configuration — Markdown to HTML
 lib/page-metadata.ts Per-page canonical, hreflang, Open Graph, and Twitter metadata
 lib/frontmatter.ts   Splits a YAML frontmatter block from a Markdown body
@@ -301,12 +306,31 @@ voice, structure, accuracy, linking, and editorial review. To draft, edit, or pu
 frontmatter reference, verified site targets, image handling, and validation steps.
 
 Frontmatter is `title`, `description`, `created`, `published`, `tags`, and the optional
-`cover`/`coverAlt` pair and `draft` flag. `lib/blog.ts` validates all of it and throws with the
+`cover`/`coverAlt` pair, `draft` flag, `outline` list, and `approved`/`approvedDigest` pair. `lib/blog.ts` validates all of it and throws with the
 filename in the message, so a bad date, a `cover` without a `coverAlt`, or an unknown tag fails
 `pnpm build` rather than shipping broken.
 
-**Scheduling.** In production, a post whose `published` date is in the future — or that carries
-`draft: true` — is hidden from the index, the sitemap, the RSS feed, and its own URL (which 404s).
+**Approval.** The author writes every post in their own words and nothing goes public without their
+stamp. `/editorial` writes `approved` (a date) and `approvedDigest` — twelve hex characters of a
+SHA-256 over the title, description, and body (`lib/blog-approval.ts`). `isPublic()` in `lib/blog.ts`
+requires the digest to match the post as it is now, so any edit after approval, by hand or by an
+agent, takes the post out of production until it is approved again; the date is outside the digest,
+so rescheduling keeps the approval. There is no override. Agents never write either field — see
+`.agents/skills/blog-post/SKILL.md` and `.agents/skills/blog-refine/SKILL.md`.
+
+**The plan.** `/editorial` (local only, behind the admin login) is the planner: every post that is not
+live yet, in date order, with its stage — idea (outline, no body), writing, approved, or changed since
+approval. Reordering, adding, or deleting a post, or changing the cadence in
+`content/blog-schedule.json` (`start`, `everyDays`, `skip`), reassigns every unreleased post to the
+next free cadence slots in order (`reflow()` in `lib/editorial-schedule.ts`). Live posts never move,
+and nothing is placed on today. So `published` stays the one place a date is written — edit the plan,
+not the field. `/editorial/<slug>` is writing mode: the outline beside an empty page, autosaved to the
+file. The machine-drafted versions of the posts reset in October 2026 are kept in
+`content/blog-archive/` as reference, and deliberately never shown in the editor so they do not bias
+the rewrite; nothing in the site reads that folder. The `blog-refine` skill polishes what the author wrote there toward `docs/blog-voice.md`.
+
+**Scheduling.** In production, a post that is unapproved, whose `published` date is in the future — or
+that carries `draft: true` — is hidden from the index, the sitemap, the RSS feed, and its own URL (which 404s).
 `/blog`, `/blog/[slug]`, `app/sitemap.ts`, and `app/blog/rss.xml` all export `revalidate = 3600`, so a
 scheduled post goes live within about an hour of its date with no redeploy. `generateStaticParams`
 prerenders only visible slugs; a future URL renders on demand, hits `notFound()`, and starts resolving
@@ -314,7 +338,7 @@ once the date passes. Keep the four `revalidate` values in step.
 
 **Previews show unreleased posts.** `showsUnreleasedPosts()` in `lib/blog.ts` reads `VERCEL_ENV`, so
 branch previews and the dev server list drafts and future-dated posts while production hides them.
-Each one renders a "Draft" or "Scheduled for …" badge (`PostStatusBadge`), so a preview is never
+Each one renders a "Draft", "Awaiting approval", "Changed since approval", or "Scheduled for …" badge (`PostStatusBadge`), so a preview is never
 mistaken for the live site, and `PostMeta.isPublic` carries the flag to the client. The check fails
 closed: with no `VERCEL_ENV`, only `NODE_ENV !== "production"` reveals them, so `pnpm build &&
 pnpm start` reproduces production exactly and an unfamiliar host hides drafts by default. This is why
@@ -332,7 +356,10 @@ Post typography is the `.post-body` block in `app/globals.css`, whose values are
 helper components in `app/docs/page.tsx` so posts and docs look identical. There is no `prose` plugin
 and we are not adding one.
 
-Images go in `public/blog/<slug>/` and are referenced with ordinary Markdown; they render as plain
+Images go in `public/blog/<slug>/` and are referenced with ordinary Markdown — writing mode uploads
+them there through `/api/editorial/images` (`lib/editorial/images.ts`), resizing to 1600px and
+re-encoding as WebP with sharp, never overwriting an existing file, and asks for alt text before it
+inserts the Markdown; they render as plain
 lazy `<img>` and bypass `next/image`. Only a `cover` goes through `next/image`. `readdir` on
 `content/blog` is invisible to the bundle tracer, which is why `next.config.mjs` carries
 `outputFileTracingIncludes` for the four blog-aware routes — remove it and production breaks on the
@@ -340,8 +367,8 @@ first revalidation.
 
 ## Internal tools and sign-in
 
-`/emails`, `/screens`, `/copy`, `/gallery`, `/social/posts`, `/social/editor`, `/translations`, and
-`/api/translations/*` are behind a Supabase Auth login at `/login` (`/logout` signs out).
+`/emails`, `/screens`, `/copy`, `/gallery`, `/social/posts`, `/social/editor`, `/translations`,
+`/editorial`, `/api/translations/*`, and `/api/editorial` are behind a Supabase Auth login at `/login` (`/logout` signs out).
 `lib/admin-routes.ts` is the single list of protected prefixes and the `ADMIN_EMAILS` allowlist.
 
 `proxy.ts` refreshes the session and redirects; it is **not** the authorization, because a proxy
@@ -349,6 +376,13 @@ matcher does not reliably cover Server Functions. Every protected page calls `re
 every protected route handler calls `refuseUnlessAdmin()` — `tests/admin-routes.test.ts` fails if
 one of them stops. Adding a tool means adding its prefix to `lib/admin-routes.ts`, both matcher
 forms to `proxy.ts`, the guard to the page, and the file to that test.
+
+**On `pnpm dev` there is no login.** None of these tools need the backend beyond the login itself —
+they read and write files in the checkout — so `requireAdmin()`, `refuseUnlessAdmin()`, and the proxy
+let a request through when `skipsLoginLocally()` in `lib/admin-routes.ts` says so: development mode,
+not on Vercel, and a loopback `Host`. A production build run locally still asks, and a phone reaching
+the dev server by its LAN address still gets the login. Anything that does need Supabase data must
+call `readAdminUser()` itself rather than relying on the guard's local stand-in user.
 
 Being signed in is not sufficient: Supabase accepts sign-ups by default, so `ADMIN_EMAILS` decides
 who gets in and an unset value means nobody. Guarded pages are dynamic by construction — read the
@@ -366,8 +400,8 @@ When the privacy policy changes materially, update `privacyCopy.lastUpdated`.
 ## Third-party services
 
 Repo skills live in `.agents/skills/<name>/SKILL.md` and are mirrored into `.cursor/rules/<name>.mdc`
-with Cursor's frontmatter dialect. There are three: `stripe-projects-cli`, `blog-post`, and
-`social-asset`.
+with Cursor's frontmatter dialect, and symlinked into `.claude/skills/`. There are four:
+`stripe-projects-cli`, `blog-post`, `blog-refine`, and `social-asset`.
 
 `.projects/state.json` tracks resources provisioned via the Stripe Projects CLI (currently
 RevenueCat). See `AGENTS.md` and `.agents/skills/stripe-projects-cli/` for that workflow.

@@ -12,9 +12,16 @@ import { blogCopy } from "@/locales/en"
 export function PostStatusBadge({ post }: { post: PostMeta }) {
   return (
     <span className="w-fit rounded-full border border-dashed border-border px-2.5 py-0.5 font-mono text-xs text-muted-foreground">
-      {post.draft ? blogCopy.status.draft : blogCopy.status.scheduled(post.publishedLabel)}
+      {statusLabel(post)}
     </span>
   )
+}
+
+function statusLabel(post: PostMeta) {
+  if (post.draft) return blogCopy.status.draft
+  if (post.approval === "none") return blogCopy.status.unapproved
+  if (post.approval === "stale") return blogCopy.status.stale
+  return blogCopy.status.scheduled(post.publishedLabel)
 }
 
 type PostCardProps = {

@@ -9,6 +9,26 @@ Work on chordlist articles in `content/blog/` and their optional images in
 `public/blog/<slug>/`. Let the existing blog routes, search, filters, RSS feed, sitemap, related
 posts, and social metadata discover the Markdown file automatically.
 
+## Authorship and approval
+
+The author writes every post in their own words, in writing mode at `/editorial/<slug>`, and nothing
+goes public until they approve it there. `lib/blog.ts` enforces this: a post is public only when its
+`approvedDigest` matches its current title, description, and body, so any later edit — yours
+included — takes it back out of production until the author approves again.
+
+- **Never set `approved` or `approvedDigest`**, and never call the approve action of
+  `/api/editorial`. Do not tell the author a post is "ready" or "scheduled to go live" unless
+  `/editorial` shows it as approved.
+- **Do not draft a post body** unless the author explicitly asks for a draft in this conversation.
+  The default contribution to a new post is an idea: a title, a one-sentence promise, tags, and an
+  `outline` of points to write from. Add it through `/editorial` or as frontmatter with an empty body.
+- To polish a body the author has written, use the `blog-refine` skill.
+- `content/blog-archive/` keeps the machine-drafted versions of the reset posts, for reference only.
+  Never surface them in `/editorial`, never copy from them into a post, and do not offer them to the
+  author while a rewrite is in progress — see its README.
+- Dates come from the plan. Do not edit `published` by hand: change the order or the cadence in
+  `/editorial`, which reassigns every unreleased post to the cadence in `content/blog-schedule.json`.
+
 Do not change blog application code merely to accommodate one article. If the requested article
 genuinely requires a new renderer feature, tag, or other site capability, identify that separately
 before expanding the implementation scope.
@@ -24,8 +44,8 @@ before expanding the implementation scope.
 4. For a new post, choose a permanent slug and create `content/blog/<slug>.md`. For an existing
    post, preserve its filename and publication history unless the user explicitly requests a
    change.
-5. Draft or edit the frontmatter and body. Keep product explanation proportional to the article's
-   reader value.
+5. Draft or edit the frontmatter, and the body only as described under **Authorship and
+   approval**. Keep product explanation proportional to the article's reader value.
 6. Fact-check broad music claims, external facts, and current product behaviour. Prefer primary
    sources.
 7. Add relevant internal links and images where they improve the article.
@@ -68,9 +88,11 @@ draft: true
 | `tags` | yes | Normally one primary and at most one meaningful secondary tag. |
 | `cover` / `coverAlt` | no | Set both or neither; one without the other fails the build. |
 | `draft` | no | Use the boolean `true` to hide the post regardless of its date. |
+| `outline` | no | A list of short notes the post is written from. Planning only; never rendered. |
+| `approved` / `approvedDigest` | no | Written by `/editorial` only. Set together or not at all. |
 
-In production, future-dated and draft posts are absent from the index, sitemap, RSS feed, and their
-own URL. Blog routes revalidate hourly, so a scheduled post normally appears within about an hour
+In production, unapproved, future-dated, and draft posts are absent from the index, sitemap, RSS
+feed, and their own URL. Blog routes revalidate hourly, so a scheduled post normally appears within about an hour
 of its publication date without another deployment.
 
 Preview deployments and the development server show unreleased posts with a status badge. Do not
@@ -133,6 +155,11 @@ The FAQ currently has no per-question anchors, so link to `/faq` as a whole. Ver
 the current routes rather than assuming this table can never change.
 
 ## Images
+
+The author adds images in writing mode (`/editorial/<slug>`): drop, paste, or pick a file, and it
+is resized to 1600px wide, saved as WebP in `public/blog/<slug>/`, and inserted at the cursor once
+they have written its alt text. Images already in that folder can be inserted from the sidebar. Do the
+same by hand only when asked:
 
 Put article images in `public/blog/<slug>/` and reference them with Markdown:
 

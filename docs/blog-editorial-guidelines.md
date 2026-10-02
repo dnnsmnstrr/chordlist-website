@@ -137,5 +137,7 @@ Before scheduling a post, confirm that:
 - internal and external links are relevant and accurate;
 - the title, description, slug, dates, draft status, and tags are valid;
 - example lyrics are original or clearly reusable;
-- the ending gives the reader a useful takeaway or next action; and
-- the post has been checked on mobile and in a preview build.
+- the ending gives the reader a useful takeaway or next action;
+- the post has been checked on mobile and in a preview build; and
+- the author has read the final text and approved it in `/editorial` — the post cannot go live
+  otherwise.

@@ -1,7 +1,7 @@
 import { createServerClient } from "@supabase/ssr"
 import { NextResponse, type NextRequest } from "next/server"
 
-import { isProtectedRoute, safeRedirectPath } from "@/lib/admin-routes"
+import { isProtectedRoute, safeRedirectPath, skipsLoginLocally } from "@/lib/admin-routes"
 
 /**
  * Keeps the admin session fresh and turns an expired one into a login redirect.
@@ -17,6 +17,18 @@ import { isProtectedRoute, safeRedirectPath } from "@/lib/admin-routes"
  */
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request })
+
+  // `pnpm dev` on this machine: no login, so nothing to refresh or redirect. The guards in each
+  // route make the same check and let the request through.
+  if (
+    skipsLoginLocally({
+      nodeEnv: process.env.NODE_ENV,
+      vercel: process.env.VERCEL,
+      host: request.headers.get("host"),
+    })
+  ) {
+    return response
+  }
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim()
   const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY?.trim()
@@ -58,10 +70,14 @@ export const config = {
   // Each prefix is listed twice — bare and with `/:path*` — rather than relying on `*` matching
   // zero segments. The bare form is the one a person actually types.
   matcher: [
+    "/api/editorial",
+    "/api/editorial/:path*",
     "/api/translations",
     "/api/translations/:path*",
     "/copy",
     "/copy/:path*",
+    "/editorial",
+    "/editorial/:path*",
     "/emails",
     "/emails/:path*",
     "/gallery",

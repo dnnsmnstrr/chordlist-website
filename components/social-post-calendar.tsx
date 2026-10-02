@@ -15,6 +15,8 @@ type SocialPostCalendarProps<Post extends CalendarPost> = {
   onClose: () => void
   title: (post: Post) => string
   editHref?: (post: Post) => string
+  /** Marks a post that is not cleared to go out yet — drawn dashed and muted. */
+  pending?: (post: Post) => boolean
 }
 
 /** Monday first, matching the en-GB dates the rest of the page prints. */
@@ -64,6 +66,7 @@ export function SocialPostCalendar<Post extends CalendarPost>({
   onClose,
   title,
   editHref,
+  pending,
 }: SocialPostCalendarProps<Post>) {
   const closeButtonRef = useRef<HTMLButtonElement>(null)
 
@@ -223,7 +226,13 @@ export function SocialPostCalendar<Post extends CalendarPost>({
                   {scheduled.length > 0 && (
                     <div className="flex flex-wrap gap-1 sm:hidden">
                       {scheduled.map((post) => (
-                        <span key={post.slug} className="size-1.5 rounded-full bg-foreground/60" />
+                        <span
+                          key={post.slug}
+                          className={cn(
+                            "size-1.5 rounded-full bg-foreground/60",
+                            pending?.(post) && "border border-dashed border-foreground/60 bg-transparent",
+                          )}
+                        />
                       ))}
                     </div>
                   )}
@@ -234,7 +243,10 @@ export function SocialPostCalendar<Post extends CalendarPost>({
                           key={post.slug}
                           href={editHref(post)}
                           title={title(post)}
-                          className="flex items-center gap-1 truncate rounded-md bg-foreground/10 px-1.5 py-1 text-xs leading-tight text-foreground transition-colors hover:bg-foreground/20"
+                          className={cn(
+                            "flex items-center gap-1 truncate rounded-md bg-foreground/10 px-1.5 py-1 text-xs leading-tight text-foreground transition-colors hover:bg-foreground/20",
+                            pending?.(post) && "border border-dashed border-border bg-transparent text-muted-foreground",
+                          )}
                         >
                           <span className="truncate">{title(post)}</span>
                           <Pencil className="size-2.5 shrink-0 text-muted-foreground" />
@@ -243,7 +255,10 @@ export function SocialPostCalendar<Post extends CalendarPost>({
                         <span
                           key={post.slug}
                           title={title(post)}
-                          className="truncate rounded-md bg-foreground/10 px-1.5 py-1 text-xs leading-tight text-foreground"
+                          className={cn(
+                            "truncate rounded-md bg-foreground/10 px-1.5 py-1 text-xs leading-tight text-foreground",
+                            pending?.(post) && "border border-dashed border-border bg-transparent text-muted-foreground",
+                          )}
                         >
                           {title(post)}
                         </span>

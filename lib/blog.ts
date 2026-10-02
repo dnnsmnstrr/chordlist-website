@@ -4,6 +4,7 @@ import { cache } from "react"
 import type { Route } from "next"
 import { parse as parseYaml } from "yaml"
 
+import { approvalState, type ApprovalState } from "@/lib/blog-approval"
 import { blogTags, type BlogTag } from "@/lib/blog-tags"
 import { splitFrontmatter } from "@/lib/frontmatter"
 import { renderMarkdown } from "@/lib/markdown"
@@ -37,8 +38,18 @@ export type PostMeta = {
   cover: string | null
   coverAlt: string | null
   draft: boolean
+  /**
+   * Whether the author has approved the exact words on the page. See lib/blog-approval.ts —
+   * "stale" means the post changed after it was approved.
+   */
+  approval: ApprovalState
+  /** The date of the last approval, kept even once it goes stale. */
+  approvedOn: string | null
+  /** The topic and ideas the post is written from. Planning notes for /editorial; never rendered. */
+  outline: string[]
+  wordCount: number
   readingMinutes: number
-  /** False for a draft or a post whose published date has not arrived. */
+  /** False for a draft, an unapproved post, or a post whose published date has not arrived. */
   isPublic: boolean
 }
 
@@ -182,6 +193,36 @@ function readCover(record: Record<string, unknown>, slug: string) {
   return { cover, coverAlt }
 }
 
+/**
+ * `approved` and `approvedDigest` are set together or not at all, like the cover pair.
+ *
+ * Only /editorial writes them. A digest without a date — or the reverse — is a hand edit that
+ * half-happened, and guessing which half was meant is how a post ends up public by accident.
+ */
+function readApproval(record: Record<string, unknown>, slug: string) {
+  const hasDate = record.approved !== undefined && record.approved !== null
+  const hasDigest = record.approvedDigest !== undefined && record.approvedDigest !== null
+
+  if (!hasDate && !hasDigest) return { approvedOn: null, approvedDigest: null }
+  if (!hasDate || !hasDigest) fail(slug, `"approved" and "approvedDigest" must be set together`)
+
+  const digest = record.approvedDigest
+  if (typeof digest !== "string" || !/^[0-9a-f]{12}$/.test(digest)) {
+    fail(slug, `"approvedDigest" must be the twelve hex characters /editorial writes`)
+  }
+
+  return { approvedOn: readDate(record, "approved", slug), approvedDigest: digest }
+}
+
+function readOutline(record: Record<string, unknown>, slug: string) {
+  const value = record.outline
+  if (value === undefined || value === null) return []
+  if (!Array.isArray(value) || !value.every((item) => typeof item === "string")) {
+    fail(slug, `"outline" must be a list of short notes`)
+  }
+  return value.map((item: string) => item.trim()).filter((item) => item !== "")
+}
+
 function parsePost(slug: string, source: string): { meta: ParsedMeta; body: string } {
   const { frontmatter, body } = splitFrontmatter(source)
   if (frontmatter === null) fail(slug, "missing YAML frontmatter")
@@ -193,7 +234,10 @@ function parsePost(slug: string, source: string): { meta: ParsedMeta; body: stri
   const record = parsed as Record<string, unknown>
 
   const { cover, coverAlt } = readCover(record, slug)
+  const { approvedOn, approvedDigest } = readApproval(record, slug)
   const published = readDate(record, "published", slug)
+  const title = readString(record, "title", slug)
+  const description = readString(record, "description", slug)
   const wordCount = body.split(/\s+/).filter(Boolean).length
 
   return {
@@ -201,8 +245,8 @@ function parsePost(slug: string, source: string): { meta: ParsedMeta; body: stri
     meta: {
       slug,
       href: `/blog/${slug}` as Route,
-      title: readString(record, "title", slug),
-      description: readString(record, "description", slug),
+      title,
+      description,
       created: readDate(record, "created", slug),
       published,
       publishedISO: `${published}T00:00:00.000Z`,
@@ -211,6 +255,10 @@ function parsePost(slug: string, source: string): { meta: ParsedMeta; body: stri
       cover,
       coverAlt,
       draft: readDraft(record, slug),
+      approval: approvalState({ title, description, body }, approvedDigest),
+      approvedOn,
+      outline: readOutline(record, slug),
+      wordCount,
       readingMinutes: Math.max(1, Math.round(wordCount / WORDS_PER_MINUTE)),
     },
   }
@@ -222,7 +270,10 @@ function parsePost(slug: string, source: string): { meta: ParsedMeta; body: stri
  * Wrapped in React's `cache` so the index page, `generateStaticParams`,
  * `generateMetadata`, the sitemap, and the RSS feed share one directory read.
  */
-const readAllPosts = cache(async (): Promise<{ meta: ParsedMeta; body: string }[]> => {
+const readAllPosts = cache(() => loadAllPosts())
+
+/** Uncached, for /editorial, which reads the directory again after each of its own writes. */
+async function loadAllPosts(): Promise<{ meta: ParsedMeta; body: string }[]> {
   const entries = await readdir(POSTS_DIRECTORY, { withFileTypes: true })
   const files = entries.filter((entry) => entry.isFile() && entry.name.endsWith(".md"))
 
@@ -243,15 +294,18 @@ const readAllPosts = cache(async (): Promise<{ meta: ParsedMeta; body: string }[
     if (a.meta.created !== b.meta.created) return a.meta.created < b.meta.created ? 1 : -1
     return a.meta.slug < b.meta.slug ? -1 : 1
   })
-})
+}
 
 /**
- * A post is public once it is not a draft and its published date has arrived.
- * The blog routes revalidate hourly, so "now" is re-evaluated after each window
- * and a scheduled post goes live without a redeploy.
+ * A post is public once it is approved, not a draft, and its published date has
+ * arrived. The blog routes revalidate hourly, so "now" is re-evaluated after each
+ * window and a scheduled post goes live without a redeploy.
+ *
+ * Approval is not optional and has no override: a post nobody has signed off on —
+ * or one edited since — stays out of production whatever its date says.
  */
-function isPublic(meta: ParsedMeta, now: Date) {
-  return !meta.draft && Date.parse(meta.publishedISO) <= now.getTime()
+export function isPublic(meta: ParsedMeta, now: Date) {
+  return meta.approval === "approved" && !meta.draft && Date.parse(meta.publishedISO) <= now.getTime()
 }
 
 /** Public posts, plus unreleased ones when this deployment shows them. */
@@ -261,6 +315,15 @@ function selectVisible(posts: readonly { meta: ParsedMeta }[], now: Date): PostM
   return posts
     .map((post) => ({ ...post.meta, isPublic: isPublic(post.meta, now) }))
     .filter((meta) => meta.isPublic || showUnreleased)
+}
+
+/**
+ * Every post on disk with its visibility, regardless of deployment. For /editorial, which plans
+ * around unreleased posts on every host it runs on.
+ */
+export async function getAllPosts(now: Date = new Date()): Promise<(PostMeta & { body: string })[]> {
+  const posts = await loadAllPosts()
+  return posts.map((post) => ({ ...post.meta, body: post.body, isPublic: isPublic(post.meta, now) }))
 }
 
 export async function getPublishedPosts(now: Date = new Date()): Promise<PostMeta[]> {
