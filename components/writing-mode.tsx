@@ -3,13 +3,16 @@
 import { useCallback, useEffect, useRef, useState, useTransition } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { ArrowLeft, Check, ExternalLink, ListTree, Maximize2, Minimize2, Undo2 } from "lucide-react"
+import { ArrowLeft, Check, ExternalLink, ListTree, Undo2 } from "lucide-react"
 
 import {
   ArticleImagePanel,
+  CollectionPicker,
   ImageInsertDialog,
   imageFiles,
   imageMarkdown,
+  importCollectionImage,
+  renameArticleImage,
   uploadArticleImage,
   type ArticleImage,
 } from "@/components/article-images"
@@ -20,6 +23,7 @@ import {
   secondaryButton,
   sendEditorialAction,
 } from "@/components/editorial-planner"
+import { FormatToolbar, handleFormatKey } from "@/components/format-toolbar"
 import { cn } from "@/lib/utils"
 import { editorialCopy } from "@/locales/en"
 
@@ -33,6 +37,8 @@ type WritingPost = {
   tags: string[]
   outline: string[]
   body: string
+  cover: string | null
+  coverAlt: string | null
   publishedLabel: string
   isPublic: boolean
   approval: "none" | "approved" | "stale"
@@ -44,7 +50,12 @@ type WritingModeProps = {
   images: ArticleImage[]
 }
 
-type Fields = Pick<WritingPost, "title" | "description" | "tags" | "body"> & { outline: string }
+type Fields = Pick<WritingPost, "title" | "description" | "tags" | "body" | "cover"> & {
+  outline: string
+  coverAlt: string
+}
+/** An image waiting for its alt text. A fresh upload can still be renamed; one already in use cannot. */
+type PendingImage = { image: ArticleImage; isNew: boolean }
 type SaveState = "saved" | "unsaved" | "saving" | "failed"
 
 /** Long enough to stay out of the way mid-sentence, short enough that a closed tab loses little. */
@@ -64,16 +75,18 @@ export function WritingMode({ post, tags, images: initialImages }: WritingModePr
     tags: post.tags,
     body: post.body,
     outline: post.outline.join("\n"),
+    cover: post.cover,
+    coverAlt: post.coverAlt ?? "",
   })
   const [approval, setApproval] = useState(post.approval)
   const [saveState, setSaveState] = useState<SaveState>("saved")
   const [error, setError] = useState<string | null>(null)
   const [showOutline, setShowOutline] = useState(true)
-  const [focus, setFocus] = useState(false)
   const [images, setImages] = useState(initialImages)
   const [uploading, setUploading] = useState(0)
   // Images waiting for their alt text, inserted one at a time in the order they arrived.
-  const [toDescribe, setToDescribe] = useState<ArticleImage[]>([])
+  const [toDescribe, setToDescribe] = useState<PendingImage[]>([])
+  const [browsing, setBrowsing] = useState(false)
 
   const bodyRef = useRef<HTMLTextAreaElement>(null)
   // Where the next image goes. Read when an insert starts, because the dialog takes focus away
@@ -113,16 +126,20 @@ export function WritingMode({ post, tags, images: initialImages }: WritingModePr
     return true
   }, [post.slug])
 
-  function update<Key extends keyof Fields>(key: Key, value: Fields[Key]) {
-    setFields((current) => ({ ...current, [key]: value }))
-    dirty.current = { ...dirty.current, [key]: value }
+  function change(patch: Partial<Fields>) {
+    setFields((current) => ({ ...current, ...patch }))
+    dirty.current = { ...dirty.current, ...patch }
     setSaveState("unsaved")
 
     // The outline is planning notes and is not part of what gets approved; everything else is.
-    if (key !== "outline" && approval === "approved") setApproval("stale")
+    if (Object.keys(patch).some((key) => key !== "outline") && approval === "approved") setApproval("stale")
 
     if (timer.current) clearTimeout(timer.current)
     timer.current = setTimeout(() => void save(), AUTOSAVE_DELAY)
+  }
+
+  function update<Key extends keyof Fields>(key: Key, value: Fields[Key]) {
+    change({ [key]: value })
   }
 
   useEffect(() => {
@@ -136,7 +153,6 @@ export function WritingMode({ post, tags, images: initialImages }: WritingModePr
         event.preventDefault()
         void save()
       }
-      if (event.key === "Escape") setFocus(false)
     }
 
     window.addEventListener("beforeunload", onBeforeUnload)
@@ -164,13 +180,61 @@ export function WritingMode({ post, tags, images: initialImages }: WritingModePr
         continue
       }
       setImages((current) => [...current.filter((image) => image.src !== result.src), result])
-      setToDescribe((queue) => [...queue, result])
+      setToDescribe((queue) => [...queue, { image: result, isNew: true }])
     }
+  }
+
+  async function pickFromCollection(file: string) {
+    setBrowsing(false)
+    rememberCaret()
+    setUploading((count) => count + 1)
+    const result = await importCollectionImage(post.slug, file)
+    setUploading((count) => count - 1)
+    if (typeof result === "string") {
+      setError(result)
+      return
+    }
+    setError(null)
+    setImages((current) =>
+      [...current.filter((image) => image.src !== result.image.src), result.image].sort((a, b) =>
+        a.name.localeCompare(b.name),
+      ),
+    )
+    setToDescribe((queue) => [...queue, result])
   }
 
   function chooseImage(image: ArticleImage) {
     rememberCaret()
-    setToDescribe((queue) => [...queue, image])
+    setToDescribe((queue) => [...queue, { image, isNew: false }])
+  }
+
+  /** Renames a fresh upload if the writer changed its name. Null when that failed; the dialog stays open. */
+  async function settleName({ image, isNew }: PendingImage, name: string) {
+    if (!isNew) return image
+    const result = await renameArticleImage(post.slug, image.name, name)
+    if (typeof result === "string") {
+      setError(result)
+      return null
+    }
+    setError(null)
+    setImages((current) =>
+      [...current.filter((candidate) => candidate.src !== image.src), result].sort((a, b) =>
+        a.name.localeCompare(b.name),
+      ),
+    )
+    return result
+  }
+
+  async function confirmInsert(pending: PendingImage, alt: string, caption: string, name: string) {
+    const image = await settleName(pending, name)
+    if (image) insertImage(image, alt, caption)
+  }
+
+  async function confirmCover(pending: PendingImage, alt: string, name: string) {
+    const image = await settleName(pending, name)
+    if (!image) return
+    change({ cover: image.src, coverAlt: alt.trim() })
+    setToDescribe((queue) => queue.slice(1))
   }
 
   /** Puts the image in a paragraph of its own at the remembered caret, then moves past it. */
@@ -220,12 +284,7 @@ export function WritingMode({ post, tags, images: initialImages }: WritingModePr
 
   return (
     <main className="flex min-h-screen flex-col bg-background text-foreground">
-      <div
-        className={cn(
-          "sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-border bg-background/95 px-4 py-2 backdrop-blur-sm transition-opacity sm:px-6",
-          focus && "border-transparent opacity-30 hover:opacity-100 focus-within:opacity-100",
-        )}
-      >
+      <div className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-border bg-background/95 px-4 py-2 backdrop-blur-sm sm:px-6">
         <div className="flex min-w-0 items-center gap-3">
           <Link href="/editorial" className={cn(secondaryButton, "border-transparent px-2")}>
             <ArrowLeft className="size-4" aria-hidden="true" />
@@ -237,29 +296,14 @@ export function WritingMode({ post, tags, images: initialImages }: WritingModePr
           <span className="font-mono text-xs text-muted-foreground" aria-live="polite">
             {editorialCopy.queue.words(words)} · {uploading > 0 ? copy.images.uploading(uploading) : copy[saveState]}
           </span>
-          {!focus ? (
-            <button
-              type="button"
-              aria-pressed={showOutline}
-              onClick={() => setShowOutline((value) => !value)}
-              className={cn(secondaryButton, "px-2")}
-            >
-              <ListTree className="size-4" aria-hidden="true" />
-              <span className="hidden sm:inline">{copy.showOutline}</span>
-            </button>
-          ) : null}
           <button
             type="button"
-            aria-pressed={focus}
-            onClick={() => setFocus((value) => !value)}
+            aria-pressed={showOutline}
+            onClick={() => setShowOutline((value) => !value)}
             className={cn(secondaryButton, "px-2")}
           >
-            {focus ? (
-              <Minimize2 className="size-4" aria-hidden="true" />
-            ) : (
-              <Maximize2 className="size-4" aria-hidden="true" />
-            )}
-            <span className="hidden sm:inline">{copy.focus}</span>
+            <ListTree className="size-4" aria-hidden="true" />
+            <span className="hidden sm:inline">{copy.showOutline}</span>
           </button>
           <a href={post.href} target="_blank" rel="noreferrer" className={cn(secondaryButton, "px-2")}>
             <ExternalLink className="size-4" aria-hidden="true" />
@@ -275,7 +319,7 @@ export function WritingMode({ post, tags, images: initialImages }: WritingModePr
       ) : null}
 
       <div className="flex flex-1 flex-col lg:flex-row">
-        {showOutline && !focus ? (
+        {showOutline ? (
           // Below lg the page comes first: on a phone the point is to write, and the outline is a scroll away.
           <aside className="order-last flex w-full shrink-0 flex-col gap-8 border-t border-border p-6 lg:sticky lg:order-first lg:top-[49px] lg:h-[calc(100vh-49px)] lg:w-96 lg:overflow-y-auto lg:border-t-0 lg:border-r">
             <section className="flex flex-col gap-2">
@@ -321,9 +365,13 @@ export function WritingMode({ post, tags, images: initialImages }: WritingModePr
 
             <ArticleImagePanel
               images={images}
+              cover={fields.cover}
+              coverAlt={fields.coverAlt}
               uploading={uploading}
               onUpload={(files) => void uploadImages(files)}
-              onInsert={chooseImage}
+              onChoose={chooseImage}
+              onOpenCollection={() => setBrowsing(true)}
+              onRemoveCover={() => change({ cover: null, coverAlt: "" })}
             />
 
             <ApprovalPanel
@@ -339,11 +387,18 @@ export function WritingMode({ post, tags, images: initialImages }: WritingModePr
 
         <div className="flex flex-1 justify-center px-6 py-10 sm:py-16">
           <div className="flex w-full max-w-2xl flex-col gap-6">
-            {focus ? null : (
-              <h1 className="text-balance text-3xl font-semibold tracking-tight">{fields.title}</h1>
-            )}
-            {/* Focus mode hides the panel, so the outline stays in view as a quiet list above the page. */}
-            {focus && outlineItems.length > 0 ? (
+            <h1 className="text-balance text-3xl font-semibold tracking-tight">{fields.title}</h1>
+            {/* Where the post shows it, cropped the same way, so the page reads as the reader will see it. */}
+            {fields.cover ? (
+              // eslint-disable-next-line @next/next/no-img-element -- a local preview of a file in public/
+              <img
+                src={fields.cover}
+                alt={fields.coverAlt}
+                className="aspect-[1200/630] w-full rounded-xl border border-border object-cover"
+              />
+            ) : null}
+            {/* With the panel hidden, the outline stays in view as a quiet list above the page. */}
+            {!showOutline && outlineItems.length > 0 ? (
               <ul className="flex flex-col gap-1 border-l border-border pl-4 text-sm text-muted-foreground">
                 {outlineItems.map((item, index) => (
                   <li key={index}>{item}</li>
@@ -357,6 +412,7 @@ export function WritingMode({ post, tags, images: initialImages }: WritingModePr
               value={fields.body}
               placeholder={copy.placeholder}
               onChange={(event) => update("body", event.target.value)}
+              onKeyDown={(event) => handleFormatKey(event, (value) => update("body", value))}
               onBlur={() => void save()}
               onPaste={(event) => {
                 const files = imageFiles(event.clipboardData)
@@ -375,14 +431,23 @@ export function WritingMode({ post, tags, images: initialImages }: WritingModePr
               }}
               className="min-h-[70vh] w-full resize-none bg-transparent text-lg leading-relaxed text-foreground placeholder:text-muted-foreground focus-visible:outline-none [field-sizing:content]"
             />
+            <FormatToolbar textareaRef={bodyRef} onFallback={(value) => update("body", value)} />
           </div>
         </div>
       </div>
+      {browsing ? (
+        <CollectionPicker onPick={(file) => void pickFromCollection(file)} onClose={() => setBrowsing(false)} />
+      ) : null}
       {toDescribe[0] ? (
         <ImageInsertDialog
-          key={`${toDescribe[0].src}-${toDescribe.length}`}
-          image={toDescribe[0]}
-          onInsert={(alt, caption) => toDescribe[0] && insertImage(toDescribe[0], alt, caption)}
+          key={`${toDescribe[0].image.src}-${toDescribe.length}`}
+          image={toDescribe[0].image}
+          isNew={toDescribe[0].isNew}
+          initialAlt={
+            toDescribe[0].image.src === fields.cover ? fields.coverAlt : (toDescribe[0].image.alt ?? "")
+          }
+          onInsert={(alt, caption, name) => toDescribe[0] && void confirmInsert(toDescribe[0], alt, caption, name)}
+          onUseAsCover={(alt, name) => toDescribe[0] && void confirmCover(toDescribe[0], alt, name)}
           onCancel={() => setToDescribe((queue) => queue.slice(1))}
         />
       ) : null}

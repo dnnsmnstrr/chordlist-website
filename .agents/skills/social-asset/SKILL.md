@@ -95,7 +95,7 @@ the worst case for PNG. Use the template deliberately rather than as default dre
 ## Copy
 
 Follow `docs/blog-editorial-guidelines.md` for voice: practical, calm, direct, musician-first,
-British English, `chordlist` lowercase, no hype and no exclamation marks.
+American English, `chordlist` lowercase, no hype and no exclamation marks.
 
 - One idea per asset. Two ideas are two assets.
 - Author line breaks deliberately — each `headline` entry is one rendered line.

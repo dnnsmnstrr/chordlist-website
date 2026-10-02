@@ -86,7 +86,7 @@ draft: true
 | `created` | yes | Real `YYYY-MM-DD` date on which the draft was created. |
 | `published` | yes | Real `YYYY-MM-DD` date; this controls scheduled visibility. |
 | `tags` | yes | Normally one primary and at most one meaningful secondary tag. |
-| `cover` / `coverAlt` | no | Set both or neither; one without the other fails the build. |
+| `cover` / `coverAlt` | no | The key visual. Set both or neither; one without the other fails the build. Part of the approval digest. |
 | `draft` | no | Use the boolean `true` to hide the post regardless of its date. |
 | `outline` | no | A list of short notes the post is written from. Planning only; never rendered. |
 | `approved` / `approvedDigest` | no | Written by `/editorial` only. Set together or not at all. |
@@ -173,8 +173,9 @@ Do not make them identical.
 - Use local images, not remote URLs.
 - Export ordinary body images at about 1600px wide and compress them. They render as lazy-loaded
   `<img>` elements rather than through `next/image`.
-- Author a cover at exactly 1200×630 and normally name it `cover.png`. The same file serves the index
-  card, article hero, and social preview.
+- The cover is the post's key visual. The author picks it in writing mode from the images in
+  `public/blog/<slug>/`; it serves the index card, the article hero, and the social preview, and the
+  first two crop it to 1200×630 from the centre. An image composed at 1200×630 crops cleanly.
 - Without a cover, `pnpm build:og` generates `public/blog/og/<slug>.png`.
 - Remember that raw HTML is trusted and unsanitised. Never paste fetched or user-submitted HTML into
   a post.

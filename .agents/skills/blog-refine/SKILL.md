@@ -23,8 +23,8 @@ their argument, their examples, their order of ideas, and as many of their sente
   in your summary as a suggestion — do not write it in.
 - **Never fill a gap with your own prose.** A `TODO`, an unfinished sentence, or a bullet left from
   the outline stays as it is, and you list it in the summary.
-- **Leave the plan alone.** Do not change the filename, `published`, `created`, `tags`, `draft`, or
-  `outline`. Propose a better `title` or `description` in the summary; change them only if the
+- **Leave the plan alone.** Do not change the filename, `published`, `created`, `tags`, `draft`,
+  `outline`, or the key visual (`cover`/`coverAlt`). Propose a better `title` or `description` in the summary; change them only if the
   author asks.
 - **Never bring the archive into the draft.** `content/blog-archive/<slug>.md` holds the old
   machine-drafted version of a rewritten post. You may read it to check a fact or find a link target
@@ -52,7 +52,7 @@ their argument, their examples, their order of ideas, and as many of their sente
    editorial guidelines flag (`always`, `never`, precise history). Do not correct a doubtful claim
    by rewriting it — flag it in the summary with what the source says.
 5. **Edit, in this order, stopping as soon as the post reads well:**
-   1. Mechanics — spelling (British: `practise` as a verb, `-ise`), punctuation, typos, grammar.
+   1. Mechanics — spelling (American: `practice` as a verb, `-ize`), punctuation, typos, grammar.
    2. House conventions — lowercase `chordlist`; `G D Em C` for what to type, G–D–Em–C in prose,
       I–V–vi–IV for analysis; code formatting for filenames, fields, and menu paths; `##` headings
       in sentence case, no H1; descriptive link text; verified internal link targets from the

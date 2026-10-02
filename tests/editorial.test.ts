@@ -18,6 +18,20 @@ test("an approval covers the exact words and nothing else", () => {
   assert.equal(approvalState({ ...post, description: "Another promise." }, digest), "stale")
 })
 
+test("the key visual is part of the approval, and a post without one keeps its old digest", () => {
+  const digest = approvalDigest(post)
+  assert.equal(approvalState({ ...post, cover: null, coverAlt: null }, digest), "approved")
+
+  const cover = { cover: "/blog/a-post/photo.webp", coverAlt: "A piano." }
+  assert.equal(approvalState({ ...post, ...cover }, digest), "stale")
+
+  const withCover = approvalDigest({ ...post, ...cover })
+  assert.equal(approvalState({ ...post, ...cover }, withCover), "approved")
+  assert.equal(approvalState({ ...post, ...cover, cover: "/blog/a-post/other.webp" }, withCover), "stale")
+  assert.equal(approvalState({ ...post, ...cover, coverAlt: "A guitar." }, withCover), "stale")
+  assert.equal(approvalState(post, withCover), "stale")
+})
+
 test("line endings and surrounding whitespace do not count as an edit", () => {
   const digest = approvalDigest({ ...post, body: "One\nTwo" })
   assert.equal(approvalState({ ...post, body: "\nOne\r\nTwo\n\n" }, digest), "approved")

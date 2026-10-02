@@ -112,6 +112,7 @@ test("every protected page actually calls the guard", () => {
     "app/(en)/translations/page.tsx": "requireAdmin",
     "app/api/editorial/route.ts": "refuseUnlessAdmin",
     "app/api/editorial/images/route.ts": "refuseUnlessAdmin",
+    "app/api/editorial/collection/route.ts": "refuseUnlessAdmin",
     "app/api/translations/route.ts": "refuseUnlessAdmin",
     "app/api/translations/languages/route.ts": "refuseUnlessAdmin",
   }

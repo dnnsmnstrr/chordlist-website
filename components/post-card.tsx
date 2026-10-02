@@ -40,7 +40,7 @@ export function PostCard({ post, compact = false }: PostCardProps) {
           width={1200}
           height={630}
           sizes="(min-width: 640px) 45vw, 100vw"
-          className="w-full rounded-lg border border-border object-cover"
+          className="aspect-[1200/630] w-full rounded-lg border border-border object-cover"
         />
       ) : null}
 

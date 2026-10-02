@@ -1,6 +1,6 @@
 import "server-only"
 
-import { readFile, rm, writeFile } from "node:fs/promises"
+import { access, readFile, rm, writeFile } from "node:fs/promises"
 import path from "node:path"
 import { parse as parseYaml, stringify as stringifyYaml } from "yaml"
 
@@ -205,9 +205,34 @@ export async function createPost(input: {
   return slug
 }
 
+/**
+ * A key visual has to be an image already in the post's own folder, public/blog/<slug>/, where
+ * writing mode uploads it. A path anywhere else would be a picture nobody can find from the editor.
+ */
+async function requireCover(slug: string, cover: unknown) {
+  const src = requireText(cover, "The key visual")
+  const prefix = `/blog/${slug}/`
+  const name = src.slice(prefix.length)
+  if (!src.startsWith(prefix) || name === "" || name.includes("/") || name.startsWith(".")) {
+    throw new EditorialError(`The key visual has to be an image in public/blog/${slug}/.`)
+  }
+  await access(path.join(process.cwd(), "public", "blog", slug, name)).catch(() => {
+    throw new EditorialError(`public${src} does not exist.`)
+  })
+  return src
+}
+
 export async function updatePost(
   slug: string,
-  patch: { title?: unknown; description?: unknown; tags?: unknown; outline?: unknown; body?: unknown },
+  patch: {
+    title?: unknown
+    description?: unknown
+    tags?: unknown
+    outline?: unknown
+    body?: unknown
+    cover?: unknown
+    coverAlt?: unknown
+  },
 ) {
   const file = await readPostFile(slug)
   const record = { ...file.record }
@@ -216,6 +241,16 @@ export async function updatePost(
   if (patch.description !== undefined) record.description = requireText(patch.description, "The promise")
   if (patch.tags !== undefined) record.tags = cleanTags(patch.tags)
   if (patch.outline !== undefined) record.outline = cleanOutline(patch.outline)
+  // The pair is written together or not at all, as lib/blog.ts requires; null takes the visual off.
+  if (patch.cover === null) {
+    delete record.cover
+    delete record.coverAlt
+  } else if (patch.cover !== undefined) {
+    record.cover = await requireCover(slug, patch.cover)
+    record.coverAlt = requireText(patch.coverAlt, "The key visual's alt text")
+  } else if (patch.coverAlt !== undefined && record.cover) {
+    record.coverAlt = requireText(patch.coverAlt, "The key visual's alt text")
+  }
   const body = typeof patch.body === "string" ? patch.body : file.body
 
   await writePostFile(slug, { record, body })
@@ -237,7 +272,13 @@ export async function approvePost(slug: string) {
     record: {
       ...file.record,
       approved: todayISO(),
-      approvedDigest: approvalDigest({ title, description, body: file.body }),
+      approvedDigest: approvalDigest({
+        title,
+        description,
+        body: file.body,
+        cover: typeof file.record.cover === "string" ? file.record.cover : null,
+        coverAlt: typeof file.record.coverAlt === "string" ? file.record.coverAlt : null,
+      }),
     },
   })
 }

@@ -315,7 +315,8 @@ filename in the message, so a bad date, a `cover` without a `coverAlt`, or an un
 
 **Approval.** The author writes every post in their own words and nothing goes public without their
 stamp. `/editorial` writes `approved` (a date) and `approvedDigest` — twelve hex characters of a
-SHA-256 over the title, description, and body (`lib/blog-approval.ts`). `isPublic()` in `lib/blog.ts`
+SHA-256 over the title, description, body, and — when there is one — the key visual (`cover` and
+`coverAlt`) (`lib/blog-approval.ts`). `isPublic()` in `lib/blog.ts`
 requires the digest to match the post as it is now, so any edit after approval, by hand or by an
 agent, takes the post out of production until it is approved again; the date is outside the digest,
 so rescheduling keeps the approval. There is no override. Agents never write either field — see
@@ -362,8 +363,14 @@ and we are not adding one.
 Images go in `public/blog/<slug>/` and are referenced with ordinary Markdown — writing mode uploads
 them there through `/api/editorial/images` (`lib/editorial/images.ts`), resizing to 1600px and
 re-encoding as WebP with sharp, never overwriting an existing file, and asks for alt text before it
-inserts the Markdown; they render as plain
-lazy `<img>` and bypass `next/image`. Only a `cover` goes through `next/image`. `readdir` on
+inserts the Markdown. **From the collection** copies one of the photography masters in
+`assets/visual-references/analog-photography/` into the post's folder the same way
+(`lib/editorial/collection.ts`, `/api/editorial/collection`), and fills in its alt text from
+`catalog.json` beside the masters — add an entry there when you add a master. A fresh upload can be renamed in that same step; an image a post already
+mentions cannot, because its name is part of that post. Body images render as plain
+lazy `<img>` and bypass `next/image`. Only a `cover` goes through `next/image`: writing mode calls it
+the **key visual** and sets it from any image in the post's folder, and the post page and index card
+crop it to 1200 × 630. `readdir` on
 `content/blog` is invisible to the bundle tracer, which is why `next.config.mjs` carries
 `outputFileTracingIncludes` for the four blog-aware routes — remove it and production breaks on the
 first revalidation.

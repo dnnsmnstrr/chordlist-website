@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server"
 
-import { listImages, saveImage } from "@/lib/editorial/images"
+import { listImages, renameImage, saveImage } from "@/lib/editorial/images"
 import { EditorialError, assertEditable } from "@/lib/editorial/store"
 import { refuseUnlessAdmin } from "@/lib/server/admin-auth"
 
-/// Article images for writing mode: list a post's folder, or upload one into it.
+/// Article images for writing mode: list a post's folder, upload one into it, or rename an upload.
 ///
 /// Separate from /api/editorial because an upload is multipart rather than JSON. Same rules:
 /// guarded, and refused outright on a deployed build — see `assertEditable`.
@@ -43,6 +43,24 @@ export async function POST(request: Request) {
     if (!(file instanceof File)) throw new EditorialError("No image was sent.")
 
     return NextResponse.json({ image: await saveImage(slug, file) })
+  } catch (error) {
+    return failure(error)
+  }
+}
+
+export async function PATCH(request: Request) {
+  const refusal = await refuseUnlessAdmin()
+  if (refusal) return refusal
+
+  try {
+    assertEditable()
+    const input = (await request.json()) as { slug?: unknown; from?: unknown; to?: unknown }
+    if (typeof input.slug !== "string") throw new EditorialError("Which post is this image for?")
+    if (typeof input.from !== "string" || typeof input.to !== "string") {
+      throw new EditorialError("Which image should be renamed, and to what?")
+    }
+
+    return NextResponse.json({ image: await renameImage(input.slug, input.from, input.to) })
   } catch (error) {
     return failure(error)
   }

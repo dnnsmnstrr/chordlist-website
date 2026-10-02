@@ -41,6 +41,8 @@ export default async function EditorialPostPage({ params }: Props) {
         tags: [...post.tags],
         outline: post.outline,
         body: post.body,
+        cover: post.cover,
+        coverAlt: post.coverAlt,
         publishedLabel: post.publishedLabel,
         isPublic: post.isPublic,
         approval: post.approval,

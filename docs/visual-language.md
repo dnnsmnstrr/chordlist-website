@@ -98,12 +98,15 @@ article a memorable visual anchor. Do not add one simply because a post has none
 
 ### Blog
 
-- Keep lossless source files under `assets/visual-references/`.
+- Keep lossless source files under `assets/visual-references/`, and give each master an `alt` entry in
+  `assets/visual-references/analog-photography/catalog.json`. Writing mode offers the masters as a
+  collection and fills in that alt text when one is added to a post.
 - Put web-ready article images in `public/blog/<slug>/` using descriptive lowercase filenames.
 - Export ordinary body images at about 1600px wide in WebP or another efficiently compressed web
   format.
-- Create a separate 1200×630 composition if an image will be used as a post cover. Do not stretch a
-  body image to fit.
+- Create a separate 1200×630 composition if an image will be used as a post cover (the key visual).
+  The site crops a cover to that shape from the centre rather than stretching it, so a body image
+  used as one loses its top and bottom.
 - Check that the important part of the image survives narrow screens and that the file has useful
   alt text and a distinct caption.
 

@@ -14,6 +14,8 @@ reference for this file.
 
 ## Words and phrases the author uses
 
+- American spelling, not British: "realized", "favorite", "practice" as a verb.
+
 ## Words and constructions to leave out
 
 ## Openings and endings

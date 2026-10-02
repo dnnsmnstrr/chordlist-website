@@ -255,7 +255,7 @@ function parsePost(slug: string, source: string): { meta: ParsedMeta; body: stri
       cover,
       coverAlt,
       draft: readDraft(record, slug),
-      approval: approvalState({ title, description, body }, approvedDigest),
+      approval: approvalState({ title, description, body, cover, coverAlt }, approvedDigest),
       approvedOn,
       outline: readOutline(record, slug),
       wordCount,

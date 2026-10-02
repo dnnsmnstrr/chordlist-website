@@ -30,6 +30,8 @@ type Action =
       tags?: string[]
       outline?: string[]
       body?: string
+      cover?: string | null
+      coverAlt?: string
     }
   | { action: "approve"; slug: string }
   | { action: "revoke"; slug: string }
