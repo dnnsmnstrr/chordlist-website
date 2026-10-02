@@ -38,3 +38,6 @@ video/public/manual/*
 .env
 .env.*
 !.env.example
+
+# Untouched author drafts, saved by the blog-refine skill before it edits
+.blog-originals/

@@ -7,12 +7,14 @@ import {
   adminRoutePrefixes,
   isAdminEmail,
   isAdminRoute,
+  isLoopbackHost,
   isProtectedRoute,
   safeRedirectPath,
+  skipsLoginLocally,
 } from "../lib/admin-routes"
 
 test("the internal tools are behind the login and the marketing site is not", () => {
-  for (const path of ["/emails", "/emails/", "/translations", "/social/editor", "/api/translations/languages", "/copy"]) {
+  for (const path of ["/emails", "/emails/", "/translations", "/social/editor", "/api/translations/languages", "/copy", "/editorial", "/editorial/a-post", "/api/editorial"]) {
     assert.equal(isProtectedRoute(path), true, path)
   }
   for (const path of ["/", "/de", "/chordlink", "/blog/a-post", "/privacy", "/press", "/chordlink/notified"]) {
@@ -100,12 +102,17 @@ test("every protected page actually calls the guard", () => {
   // one a failing build rather than a quiet hole.
   const guarded = {
     "app/(en)/copy/page.tsx": "requireAdmin",
+    "app/(en)/editorial/page.tsx": "requireAdmin",
+    "app/(en)/editorial/[slug]/page.tsx": "requireAdmin",
     "app/(en)/emails/page.tsx": "requireAdmin",
     "app/(en)/gallery/page.tsx": "requireAdmin",
     "app/(en)/social-editor/page.tsx": "requireAdmin",
     "app/(en)/social/editor/page.tsx": "requireAdmin",
     "app/(en)/social/posts/page.tsx": "requireAdmin",
     "app/(en)/translations/page.tsx": "requireAdmin",
+    "app/api/editorial/route.ts": "refuseUnlessAdmin",
+    "app/api/editorial/images/route.ts": "refuseUnlessAdmin",
+    "app/api/editorial/collection/route.ts": "refuseUnlessAdmin",
     "app/api/translations/route.ts": "refuseUnlessAdmin",
     "app/api/translations/languages/route.ts": "refuseUnlessAdmin",
   }
@@ -128,4 +135,27 @@ test("an admin page can never be prerendered as static content", () => {
 
   assert.ok(cookiesAt > 0 && configAt > 0)
   assert.ok(cookiesAt < configAt, "cookies() must be read before the configuration check")
+})
+
+test("the login is skipped only for pnpm dev on this machine", () => {
+  const local = { nodeEnv: "development", vercel: undefined, host: "localhost:3000" }
+  assert.equal(skipsLoginLocally(local), true)
+  assert.equal(skipsLoginLocally({ ...local, host: "127.0.0.1:3000" }), true)
+  assert.equal(skipsLoginLocally({ ...local, host: "[::1]:3000" }), true)
+
+  // A production build run locally is the rehearsal of the deployed site, so it still asks.
+  assert.equal(skipsLoginLocally({ ...local, nodeEnv: "production" }), false)
+  assert.equal(skipsLoginLocally({ ...local, nodeEnv: undefined }), false)
+  // No Vercel deployment opts out, whatever mode it runs in.
+  assert.equal(skipsLoginLocally({ ...local, vercel: "1" }), false)
+  // A phone on the same network reaches the dev server by its LAN address.
+  assert.equal(skipsLoginLocally({ ...local, host: "192.168.1.20:3000" }), false)
+  assert.equal(skipsLoginLocally({ ...local, host: null }), false)
+})
+
+test("a hostname that merely contains localhost is not loopback", () => {
+  assert.equal(isLoopbackHost("app.localhost:3000"), true)
+  assert.equal(isLoopbackHost("localhost.evil.example"), false)
+  assert.equal(isLoopbackHost("notlocalhost"), false)
+  assert.equal(isLoopbackHost("127.0.0.1.evil.example"), false)
 })

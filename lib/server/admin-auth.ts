@@ -1,9 +1,10 @@
 import "server-only"
 
 import type { Route } from "next"
+import { headers } from "next/headers"
 import { redirect } from "next/navigation"
 
-import { adminEmails, isAdminEmail, safeRedirectPath } from "@/lib/admin-routes"
+import { adminEmails, isAdminEmail, safeRedirectPath, skipsLoginLocally } from "@/lib/admin-routes"
 import { createSupabaseServerClient } from "@/lib/supabase/server"
 
 export type AdminUser = { id: string; email: string }
@@ -27,6 +28,20 @@ export async function readAdminUser(): Promise<AdminUser | null> {
     : null
 }
 
+/** Stands in for the signed-in administrator on `pnpm dev`. See `skipsLoginLocally`. */
+const localDeveloper: AdminUser = { id: "local-development", email: "local@localhost" }
+
+async function localDeveloperUser(): Promise<AdminUser | null> {
+  const requestHeaders = await headers()
+  return skipsLoginLocally({
+    nodeEnv: process.env.NODE_ENV,
+    vercel: process.env.VERCEL,
+    host: requestHeaders.get("host"),
+  })
+    ? localDeveloper
+    : null
+}
+
 /**
  * The guard every internal tool calls before rendering anything.
  *
@@ -36,7 +51,7 @@ export async function readAdminUser(): Promise<AdminUser | null> {
  * keeps the session fresh and makes the redirect quick; this decides who gets in.
  */
 export async function requireAdmin(returnTo: string): Promise<AdminUser> {
-  const user = await readAdminUser()
+  const user = (await localDeveloperUser()) ?? (await readAdminUser())
   if (user) return user
 
   const next = encodeURIComponent(safeRedirectPath(returnTo))
@@ -51,6 +66,6 @@ export async function requireAdmin(returnTo: string): Promise<AdminUser> {
  * redirect would arrive as an opaque HTML body rather than an error the caller can act on.
  */
 export async function refuseUnlessAdmin(): Promise<Response | null> {
-  if (await readAdminUser()) return null
+  if ((await localDeveloperUser()) ?? (await readAdminUser())) return null
   return Response.json({ error: "Not authorized." }, { status: 401 })
 }

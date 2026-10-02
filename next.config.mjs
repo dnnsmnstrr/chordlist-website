@@ -2,6 +2,9 @@
 const nextConfig = {
   typedRoutes: true,
   turbopack: { root: process.cwd() },
+  // Next 16.3 appends its own agent-rules block to AGENTS.md whenever an AI agent runs `next dev`.
+  // AGENTS.md and CLAUDE.md here are written by hand and round-trip through v0, so they stay ours.
+  agentRules: false,
 
   async headers() {
     return [

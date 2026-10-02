@@ -991,7 +991,17 @@ export const blogCopy = {
   // are not public yet are shown so they can be reviewed.
   status: {
     draft: "Draft",
+    // Approval outranks the date: an unapproved post never goes live, so "Scheduled" would lie.
+    unapproved: "Awaiting approval",
+    stale: "Changed since approval",
     scheduled: (date: string) => `Scheduled for ${date}`,
+  },
+  author: {
+    byline: (name: string) => `By ${name}`,
+    title: "About the author",
+    bio: `${siteConfig.author.firstName} is the solo developer behind ${siteConfig.name}. He created the app to help him play his favorite songs on the piano.`,
+    contact: "Questions, corrections, or a topic you would like covered?",
+    contactLink: `Write to ${siteConfig.contact.feedback}`,
   },
   post: {
     back: "All posts",
@@ -1048,6 +1058,149 @@ export const galleryCopy = {
       alt: "Black-and-white piano keys stretching into soft vertical streaks of motion.",
     },
   ],
+} as const
+
+export const editorialCopy = {
+  metadata: {
+    title: "Editorial",
+    description: `Plan, write, and approve ${siteConfig.name} blog posts.`,
+  },
+  eyebrow: "Internal · blog plan",
+  title: "Editorial plan",
+  introduction:
+    "Every post is written from an outline and goes live only once you have approved its exact words. Editing an approved post withdraws the approval until you approve it again.",
+  unavailable: "The editorial tool writes files in this checkout, so it only runs under pnpm dev.",
+  calendar: "Calendar",
+  summary: {
+    live: (count: number) => `${count} live`,
+    upcoming: (count: number) => `${count} planned`,
+    awaiting: (count: number) => `${count} awaiting approval`,
+  },
+  status: {
+    idea: "Idea",
+    writing: "Writing",
+    stale: "Changed since approval",
+    approved: "Approved",
+    live: "Live",
+    draft: "Held as draft",
+  },
+  // Shown under a planned post whose date has passed without an approval. It is not live, and the
+  // next change to the plan moves it to the first free slot.
+  overdue: "Date passed without approval — not live. Any change to the plan moves it to the next free week.",
+  cadence: {
+    title: "Release cadence",
+    start: "First release",
+    everyDays: "Days between posts",
+    skip: "Weeks to skip",
+    skipHint: "One date per line, YYYY-MM-DD — a holiday, a busy week.",
+    save: "Save and reschedule",
+    explanation:
+      "Changing the cadence or the order reassigns every post that is not live yet to the next free slots, in order. Live posts never move, and approval survives a new date.",
+  },
+  queue: {
+    title: "Planned",
+    empty: "Nothing planned. Add an idea below.",
+    moveUp: (title: string) => `Move “${title}” a week earlier`,
+    moveDown: (title: string) => `Move “${title}” a week later`,
+    write: "Write",
+    approve: "Approve",
+    revoke: "Withdraw approval",
+    delete: "Delete",
+    words: (count: number) => (count === 1 ? "1 word" : `${count} words`),
+    confirmApprove: (title: string, date: string) =>
+      `Approve “${title}”?\n\nYou are confirming you have read every word as it is now. It goes live on ${date}.`,
+    confirmDelete: (title: string) => `Delete “${title}”? The file is removed from content/blog.`,
+  },
+  live: {
+    title: "Live",
+    empty: "Nothing is live yet.",
+  },
+  add: {
+    title: "Add an idea",
+    titleLabel: "Working title",
+    slugLabel: "Slug — the permanent URL",
+    promiseLabel: "Promise — one sentence, becomes the description",
+    tagsLabel: "Tags",
+    outlineLabel: "Outline — one idea per line",
+    submit: "Add to the end of the plan",
+  },
+  writing: {
+    back: "Plan",
+    showOutline: "Outline",
+    format: {
+      label: "Formatting",
+      heading: "Heading — cycles through ## and ###",
+      bold: "Bold (⌘B)",
+      italic: "Italic (⌘I)",
+      link: "Link (⌘K)",
+      code: "Code (⌘E) — inline within a line, a block across lines",
+      codeBlock: "Code block",
+      quote: "Quote",
+      list: "Bulleted list",
+      placeholders: {
+        bold: "bold text",
+        italic: "italic text",
+        code: "code",
+        linkText: "link text",
+        linkUrl: "https://",
+      },
+    },
+    preview: "Preview",
+    saved: "Saved",
+    saving: "Saving…",
+    unsaved: "Unsaved",
+    failed: "Not saved",
+    placeholder: "Write it your way. The outline is only a map.",
+    outlineTitle: "Outline",
+    outlineHint: "One idea per line. Nothing here is published.",
+    detailsTitle: "Details",
+    titleLabel: "Title",
+    promiseLabel: "Promise",
+    tagsLabel: "Tags",
+    scheduled: (date: string) => `Planned for ${date}`,
+    approvedNotice:
+      "This post is approved. Any edit withdraws the approval until you approve it again.",
+    staleNotice: "Edited since you approved it — it will not go live until you approve this version.",
+    approve: "Approve this version",
+    revoke: "Withdraw approval",
+    images: {
+      title: "Images",
+      hint: "Drop or paste an image onto the page, or add one here. It is resized to 1600px and saved as WebP in public/blog.",
+      add: "Add images",
+      empty: "No images for this post yet.",
+      use: "Use",
+      useLabel: (name: string) => `Use ${name} in the post or as its key visual`,
+      uploading: (count: number) => (count === 1 ? "Uploading 1 image…" : `Uploading ${count} images…`),
+      size: (kilobytes: number) => `${kilobytes} KB`,
+      dialogTitle: "Use image",
+      fileNameLabel: "File name",
+      fileNameHint:
+        "Lowercase words and hyphens, describing the picture. It becomes part of the image's URL, so it cannot change once a post uses it.",
+      altLabel: "Alt text",
+      altHint: "What matters in the image, for someone who cannot see it. Required.",
+      altFromCatalog: "Filled in from the photography catalog. Make it more specific if the post needs it.",
+      fromCollection: "From the collection",
+      collectionTitle: "Photography collection",
+      collectionHint:
+        "The black-and-white masters in assets/visual-references. Picking one copies a 1600px WebP into this post's folder, with its alt text from the catalog.",
+      collectionLoading: "Loading the collection…",
+      collectionEmpty: "The collection is empty.",
+      collectionPick: (file: string) => `Add ${file} to this post`,
+      collectionNoAlt: "No alt text yet",
+      close: "Close",
+      captionLabel: "Caption",
+      captionHint: "Optional. Shown under the image in the post — say something the alt text does not. Key visuals have none.",
+      confirm: "Insert at cursor",
+      useAsKeyVisual: "Use as key visual",
+      cancel: "Cancel",
+      keyVisualTitle: "Key visual",
+      keyVisualHint:
+        "Shown above the post and on its card in the blog index, cropped to 1200 × 630, and used when the post is shared. Part of what you approve.",
+      keyVisualEmpty: "None yet. Pick an image below and choose “Use as key visual”.",
+      keyVisualBadge: "Key visual",
+      removeKeyVisual: "Remove key visual",
+    },
+  },
 } as const
 
 export const pianoCopy = {

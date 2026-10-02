@@ -30,7 +30,7 @@ Explain an unfamiliar term once, in plain language. Do not assume the reader is 
   wondered…?"
 - Keep `chordlist` lowercase in prose and headings. Avoid starting a sentence with the name when
   that makes the lowercase styling look accidental.
-- Use British English: `practise` as a verb, `normalise`, and `recognisably`.
+- Use American English: `practice` as a verb, `normalize`, and `recognizably`.
 
 ## Shape the article around one promise
 
@@ -137,5 +137,7 @@ Before scheduling a post, confirm that:
 - internal and external links are relevant and accurate;
 - the title, description, slug, dates, draft status, and tags are valid;
 - example lyrics are original or clearly reusable;
-- the ending gives the reader a useful takeaway or next action; and
-- the post has been checked on mobile and in a preview build.
+- the ending gives the reader a useful takeaway or next action;
+- the post has been checked on mobile and in a preview build; and
+- the author has read the final text and approved it in `/editorial` — the post cannot go live
+  otherwise.

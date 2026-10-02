@@ -30,6 +30,8 @@ export async function GET() {
         `      <guid isPermaLink="true">${escapeXml(url)}</guid>`,
         `      <description>${escapeXml(post.description)}</description>`,
         `      <pubDate>${new Date(post.publishedISO).toUTCString()}</pubDate>`,
+        // RSS's own <author> must be an email address; dc:creator is the name, which readers display.
+        `      <dc:creator>${escapeXml(siteConfig.author.name)}</dc:creator>`,
         ...categories,
         "    </item>",
       ].join("\n")
@@ -38,7 +40,7 @@ export async function GET() {
 
   const xml = [
     '<?xml version="1.0" encoding="UTF-8"?>',
-    '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">',
+    '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/">',
     "  <channel>",
     `    <title>${escapeXml(blogCopy.metadata.feedTitle)}</title>`,
     `    <link>${siteConfig.url}/blog</link>`,

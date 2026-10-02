@@ -11,8 +11,10 @@
  * App Store sets, so it is part of the public site and a login in front of it is a dead link.
  */
 export const adminRoutePrefixes = [
+  "/api/editorial",
   "/api/translations",
   "/copy",
+  "/editorial",
   "/emails",
   "/gallery",
   "/login",
@@ -74,4 +76,39 @@ export function safeRedirectPath(value: string | null | undefined, fallback = "/
   if (!value.startsWith("/")) return fallback
   if (value.startsWith("//") || value.startsWith("/\\")) return fallback
   return value
+}
+
+/**
+ * Whether the internal tools skip the login for this request.
+ *
+ * Only on `pnpm dev`, only off Vercel, and only for a request addressed to this machine. None of the
+ * tools need the backend for anything but the login itself — they read and write files in the
+ * checkout — so signing in to your own laptop is friction without protection.
+ *
+ * Each condition fails closed. A production build (`pnpm build && pnpm start`) still asks, so it
+ * stays an honest rehearsal of the deployed site. `VERCEL` is set on every Vercel build and function,
+ * so no deployment can opt out by running in development mode. And `next dev` listens on the
+ * network: the host check keeps a phone on the same Wi-Fi, which reaches the server by its LAN
+ * address, behind the login. It is a convenience boundary, not a security one — a Host header can be
+ * forged by anyone who can reach the port — which is why the first two conditions carry the weight.
+ */
+export function skipsLoginLocally(environment: {
+  nodeEnv: string | undefined
+  vercel: string | undefined
+  host: string | null | undefined
+}): boolean {
+  if (environment.nodeEnv !== "development") return false
+  if (environment.vercel !== undefined && environment.vercel !== "") return false
+  return isLoopbackHost(environment.host)
+}
+
+export function isLoopbackHost(host: string | null | undefined): boolean {
+  if (!host) return false
+  const hostname = host.trim().toLowerCase().replace(/:\d+$/, "")
+  return (
+    hostname === "localhost" ||
+    hostname.endsWith(".localhost") ||
+    hostname === "127.0.0.1" ||
+    hostname === "[::1]"
+  )
 }

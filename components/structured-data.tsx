@@ -7,6 +7,7 @@ import { blogCopy } from "@/locales/en"
 
 const organizationId = `${siteConfig.url}#organization`
 const websiteId = `${siteConfig.url}#website`
+const authorId = `${siteConfig.url}#author`
 
 /**
  * One JSON-LD block.
@@ -38,6 +39,20 @@ const organizationNode = {
   logo: `${siteConfig.url}/apple-icon.png`,
   email: siteConfig.contact.support,
   sameAs: [siteConfig.social.x.url, siteConfig.social.instagram.url],
+}
+
+/**
+ * The person who writes the blog. Emitted in full beside every post for the same reason as the
+ * Organization node: a validator reading one article does not resolve a bare reference.
+ */
+const authorNode = {
+  "@type": "Person",
+  "@id": authorId,
+  name: siteConfig.author.name,
+  url: `${siteConfig.url}/blog`,
+  ...(siteConfig.author.photo ? { image: `${siteConfig.url}${siteConfig.author.photo}` } : {}),
+  ...(siteConfig.author.links.length > 0 ? { sameAs: siteConfig.author.links.map((link) => link.url) } : {}),
+  worksFor: { "@id": organizationId },
 }
 
 /**
@@ -161,6 +176,7 @@ export function BlogPostStructuredData({ post }: { post: PostMeta }) {
     "@context": "https://schema.org",
     "@graph": [
       organizationNode,
+      authorNode,
       websiteNode(defaultLanguage),
       {
         "@type": "BlogPosting",
@@ -175,7 +191,7 @@ export function BlogPostStructuredData({ post }: { post: PostMeta }) {
         inLanguage: dictionary(defaultLanguage).locale.htmlLang,
         isPartOf: { "@id": websiteId },
         mainEntityOfPage: url,
-        author: { "@id": organizationId },
+        author: { "@id": authorId },
         publisher: { "@id": organizationId },
       },
       {

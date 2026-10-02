@@ -1,0 +1,10 @@
+---
+description: Refine a chordlist blog post the author drafted in writing mode, keeping it in their own words.
+alwaysApply: false
+---
+
+# Blog refine
+
+Read and follow `.agents/skills/blog-refine/SKILL.md` completely before editing a post. That shared
+skill is the operational source of truth for Claude, Codex, and Cursor. Never approve a post: only the
+author does that, in `/editorial`.
