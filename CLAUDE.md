@@ -166,7 +166,10 @@ file; blog components read from `blogCopy` or from parsed Markdown.
 ### Product facts live in `lib/site-config.ts`
 
 URLs, contact addresses, social handles, `launchDate`, `minimumOSVersion`, and `freeSongLimit`
-come from `siteConfig`. `locales/en.ts` imports `siteConfig` and interpolates it, so a fact is
+come from `siteConfig`. So does `author` — the name, city, optional portrait, and personal links
+behind every post's byline and author card (`components/post-author.tsx`), its `article:author`
+metadata, the feed's `dc:creator`, and the `Person` node `BlogPostStructuredData` names as the
+post's author (the Organization stays the publisher). `locales/en.ts` imports `siteConfig` and interpolates it, so a fact is
 never written twice. The app name is `siteConfig.name` (lowercase "chordlist") — do not hardcode it.
 
 Store-link handling is deliberate: `links.testFlight`, `links.appStore`, and `links.preorder` are

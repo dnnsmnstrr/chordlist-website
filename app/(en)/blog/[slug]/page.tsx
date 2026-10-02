@@ -6,6 +6,7 @@ import { ArrowLeft } from "lucide-react"
 
 import { AppCTA } from "@/components/app-cta"
 import { BlogMarkdown } from "@/components/blog-markdown"
+import { AuthorCard, PostByline } from "@/components/post-author"
 import { PostCard, PostStatusBadge } from "@/components/post-card"
 import { SiteFooter } from "@/components/site-footer"
 import { SiteHeader } from "@/components/site-header"
@@ -45,7 +46,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
     title: post.title,
     description: post.description,
     keywords: post.tags.map((tag) => blogCopy.tags[tag]),
-    authors: [{ name: siteConfig.operator, url: siteConfig.url }],
+    authors: [{ name: siteConfig.author.name, url: `${siteConfig.url}/blog` }],
     alternates: {
       canonical: post.href,
       languages: siteAlternateLanguages(post.href),
@@ -61,6 +62,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
       title: post.title,
       description: post.description,
       publishedTime: post.publishedISO,
+      authors: [siteConfig.author.name],
       tags: [...post.tags],
       images: [{ url: image, width: 1200, height: 630, alt: post.coverAlt ?? metadataCopy.socialImageAlt }],
     },
@@ -112,6 +114,9 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           </p>
           <h1 className="mt-3 text-balance text-4xl font-semibold tracking-tight sm:text-5xl">{post.title}</h1>
           <p className="mt-4 text-pretty leading-relaxed text-muted-foreground">{post.description}</p>
+          <div className="mt-6">
+            <PostByline />
+          </div>
 
           <ul className="mt-6 flex flex-wrap gap-2">
             {post.tags.map((tag) => (
@@ -139,6 +144,8 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         ) : null}
 
         <BlogMarkdown html={post.html} className="mt-10" />
+
+        <AuthorCard />
 
         {related.length > 0 ? (
           <section aria-labelledby="related-posts" className="mt-16 border-t border-border pt-10">

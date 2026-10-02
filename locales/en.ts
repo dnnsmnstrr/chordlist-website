@@ -996,6 +996,13 @@ export const blogCopy = {
     stale: "Changed since approval",
     scheduled: (date: string) => `Scheduled for ${date}`,
   },
+  author: {
+    byline: (name: string) => `By ${name}`,
+    title: "About the author",
+    bio: `${siteConfig.author.name} is the solo developer behind ${siteConfig.name}, based in ${siteConfig.author.city}. Every post on this blog is written and approved by ${siteConfig.author.firstName}.`,
+    contact: "Questions, corrections, or a topic you would like covered?",
+    contactLink: `Write to ${siteConfig.contact.feedback}`,
+  },
   post: {
     back: "All posts",
     related: "Related posts",

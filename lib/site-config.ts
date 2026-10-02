@@ -9,6 +9,20 @@ export const siteConfig = {
     city: "Mainz",
     countryCode: "DE",
   },
+  /**
+   * Who writes the blog. Every post is written and approved by this one person (see
+   * lib/blog-approval.ts), so the byline, the author card, the feed, and the Article JSON-LD all
+   * name them from here.
+   */
+  author: {
+    name: "Dennis Muensterer",
+    firstName: "Dennis",
+    city: "Mainz",
+    // A square portrait in public/, e.g. "/blog/author.webp". Without one the card shows initials.
+    photo: null as string | null,
+    // Personal profiles, shown on the author card and listed as `sameAs` in the JSON-LD.
+    links: [] as { label: string; url: string }[],
+  },
   url: "https://chordlist.app",
   launchDate: "2026-09-09",
   minimumOSVersion: 18,
