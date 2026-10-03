@@ -123,7 +123,7 @@ export default function PressPage() {
           <CollapsibleSection title={pressCopy.details.sectionTitle}>
             <dl className="grid gap-x-8 gap-y-4 sm:grid-cols-[10rem_1fr]">
               <DetailRow label={pressCopy.details.labels.name} value={siteConfig.name} />
-              <DetailRow label={pressCopy.details.labels.developer} value={siteConfig.operator} />
+              <DetailRow label={pressCopy.details.labels.developer} value={siteConfig.operator + " (" + siteConfig.legalName + ")"} />
               <DetailRow label={pressCopy.details.labels.platforms} value={pressCopy.details.platforms} />
               <DetailRow label={pressCopy.details.labels.requirements} value={pressCopy.details.requirements} />
               <DetailRow label={pressCopy.details.labels.category} value={pressCopy.details.category} />
