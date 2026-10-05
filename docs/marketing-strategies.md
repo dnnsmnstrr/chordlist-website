@@ -120,8 +120,9 @@ answer the question a stranger has — without a word of feature copy. The found
 every piano clip after it is the proof. The party trick (Series 1) follows once that footage is used
 up.
 
-Instagram Reels and native X video carry all of it, since those are the accounts that exist. Claim
-TikTok and YouTube handles if that has not happened; the same vertical files go there for free.
+Every video goes to TikTok, Instagram Reels and X. There is less than a week of piano footage but
+several takes of each piano, so the best take of each goes everywhere and the alternates become extra
+TikTok posts — the one network where posting often is the strategy rather than noise.
 
 ### chordlink — give away the file, sell the object
 
@@ -205,8 +206,8 @@ channel did the work.
 - **Rewriting the site's positioning.** The file-ownership story is well made and consistently
   voiced. The change above is one line.
 - **More than one video a week.** The footage is finite and the launch week is not the week to find
-  a rhythm. The founder video, then one piano clip every Wednesday; a second weekly slot only once
-  there are more clips than weeks.
+  a rhythm. The founder video, then one piano clip every Wednesday on Instagram and X; the alternate
+  takes are TikTok's, and only TikTok's.
 - **Letting chordlink share launch day.** Two announcements on one day is one announcement at half
   strength.
 - **Adding a second launch flag.** The backend switch is the only gate, and a launch-week rush is

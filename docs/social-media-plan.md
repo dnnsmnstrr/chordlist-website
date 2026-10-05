@@ -33,6 +33,8 @@ That shapes the plan more than anything else:
    gets played. They show the feature the [strategy](marketing-strategies.md) says answers a stranger's
    real question — *I do not know what to play* — and nobody else can film them. A montage of them
    opens the run on 14 October, then one a week, every Wednesday, for as long as the footage lasts.
+   There is less than a week of it, but several takes of each piano: the best take of each goes
+   everywhere, and the rest become extra TikToks.
 4. **The stills fill in around them,** on the blog's Saturdays and on Sundays.
 
 ## Saturday is blog day
@@ -109,11 +111,37 @@ post goes live within about an hour of its date rather than exactly at midnight.
 
 🎹 is a video from [Series 5](video-scripts.md#series-5--shuffle-at-a-public-piano); write the city and
 the song into the row when it is posted. 📝 is conditional on that day's post being live, per above.
-If the footage runs out before 11 November, the Wednesday goes to the backlog below; if it outlasts
-the table, keep Wednesdays for it.
+One row per piano, using its best take — there are fewer pianos than the five Wednesdays, so the
+rows after the last one go to the backlog below or to a Series 1 party-trick video. The other takes
+are TikTok's.
 
-Three posts a week is the ceiling for one person who is also answering support mail in launch week.
-If a week slips, drop the Sunday still, never the Wednesday video.
+## TikTok
+
+The public-piano takes give TikTok more than the other two accounts get, which suits it: it rewards
+posting often, and a different take of the same piano is a different video there.
+
+- **Everything above that is a video goes to TikTok too**, the same day: the founder video on 10 October,
+  the montage on 14 October, and each Wednesday's piano.
+- **The alternate takes go to TikTok only**, on the days between — Monday and Friday from 12 October —
+  until they run out. Each take is its own shuffle, so its caption names its song and city, and none
+  repeats the Wednesday post's file.
+- **No stills.** The cards are 1.91:1 and 4:5; TikTok is a video feed, and a card there is an ad.
+
+| Date | TikTok |
+| --- | --- |
+| Sat 10 Oct | 0.1 *The obvious thing* |
+| Mon 12 Oct | Alternate take |
+| Wed 14 Oct | 0.2 the montage |
+| Fri 16 Oct | Alternate take |
+| Mon 19 Oct | Alternate take |
+| Wed 21 Oct | Public piano #1 |
+| Fri 23 Oct | Alternate take — and so on, Mondays and Fridays, until the takes are used up |
+
+Add the handle to `siteConfig.social` once it exists, so the footer and structured data link it.
+
+Three posts a week on Instagram and X, plus the TikTok extras, is the ceiling for one person who is
+also answering support mail in launch week. If a week slips, drop the Sunday still and the TikTok
+extra, never the Wednesday video.
 
 ## Backlog
 
@@ -274,6 +302,5 @@ These come from the iOS repository's automated screenshot tests rather than an i
   *used*; the briefs above are about the shapes the library is missing when it is.
 - **A store link in an image.** `siteConfig.links` is the only thing that can follow availability;
   every asset points at `chordlist.app` instead.
-- **Stills on a network that is not X or Instagram.** `siteConfig.social` declares two accounts and
-  the format matrix serves exactly those two. The videos are vertical and can also go to TikTok and
-  YouTube Shorts once those handles exist — see [Where they go](video-scripts.md#where-they-go).
+- **Stills on a network that is not X or Instagram.** The format matrix serves exactly those two.
+  TikTok carries video only — see [TikTok](#tiktok).

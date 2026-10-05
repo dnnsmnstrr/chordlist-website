@@ -78,17 +78,18 @@ describing the feature.
 
 | Time | Shot | On screen | Said |
 | --- | --- | --- | --- |
-| 0:00–0:03 | `[A]` Face to camera | — | "For one week I wasn't allowed to choose what I played. The app chose." |
-| 0:03–0:20 | `[A]`/`[S]` Fast montage, five cuts. Each: tap shuffle → title appears → four seconds of playing it | **DAY 1 / DAY 2 / DAY 3…** as each cut lands | — |
+| 0:00–0:03 | `[A]` Face to camera | — | "On this trip I wasn't allowed to choose what I played. The app chose." (Originally *For one week* — see below.) |
+| 0:03–0:20 | `[A]`/`[S]` Fast montage, five cuts. Each: tap shuffle → title appears → four seconds of playing it | **<city>** as each cut lands | — |
 | 0:20–0:26 | `[A]` Back to face | — | "Day three it gave me a song I'd have skipped every time. It's now the one I keep playing." |
 | 0:26–0:30 | `[A]` Same | — | "Turns out I'm a worse DJ than a random number." |
 
-**The travelling footage is this video, for real.** The original note was to shoot all five on one day
-and change shirts between takes to sell the week. The public-piano clips make that unnecessary: they
-are real days in real places, and a different piano in every cut sells the week better than a shirt
-does. Swap the day labels for **DAY 1 · <city>** if the cities read well, and make the line at 0:20 about
-whichever song actually stuck. If there are not five usable clips, the one-day version still works —
-just keep the line at 0:00 true to how it was made.
+**Built from the travel takes, not a week of days.** There are fewer pianos than days in a week, so
+*DAY 1 / DAY 2 / DAY 3…* would claim something the footage does not show, and so would the original
+idea of one day's takes with a shirt change between them. Frame it as the trip instead, and label each
+cut with its place — **<city>** — rather than a day number. Say the opening your way, along the lines
+of *"On this trip I wasn't allowed to choose what I played. The app chose."*, and make the line at
+0:20 about whichever song actually stuck. Each piano gets one cut, from its best take; the other
+takes are the TikToks in [Series 5](#series-5--shuffle-at-a-public-piano).
 
 What the montage loses against the original note is the one camera angle that makes the cuts snap.
 Get some of that back by cutting every clip on the same beat: the title appearing, then the first
@@ -260,6 +261,11 @@ the app deciding, and an obviously rehearsed pick breaks that.
 **The caption names the city, the song, and nothing about features.** The post caption can carry one
 line about shuffle and the link; the video does not explain itself.
 
+**Several takes per piano.** Each piano was filmed more than once, and each take is its own shuffle,
+so each one is a post — on TikTok, which rewards frequency, rather than on Instagram and X, where the
+same piano twice in a month reads as a repeat. Give every take its own caption and never post the same
+file twice to one account. The best take of each piano is the one that goes everywhere.
+
 Order them strongest first, not in the order you travelled. Write the city and song into the calendar
 row when it goes out, so the next pick is not a repeat.
 
@@ -293,11 +299,13 @@ Shoot vertical. Lock exposure. Do not edit any of it the same week.
 
 ## Where they go
 
-`siteConfig.social` declares only X and Instagram, so every video goes out as an Instagram Reel and as
-native video on X first. **Claim TikTok and YouTube now** if that has not happened — the public-piano
-series is exactly what both are for, and reposting the same vertical files there costs nothing.
-Add them to `siteConfig.social` once claimed; the footer and the structured data read from there, so
-that is the only edit needed.
+Every video goes to **TikTok**, as an Instagram Reel, and as native video on X. TikTok also gets the
+alternate public-piano takes, which is most of what it posts — see the
+[TikTok track](social-media-plan.md#tiktok) in the calendar. YouTube Shorts can take the same files
+whenever there is a handle for it.
+
+`siteConfig.social` declares only X and Instagram. Add the TikTok handle there once it is claimed; the
+footer and the structured data read from there, so that is the only edit needed.
 
 Posting order per video: the vertical surfaces first, then the still from `content/social/` that
 carries the same idea, on the day the social calendar already schedules it.
