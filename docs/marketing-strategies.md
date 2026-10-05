@@ -3,7 +3,7 @@
 A companion to [Social media plan](social-media-plan.md). That document is the running calendar for
 `content/social/`; this one covers the channels it deliberately scopes out — press, communities,
 video, an owned list, the German market, and the maker distribution of chordlink — and how they sit
-against the 9 September launch.
+against the 10 October launch.
 
 Nothing here replaces the social calendar. Everything scheduled there stays as it is.
 
@@ -168,9 +168,9 @@ Everything the social calendar already schedules stays as it is. This is only wh
 | Thu 4 Sep | Second press wave — one line, not a resend. |
 | Sun 7 Sep | Render the Remotion short. Write the launch-day text and leave it in a file. |
 | Tue 8 Sep | Verify every CTA and the App Store listing in light and dark, ready for `links.appStore`. |
-| Wed 9 Sep | `out-now`, plus Show HN with the plain-text post, r/apple, r/iosapps, and a note to everyone who ever replied. |
 | Fri 11 Sep | `matching-progressions` as scheduled, and the first video of the series it belongs to. |
 | Mid-Sep | chordlink: legal copy signed off, sales switch opened, model posted to the maker communities. |
+| Sat 10 Oct | `out-now`, plus Show HN with the plain-text post, r/apple, r/iosapps, and a note to everyone who ever replied. |
 
 ## Measurement
 

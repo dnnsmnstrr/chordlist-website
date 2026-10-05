@@ -21,7 +21,7 @@ Three phases, and the calendar below is built around them:
    in the calendar. It opens with the announcement on **Sunday 16 August** and works through the
    product's four best arguments — the file, the library, the pricing, the privacy — while the beta
    is still worth joining.
-2. **Launch week** (9 September). One asset announces availability on the day; the positioning and
+2. **Launch week** (10 October). One asset announces availability on the day; the positioning and
    atmosphere pieces follow it rather than competing with it.
 3. **After** (mid-September onward). The recurring series carry the account once the launch news is
    spent: a progression a week, a quote per blog post, one screen at a time.
@@ -61,14 +61,14 @@ After 18 September the blog has nothing scheduled, so Fridays are free again.
 ## Pre-order run-up
 
 - [ ] **Sun 16 Aug — the announcement.** Two assets, posted together:
-  [out-9-september](../content/social/out-9-september.md) then
+  [out-10-october](../content/social/out-10-october.md) then
   [anatomy-of-a-song-file](../content/social/anatomy-of-a-song-file.md) — the news, then the thing
   itself, because most of the people who see this post have never heard of it.
-  `card` `post` `story` · [preview](../public/social/out-9-september/card.png) ·
+  `card` `post` `story` · [preview](../public/social/out-10-october/card.png) ·
   [preview](../public/social/anatomy-of-a-song-file/post.png)
   - On Instagram it is one carousel in that order, at `post` size. On X the card carries it, with the
     file image attached second.
-  - The caption on `out-9-september` is the one to post: it says the pre-order is live and invites a
+  - The caption on `out-10-october` is the one to post: it says the pre-order is live and invites a
     message for a TestFlight link. It is written to fit X; on Instagram there is room to add that
     pre-ordering installs the app for you on release day, and that the link is in the bio.
   - Check that X direct messages are open to people who do not follow you before posting, or the
@@ -105,7 +105,7 @@ After 18 September the blog has nothing scheduled, so Fridays are free again.
 
 ## Launch week
 
-- [ ] **Wed 9 Sep** · [out-now](../content/social/out-now.md) — release day. The only asset whose job
+- [ ] **Sat 10 Oct** · [out-now](../content/social/out-now.md) — release day. The only asset whose job
   is the announcement. `card` `post` `story` · [preview](../public/social/out-now/card.png)
 - [ ] **Fri 11 Sep** · [matching-progressions](../content/social/matching-progressions.md) — 📝 with
   [Finding songs that share a progression](../content/blog/finding-songs-that-share-a-progression.md).
@@ -151,7 +151,7 @@ Five recurring lines, so a gap in the calendar has an obvious thing to fill it w
 needing a new idea each time.
 
 **Pre-order run-up.** Finite and nearly spent: the release date, the beta, the pricing. It ends on
-9 September and does not come back.
+10 October and does not come back.
 
 **Progression of the week.** The cheapest asset in the system to author and the most recognisably
 chordlist — a chord row, its numerals, one line. Four exist. Unwritten:

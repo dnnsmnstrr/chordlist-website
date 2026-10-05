@@ -13,7 +13,7 @@ Three documents already own their own ground and nothing here overrides them:
 | [Blog editorial guidelines](blog-editorial-guidelines.md) | Voice, structure, accuracy, review. |
 | [Marketing strategies](marketing-strategies.md) | The channel decisions this plan carries out. |
 
-**Launch is Wednesday 9 September 2026** (`siteConfig.launchDate`). Every date below is 2026.
+**Launch is Saturday 10 October 2026** (`siteConfig.launchDate`). Every date below is 2026.
 
 ## What is actually being sold
 
@@ -72,7 +72,7 @@ environment variable on a preview branch, so a variant can be read on a real URL
 someone — before it is promoted.
 
 **The recommendation: ship `files` through launch.** The three highest-value channels between now
-and 9 September are press, Hacker News, and the Obsidian communities, and all three respond to the
+and 10 October are press, Hacker News, and the Obsidian communities, and all three respond to the
 ownership story. Put `progressions` on a preview branch instead and use it as the landing page for
 the video series and the musician communities once those start, mid-September. `setlist` is the one
 to hold: it is the strongest writing of the three and the weakest argument, and it earns its place
@@ -101,7 +101,7 @@ Draft, English:
 > chordlist is a songbook for iPhone and iPad that stores every song as a plain Markdown file in a
 > folder you choose — no account, no sync, one purchase. It also reads the chord progression out of
 > each file, so finishing a song shows you which others in your library share it. It is out on
-> 9 September; here is a TestFlight build if you would like to hold it first, and the press kit is
+> 10 October; here is a TestFlight build if you would like to hold it first, and the press kit is
 > at chordlist.app/press.
 
 Draft, German:
@@ -109,7 +109,7 @@ Draft, German:
 > chordlist ist ein Songbook für iPhone und iPad, das jeden Song als einfache Markdown-Datei in
 > einem Ordner deiner Wahl ablegt – kein Account, keine Cloud, ein einmaliger Kauf. Die App liest
 > außerdem die Akkordfolge aus jeder Datei und zeigt, welche anderen Songs in der Bibliothek
-> dieselbe Folge nutzen. Release ist am 9. September; hier ist ein TestFlight-Build zum Ausprobieren,
+> dieselbe Folge nutzen. Release ist am 10. Oktober; hier ist ein TestFlight-Build zum Ausprobieren,
 > das Pressekit liegt unter chordlist.app/press.
 
 | Target | Language | Angle |
@@ -180,7 +180,7 @@ Analytics. Whatever provider is chosen must have a German-market-safe double opt
 imprint-compatible footer; `siteConfig.businessAddress` is already the address that belongs in it.
 
 This is the cheapest item in the plan and the one with the longest tail. If only one thing on the
-list before 9 September gets done, it is the press pitch; if two, this is the second.
+list before 10 October gets done, it is the press pitch; if two, this is the second.
 
 ### 4. Video — two systems
 

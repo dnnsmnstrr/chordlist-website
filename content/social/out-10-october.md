@@ -7,14 +7,14 @@ formats:
   - post
   - story
 headline:
-  - Out 9 September.
+  - Out 10 October.
 footnote: chordlist.app
-alt: A dark chordlist card reading "Out 9 September." over a faint photograph of a stage microphone.
+alt: A dark chordlist card reading "Out 10 October." over a faint photograph of a stage microphone.
 created: 2026-08-14
 scheduled: 2026-08-16
 ---
 
-chordlist is on the App Store to pre-order — out 9 September.
+chordlist is on the App Store to pre-order — out 10 October.
 
 Every song is a Markdown file in a folder you chose. No account, nothing uploaded, nothing to
 export.

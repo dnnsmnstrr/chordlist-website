@@ -298,28 +298,28 @@
     ]
   },
   {
-    "slug": "out-9-september",
+    "slug": "out-10-october",
     "template": "statement",
-    "alt": "A dark chordlist card reading \"Out 9 September.\" over a faint photograph of a stage microphone.",
-    "caption": "chordlist is on the App Store to pre-order — out 9 September.\n\nEvery song is a Markdown file in a folder you chose. No account, nothing uploaded, nothing to\nexport.\n\nWant it before then? Message me for a TestFlight link — iPhone or iPad, iOS 18 or later.\n\nchordlist.app",
+    "alt": "A dark chordlist card reading \"Out 10 October.\" over a faint photograph of a stage microphone.",
+    "caption": "chordlist is on the App Store to pre-order — out 10 October.\n\nEvery song is a Markdown file in a folder you chose. No account, nothing uploaded, nothing to\nexport.\n\nWant it before then? Message me for a TestFlight link — iPhone or iPad, iOS 18 or later.\n\nchordlist.app",
     "created": "2026-08-14",
     "scheduled": "2026-08-16",
     "outputs": [
       {
         "format": "card",
-        "file": "public/social/out-9-september/card.png",
+        "file": "public/social/out-10-october/card.png",
         "width": 1200,
         "height": 630
       },
       {
         "format": "post",
-        "file": "public/social/out-9-september/post.png",
+        "file": "public/social/out-10-october/post.png",
         "width": 1080,
         "height": 1350
       },
       {
         "format": "story",
-        "file": "public/social/out-9-september/story.png",
+        "file": "public/social/out-10-october/story.png",
         "width": 1080,
         "height": 1920
       }
@@ -331,7 +331,7 @@
     "alt": "A dark chordlist card reading \"Out now on iPhone and iPad.\"",
     "caption": "chordlist is on the App Store today. Choose a folder, add a song, and your songbook is already\na set of files you can open anywhere.\n\nFree to start, with an optional one-time purchase for unlimited songs. chordlist.app",
     "created": "2026-08-14",
-    "scheduled": "2026-09-09",
+    "scheduled": "2026-10-10",
     "outputs": [
       {
         "format": "card",

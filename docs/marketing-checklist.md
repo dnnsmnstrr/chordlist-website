@@ -7,7 +7,7 @@ below — only the days where something is added to it are named.
 **Tick a line when it is done.** Nothing in the build reads this file; this file and the person
 reading it are the only things keeping it honest.
 
-Launch is **Wednesday 9 September 2026**. Every date is 2026.
+Launch is **Saturday 10 October 2026**. Every date is 2026.
 
 ## Priorities
 
@@ -92,19 +92,6 @@ date does not survive another slip.
 - [ ] **P0 — Stage the one-line change**: `links.appStore` in `lib/site-config.ts`. Setting it is what
   flips every CTA from *Pre-order* to *Download*. Do not add a second flag.
 
-### Wed 9 Sep — launch, all P0
-
-- [ ] **P0 — Set `links.appStore` and deploy.** Verify the CTA changed on the live site before
-  anything else goes out.
-- [ ] **P0 — `out-now`**, as the social calendar already schedules it.
-- [ ] **P0 — Show HN**, with [Why your songbook should be plain
-  text](../content/blog/why-plain-text-songbooks-last.md): *Show HN: a songbook app that stores songs
-  as Markdown files in a folder you pick.* Post in the morning, then stay in the thread all day.
-- [ ] **P0 — r/apple and r/iosapps.**
-- [ ] **P0 — Reply to everyone who ever answered a pitch**, including the ones who said no.
-- [ ] **P1 — Record the pre-order to download conversion** in App Store Connect at end of day. It is
-  a one-day number and it is gone tomorrow.
-
 ### Thu 10 Sep — P0
 
 - [ ] **P0 — Answer everything.** Nothing new goes out. The day after a launch is worth more spent in
@@ -162,6 +149,19 @@ strength.
   the locale objects, wiring the switcher and adding German App Store metadata is an October question.
 - [ ] **P3 — Decide whether a copy variant won anything.** If nothing moved, ship `files` permanently
   and delete the experiment rather than leaving three wordings to maintain.
+
+### Sat 10 Oct — launch, all P0
+
+- [ ] **P0 — Set `links.appStore` and deploy.** Verify the CTA changed on the live site before
+  anything else goes out.
+- [ ] **P0 — `out-now`**, as the social calendar already schedules it.
+- [ ] **P0 — Show HN**, with [Why your songbook should be plain
+  text](../content/blog/why-plain-text-songbooks-last.md): *Show HN: a songbook app that stores songs
+  as Markdown files in a folder you pick.* Post in the morning, then stay in the thread all day.
+- [ ] **P0 — r/apple and r/iosapps.**
+- [ ] **P0 — Reply to everyone who ever answered a pitch**, including the ones who said no.
+- [ ] **P1 — Record the pre-order to download conversion** in App Store Connect at end of day. It is
+  a one-day number and it is gone tomorrow.
 
 ## Tracking links
 

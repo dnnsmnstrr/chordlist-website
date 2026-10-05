@@ -161,7 +161,7 @@ credibility of this entire post.
 `ChordlistPromoShort` already renders this. It is the one video that must be exact, so nothing is
 filmed for it and nothing is improvised.
 
-Before 9 September:
+Before 10 October:
 
 1. `pnpm sync:video` to pull current clips from the app repository.
 2. `pnpm video:studio`, set `copyVariant` to match whichever site copy variant is shipping — the

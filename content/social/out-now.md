@@ -11,7 +11,7 @@ headline:
 footnote: chordlist.app
 alt: A dark chordlist card reading "Out now on iPhone and iPad."
 created: 2026-08-14
-scheduled: 2026-09-09
+scheduled: 2026-10-10
 ---
 
 chordlist is on the App Store today. Choose a folder, add a song, and your songbook is already
