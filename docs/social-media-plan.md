@@ -1,157 +1,153 @@
 # Social media plan
 
-The running calendar for [`content/social/`](../content/social). Every line is an asset that already
-exists in the repository with its copy reviewed and its PNGs built, so posting is a matter of opening
-[`public/social/manifest.json`](../public/social/manifest.json), taking the caption that ships with
-the image, and posting it.
+The running calendar for [`content/social/`](../content/social) and the videos that now lead it. Every
+still is an asset that already exists in the repository with its copy reviewed and its PNGs built, so
+posting one is a matter of opening [`public/social/manifest.json`](../public/social/manifest.json),
+taking the caption that ships with the image, and posting it. The videos are scripted in
+[Video scripts and storyboards](video-scripts.md).
 
 **Tick a line when the post is live.** The `scheduled` date in each definition is the same date as the
-one here — the build does not act on it, so this file and that field are the only things keeping the
-calendar honest. If a date moves, move both.
+one here, and `/social/posts` draws its calendar from that field — the build does not act on it, so this
+file and that field are the only things keeping the calendar honest. If a date moves, move both. An
+asset in the backlog has no `scheduled` date at all, so it shows as unscheduled rather than as a date
+that has already gone by.
 
 The system that produces these is documented in [Social media system](social-media-system.md); the
 workflow for writing a new one is [`.agents/skills/social-asset/SKILL.md`](../.agents/skills/social-asset/SKILL.md).
 
-## The shape of the next eight weeks
+## Where things stand on 5 October
 
-Three phases, and the calendar below is built around them:
+The release moved from 9 September to **Saturday 10 October**, and the September calendar went out
+with it. Two things have been posted: [coming-soon](../content/social/coming-soon.md) on 10 August,
+and the pre-order announcement on 16 August — which said *Out 9 September*. Nothing since, so the
+people who saw that post last heard a date that has passed.
 
-1. **Pre-order run-up** (now → 8 September). The app is on the App Store to pre-order and the public
-   TestFlight beta is open. Nothing in the set said either of those things, which was the largest gap
-   in the calendar. It opens with the announcement on **Sunday 16 August** and works through the
-   product's four best arguments — the file, the library, the pricing, the privacy — while the beta
-   is still worth joining.
-2. **Launch week** (10 October). One asset announces availability on the day; the positioning and
-   atmosphere pieces follow it rather than competing with it.
-3. **After** (mid-September onward). The recurring series carry the account once the launch news is
-   spent: a progression a week, a quote per blog post, one screen at a time.
+That shapes the plan more than anything else:
 
-## Friday is blog day
+1. **The date is the first thing to fix.** One still on Thursday says the new date out loud, before
+   anything asks for attention on Saturday.
+2. **The launch is a person, not a card.** The founder video — *I've been wanting to play more piano,
+   so I developed an app* — is the release announcement. `out-now` goes out beside it as the still that
+   carries the link, not instead of it.
+3. **The public-piano videos are the series.** Filmed while travelling, the app's shuffle choosing what
+   gets played. They show the feature the [strategy](marketing-strategies.md) says answers a stranger's
+   real question — *I do not know what to play* — and nobody else can film them. One a week, every
+   Wednesday, for as long as the footage lasts.
+4. **The stills fill in around them,** on the blog's Saturdays and on Sundays.
 
-Every post in [`content/blog`](../content/blog) publishes on a Friday, so the calendar is built on
-that: **Friday belongs to whichever asset goes with that day's post**, and everything else fills the
-Sunday and Wednesday slots around it.
+## Saturday is blog day
 
-No asset goes out before the post it depends on. That is a hard rule for the obvious reason — a
-footnote URL 404s until its post is live — but the softer version matters more: an asset that
-explains a feature should not arrive days before the article that explains it properly. That is why
-`matching-progressions` sits on 11 September rather than the 7th, where it would have pre-empted
-[Finding songs that share a progression](../content/blog/finding-songs-that-share-a-progression.md) by
-four days.
+The blog was reset in October: every post is being rewritten in the author's own words, and
+[`content/blog-schedule.json`](../content/blog-schedule.json) now releases one every seven days from
+10 October — so **Saturday belongs to the blog**, and the asset that goes with that day's post goes out
+the same afternoon.
 
-| Blog post | Publishes | Asset that goes with it |
-| --- | --- | --- |
-| [Why your songbook should be plain text](../content/blog/why-plain-text-songbooks-last.md) | 1 Aug | `plain-text-lasts`, 23 Aug — post long live, so the date is free |
-| [Finding the chords in a song](../content/blog/finding-the-chords-in-a-song.md) | Fri 21 Aug | `chords-by-ear`, same day |
-| [Learn a four-chord pop progression](../content/blog/how-to-play-almost-any-pop-song.md) | Fri 28 Aug | `four-chords`, same day |
-| [Three ways to write down a chord progression](../content/blog/chord-notation-styles.md) | Fri 4 Sep | `doo-wop-changes`, same day — chords over numerals is what the post compares |
-| [Finding songs that share a progression](../content/blog/finding-songs-that-share-a-progression.md) | Fri 11 Sep | `matching-progressions`, same day |
-| [Use one folder for Obsidian and chordlist](../content/blog/one-folder-obsidian-and-chordlist.md) | Fri 18 Sep | `notes-and-folders`, same day |
+No asset goes out before the post it depends on, and that rule now bites. Only the first post is
+written and approved; the rest are outlines. So every blog Saturday below is **conditional**: post the
+paired asset if the article is live that day, and the fallback if it is not. A post goes live only once
+it is approved, so check the live `/blog`, not the file.
 
-Two of those pairings are thematic rather than quoted — `doo-wop-changes` and `matching-progressions`
-carry their own footnote and name the post in the caption instead. A pulled quote would tie them
-tighter; both are in the backlog below if that is worth writing.
+The second rule matters as much: **a quote asset must quote the post as published.** The three quote
+assets were lifted from the machine-drafted versions now in `content/blog-archive/`, and the rewritten
+posts will not contain those lines. Before posting one, find its line in the live article; if it is not
+there, rewrite the headline from a line that is, or skip it.
 
-**Post in the afternoon on a shared day.** `/blog` and `/blog/[slug]` revalidate hourly, so a
-scheduled post goes live within about an hour of its date rather than exactly at midnight. Posting
-the social asset later the same day means the link is certain to resolve.
+| Blog post | Publishes | Asset that goes with it | Fallback |
+| --- | --- | --- | --- |
+| [Why your songbook should be plain text](../content/blog/why-plain-text-songbooks-last.md) | Sat 10 Oct | `plain-text-lasts` — **backlog**: its line is not in the rewritten post, and launch day is the founder video's | — |
+| [Learn a four-chord pop progression](../content/blog/how-to-play-almost-any-pop-song.md) | Sat 17 Oct | `four-chords` — its footnote links the post | `two-five-one` |
+| [Finding the chords in a song](../content/blog/finding-the-chords-in-a-song.md) | Sat 24 Oct | `chords-by-ear` — quote, verify the line | `twelve-bar-blues` |
+| [Three ways to write down a chord progression](../content/blog/chord-notation-styles.md) | Sat 31 Oct | `doo-wop-changes` — thematic, links the docs | — |
+| [Finding songs that share a progression](../content/blog/finding-songs-that-share-a-progression.md) | Sat 7 Nov | `matching-progressions` — thematic, links the docs | — |
+| [Use one folder for Obsidian and chordlist](../content/blog/one-folder-obsidian-and-chordlist.md) | Sat 14 Nov | `notes-and-folders` — quote, verify the line | `nothing-to-export` |
 
-After 18 September the blog has nothing scheduled, so Fridays are free again.
+`doo-wop-changes` and `matching-progressions` link the docs rather than the post, so they can go out on
+their Saturday whether or not the article made it.
 
-## Pre-order run-up
-
-- [ ] **Sun 16 Aug — the announcement.** Two assets, posted together:
-  [out-10-october](../content/social/out-10-october.md) then
-  [anatomy-of-a-song-file](../content/social/anatomy-of-a-song-file.md) — the news, then the thing
-  itself, because most of the people who see this post have never heard of it.
-  `card` `post` `story` · [preview](../public/social/out-10-october/card.png) ·
-  [preview](../public/social/anatomy-of-a-song-file/post.png)
-  - On Instagram it is one carousel in that order, at `post` size. On X the card carries it, with the
-    file image attached second.
-  - The caption on `out-10-october` is the one to post: it says the pre-order is live and invites a
-    message for a TestFlight link. It is written to fit X; on Instagram there is room to add that
-    pre-ordering installs the app for you on release day, and that the link is in the bio.
-  - Check that X direct messages are open to people who do not follow you before posting, or the
-    invitation goes nowhere. `feedback@chordlist.app` is the fallback for anyone who would rather
-    email. The public TestFlight link is also on the site, so this is an invitation to talk rather
-    than the only way in.
-- [ ] **Wed 19 Aug** · [song-library](../content/social/song-library.md) — the first look at the app
-  itself. Nothing else in the pre-order window shows a screen, and this one makes the case on its own:
-  every song in the list carries its chord progression. `card` `post` ·
-  [preview](../public/social/song-library/card.png)
-- [ ] **Fri 21 Aug** · [chords-by-ear](../content/social/chords-by-ear.md) — 📝 pull quote, with
-  [Finding the chords in a song](../content/blog/finding-the-chords-in-a-song.md). `card` `post` ·
-  [preview](../public/social/chords-by-ear/card.png)
-- [ ] **Sun 23 Aug** · [plain-text-lasts](../content/social/plain-text-lasts.md) — pull quote from
-  [Why your songbook should be plain text](../content/blog/why-plain-text-songbooks-last.md), live
-  since 1 August. `card` `post` · [preview](../public/social/plain-text-lasts/card.png)
-- [ ] **Wed 26 Aug** · [beta-is-open](../content/social/beta-is-open.md) — last call for testers,
-  exactly two weeks out from release and the last moment their feedback can still change anything.
-  `card` `post` `story` · [preview](../public/social/beta-is-open/card.png)
-- [ ] **Fri 28 Aug** · [four-chords](../content/social/four-chords.md) — 📝 with
-  [Learn a four-chord pop progression](../content/blog/how-to-play-almost-any-pop-song.md). `card`
-  `post` · [preview](../public/social/four-chords/card.png)
-- [ ] **Sun 30 Aug** · [ten-songs-free](../content/social/ten-songs-free.md) — pricing, and the
-  sharpest differentiator in the set. `card` `post` · [preview](../public/social/ten-songs-free/card.png)
-- [ ] **Wed 2 Sep** · [no-account-no-upload](../content/social/no-account-no-upload.md) — privacy,
-  stated as absence. `card` `post` · [preview](../public/social/no-account-no-upload/card.png)
-- [ ] **Fri 4 Sep** · [doo-wop-changes](../content/social/doo-wop-changes.md) — 📝 I–vi–IV–V, with
-  [Three ways to write down a chord progression](../content/blog/chord-notation-styles.md): the asset
-  sets chord symbols over Roman numerals, which is what the post compares. `card` `post` ·
-  [preview](../public/social/doo-wop-changes/card.png)
-- [ ] **Sun 6 Sep** · [the-folder-is-the-structure](../content/social/the-folder-is-the-structure.md) —
-  folders are artists, files are songs. `card` `post` ·
-  [preview](../public/social/the-folder-is-the-structure/card.png)
+**Post in the afternoon on a shared day.** `/blog` and `/blog/[slug]` revalidate hourly, so a scheduled
+post goes live within about an hour of its date rather than exactly at midnight.
 
 ## Launch week
 
-- [ ] **Sat 10 Oct** · [out-now](../content/social/out-now.md) — release day. The only asset whose job
-  is the announcement. `card` `post` `story` · [preview](../public/social/out-now/card.png)
-- [ ] **Fri 11 Sep** · [matching-progressions](../content/social/matching-progressions.md) — 📝 with
-  [Finding songs that share a progression](../content/blog/finding-songs-that-share-a-progression.md).
-  Two days after launch, the first feature shown in depth. `card` `post` ·
-  [preview](../public/social/matching-progressions/card.png)
-- [ ] **Sun 13 Sep** · [local-first-songbook](../content/social/local-first-songbook.md) — the tagline,
-  as positioning behind the news. `post` `story` ·
-  [preview](../public/social/local-first-songbook/post.png)
-- [ ] **Wed 16 Sep** · [caught-in-motion](../content/social/caught-in-motion.md) — the launch
-  photograph, once the news has landed. `card` `post` `story` ·
-  [preview](../public/social/caught-in-motion/card.png)
+- [ ] **Mon 5 – Wed 7 Oct · record the founder video.** Script:
+  [0.1 "I've been wanting to play more piano"](video-scripts.md#01-ive-been-wanting-to-play-more-piano--4560-s-capcut).
+  Pick the public-piano clips for the series at the same time, and render the Remotion end card if it
+  is not already on the phone.
+- [ ] **Thu 8 Oct** · [out-10-october](../content/social/out-10-october.md) — the new date. The card
+  already reads *Out 10 October.*, and its caption opens with *New date* rather than pretending the
+  last one never happened. `card` `post` `story` · [preview](../public/social/out-10-october/card.png)
+  - The August post said 9 September and stays as it is; this one corrects it in public.
+- [ ] **Sat 10 Oct · release.** Wait until the listing shows as available, then:
+  - **The founder video**, as a Reel on Instagram and native video on X — the announcement.
+  - [out-now](../content/social/out-now.md) beside it: an Instagram story with the link sticker, and the
+    `card` as the reply under the X video so the link sits one tap away. `card` `post` `story` ·
+    [preview](../public/social/out-now/card.png)
+  - Nothing else that day. Answer every reply.
+- [ ] **Sun 11 Oct** — nothing new. Reshare anything that mentions the app to the story.
 
-## After launch
+## The six weeks after
 
-- [ ] **Fri 18 Sep** · [notes-and-folders](../content/social/notes-and-folders.md) — 📝 pull quote, with
-  [Use one folder for Obsidian and chordlist](../content/blog/one-folder-obsidian-and-chordlist.md).
-  Aimed at the Obsidian audience rather than musicians. `card` `post` ·
-  [preview](../public/social/notes-and-folders/card.png)
-- [ ] **Sun 20 Sep** · [chord-keyboard](../content/social/chord-keyboard.md) — the most distinctive
-  screen in the app, and it had no asset. `card` `post` · [preview](../public/social/chord-keyboard/card.png)
-- [ ] **Wed 23 Sep** · [nothing-to-export](../content/social/nothing-to-export.md) — the argument for
-  files, in two sentences. `card` `post` · [preview](../public/social/nothing-to-export/card.png)
-- [ ] **Fri 25 Sep** · [search-across-everything](../content/social/search-across-everything.md) —
-  `card` `post` · [preview](../public/social/search-across-everything/card.png)
-- [ ] **Sun 27 Sep** · [paper-and-glass](../content/social/paper-and-glass.md) — `card` `post` ·
-  [preview](../public/social/paper-and-glass/card.png)
-- [ ] **Wed 30 Sep** · [two-five-one](../content/social/two-five-one.md) — ii–V–I. `card` `post` ·
-  [preview](../public/social/two-five-one/card.png)
-- [ ] **Wed 7 Oct** · [twelve-bar-blues](../content/social/twelve-bar-blues.md) — I–IV–V. `card` `post` ·
-  [preview](../public/social/twelve-bar-blues/card.png)
+| Date | What | Notes |
+| --- | --- | --- |
+| Wed 14 Oct | 🎹 Public piano #1 | The strongest clip goes first. |
+| Sat 17 Oct | 📝 [four-chords](../content/social/four-chords.md) | Fallback [two-five-one](../content/social/two-five-one.md). |
+| Sun 18 Oct | [caught-in-motion](../content/social/caught-in-motion.md) | Its caption says *hit shuffle* — the still that rhymes with the series. |
+| Wed 21 Oct | 🎹 Public piano #2 | |
+| Sat 24 Oct | 📝 [chords-by-ear](../content/social/chords-by-ear.md) | Quote: verify. Fallback [twelve-bar-blues](../content/social/twelve-bar-blues.md). |
+| Sun 25 Oct | [song-library](../content/social/song-library.md) | The first screen; every song carries its progression. |
+| Wed 28 Oct | 🎹 Public piano #3 | |
+| Sat 31 Oct | 📝 [doo-wop-changes](../content/social/doo-wop-changes.md) | I–vi–IV–V; chords over numerals is what the post compares. |
+| Sun 1 Nov | [ten-songs-free](../content/social/ten-songs-free.md) | Pricing, once people can actually download it. |
+| Wed 4 Nov | 🎹 Public piano #4 | |
+| Sat 7 Nov | 📝 [matching-progressions](../content/social/matching-progressions.md) | |
+| Sun 8 Nov | [no-account-no-upload](../content/social/no-account-no-upload.md) | Privacy, stated as absence. |
+| Wed 11 Nov | 🎹 Public piano #5 | |
+| Sat 14 Nov | 📝 [notes-and-folders](../content/social/notes-and-folders.md) | Quote: verify. Fallback [nothing-to-export](../content/social/nothing-to-export.md). For the Obsidian audience. |
+| Sun 15 Nov | [the-folder-is-the-structure](../content/social/the-folder-is-the-structure.md) | Folders are artists, files are songs. |
 
-📝 marks an asset tied to that day's blog post.
+🎹 is a video from [Series 5](video-scripts.md#series-5--shuffle-at-a-public-piano); write the city and
+the song into the row when it is posted. 📝 is conditional on that day's post being live, per above.
+If the footage runs out before 11 November, the Wednesday goes to the backlog below; if it outlasts
+the table, keep Wednesdays for it.
 
-Posted already: [coming-soon](../content/social/coming-soon.md), 10 August. Left exactly as it went
-out — its copy carries an exclamation mark and a "finally ready to be shared" the
-[voice guidelines](blog-editorial-guidelines.md) would not pass today, but rewriting a definition
-after its image is public only puts the repository out of step with the timeline. The lesson belongs
-in the next asset, not in that one.
+Three posts a week is the ceiling for one person who is also answering support mail in launch week.
+If a week slips, drop the Sunday still, never the Wednesday video.
+
+## Backlog
+
+Built and reviewed, with no date. Pull from here when a slot opens:
+
+- [anatomy-of-a-song-file](../content/social/anatomy-of-a-song-file.md) — planned as the second half of
+  the August announcement. If it did not go out then, it is the best Sunday still in the set.
+- [chord-keyboard](../content/social/chord-keyboard.md) — the most distinctive screen in the app.
+- [local-first-songbook](../content/social/local-first-songbook.md) — the tagline.
+- [search-across-everything](../content/social/search-across-everything.md)
+- [paper-and-glass](../content/social/paper-and-glass.md) — the second photo asset; keep it apart from
+  `caught-in-motion`.
+- [nothing-to-export](../content/social/nothing-to-export.md), [two-five-one](../content/social/two-five-one.md),
+  [twelve-bar-blues](../content/social/twelve-bar-blues.md) — also the Saturday fallbacks.
+- [plain-text-lasts](../content/social/plain-text-lasts.md) — **needs a new headline first.** It quotes
+  *Your songbook should outlast the app you use to manage it*, which is in the post's outline but not
+  in its text. *Your personal collection of songs should not be bound to a specific service or app.* is
+  in the text, and is the obvious replacement.
+
+Retired: [beta-is-open](../content/social/beta-is-open.md), a last call for testers two weeks before a
+release that has now happened. [coming-soon](../content/social/coming-soon.md) is posted and stays as it
+went out — its copy carries an exclamation mark the [voice guidelines](blog-editorial-guidelines.md)
+would not pass today, but rewriting a definition after its image is public only puts the repository
+out of step with the timeline. `out-10-october` is the deliberate exception: the slug and image now say
+10 October, and the August post that said 9 September lives only on the networks.
 
 ## The campaigns behind the calendar
 
 Five recurring lines, so a gap in the calendar has an obvious thing to fill it with rather than
 needing a new idea each time.
 
-**Pre-order run-up.** Finite and nearly spent: the release date, the beta, the pricing. It ends on
-10 October and does not come back.
+**Shuffle at a public piano.** The new lead line, and the only one that is video. A public piano, the
+phone on the music stand, shuffle, and whatever comes up gets played — well or not. It does in fifteen
+seconds what the stills cannot: shows the app being used by the person who made it, somewhere a
+viewer recognises. Scripts and the rules for filming strangers and other people's songs are in
+[Series 5](video-scripts.md#series-5--shuffle-at-a-public-piano).
 
 **Progression of the week.** The cheapest asset in the system to author and the most recognisably
 chordlist — a chord row, its numerals, one line. Four exist. Unwritten:
@@ -176,17 +172,9 @@ and four now have assets. Unwritten:
 - [ ] autoscroll and transposition, neither of which has a screenshot yet — they need one from the
   iOS repository's screenshot tests first
 
-**A quote per post.** Each post gets one line lifted verbatim from it, pinned to its publish date.
-Three are scheduled (`chords-by-ear`, `plain-text-lasts`, `notes-and-folders`). The two remaining
-Fridays are covered thematically rather than quoted, so these would be an upgrade rather than a gap:
-
-- [ ] a line from [Three ways to write down a chord progression](../content/blog/chord-notation-styles.md)
-  — 4 September currently carries `doo-wop-changes`, which illustrates the post rather than quoting it
-- [ ] a line from [Finding songs that share a progression](../content/blog/finding-songs-that-share-a-progression.md)
-  — 11 September currently carries `matching-progressions`, same trade
-
-Writing either one means deciding what moves: the Friday is taken, so the quote either replaces the
-asset there or pushes it to the following Sunday.
+**A quote per post.** Each post gets one line lifted verbatim from it, pinned to its publish date. With
+the blog rewritten, the three that exist (`chords-by-ear`, `plain-text-lasts`, `notes-and-folders`)
+each need checking against the published text, and the rest are written only once their post is live.
 
 The rule that makes this campaign work: the line has to be **in** the post. The footnote is a canonical
 URL and the asset is self-sourcing, so a paraphrase is a promise the article does not keep.
@@ -284,5 +272,6 @@ These come from the iOS repository's automated screenshot tests rather than an i
   *used*; the briefs above are about the shapes the library is missing when it is.
 - **A store link in an image.** `siteConfig.links` is the only thing that can follow availability;
   every asset points at `chordlist.app` instead.
-- **Anything on a network that is not X or Instagram.** `siteConfig.social` declares two accounts and
-  the format matrix serves exactly those two.
+- **Stills on a network that is not X or Instagram.** `siteConfig.social` declares two accounts and
+  the format matrix serves exactly those two. The videos are vertical and can also go to TikTok and
+  YouTube Shorts once those handles exist — see [Where they go](video-scripts.md#where-they-go).

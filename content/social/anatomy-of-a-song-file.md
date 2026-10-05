@@ -18,7 +18,6 @@ lines:
 footnote: chordlist.app/#preview
 alt: A song file shown as plain text, with the filename Let It Be.md above a YAML block reading "chords C G Am F" and the same four chords laid out under a verse and a chorus marker.
 created: 2026-08-14
-scheduled: 2026-08-16
 ---
 
 This is a whole song, as chordlist stores it. A Markdown file in a folder you chose, with the

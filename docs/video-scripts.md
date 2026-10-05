@@ -32,11 +32,47 @@ Remotion render, `[T]` is a title card.
 
 ---
 
+## Series 0 — Why it exists
+
+### 0.1 "I've been wanting to play more piano" — 45–60 s, CapCut
+
+The release announcement, posted on 10 October before anything else. It is the only video in this
+document that is about the person rather than a feature, and it is the reason the rest make sense: the
+public-piano series is this video's promise being kept.
+
+No earlier draft of this script is in either repository — if one exists elsewhere, it wins over this
+one. **Everything in the *Said* column is a prompt, not a line.** Say it the way you would say it to a
+friend; a read script sounds read. The facts in it are checked against the site; the story is yours,
+so add nothing to it that did not happen.
+
+| Time | Shot | On screen | Said |
+| --- | --- | --- | --- |
+| 0:00–0:04 | `[A]` At a piano, hands on the keys, to camera | Caption: **I wanted to play more piano.** | *"I've been wanting to play more piano, so I developed an app."* |
+| 0:04–0:15 | `[A]` Same shot, or a phone with a mess of screenshots and tabs | — | Your words: what actually got in the way. The songs scattered across screenshots, notes and chord sites; the one that vanished — the chord site that would not show you the song you wanted to rickroll your friends with is already true and already [on the blog](../content/blog/why-plain-text-songbooks-last.md). |
+| 0:15–0:25 | `[S]` Library, tap shuffle, a song opens; chords sit above the words | Caption: **It picks. I play.** | Shuffle is what made you play more, if that is true: you stopped choosing and started playing. |
+| 0:25–0:35 | `[A]` A two-second cut from three different public pianos | Caption: **So I took it travelling.** | Your words: where these were. This is the trailer for Series 5. |
+| 0:35–0:45 | `[S]` Files app: the same song as a `.md` file in a folder | Caption: **Every song is a file you keep.** | *"Every song is a plain text file in a folder you choose."* |
+| 0:45–0:55 | `[S]` Remotion end card | `chordlist` · out now · iPhone and iPad | *"The first ten songs are free. It's out today."* |
+
+**The first four seconds are the whole video.** The line is the hook; say it before you play a note,
+and keep the caption on screen until it is said.
+
+What can be claimed, all of it already on the site: iPhone and iPad, iOS
+18 or later; songs are Markdown files in a folder the user picks; no account; the first
+ten songs free and a one-time purchase for unlimited songs; shuffle opens a random song from the
+current filter. Do not say *free* without *the first ten songs*.
+
+Use `public/songs/morning-light.md` or your own song for anything shown on screen at 0:15. The shuffle
+should land on a song whose lyrics you may show, which on a demo device means picking the library
+before you film.
+
+---
+
 ## Series 1 — The party trick
 
 The highest-ceiling idea the product has, and the one no competitor can answer: *these four songs are
-the same song.* It is the `progressions` copy variant as a video. Aim for one a week once the series
-starts, mid-September.
+the same song.* It is the `progressions` copy variant as a video. Aim for one a week once the
+public-piano series in Series 5 has run its course.
 
 ### 1.1 "These four songs are the same song" — 25 s, CapCut
 
@@ -103,7 +139,7 @@ text](../content/blog/why-plain-text-songbooks-last.md).
 
 ### 2.2 "One folder, two apps" — 35 s, screen only
 
-For r/ObsidianMD, and it goes out with the post on 18 September, not before.
+For r/ObsidianMD, and it goes out with the post on 14 November, not before.
 
 | Time | Shot | On screen |
 | --- | --- | --- |
@@ -119,7 +155,7 @@ No voiceover. This audience reads.
 
 ## Series 3 — The maker story
 
-Runs from mid-September, after the app launch, alongside publishing `public/model.html` to Printables
+Runs once the app launch has settled, alongside publishing `public/model.html` to Printables
 and MakerWorld. This is the chordlink channel, and it sells the object by giving away the file.
 
 ### 3.1 "Twenty of these exist" — 30 s, CapCut
@@ -174,9 +210,48 @@ somewhere the phone can reach it.
 
 ---
 
+## Series 5 — Shuffle at a public piano
+
+Footage already shot while travelling: a public piano, the phone on the stand, shuffle, and whatever
+comes up gets played. It is the series the launch hands over to, one a week on Wednesdays from 14
+October in the [social calendar](social-media-plan.md#the-six-weeks-after).
+
+### 5.x "The app picks, I play" — 15–30 s, CapCut, one per piano
+
+| Time | Shot | On screen | Said |
+| --- | --- | --- | --- |
+| 0:00–0:02 | `[A]` The piano in its place — station, square, hall — wide enough to see where you are | Caption: **Public piano, <city>. The app picks the song.** | — |
+| 0:02–0:05 | `[A]`/`[S]` Thumb on shuffle; the song title lands | Song title, large | — |
+| 0:05–0:25 | `[A]` Playing it, whatever it is | — | Room sound only |
+| 0:25–0:30 | `[S]` Remotion end card | `chordlist` | — |
+
+**Keep the miss.** A song you barely know, played anyway, is the better video — the series is about
+the app deciding, and an obviously rehearsed pick breaks that.
+
+**The caption names the city, the song, and nothing about features.** The post caption can carry one
+line about shuffle and the link; the video does not explain itself.
+
+Order them strongest first, not in the order you travelled. Write the city and song into the calendar
+row when it goes out, so the next pick is not a repeat.
+
+Before posting each one:
+
+- **Lyrics on screen.** The general rule above applies: the shuffle moment shows the title and the
+  chord row, not a readable verse of someone else's lyrics. Crop or blur in CapCut if the phone shows
+  more.
+- **Other people's songs, played.** Instagram and TikTok carry music licences for their libraries, but a
+  recognisable song can still be claimed, muted, or region-blocked — YouTube most of all. A claim on one
+  clip is no reason to drop the series; it is a reason to lead with clips of public-domain or your own
+  material if you have them.
+- **Strangers in frame.** A crowd in the background is part of a public piano; a recognisable person
+  as the subject is someone whose picture you are publishing. Ask, or frame around them.
+
+---
+
 ## Shooting the raw footage
 
-One session, before the ninth, edited later. The point is to have material, not videos.
+Still worth one session once the launch is out — the public-piano footage covers playing, not the
+chordlink or the failed prints. The point is to have material, not videos.
 
 - Hands on the keys playing I–V–vi–IV, slow and clean, three angles, sixty seconds each.
 - The same four chords on guitar if a guitar is to hand.
@@ -189,8 +264,9 @@ Shoot vertical. Lock exposure. Do not edit any of it the same week.
 
 ## Where they go
 
-Handles do not exist yet and `siteConfig.social` declares only X and Instagram. **Claim TikTok and
-YouTube now**, whether or not the series starts — the worst outcome is finding them taken in October.
+`siteConfig.social` declares only X and Instagram, so every video goes out as an Instagram Reel and as
+native video on X first. **Claim TikTok and YouTube now** if that has not happened — the public-piano
+series is exactly what both are for, and reposting the same vertical files there costs nothing.
 Add them to `siteConfig.social` once claimed; the footer and the structured data read from there, so
 that is the only edit needed.
 

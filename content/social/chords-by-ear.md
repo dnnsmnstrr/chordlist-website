@@ -13,7 +13,7 @@ attribution: Finding the chords in a song
 footnote: chordlist.app/blog/finding-the-chords-in-a-song
 alt: A pull quote reading "Working out the chords by ear is not a single flash of recognition. It is a series of small tests."
 created: 2026-08-14
-scheduled: 2026-08-21
+scheduled: 2026-10-24
 ---
 
 Find a likely home note, follow the bass, try the common chords around it, and go back to the bar

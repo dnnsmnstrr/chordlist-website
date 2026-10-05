@@ -11,7 +11,7 @@ attribution: Use one folder for Obsidian and chordlist
 footnote: chordlist.app/blog/one-folder-obsidian-and-chordlist
 alt: A pull quote reading "Obsidian sees notes and folders. chordlist sees artists and songs."
 created: 2026-08-14
-scheduled: 2026-09-18
+scheduled: 2026-11-14
 ---
 
 One iCloud folder can be an Obsidian vault and a chordlist library at the same time. Write and

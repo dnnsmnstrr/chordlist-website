@@ -5,13 +5,13 @@ A companion to [Social media plan](social-media-plan.md). That document is the r
 video, an owned list, the German market, and the maker distribution of chordlink — and how they sit
 against the 10 October launch.
 
-Nothing here replaces the social calendar. Everything scheduled there stays as it is.
+Nothing here replaces the social calendar; where they touch, the calendar has the dates.
 
 **This document decides; three others carry it out.** [Marketing plan](marketing-plan.md) turns the
 channels below into what gets sent and how it is measured, [Marketing checklist](marketing-checklist.md)
 is the dated tracker with priorities, and [Video scripts and storyboards](video-scripts.md) scripts
-the video section. Where the twelve-day table below and the checklist disagree, the checklist is
-right — it carries two corrections, noted at its end.
+the video section. The checklist was written for a 9 September launch and its September dates are
+spent; until it is redone, [the launch fortnight](#the-launch-fortnight) below is the schedule.
 
 ## Where the site and the campaign disagree
 
@@ -48,7 +48,10 @@ Everything a reviewer needs is built: `/press` with a downloadable kit, reproduc
 from the app's automated tests, per-language App Store sets at `/screens`, a live pre-order listing,
 a public TestFlight build, and `marketing@chordlist.app`. None of it has been sent to anyone.
 
-Coverage on launch day needs the pitch to land roughly a week before launch day.
+Coverage on launch day needs the pitch to land roughly a week before launch day. With release on
+Saturday 10 October, that week is now: send on Monday or Tuesday, and anyone pitched in August hears
+the new date in one line rather than a resend. A Saturday release also means the Apple blogs' weekend
+desks — write the pitch so it can run on Monday without going stale.
 
 - English Apple press: MacStories, 9to5Mac, The Sweet Setup, Six Colors.
 - German Apple press: iFun, Macerkopf, AppGefahren. The more reachable audience for a Mainz solo
@@ -102,9 +105,21 @@ They join at the end: the Remotion short is the payoff clip of a human video. Re
 the file, drop it into the last five seconds of the phone edit. Every human video then gets a
 pixel-exact product ending for free.
 
-The blocker is that there is no video account. Claim the handles now whether or not the series
-starts — the worst outcome is finding them taken in October. Realistically the series starts after
-the ninth; shoot raw footage before then and edit later.
+**Video now leads the launch, because the footage exists.** Two pieces, in this order:
+
+1. **The founder video** — *I've been wanting to play more piano, so I developed an app.* It is the
+   release announcement on 10 October, and it is the one piece of marketing only the person who made
+   the app can make. Scripted as [0.1](video-scripts.md#01-ive-been-wanting-to-play-more-piano--4560-s-capcut).
+2. **Shuffle at a public piano** — clips filmed while travelling, the app's shuffle choosing the song.
+   One a week from 14 October. Scripted as [Series 5](video-scripts.md#series-5--shuffle-at-a-public-piano).
+
+Together they make the case this document argues for below — that shuffle and *what can I play*
+answer the question a stranger has — without a word of feature copy. The founder video says why;
+every piano clip after it is the proof. The party trick (Series 1) follows once that footage is used
+up.
+
+Instagram Reels and native X video carry all of it, since those are the accounts that exist. Claim
+TikTok and YouTube handles if that has not happened; the same vertical files go there for free.
 
 ### chordlink — give away the file, sell the object
 
@@ -145,39 +160,38 @@ send readers to a page that reads properly in their language. Revisit once there
 A Mainz-based solo developer shipping an iOS app is also a story for German regional and maker press
 in a way it is not for anyone in English.
 
-### Musicians, via the party trick — after launch
+### Musicians, via the public pianos and the party trick — after launch
 
-The *progression of the week* line in the social plan is the right ammunition loaded as static
-cards. *These four songs are the same song* has a much higher ceiling as video, and needs the
+The public-piano series is the way into these rooms: a musician sharing a clip of playing is a post
+they already accept, where a link to an app is not. The *progression of the week* line in the social
+plan is the right ammunition loaded as static cards. *These four songs are the same song* has a much higher ceiling as video, and needs the
 homepage change above to be true first.
 
 r/piano, r/guitar, r/WeAreTheMusicMakers and worship-tech communities are the right rooms, but they
 are stricter than the plain-text communities and slower to convert. Earn standing before posting.
 
-## The twelve days
+## The launch fortnight
 
-Everything the social calendar already schedules stays as it is. This is only what to add.
+The social calendar has the posts; this is everything around them. Today is Monday 5 October.
 
-| When | Add |
+| When | Do |
 | --- | --- |
-| Fri 28 Aug | Claim the video handles. Write the press pitch. Ship the `homeCopy.features` edit. |
-| Sat 29 Aug | Send the press pitches, English and German in one sitting. Submit the Apple featuring nomination. |
-| Sun 30 Aug | Add the email field to the homepage closing CTA. |
-| Mon 1 Sep | Post the Obsidian article to r/ObsidianMD and the Obsidian forum. |
-| Wed 3 Sep | Shoot raw footage: chordlink tap, hands on keys, failed prints. Do not edit it. |
-| Thu 4 Sep | Second press wave — one line, not a resend. |
-| Sun 7 Sep | Render the Remotion short. Write the launch-day text and leave it in a file. |
-| Tue 8 Sep | Verify every CTA and the App Store listing in light and dark, ready for `links.appStore`. |
-| Fri 11 Sep | `matching-progressions` as scheduled, and the first video of the series it belongs to. |
-| Mid-Sep | chordlink: legal copy signed off, sales switch opened, model posted to the maker communities. |
-| Sat 10 Oct | `out-now`, plus Show HN with the plain-text post, r/apple, r/iosapps, and a note to everyone who ever replied. |
+| Mon 5 Oct | Press pitch, English and German, in one sitting — or the one-line new-date note to anyone pitched in August. Apple featuring nomination, if not done. |
+| Mon 5 – Wed 7 Oct | Record and edit the founder video. Choose and order the public-piano clips. |
+| Wed 7 Oct | Render the Remotion short and end card. Write the launch-day text and leave it in a file. |
+| Thu 8 Oct | `out-10-october` — the new date. Verify every CTA and the App Store listing in light and dark, ready for `links.appStore`. |
+| Sat 10 Oct | Set `links.appStore` and deploy once the listing is live. The founder video and `out-now`. r/iosapps. A note to everyone who ever replied. |
+| Tue 13 Oct | Show HN with [Why your songbook should be plain text](../content/blog/why-plain-text-songbooks-last.md), and r/apple. Moved off the release day: a Saturday Show HN reaches a fraction of the readers, and the post is live from the 10th. |
+| Wed 14 Oct | Public piano #1. Second press wave — one line, not a resend. |
+| Thu 15 Oct | r/ObsidianMD and the Obsidian forum, framed as *I made my songbook a vault* — only if [the Obsidian post](../content/blog/one-folder-obsidian-and-chordlist.md) is live; it is scheduled for 14 November, so otherwise this waits for it. |
+| From mid-Oct | chordlink: legal copy signed off, sales switch opened, model posted to the maker communities — not before the launch has had a clear week. |
 
 ## Measurement
 
 Vercel Analytics is on the site and TelemetryDeck is in the app; neither appears in any plan
 document. Three numbers are enough through launch week:
 
-- pre-order to download conversion on the ninth;
+- pre-order to download conversion on the tenth;
 - the free-to-unlock rate once there are users;
 - referrers by source.
 
@@ -188,8 +202,9 @@ channel did the work.
 
 - **Rewriting the site's positioning.** The file-ownership story is well made and consistently
   voiced. The change above is one line.
-- **Starting a video series before the ninth.** Building a template, finding a rhythm and launching
-  an app in the same week and a half damages the launch, which is the part that cannot be repeated.
+- **More than one video a week.** The footage is finite and the launch week is not the week to find
+  a rhythm. The founder video, then one piano clip every Wednesday; a second weekly slot only once
+  there are more clips than weeks.
 - **Letting chordlink share launch day.** Two announcements on one day is one announcement at half
   strength.
 - **Adding a second launch flag.** The backend switch is the only gate, and a launch-week rush is

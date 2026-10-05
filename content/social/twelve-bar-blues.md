@@ -15,7 +15,6 @@ headline:
 footnote: chordlist.app/docs#playing
 alt: The chords A, D and E set large above the Roman numerals one, four, five.
 created: 2026-08-14
-scheduled: 2026-10-07
 ---
 
 The twelve-bar blues spends four bars on the I, two on the IV, two more on the I, then one each
