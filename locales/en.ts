@@ -793,20 +793,22 @@ export const screensCopy = {
 export const privacyCopy = {
   metadata: {
     title: "Privacy Policy",
-    description: `How ${siteConfig.name} handles song files, optional analytics, imports, purchases, and website visits.`,
+    description: `How ${siteConfig.name} handles song files, optional analytics, adverts, imports, purchases, chordlink orders, and website visits.`,
   },
   title: "Privacy Policy",
-  lastUpdated: "Last updated: 29 August 2026",
+  lastUpdated: "Last updated: 5 October 2026",
   sections: {
     shortVersion: {
       title: "The short version",
       paragraphs: [
-        `Your song library is made of files in a folder you choose. ${siteConfig.name} does not upload that library to a developer-operated account, server, or sync service. Optional analytics, explicit website imports, App Store purchases, support emails, and visits to this website are handled as described below.`,
+        `Your song library is made of files in a folder you choose. ${siteConfig.name} does not upload that library to a developer-operated account, server, or sync service. Optional analytics and chord contributions, adverts shown to free users, explicit website imports, purchases, chordlink orders and notifications, support emails, and visits to this website are handled as described below, together with the legal basis for each and how long the data is kept.`,
       ],
     },
     operator: {
       title: `Who operates ${siteConfig.name}`,
-      beforeEmail: `${siteConfig.name} is operated by ${siteConfig.operator}. Privacy questions can be sent to`,
+      beforeEmail: `${siteConfig.name} is operated by ${siteConfig.operator}, the controller responsible for the processing described here. Privacy questions can be sent to`,
+      imprintPrefix: "The postal address is listed in the",
+      imprintLabel: "imprint",
     },
     songFiles: {
       title: "Your song files",
@@ -823,6 +825,7 @@ export const privacyCopy = {
         "The app stores your choice and the version of the consent notice on your device. Declining analytics does not limit the app's features.",
         `When enabled, ${siteConfig.name} uses TelemetryDeck to send app interaction events such as viewing the song list, shuffling, transposing, creating, or editing a song. Song files, lyrics, titles, artists, and chord data are not included in usage analytics.`,
         "TelemetryDeck may process an anonymized installation identifier, the event, an hour-level timestamp, and device or app metadata such as device type, operating-system version, app version, and build information. TelemetryDeck states that it does not store IP addresses or personally identifiable information for app analytics.",
+        "Analytics are based on your consent (Art. 6(1)(a) GDPR and § 25(1) TDDDG). You can withdraw it at any time by turning analytics off in Settings; this stops all further events and does not affect processing that happened before.",
       ],
       linkPrefix: "Learn more in the",
       linkLabel: "TelemetryDeck privacy FAQ",
@@ -831,7 +834,9 @@ export const privacyCopy = {
       title: "Optional chord-data contribution",
       paragraphs: [
         "A separate setting lets you choose to contribute chord data. It is off by default and works only while anonymous analytics are also enabled.",
-        "When you add or change chords with this option enabled, the song title, artist, chord progression, normalized chord progression, and whether the progression was added or updated may be sent to TelemetryDeck. Lyrics and tags are never included. Turning off anonymous analytics also turns off chord data contribution.",
+        "When you add or change chords with this option enabled, the song title, artist, key, capo, tuning, section names and their chords, a random contribution identifier, a one-way hash of the song's local identifier, and the app version are sent to TelemetryDeck as part of an analytics event. Lyrics, tags, and notes are never included. Turning off anonymous analytics also turns off chord data contribution.",
+        `${siteConfig.operator} then copies these contributions from TelemetryDeck into the ${siteConfig.name} chord database, hosted by Supabase in its Ireland region, to compare independent contributions and suggest chords. Before a contribution is stored, TelemetryDeck's anonymized installation identifier is hashed again with a secret key held only by ${siteConfig.operator}, and the original identifier is discarded. Contributions are reviewed and can be removed during moderation.`,
+        "Contributions are based on your consent (Art. 6(1)(a) GDPR). You can withdraw it at any time by turning the setting off, which stops all further contributions. Stored contributions are kept for as long as the chord database is operated. Because they cannot be linked back to you, your Apple account, or your device, we cannot find your earlier contributions on request (Art. 11 GDPR).",
       ],
     },
     importing: {
@@ -840,11 +845,22 @@ export const privacyCopy = {
         `If you ask the app to import a song from a URL, your device requests that page from the selected website and processes the returned content to create a song. The website may receive standard request information such as your IP address and device user-agent under its own privacy policy. The import is initiated only when you provide a URL; ${siteConfig.operator} does not receive the fetched page through a separate import server.`,
       ],
     },
+    adverts: {
+      title: "Adverts for free users",
+      paragraphs: [
+        `Until the unlimited-song unlock is purchased, ${siteConfig.name} shows a small advert for another independent app at the end of the song list and of each song. Adverts are provided by Kickstart Exchange, operated by Hudson Heavy Industries Ltd in the United Kingdom, which decides independently how it processes this data.`,
+        "To show and count adverts, Kickstart Exchange receives your App Store country and records which advert was shown or tapped. According to Kickstart Exchange, it does not collect IP addresses, device identifiers, the advertising identifier, or cookies, does not track you across apps or build profiles, and keeps advert records for about 30 days before keeping only daily totals. Its network provider, Cloudflare, carries the connection; Kickstart Exchange states that it does not retain IP addresses.",
+        `${siteConfig.operator} shows these adverts on the basis of its legitimate interest in financing the free version of ${siteConfig.name} (Art. 6(1)(f) GDPR). Buying the unlimited-song unlock removes the adverts. The European Commission has recognised the United Kingdom as providing an adequate level of data protection.`,
+      ],
+      linkPrefix: "Kickstart Exchange describes its handling of this data in its",
+      linkLabel: "privacy notice",
+    },
     purchases: {
       title: "Purchases",
       paragraphs: [
         `The optional unlimited-song unlock is processed by Apple through StoreKit. Apple handles the App Store account and payment method. The app receives product and transaction information needed to determine whether the unlock is available; ${siteConfig.operator} does not receive your payment-card or bank-account details.`,
         `${siteConfig.name} uses RevenueCat to manage purchases and verify entitlements. RevenueCat processes an anonymous app user identifier it generates, purchase and receipt information from Apple, and device or app metadata such as platform, app version, and country. It does not receive your payment-card or bank-account details, and ${siteConfig.name} does not send it your song library.`,
+        "RevenueCat processes this data on our behalf. It is based in the United States, so the data is transferred outside the European Union under the standard contractual clauses in RevenueCat's data-processing addendum. Purchase processing is necessary to provide what you bought (Art. 6(1)(b) GDPR).",
       ],
       linkPrefix: "Apple's handling of App Store data is covered by the",
       linkLabel: "App Store privacy information",
@@ -860,6 +876,8 @@ export const privacyCopy = {
         "The database is located in Supabase's Ireland region, so these records are stored in the European Union. Supabase is a company based in the United States, and it may access stored data from outside the European Union where that is necessary to operate, secure, and support the service, under the terms and transfer safeguards of its data-processing agreement.",
         `If you use the online chordlink withdrawal function, Brevo sends your declaration to ${siteConfig.operator} and immediately emails you a confirmation containing its content, date, and time. Brevo processes the name, order identifier, confirmation email address, and withdrawal record only to receive and document the withdrawal and to meet legal obligations.`,
         "Individual /link/ URLs redirect to a shared setup page without carrying the unit number into page analytics. Hosting infrastructure may still process the requested URL in ordinary security and delivery logs.",
+        `When you scan a chordlink in the app, the app sends the chordlink's public number, the secret setup code stored in the tag, and a random claim identifier created by the app to the ${siteConfig.name} chordlink service at Supabase. The setup code and claim identifier are stored only as one-way hashes, so the same app installation can retrieve its offer again and no other installation can claim it. No name, Apple account, or device identifier is sent.`,
+        "Checkout, fulfilment, and offer delivery are necessary to perform the purchase contract (Art. 6(1)(b) GDPR). Withdrawal records and order and invoice records are kept to meet legal obligations (Art. 6(1)(c) GDPR): order, invoice, and accounting records for the periods required by German commercial and tax law, generally up to ten years (§ 147 AO, § 257 HGB), and withdrawal records until the end of the regular three-year limitation period.",
       ],
       stripeLinkPrefix: "Stripe describes its handling of checkout data in its",
       stripeLinkLabel: "privacy policy",
@@ -873,6 +891,7 @@ export const privacyCopy = {
         "The list uses confirmed opt-in: submitting the form sends one confirmation email, and you are added only when you select the link in it. An address that is never confirmed is never written to again. Every message includes an unsubscribe link, and unsubscribing removes you from the list.",
         `The list is operated by Brevo, a company based in France, which sends the confirmation and later messages, records the confirmation as proof of consent, and handles unsubscribes. It stores the email address, the language the form was submitted in, whether you signed up before the first sale or after it sold out, and the technical record of your confirmation. Brevo stores this data on servers in the European Union and processes it as a service provider on behalf of ${siteConfig.operator}.`,
         "The notification list is kept separate from the chordlink order inventory: an address given here is not added to the order database, and buying a chordlink does not add you to this list.",
+        `The list is based on your consent (Art. 6(1)(a) GDPR). You can withdraw it at any time through the unsubscribe link in every message or by emailing ${siteConfig.contact.support}; this does not affect messages sent before. After you unsubscribe, Brevo keeps your address only on a suppression list so you are not emailed again, together with the record of your original confirmation as proof of consent. The whole list is deleted once chordlink is no longer offered.`,
       ],
       linkPrefix: "Brevo describes its handling of this data in its",
       linkLabel: "privacy policy",
@@ -880,7 +899,8 @@ export const privacyCopy = {
     support: {
       title: "Support and feedback",
       paragraphs: [
-        "Choosing “Send Feedback” opens an email draft. If you send it, the message can include the content you write plus app-version and iOS details included in the draft. Your email provider and ours process that message. Support correspondence is retained only as long as reasonably needed to respond, keep support records, or meet legal obligations.",
+        "Choosing “Send Feedback” opens an email draft. If you send it, the message can include the content you write plus app-version and iOS details included in the draft. Your email provider and ours process that message; our support mailbox is hosted by Apple through iCloud Mail. Support correspondence is retained only as long as reasonably needed to respond, keep support records, or meet legal obligations.",
+        "Answering your message is based on our legitimate interest in providing support (Art. 6(1)(f) GDPR), or is necessary for the contract when it concerns a purchase or chordlink order (Art. 6(1)(b) GDPR).",
       ],
     },
     website: {
@@ -888,6 +908,7 @@ export const privacyCopy = {
       paragraphs: [
         "This website is hosted by Vercel. Like other hosting providers, Vercel may process request and technical information needed to deliver and secure the site.",
         "The production website also uses Vercel Web Analytics for aggregate traffic statistics. Vercel states that Web Analytics does not use third-party cookies, does not associate page views with personal identifiers, and uses a daily-changing hash rather than a persistent cross-site identifier. Data points can include the page visited, referrer, filtered query parameters, approximate location, device type, operating system, browser, and timestamp.",
+        "Delivering and securing the site and measuring aggregate traffic are based on our legitimate interest in operating a reliable, secure website and understanding which pages are useful (Art. 6(1)(f) GDPR). Vercel is based in the United States, so this data may be processed outside the European Union.",
       ],
       linkPrefix: "See Vercel's",
       linkLabel: "Web Analytics privacy and compliance information",
@@ -895,7 +916,7 @@ export const privacyCopy = {
     sharing: {
       title: "Sharing and sale of data",
       paragraphs: [
-        `${siteConfig.operator} does not sell your song library or personal information. Data is shared only when you initiate an action, enable an optional feature described above, or when a service provider needs it to operate the app, website, purchase, or support channel. Information may also be disclosed when required by law or necessary to protect rights, safety, and service integrity.`,
+        `${siteConfig.operator} does not sell your song library or personal information. Data is shared only when you initiate an action, enable an optional feature described above, when adverts are shown to free users as described above, or when a service provider needs it to operate the app, website, purchase, or support channel. Information may also be disclosed when required by law or necessary to protect rights, safety, and service integrity.`,
       ],
     },
     rights: {
@@ -904,10 +925,14 @@ export const privacyCopy = {
         "Disable anonymous analytics in the app's Settings.",
         "Leave optional chord-data contribution disabled or turn it off at any time.",
         "Choose, move, edit, export, or delete your song files using compatible file-management tools.",
-        "Contact us to ask about support correspondence or other information you provided directly.",
+        "Unsubscribe from chordlink notifications through the link in any message.",
+        "Withdraw any consent at any time, with effect for the future.",
+        "Object to processing based on our legitimate interest, including adverts, for reasons arising from your particular situation (Art. 21 GDPR).",
+        "Ask for access to, correction, deletion, restriction, or a portable copy of personal data we hold about you (Art. 15–20 GDPR).",
+        "Complain to a data-protection supervisory authority, in particular the one where you live or where we are established.",
       ],
       beforeEmail:
-        "Depending on where you live, privacy law may give you additional access, correction, deletion, restriction, objection, or complaint rights. Send requests to",
+        "Send requests to",
     },
     changes: {
       title: "Changes to this policy",

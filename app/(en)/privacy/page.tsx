@@ -36,6 +36,10 @@ export default function PrivacyPage() {
               {sections.operator.beforeEmail}{" "}
               <PolicyLink href={`mailto:${siteConfig.contact.support}`}>{siteConfig.contact.support}</PolicyLink>.
             </p>
+            <p>
+              {sections.operator.imprintPrefix}{" "}
+              <PolicyLink href="/imprint">{sections.operator.imprintLabel}</PolicyLink>.
+            </p>
           </PolicySection>
 
           <PolicySection title={sections.songFiles.title}>
@@ -59,6 +63,14 @@ export default function PrivacyPage() {
 
           <PolicySection title={sections.importing.title}>
             <PolicyParagraphs paragraphs={sections.importing.paragraphs} />
+          </PolicySection>
+
+          <PolicySection title={sections.adverts.title}>
+            <PolicyParagraphs paragraphs={sections.adverts.paragraphs} />
+            <p>
+              {sections.adverts.linkPrefix}{" "}
+              <PolicyLink href="https://exchange.kickstart.tools/privacy">{sections.adverts.linkLabel}</PolicyLink>.
+            </p>
           </PolicySection>
 
           <PolicySection title={sections.purchases.title}>
