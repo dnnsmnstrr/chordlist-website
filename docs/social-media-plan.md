@@ -27,12 +27,12 @@ That shapes the plan more than anything else:
 1. **The date is the first thing to fix.** One still on Thursday says the new date out loud, before
    anything asks for attention on Saturday.
 2. **The launch is a person, not a card.** The founder video — *I've been wanting to play more piano,
-   so I developed an app* — is the release announcement. `out-now` goes out beside it as the still that
+   so I did the obvious thing and started developing an app* — is the release announcement. `out-now` goes out beside it as the still that
    carries the link, not instead of it.
 3. **The public-piano videos are the series.** Filmed while travelling, the app's shuffle choosing what
    gets played. They show the feature the [strategy](marketing-strategies.md) says answers a stranger's
-   real question — *I do not know what to play* — and nobody else can film them. One a week, every
-   Wednesday, for as long as the footage lasts.
+   real question — *I do not know what to play* — and nobody else can film them. A montage of them
+   opens the run on 14 October, then one a week, every Wednesday, for as long as the footage lasts.
 4. **The stills fill in around them,** on the blog's Saturdays and on Sundays.
 
 ## Saturday is blog day
@@ -70,7 +70,7 @@ post goes live within about an hour of its date rather than exactly at midnight.
 ## Launch week
 
 - [ ] **Mon 5 – Wed 7 Oct · record the founder video.** Script:
-  [0.1 "I've been wanting to play more piano"](video-scripts.md#01-ive-been-wanting-to-play-more-piano--4560-s-capcut).
+  [0.1 "The obvious thing"](video-scripts.md#01-the-obvious-thing--29-s-capcut).
   Pick the public-piano clips for the series at the same time, and render the Remotion end card if it
   is not already on the phone.
 - [ ] **Thu 8 Oct** · [out-10-october](../content/social/out-10-october.md) — the new date. The card
@@ -78,7 +78,9 @@ post goes live within about an hour of its date rather than exactly at midnight.
   last one never happened. `card` `post` `story` · [preview](../public/social/out-10-october/card.png)
   - The August post said 9 September and stays as it is; this one corrects it in public.
 - [ ] **Sat 10 Oct · release.** Wait until the listing shows as available, then:
-  - **The founder video**, as a Reel on Instagram and native video on X — the announcement.
+  - **The founder video**, as a Reel on Instagram and native video on X — the announcement. Its post
+    caption is the question from the script, *What's a song you always mean to learn and never do?*,
+    then *out today on iPhone and iPad* and the link.
   - [out-now](../content/social/out-now.md) beside it: an Instagram story with the link sticker, and the
     `card` as the reply under the X video so the link sits one tap away. `card` `post` `story` ·
     [preview](../public/social/out-now/card.png)
@@ -89,19 +91,19 @@ post goes live within about an hour of its date rather than exactly at midnight.
 
 | Date | What | Notes |
 | --- | --- | --- |
-| Wed 14 Oct | 🎹 Public piano #1 | The strongest clip goes first. |
+| Wed 14 Oct | 🎬 [I let the app pick for a week](video-scripts.md#02-i-let-the-app-pick-for-a-week--30-s-capcut) | The montage of the travel clips — introduces the series. |
 | Sat 17 Oct | 📝 [four-chords](../content/social/four-chords.md) | Fallback [two-five-one](../content/social/two-five-one.md). |
 | Sun 18 Oct | [caught-in-motion](../content/social/caught-in-motion.md) | Its caption says *hit shuffle* — the still that rhymes with the series. |
-| Wed 21 Oct | 🎹 Public piano #2 | |
+| Wed 21 Oct | 🎹 Public piano #1 | The strongest single clip; the full take of a montage cut is fine. |
 | Sat 24 Oct | 📝 [chords-by-ear](../content/social/chords-by-ear.md) | Quote: verify. Fallback [twelve-bar-blues](../content/social/twelve-bar-blues.md). |
 | Sun 25 Oct | [song-library](../content/social/song-library.md) | The first screen; every song carries its progression. |
-| Wed 28 Oct | 🎹 Public piano #3 | |
+| Wed 28 Oct | 🎹 Public piano #2 | |
 | Sat 31 Oct | 📝 [doo-wop-changes](../content/social/doo-wop-changes.md) | I–vi–IV–V; chords over numerals is what the post compares. |
 | Sun 1 Nov | [ten-songs-free](../content/social/ten-songs-free.md) | Pricing, once people can actually download it. |
-| Wed 4 Nov | 🎹 Public piano #4 | |
+| Wed 4 Nov | 🎹 Public piano #3 | |
 | Sat 7 Nov | 📝 [matching-progressions](../content/social/matching-progressions.md) | |
 | Sun 8 Nov | [no-account-no-upload](../content/social/no-account-no-upload.md) | Privacy, stated as absence. |
-| Wed 11 Nov | 🎹 Public piano #5 | |
+| Wed 11 Nov | 🎹 Public piano #4 | |
 | Sat 14 Nov | 📝 [notes-and-folders](../content/social/notes-and-folders.md) | Quote: verify. Fallback [nothing-to-export](../content/social/nothing-to-export.md). For the Obsidian audience. |
 | Sun 15 Nov | [the-folder-is-the-structure](../content/social/the-folder-is-the-structure.md) | Folders are artists, files are songs. |
 

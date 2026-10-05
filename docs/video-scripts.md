@@ -34,37 +34,65 @@ Remotion render, `[T]` is a title card.
 
 ## Series 0 — Why it exists
 
-### 0.1 "I've been wanting to play more piano" — 45–60 s, CapCut
+Two videos that introduce the person behind the app and the one feature that got them playing more.
+0.1 is the release announcement on 10 October; 0.2 opens the public-piano run on 14 October, and the
+single clips in [Series 5](#series-5--shuffle-at-a-public-piano) follow it. Both are the author's own scripts — the
+wording below is theirs, laid into this document's table.
 
-The release announcement, posted on 10 October before anything else. It is the only video in this
-document that is about the person rather than a feature, and it is the reason the rest make sense: the
-public-piano series is this video's promise being kept.
+### 0.1 "The obvious thing" — 29 s, CapCut
 
-No earlier draft of this script is in either repository — if one exists elsewhere, it wins over this
-one. **Everything in the *Said* column is a prompt, not a line.** Say it the way you would say it to a
-friend; a read script sounds read. The facts in it are checked against the site; the story is yours,
-so add nothing to it that did not happen.
+Origin, and the hook for everything after it.
 
 | Time | Shot | On screen | Said |
 | --- | --- | --- | --- |
-| 0:00–0:04 | `[A]` At a piano, hands on the keys, to camera | Caption: **I wanted to play more piano.** | *"I've been wanting to play more piano, so I developed an app."* |
-| 0:04–0:15 | `[A]` Same shot, or a phone with a mess of screenshots and tabs | — | Your words: what actually got in the way. The songs scattered across screenshots, notes and chord sites; the one that vanished — the chord site that would not show you the song you wanted to rickroll your friends with is already true and already [on the blog](../content/blog/why-plain-text-songbooks-last.md). |
-| 0:15–0:25 | `[S]` Library, tap shuffle, a song opens; chords sit above the words | Caption: **It picks. I play.** | Shuffle is what made you play more, if that is true: you stopped choosing and started playing. |
-| 0:25–0:35 | `[A]` A two-second cut from three different public pianos | Caption: **So I took it travelling.** | Your words: where these were. This is the trailer for Series 5. |
-| 0:35–0:45 | `[S]` Files app: the same song as a `.md` file in a folder | Caption: **Every song is a file you keep.** | *"Every song is a plain text file in a folder you choose."* |
-| 0:45–0:55 | `[S]` Remotion end card | `chordlist` · out now · iPhone and iPad | *"The first ten songs are free. It's out today."* |
+| 0:00–0:04 | `[A]` Face to camera, sitting at the piano, hands still on the keys | **I did the obvious thing** (at 0:02) | "I've been wanting to play more piano — so I did the obvious thing and started developing an app." |
+| 0:04–0:05 | `[A]` Beat. Hold the look one second too long. Let it be the joke. | — | — |
+| 0:05–0:08 | `[A]` Same shot | **this is procrastination** | "Which is, objectively, a way of not playing piano." |
+| 0:08–0:14 | `[S]` Screen recording | — | "But here's the actual problem. I'd sit down, not know what to play, scroll for ten minutes, and then not play." |
+| 0:14–0:17 | `[S]` Tap shuffle, a song loads | — | "So it picks for me." |
+| 0:17–0:24 | `[A]` Over the shoulder: hands playing, chords scrolling by themselves | — | "And it scrolls, so I don't have to stop." |
+| 0:24–0:29 | `[A]` Back to face | — | "I've played more in the last three weeks than the last three years. Building it still counts as procrastinating, though." |
+| 0:29 | `[S]` Remotion end card | `chordlist` | — |
 
-**The first four seconds are the whole video.** The line is the hook; say it before you play a note,
-and keep the caption on screen until it is said.
+**Post caption:** *What's a song you always mean to learn and never do?*
 
-What can be claimed, all of it already on the site: iPhone and iPad, iOS
-18 or later; songs are Markdown files in a folder the user picks; no account; the first
-ten songs free and a one-time purchase for unlimited songs; shuffle opens a random song from the
-current filter. Do not say *free* without *the first ten songs*.
+**Why it works:** self-aware developer humour plus a real problem. The joke earns the pitch, and the
+pitch is only fourteen seconds long. The app name appears only on the end card.
 
-Use `public/songs/morning-light.md` or your own song for anything shown on screen at 0:15. The shuffle
-should land on a song whose lyrics you may show, which on a demo device means picking the library
-before you film.
+Production notes:
+
+- The 0:08 screen recording is the scrolling-and-not-choosing — the library, scrolled aimlessly. The
+  shuffle tap at 0:14 then lands as the answer.
+- The song shuffle opens at 0:14 and the one played at 0:17 must be one whose lyrics may be shown: on
+  the demo device, `public/songs/morning-light.md`, your own song, or a public-domain one. The general
+  rule above applies to an over-the-shoulder shot of the screen too.
+- "Three weeks" and "three years" are claims about you, so make sure they are still true on the day
+  you film.
+- The release goes in the post caption and the link, not the video: under the question, *chordlist is
+  out today on iPhone and iPad* and the link, which is what `out-now` carries alongside it.
+
+### 0.2 "I let the app pick for a week" — 30 s, CapCut
+
+Shuffle as a constraint format viewers already understand, carrying a feature demo without ever
+describing the feature.
+
+| Time | Shot | On screen | Said |
+| --- | --- | --- | --- |
+| 0:00–0:03 | `[A]` Face to camera | — | "For one week I wasn't allowed to choose what I played. The app chose." |
+| 0:03–0:20 | `[A]`/`[S]` Fast montage, five cuts. Each: tap shuffle → title appears → four seconds of playing it | **DAY 1 / DAY 2 / DAY 3…** as each cut lands | — |
+| 0:20–0:26 | `[A]` Back to face | — | "Day three it gave me a song I'd have skipped every time. It's now the one I keep playing." |
+| 0:26–0:30 | `[A]` Same | — | "Turns out I'm a worse DJ than a random number." |
+
+**The travelling footage is this video, for real.** The original note was to shoot all five on one day
+and change shirts between takes to sell the week. The public-piano clips make that unnecessary: they
+are real days in real places, and a different piano in every cut sells the week better than a shirt
+does. Swap the day labels for **DAY 1 · <city>** if the cities read well, and make the line at 0:20 about
+whichever song actually stuck. If there are not five usable clips, the one-day version still works —
+just keep the line at 0:00 true to how it was made.
+
+What the montage loses against the original note is the one camera angle that makes the cuts snap.
+Get some of that back by cutting every clip on the same beat: the title appearing, then the first
+chord.
 
 ---
 
@@ -213,8 +241,9 @@ somewhere the phone can reach it.
 ## Series 5 — Shuffle at a public piano
 
 Footage already shot while travelling: a public piano, the phone on the stand, shuffle, and whatever
-comes up gets played. It is the series the launch hands over to, one a week on Wednesdays from 14
-October in the [social calendar](social-media-plan.md#the-six-weeks-after).
+comes up gets played. [0.2](#02-i-let-the-app-pick-for-a-week--30-s-capcut) introduces it as a
+montage on 14 October; from 21 October each clip goes out on its own, one a week on Wednesdays in the
+[social calendar](social-media-plan.md#the-six-weeks-after).
 
 ### 5.x "The app picks, I play" — 15–30 s, CapCut, one per piano
 

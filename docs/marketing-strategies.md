@@ -107,11 +107,13 @@ pixel-exact product ending for free.
 
 **Video now leads the launch, because the footage exists.** Two pieces, in this order:
 
-1. **The founder video** — *I've been wanting to play more piano, so I developed an app.* It is the
-   release announcement on 10 October, and it is the one piece of marketing only the person who made
-   the app can make. Scripted as [0.1](video-scripts.md#01-ive-been-wanting-to-play-more-piano--4560-s-capcut).
+1. **The founder video** — *I've been wanting to play more piano, so I did the obvious thing and
+   started developing an app.* It is the release announcement on 10 October, and it is the one piece
+   of marketing only the person who made the app can make. Scripted as
+   [0.1](video-scripts.md#01-the-obvious-thing--29-s-capcut).
 2. **Shuffle at a public piano** — clips filmed while travelling, the app's shuffle choosing the song.
-   One a week from 14 October. Scripted as [Series 5](video-scripts.md#series-5--shuffle-at-a-public-piano).
+   Introduced on 14 October by a montage, [*I let the app pick for a week*](video-scripts.md#02-i-let-the-app-pick-for-a-week--30-s-capcut),
+   then one clip a week. Scripted as [Series 5](video-scripts.md#series-5--shuffle-at-a-public-piano).
 
 Together they make the case this document argues for below — that shuffle and *what can I play*
 answer the question a stranger has — without a word of feature copy. The founder video says why;
@@ -182,7 +184,7 @@ The social calendar has the posts; this is everything around them. Today is Mond
 | Thu 8 Oct | `out-10-october` — the new date. Verify every CTA and the App Store listing in light and dark, ready for `links.appStore`. |
 | Sat 10 Oct | Set `links.appStore` and deploy once the listing is live. The founder video and `out-now`. r/iosapps. A note to everyone who ever replied. |
 | Tue 13 Oct | Show HN with [Why your songbook should be plain text](../content/blog/why-plain-text-songbooks-last.md), and r/apple. Moved off the release day: a Saturday Show HN reaches a fraction of the readers, and the post is live from the 10th. |
-| Wed 14 Oct | Public piano #1. Second press wave — one line, not a resend. |
+| Wed 14 Oct | *I let the app pick for a week*. Second press wave — one line, not a resend. |
 | Thu 15 Oct | r/ObsidianMD and the Obsidian forum, framed as *I made my songbook a vault* — only if [the Obsidian post](../content/blog/one-folder-obsidian-and-chordlist.md) is live; it is scheduled for 14 November, so otherwise this waits for it. |
 | From mid-Oct | chordlink: legal copy signed off, sales switch opened, model posted to the maker communities — not before the launch has had a clear week. |
 
