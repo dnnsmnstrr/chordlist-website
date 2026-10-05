@@ -174,5 +174,8 @@ export function rootMetadata(language: Language): Metadata {
       ],
       apple: "/apple-icon.png",
     },
+    // Safari's Smart App Banner on iPhone and iPad: Safari draws the icon, rating, and button from
+    // the App Store listing, and the button reads "Open" once the app is installed.
+    itunes: { appId: siteConfig.appStoreId },
   }
 }

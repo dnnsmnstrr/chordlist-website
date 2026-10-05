@@ -742,7 +742,7 @@ export const pressCopy = {
     requirements: `iOS or iPadOS ${siteConfig.minimumOSVersion} or later`,
     category: "Music",
     website: "chordlist.app",
-    appStoreLink: "6798344297"
+    appStoreLink: siteConfig.appStoreId
   },
   boilerplate: {
     sectionTitle: "Boilerplate description",

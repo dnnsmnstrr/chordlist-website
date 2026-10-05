@@ -24,7 +24,7 @@ export const siteConfig = {
     links: [] as { label: string; url: string }[],
   },
   url: "https://chordlist.app",
-  launchDate: "2026-09-09",
+  launchDate: "2026-10-10",
   minimumOSVersion: 18,
   freeSongLimit: 10,
   contact: {
@@ -42,6 +42,11 @@ export const siteConfig = {
       url: "https://www.instagram.com/chordlist.app/",
     },
   },
+  /**
+   * The App Store's numeric ID for the app — the `id…` in every apps.apple.com URL. Safari's Smart
+   * App Banner reads it, as does the press page.
+   */
+  appStoreId: "6798344297",
   links: {
     // Add the public TestFlight URL here to use the TestFlight CTA.
     testFlight: "https://testflight.apple.com/join/HS4DNEH8" as string | null,
