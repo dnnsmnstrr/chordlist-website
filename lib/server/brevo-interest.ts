@@ -21,9 +21,17 @@ function listIdForReason(reason: ChordlinkInterestReason): number | null {
   return Number.isInteger(listId) && listId > 0 ? listId : null
 }
 
-function templateId(): number | null {
-  const parsed = Number(process.env.BREVO_INTEREST_DOI_TEMPLATE_ID?.trim())
+function parseTemplateId(raw: string | undefined): number | null {
+  const parsed = Number(raw?.trim())
   return Number.isInteger(parsed) && parsed > 0 ? parsed : null
+}
+
+function templateId(language: Language = "en"): number | null {
+  const english = parseTemplateId(process.env.BREVO_INTEREST_DOI_TEMPLATE_ID)
+  // A German template is optional: without one a German signup still gets a confirmation, in
+  // English, rather than no form at all. The address is what matters; the wording is a courtesy.
+  if (language === "de") return parseTemplateId(process.env.BREVO_INTEREST_DOI_TEMPLATE_ID_DE) ?? english
+  return english
 }
 
 function apiKey(): string | null {
@@ -59,7 +67,7 @@ export async function submitChordlinkInterest({
   reason: ChordlinkInterestReason
 }): Promise<ChordlinkInterestOutcome> {
   const key = apiKey()
-  const template = templateId()
+  const template = templateId(language)
   const listId = listIdForReason(reason)
   if (!key || !template || !listId) return "unavailable"
 

@@ -402,12 +402,17 @@ submitted form, so nobody can put themselves on the restock list while the first
 To turn it on:
 
 1. In Brevo, create the two contact lists and a **double opt-in template**, and add a `LANGUAGE` and
-   a `SIGNUP_REASON` contact attribute so a later campaign can segment on them.
-2. Point the template's confirmation button at the site; the request sends the localized
+   a `SIGNUP_REASON` contact attribute so a later campaign can segment on them. The template must
+   carry the tag `optin` and be set to **Active** — a new template starts inactive — and its content
+   is uploaded from this repository rather than built in Brevo's editor (see
+   [Uploading the confirmation template](#uploading-the-confirmation-template)).
+2. The template's confirmation button links to `{{ params.DOIurl }}`; the request sends the localized
    `redirectionUrl` (`/chordlink/notified`, `/de/chordlink/notified`), which is where a confirmed
    subscriber lands.
 3. Set `BREVO_API_KEY` as a Vercel sensitive environment variable, plus
    `BREVO_INTEREST_DOI_TEMPLATE_ID`, `BREVO_INTEREST_LIST_ID`, and `BREVO_WAITLIST_LIST_ID`.
+   `BREVO_INTEREST_DOI_TEMPLATE_ID_DE` is the German confirmation mail, sent to signups from the
+   German page; without it they get the English one.
 4. Sign Brevo's data-processing agreement and keep `privacyCopy.sections.chordlinkNotifications`
    accurate if what is stored changes.
 
@@ -421,6 +426,41 @@ form cannot be used to test whether a given person is subscribed.
 Measurement is deliberately the free path: `/chordlink` page views in Vercel Web Analytics at the
 top of the funnel and confirmed Brevo contacts at the bottom. Vercel custom events are a Pro
 feature, so nothing here depends on them.
+
+#### When signups fail
+
+Every rejection reaches the visitor as "The signup is temporarily unavailable", so the reason is in
+the production logs, not on the page. Brevo's `message` is logged beside its code:
+
+```bash
+vercel logs --environment production --since 7d --query "Brevo" --expand
+```
+
+`An active DOI template does not exist` means `BREVO_INTEREST_DOI_TEMPLATE_ID` (or `_DE`, for a
+German signup) names a template that is missing, inactive, or not tagged `optin`. A `401` status means `BREVO_API_KEY` is wrong or
+revoked. A change to the template in Brevo takes effect immediately; a changed environment variable needs a
+redeploy.
+
+#### Uploading the confirmation template
+
+Brevo's visual editor wraps pasted HTML in a container of its own, so the generated mail is written
+to the template through the API instead, which stores it byte for byte. The English template is ID
+`1`; for the German one, put its ID in place of the `1` in the URL and `de.html` in place of
+`en.html`. Run both in the same interactive terminal — the first prompts for the API key without
+echoing it or leaving it in shell history:
+
+```bash
+read -s "BREVO_API_KEY?Brevo API key: " && export BREVO_API_KEY
+```
+
+```bash
+node -e 'fetch("https://api.brevo.com/v3/smtp/templates/1",{method:"PUT",headers:{"api-key":process.env.BREVO_API_KEY,"content-type":"application/json"},body:JSON.stringify({htmlContent:require("fs").readFileSync("public/emails/chordlink-confirm/en.html","utf8")})}).then(async r=>console.log(r.status,await r.text()))'
+```
+
+`204` means it was stored. Re-run it after every `pnpm build:emails` that changes `chordlink-confirm`,
+and after anyone saves the template in Brevo's editor, which can put the wrapper back. Afterwards
+check that the template is still Active and tagged `optin`, and send one test signup through
+`/chordlink`.
 
 ### Email templates
 

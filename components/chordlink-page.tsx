@@ -71,7 +71,8 @@ const copy = {
       action: "Get notified",
       pending: "Sending…",
       consent: "You will receive one confirmation email; you are only on the list once you click the link in it. We use your address only to tell you about chordlink availability, and every message has an unsubscribe link.",
-      sent: "Almost there — check your inbox and click the link in the confirmation email. You are on the list only once you have.",
+      sentTitle: "Almost there",
+      sent: "Check your inbox and click the link in the confirmation email. You are on the list only once you have.",
       invalidEmail: "That does not look like an email address. Please check it and try again.",
       unavailable: "The signup is temporarily unavailable. Please try again later.",
     },
@@ -123,7 +124,8 @@ const copy = {
       action: "Benachrichtigen",
       pending: "Wird gesendet…",
       consent: "Du erhältst eine Bestätigungs-E-Mail; erst wenn du den Link darin anklickst, stehst du auf der Liste. Wir nutzen deine Adresse ausschließlich, um dich über die Verfügbarkeit von chordlink zu informieren, und jede Nachricht enthält einen Abmeldelink.",
-      sent: "Fast geschafft — sieh in dein Postfach und klicke den Link in der Bestätigungs-E-Mail. Erst danach stehst du auf der Liste.",
+      sentTitle: "Fast geschafft",
+      sent: "Sieh in dein Postfach und klicke den Link in der Bestätigungs-E-Mail. Erst danach stehst du auf der Liste.",
       invalidEmail: "Das sieht nicht nach einer E-Mail-Adresse aus. Bitte prüfe sie und versuche es erneut.",
       unavailable: "Die Anmeldung ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.",
     },
@@ -194,9 +196,12 @@ export function ChordlinkPage({
 
           {notify ? (
             <section aria-labelledby="chordlink-notify" className="mt-8 rounded-2xl border border-border bg-card/60 p-5">
-              <h2 className="text-lg font-semibold tracking-tight" id="chordlink-notify">{notify.title}</h2>
-              <p className="mt-2 max-w-md text-pretty text-sm leading-6 text-muted-foreground">{notify.body}</p>
-              <ChordlinkNotifyForm copy={text.notify} language={language} />
+              <ChordlinkNotifyForm
+                copy={text.notify}
+                headingId="chordlink-notify"
+                intro={notify}
+                language={language}
+              />
             </section>
           ) : null}
 
