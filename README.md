@@ -462,6 +462,45 @@ and after anyone saves the template in Brevo's editor, which can put the wrapper
 check that the template is still Active and tagged `optin`, and send one test signup through
 `/chordlink`.
 
+#### Sending the launch and restock mail
+
+Both mails go out as Brevo campaigns, one per language. Recipients are a Brevo **segment** each —
+the list membership and the `LANGUAGE` attribute together — created once in Brevo's Contacts →
+Segments:
+
+| Segment | Conditions | Campaign |
+| --- | --- | --- |
+| chordlink launch · EN | in list `2` **and** `LANGUAGE` is `EN` | `chordlink-on-sale` `en` |
+| chordlink launch · DE | in list `2` **and** `LANGUAGE` is `DE` | `chordlink-on-sale` `de` |
+| chordlink restock · EN | in list `2` **or** `3`, **and** `LANGUAGE` is `EN` | `chordlink-restock` `en` |
+| chordlink restock · DE | in list `2` **or** `3`, **and** `LANGUAGE` is `DE` | `chordlink-restock` `de` |
+
+The restock mail goes to **both** lists on purpose: the launch mail tells anyone who misses the first
+run to stay on the list for the next batch, and those people are on list `2`, not the waitlist.
+Brevo knows nothing about purchases — buying does not touch either list — so someone who signed up
+and then bought one still gets the restock mail. That is accepted rather than fixed: excluding buyers
+would mean sending buyer addresses to Brevo, which the privacy policy does not describe.
+
+`pnpm brevo:campaign` writes one built email into Brevo as a **draft** — it never sends. With the
+key set in the shell as for the template upload:
+
+```bash
+pnpm build:emails
+```
+
+```bash
+pnpm brevo:campaign chordlink-on-sale en --segment <segment-id>
+```
+
+It prints the new campaign's ID. Pass `--campaign <id>` to overwrite that draft instead of creating
+another, after an edit to the definition. Then, for the launch:
+
+1. Prepare both drafts ahead of time and send each a test from Brevo.
+2. Open sales with the switch in the chordlink admin, and load `/chordlink` to see the buy button.
+3. Send both campaigns from Brevo. In that order — the mail promises the link works.
+
+The restock is the same with `chordlink-restock`, once the new batch is seeded and on sale.
+
 ### Email templates
 
 Emails are built from `content/emails/` rather than written in Brevo's editor, so the wording is
@@ -484,9 +523,9 @@ mailed in the wrong language.
 
 Four definitions ship. `chordlink-confirm` is the double opt-in mail and is the one the signup flow
 actually depends on — its button must keep the `{{ params.DOIurl }}` merge field, which Brevo's
-API-based double-opt-in flow replaces with the confirmation link. `chordlink-on-sale` and
-`chordlink-restock` are the campaigns
-for the two lists. `chordlist-announcement` is a deliberately empty skeleton to copy for the next
+API-based double-opt-in flow replaces with the confirmation link. `chordlink-on-sale` is the launch
+campaign for list `2`, and `chordlink-restock` goes to lists `2` and `3` together — see
+[Sending the launch and restock mail](#sending-the-launch-and-restock-mail). `chordlist-announcement` is a deliberately empty skeleton to copy for the next
 announcement.
 
 Layout lives in `scripts/lib/email-templates.mjs` and is shaped by three constraints rather than

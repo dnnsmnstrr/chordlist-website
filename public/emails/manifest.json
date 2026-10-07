@@ -72,7 +72,7 @@
     },
     "html": "/emails/chordlink-restock/en.html",
     "text": "/emails/chordlink-restock/en.txt",
-    "bytes": 8689
+    "bytes": 8678
   },
   {
     "slug": "chordlink-restock",
@@ -87,7 +87,7 @@
     },
     "html": "/emails/chordlink-restock/de.html",
     "text": "/emails/chordlink-restock/de.txt",
-    "bytes": 8810
+    "bytes": 8793
   },
   {
     "slug": "chordlist-announcement",

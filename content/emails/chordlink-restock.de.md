@@ -8,10 +8,10 @@ heading: "Es gibt eine neue Charge"
 cta:
   label: "chordlink ansehen"
   url: "https://chordlist.app/de/chordlink"
-footnote: "Du stehst auf dieser Liste, weil die erste Edition bereits ausverkauft war, als du sie gefunden hast."
+footnote: "Du bekommst diese Nachricht, weil du wissen wolltest, wann chordlink verfügbar ist."
 ---
 
-Die erste Edition war ausverkauft, und du wolltest Bescheid bekommen, sobald es wieder welche gibt. Eine neue Charge **chordlink** ist gefertigt und ab sofort verfügbar.
+Die erste Edition ist ausverkauft, und du wolltest Bescheid bekommen, sobald es wieder welche gibt. Eine neue Charge **chordlink** ist gefertigt und ab sofort verfügbar.
 
 Es ist dasselbe geblieben: ein 3D-gedruckter, nummerierter NFC-Tag, der chordlist genau dort öffnet, wo du hinwillst — und chordlist unlimited gehört dazu.
 

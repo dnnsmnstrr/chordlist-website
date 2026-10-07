@@ -10,6 +10,7 @@
     "build:icons": "node scripts/build-icons.mjs",
     "build:og": "node scripts/build-og-image.mjs && node scripts/build-page-og.mjs && node scripts/build-blog-og.mjs",
     "build:emails": "node scripts/build-emails.mjs",
+    "brevo:campaign": "node scripts/brevo-campaign.mjs",
     "build:social": "node scripts/build-social.mjs",
     "video:studio": "pnpm sync:video && remotion studio video/src/chordlist-entry.ts --public-dir=video/public",
     "video:render:short": "pnpm sync:video && remotion render video/src/chordlist-entry.ts ChordlistPromoShort public/video/chordlist-promo-short-light.mp4 --props=video/render-props/light.json --public-dir=video/public",
