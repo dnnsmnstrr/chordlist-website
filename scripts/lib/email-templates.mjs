@@ -154,13 +154,13 @@ function ctaButton({ colors, label, url }) {
  * The hidden line the inbox shows beside the subject.
  *
  * Left unset, a client invents one from the first words of the body — usually the greeting, which
- * tells the reader nothing. The trailing zero-width spaces stop it appending body text to whatever
- * we chose.
+ * tells the reader nothing. It is hidden by layout alone: a 1px font, a transparent colour, or a
+ * run of zero-width padding is what spam filters score as invisible text (SpamAssassin's
+ * FONT_INVIS_*, which cost the launch mail 2.5 points), so none of them are used.
  */
 function preheaderBlock(preheader) {
-  const padding = "&#847;&zwnj;&nbsp;".repeat(60)
   return `
-    <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;font-size:1px;line-height:1px;color:transparent;">${escapeHtml(preheader)}${padding}</div>`
+    <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;">${escapeHtml(preheader)}</div>`
 }
 
 function footerBlock({ colors, footer, kind }) {

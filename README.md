@@ -501,7 +501,10 @@ pnpm brevo:campaign chordlink-on-sale de --segment 2
 Each prints the new campaign's ID. Pass `--campaign <id>` to overwrite that draft instead of creating
 another, after an edit to the definition. Then, for the launch:
 
-1. Prepare both drafts ahead of time and send each a test from Brevo.
+1. Prepare both drafts ahead of time and send each a test from the draft's **Send a test** in Brevo,
+   which mails only the addresses you type in. Do not send or schedule the campaign itself to test
+   it: that mails the whole segment, and a sent campaign cannot be reused — create a new draft with
+   the same command, without `--campaign`.
 2. Open sales with the switch in the chordlink admin, and load `/chordlink` to see the buy button.
 3. Send both campaigns from Brevo. In that order — the mail promises the link works.
 

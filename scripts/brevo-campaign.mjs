@@ -4,7 +4,7 @@
  *   node scripts/brevo-campaign.mjs <slug> <language> --segment <id> [--campaign <id>]
  *
  * Without --campaign it creates a new draft and prints its ID; with it, it overwrites that draft's
- * subject, preview text, HTML, and recipients. Either way the HTML goes through the API rather
+ * subject, HTML, and recipients. Either way the HTML goes through the API rather
  * than Brevo's editor, which wraps pasted code in a container of its own.
  *
  * Recipients are a single Brevo segment and nothing else. Brevo's segments are where "on this list
@@ -83,18 +83,31 @@ async function main() {
   const body = {
     name: `${slug} (${language})`,
     subject: email.subject,
-    previewText: email.preheader,
+    // No `previewText`: the HTML already carries the preheader, and Brevo would inject a second
+    // hidden one of its own — hidden text is what spam filters penalise.
     sender: CONFIG.sender,
     htmlContent,
     recipients: { segmentIds: [segmentId] },
   }
 
-  const response = await fetch(campaignId ? `${CONFIG.endpoint}/${campaignId}` : CONFIG.endpoint, {
-    method: campaignId ? "PUT" : "POST",
-    headers: { "api-key": apiKey, "content-type": "application/json", accept: "application/json" },
-    body: JSON.stringify(body),
-  })
-  const reply = await response.text()
+  const send = (payload) =>
+    fetch(campaignId ? `${CONFIG.endpoint}/${campaignId}` : CONFIG.endpoint, {
+      method: campaignId ? "PUT" : "POST",
+      headers: { "api-key": apiKey, "content-type": "application/json", accept: "application/json" },
+      body: JSON.stringify(payload),
+    })
+
+  let response = await send(body)
+  let reply = await response.text()
+
+  // Brevo will not attach a segment that matches nobody yet — the normal state of a launch list
+  // before anyone has confirmed. The draft is still worth having, so it is written without
+  // recipients, which also means it cannot be sent until a segment is chosen in Brevo.
+  const segmentIsEmpty = response.status === 400 && reply.includes("no contacts associated")
+  if (segmentIsEmpty) {
+    response = await send({ ...body, recipients: undefined })
+    reply = await response.text()
+  }
 
   if (!response.ok) {
     console.error(`Brevo refused the draft (${response.status}): ${reply}`)
@@ -102,8 +115,14 @@ async function main() {
   }
 
   const id = campaignId ?? JSON.parse(reply).id
-  console.log(`${campaignId ? "Updated" : "Created"} draft campaign ${id}: "${email.subject}" → segment ${segmentId}`)
-  console.log("Nothing has been sent. Send a test to yourself from Brevo, then send or schedule it there.")
+  const action = campaignId ? "Updated" : "Created"
+  if (segmentIsEmpty) {
+    console.log(`${action} draft campaign ${id}: "${email.subject}" — with no recipients.`)
+    console.log(`Segment ${segmentId} has no contacts yet, so Brevo would not attach it. Choose it in Brevo before sending.`)
+  } else {
+    console.log(`${action} draft campaign ${id}: "${email.subject}" → segment ${segmentId}`)
+  }
+  console.log("Nothing has been sent. Use Send a test in Brevo; send or schedule the campaign only for real.")
 }
 
 await main()
