@@ -44,7 +44,7 @@ export const sceneSchema = z.object({
   freezeFrame: z.boolean(),
   clipTitles: z.array(z.string()),
   sceneDurationSeconds: z.number().min(0.5).max(30).step(0.1),
-  startOffsetSeconds: z.number().min(0).max(30).step(0.1),
+  startOffsetSeconds: z.number().min(-3).max(30).step(0.1),
   maxSecondsPerClip: z.number().min(0.5).max(12).step(0.1),
 });
 

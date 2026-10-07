@@ -108,6 +108,13 @@ for (const appearance of appearances) {
   }
 
   const cues = parseVtt(await readFile(vttPath, 'utf8'));
+  // The prepared clips carry handles on both sides of each shot; scenes.json says where the shot
+  // itself begins inside its clip, which the timeline needs to start playback on the right frame.
+  const shotStarts = new Map(
+    JSON.parse(await readFile(path.join(sourceDirectory, 'scenes.json'), 'utf8')).scenes.map(
+      (scene) => [scene.clip, scene.shotStart],
+    ),
+  );
   await rm(destinationDirectory, {recursive: true, force: true});
   await mkdir(destinationDirectory, {recursive: true});
 
@@ -136,6 +143,7 @@ for (const appearance of appearances) {
 
     manifest[appearance].push({
       ...cue,
+      shotStartInSeconds: shotStarts.get(videoFilename) ?? 0,
       file: `generated/${appearance}/${videoFilename}`,
       poster: filenames.includes(posterFilename)
         ? `generated/${appearance}/${posterFilename}`

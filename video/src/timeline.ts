@@ -46,6 +46,8 @@ export type ClipAsset = {
   title: string;
   summary: string;
   durationInSeconds: number;
+  /** Where the shot begins inside its file, past the lead-in handle the capture pipeline adds. */
+  shotStartInSeconds?: number;
   file: string;
   poster: string | null;
   mediaType?: 'video' | 'image';
@@ -82,6 +84,9 @@ const shortClipTitles: Record<Exclude<SceneId, 'files'>, string[]> = {
   'hands-free': ['Hands-free autoscroll'],
 };
 
+const leadInFrames = (clip: ClipAsset): number =>
+  Math.round((clip.shotStartInSeconds ?? 0) * FPS);
+
 const resolveFrozenSource = (
   clips: ClipAsset[],
   offsetInFrames: number,
@@ -91,7 +96,7 @@ const resolveFrozenSource = (
   for (const clip of clips) {
     const sourceFrames = Math.max(1, Math.round(clip.durationInSeconds * FPS));
     if (remainingOffset < sourceFrames) {
-      return {clip, sourceFrame: remainingOffset};
+      return {clip, sourceFrame: Math.max(0, leadInFrames(clip) + remainingOffset)};
     }
     remainingOffset -= sourceFrames;
   }
@@ -103,7 +108,10 @@ const resolveFrozenSource = (
 
   return {
     clip: lastClip,
-    sourceFrame: Math.max(0, Math.round(lastClip.durationInSeconds * FPS) - 1),
+    sourceFrame: Math.max(
+      0,
+      leadInFrames(lastClip) + Math.round(lastClip.durationInSeconds * FPS) - 1,
+    ),
   };
 };
 
@@ -169,7 +177,8 @@ export const resolveScenes = (props: VideoProps): ResolvedScene[] => {
               return [];
             }
 
-            const startOffsetFrames = remainingOffsetFrames;
+            // A negative offset reaches back into the lead-in handle, never past the file's start.
+            const startOffsetFrames = Math.max(-leadInFrames(clip), remainingOffsetFrames);
             remainingOffsetFrames = 0;
             const durationInFrames = Math.max(
               1,
@@ -185,7 +194,7 @@ export const resolveScenes = (props: VideoProps): ResolvedScene[] => {
               {
                 ...clip,
                 durationInFrames,
-                trimBeforeInFrames: startOffsetFrames,
+                trimBeforeInFrames: leadInFrames(clip) + startOffsetFrames,
               },
             ];
           });

@@ -254,7 +254,7 @@ const Clip: React.FC<{
         alignItems: 'center',
         justifyContent: 'center',
       }}
-      from={-84}>
+    >
       <div
         style={{
           position: 'relative',
