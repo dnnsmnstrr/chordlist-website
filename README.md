@@ -468,12 +468,14 @@ Both mails go out as Brevo campaigns, one per language. Recipients are a Brevo *
 the list membership and the `LANGUAGE` attribute together — created once in Brevo's Contacts →
 Segments:
 
-| Segment | Conditions | Campaign |
-| --- | --- | --- |
-| chordlink launch · EN | in list `2` **and** `LANGUAGE` is `EN` | `chordlink-on-sale` `en` |
-| chordlink launch · DE | in list `2` **and** `LANGUAGE` is `DE` | `chordlink-on-sale` `de` |
-| chordlink restock · EN | in list `2` **or** `3`, **and** `LANGUAGE` is `EN` | `chordlink-restock` `en` |
-| chordlink restock · DE | in list `2` **or** `3`, **and** `LANGUAGE` is `DE` | `chordlink-restock` `de` |
+| ID | Segment | Conditions | Campaign |
+| --- | --- | --- | --- |
+| `1` | chordlink launch · EN | in list `2` **and** `LANGUAGE` is `EN` | `chordlink-on-sale` `en` |
+| `2` | chordlink launch · DE | in list `2` **and** `LANGUAGE` is `DE` | `chordlink-on-sale` `de` |
+| — | chordlink restock · EN | in list `2` **or** `3`, **and** `LANGUAGE` is `EN` | `chordlink-restock` `en` |
+| — | chordlink restock · DE | in list `2` **or** `3`, **and** `LANGUAGE` is `DE` | `chordlink-restock` `de` |
+
+The restock segments are not created yet; add their IDs here when they are.
 
 The restock mail goes to **both** lists on purpose: the launch mail tells anyone who misses the first
 run to stay on the list for the next batch, and those people are on list `2`, not the waitlist.
@@ -489,10 +491,14 @@ pnpm build:emails
 ```
 
 ```bash
-pnpm brevo:campaign chordlink-on-sale en --segment <segment-id>
+pnpm brevo:campaign chordlink-on-sale en --segment 1
 ```
 
-It prints the new campaign's ID. Pass `--campaign <id>` to overwrite that draft instead of creating
+```bash
+pnpm brevo:campaign chordlink-on-sale de --segment 2
+```
+
+Each prints the new campaign's ID. Pass `--campaign <id>` to overwrite that draft instead of creating
 another, after an edit to the definition. Then, for the launch:
 
 1. Prepare both drafts ahead of time and send each a test from Brevo.
