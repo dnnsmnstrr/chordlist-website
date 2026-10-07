@@ -28,7 +28,7 @@ export const copyVariants: Record<CopyVariant, CopyPack> = {
     openingHook: 'Your songs deserve better than 37 open tabs.',
     openingFooter: 'Close the tabs. Open your songbook.',
     endLine: 'Your lyrics. Your chords. Your files.',
-    releaseLine: 'chordlist — coming August 30',
+    releaseLine: 'chordlist — out on October 10',
     scenes: {
       collect: {
         eyebrow: 'Collect',
@@ -66,7 +66,7 @@ export const copyVariants: Record<CopyVariant, CopyPack> = {
     openingHook: 'Spend less time organizing. More time playing.',
     openingFooter: 'Less organizing. More playing.',
     endLine: 'Less managing. More music.',
-    releaseLine: 'chordlist — coming August 30',
+    releaseLine: 'chordlist — out on October 10',
     scenes: {
       collect: {
         eyebrow: 'Together',
@@ -104,7 +104,7 @@ export const copyVariants: Record<CopyVariant, CopyPack> = {
     openingHook: 'Your songbook should belong to you.',
     openingFooter: 'Portable by design. Yours by default.',
     endLine: 'Your music. Your files. Your way.',
-    releaseLine: 'chordlist — coming August 30',
+    releaseLine: 'chordlist — out on October 10',
     scenes: {
       collect: {
         eyebrow: 'Local first',
@@ -142,7 +142,7 @@ export const copyVariants: Record<CopyVariant, CopyPack> = {
     openingHook: 'Your songbook should feel\nlike yours.',
     openingFooter: 'Your colour. Your pace. Your way.',
     endLine: 'Your colour.\nYour pace.\nYour songbook.',
-    releaseLine: 'chordlist — coming August 30',
+    releaseLine: 'chordlist — out on October 10',
     scenes: {
       collect: {
         eyebrow: 'Your library',
@@ -186,7 +186,7 @@ export const copyVariants: Record<CopyVariant, CopyPack> = {
     openingHook: 'Give the song in your head\nsomewhere to live.',
     openingFooter: 'Write it down. Play it through.',
     endLine: 'Write it.\nShape it.\nPlay it.',
-    releaseLine: 'chordlist — coming August 30',
+    releaseLine: 'chordlist — out on October 10',
     scenes: {
       collect: {
         eyebrow: 'Start here',
@@ -230,7 +230,7 @@ export const copyVariants: Record<CopyVariant, CopyPack> = {
     openingHook: "Don't know what to play?\nTap Shuffle.",
     openingFooter: 'Let your songbook choose.',
     endLine: 'Less choosing.\nMore playing.',
-    releaseLine: 'chordlist — coming August 30',
+    releaseLine: 'chordlist — out on October 10',
     scenes: {
       collect: {
         eyebrow: 'Stack the deck',
@@ -274,7 +274,7 @@ export const copyVariants: Record<CopyVariant, CopyPack> = {
     openingHook: 'Different key.\nSame progression.\nYour next song.',
     openingFooter: 'See what your songs have in common.',
     endLine: 'Match the chords.\nFind what comes next.',
-    releaseLine: 'chordlist — coming August 30',
+    releaseLine: 'chordlist — out on October 10',
     scenes: {
       collect: {
         eyebrow: 'Map the song',
