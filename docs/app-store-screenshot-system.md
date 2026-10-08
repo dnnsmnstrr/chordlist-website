@@ -39,7 +39,10 @@ The build also writes one ZIP archive per treatment and device to
 offers both complete ZIP downloads and the original individual PNGs.
 
 The analog template follows `docs/visual-language.md`: sharp interface screenshots sit over atmospheric rehearsal
-photography with crushed blacks, blooming highlights, deterministic grain, dust, scratches, and a heavy vignette.
+photography with crushed blacks, blooming highlights, deterministic grain, dust, and scratches. Every slide has its
+own photograph and its own grain seed, so no two frames share a background. The template's scrims and vignette are
+opt-in and off for the screenshots: stacked over the photograph they crush every slide to the same black. The creative
+assets switch on only the left-column scrim, behind their words.
 Photography is selected and focused separately for iPhone and iPad so the crop remains intentional. Type and device
 screenshots are never baked into or filtered with the photograph.
 

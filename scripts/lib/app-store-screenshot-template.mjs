@@ -98,9 +98,12 @@ export function classicBackground({ slide, device }) {
   ]
 }
 
-/// `scrims` darken the photograph behind the copy: the top band for the portrait screenshots, the
-/// left column for every layout that sets its words on the left, and neither for art without words.
-export function analogBackground({ background, device, seed, scrims = { top: true, left: true } }) {
+/// The photograph, bloom, and grain are the look; every darkening layer is opt-in. Until satori was
+/// given explicit offsets instead of `inset: 0` none of them rendered, and the approved sets were built
+/// without them — switched on together over a photo at 0.44 they crush every slide to the same black.
+/// `scrims` darken the photograph behind the copy: the top band, or the left column for a layout that
+/// sets its words on the left. `vignette` darkens the corners.
+export function analogBackground({ background, device, seed, scrims = { top: false, left: false }, vignette = false }) {
   const box = coverBox(background, device, background.focus)
 
   return [
@@ -141,7 +144,7 @@ export function analogBackground({ background, device, seed, scrims = { top: tru
           "linear-gradient(90deg, rgba(2,2,2,0.72) 0%, rgba(2,2,2,0.48) 46%, rgba(2,2,2,0.08) 82%, rgba(2,2,2,0) 100%)",
       },
     }),
-    h("div", {
+    vignette && h("div", {
       key: "vignette",
       style: {
         position: "absolute",
