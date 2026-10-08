@@ -27,6 +27,15 @@ const nextConfig = {
     "/blog/rss.xml": ["./content/blog/**/*"],
     "/sitemap.xml": ["./content/blog/**/*"],
   },
+
+  // The translation store resolves the app checkout from process.cwd(), so the tracer bundles the
+  // whole website into these functions — public/ alone is past Vercel's 250 MB limit. They only
+  // read the app repository, and only locally; production 404s them.
+  outputFileTracingExcludes: {
+    "/translations": ["./public/**/*", "./assets/**/*"],
+    "/api/translations": ["./public/**/*", "./assets/**/*"],
+    "/api/translations/languages": ["./public/**/*", "./assets/**/*"],
+  },
 }
 
 export default nextConfig
