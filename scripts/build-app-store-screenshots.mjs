@@ -59,7 +59,7 @@ const CONFIG = {
         supportingSize: 38,
       },
       glow: { right: -240, top: -170, size: 760 },
-      frame: { x: 102, y: 704, width: 1038, height: 2250, border: 24, radius: 150 },
+      frame: { x: 102, y: 584, width: 1038, height: 2250, border: 24, radius: 150 },
       screen: { width: 990, height: 2142, radius: 126 },
       dynamicIsland: { width: 274, height: 78, top: 25 },
     },
