@@ -788,6 +788,16 @@ export const screensCopy = {
   screenshotAlt: (title: string, language: string, variant: string, device: string) =>
     `${title}, from the ${language} ${variant.toLowerCase()} ${device} App Store screenshot set.`,
   downloadSet: "Download set (.zip)",
+  creative: {
+    title: "Creative assets",
+    description:
+      "The product page header, the search results asset, the universal asset that can serve as either, and In-App Event media, for iOS 27 and iPadOS 27. Each is drawn at the size of Apple's template, with its words and devices inside the centred safe area Apple crops around.",
+    setTitle: (language: string, variant: string) => `${language} · ${variant}`,
+    meta: (width: number, height: number) => `${width} × ${height} PNG`,
+    download: "Download PNG",
+    alt: (label: string, language: string, variant: string) =>
+      `${label} App Store creative asset, ${language}, ${variant.toLowerCase()} treatment.`,
+  },
 } as const
 
 export const privacyCopy = {

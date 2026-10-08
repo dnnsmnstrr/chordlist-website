@@ -67,13 +67,16 @@ function coverBox(source, target, focus = [0.5, 0.5]) {
   }
 }
 
-function classicBackground({ slide, device }) {
+export function classicBackground({ slide, device }) {
   return [
     h("div", {
       key: "gradient",
       style: {
         position: "absolute",
-        inset: 0,
+        left: 0,
+        top: 0,
+        right: 0,
+        bottom: 0,
         display: "flex",
         background: `linear-gradient(145deg, ${slide.gradient[0]} 0%, ${slide.gradient[1]} 100%)`,
       },
@@ -95,13 +98,15 @@ function classicBackground({ slide, device }) {
   ]
 }
 
-function analogBackground({ background, device, seed }) {
+/// `scrims` darken the photograph behind the copy: the top band for the portrait screenshots, the
+/// left column for every layout that sets its words on the left, and neither for art without words.
+export function analogBackground({ background, device, seed, scrims = { top: true, left: true } }) {
   const box = coverBox(background, device, background.focus)
 
   return [
     h("div", {
       key: "black",
-      style: { position: "absolute", inset: 0, display: "flex", background: "#050505" },
+      style: { position: "absolute", left: 0, top: 0, right: 0, bottom: 0, display: "flex", background: "#050505" },
     }),
     h("img", {
       key: "photograph",
@@ -110,21 +115,27 @@ function analogBackground({ background, device, seed }) {
       height: box.height,
       style: { position: "absolute", left: box.left, top: box.top, opacity: 0.44 },
     }),
-    h("div", {
+    scrims.top && h("div", {
       key: "copy-scrim",
       style: {
         position: "absolute",
-        inset: 0,
+        left: 0,
+        top: 0,
+        right: 0,
+        bottom: 0,
         display: "flex",
         background:
           "linear-gradient(180deg, rgba(3,3,3,0.92) 0%, rgba(3,3,3,0.7) 22%, rgba(3,3,3,0.22) 52%, rgba(3,3,3,0.82) 100%)",
       },
     }),
-    h("div", {
+    scrims.left && h("div", {
       key: "copy-column-scrim",
       style: {
         position: "absolute",
-        inset: 0,
+        left: 0,
+        top: 0,
+        right: 0,
+        bottom: 0,
         display: "flex",
         background:
           "linear-gradient(90deg, rgba(2,2,2,0.72) 0%, rgba(2,2,2,0.48) 46%, rgba(2,2,2,0.08) 82%, rgba(2,2,2,0) 100%)",
@@ -134,7 +145,10 @@ function analogBackground({ background, device, seed }) {
       key: "vignette",
       style: {
         position: "absolute",
-        inset: 0,
+        left: 0,
+        top: 0,
+        right: 0,
+        bottom: 0,
         display: "flex",
         background:
           "radial-gradient(ellipse at 58% 43%, rgba(0,0,0,0) 24%, rgba(0,0,0,0.34) 58%, rgba(0,0,0,0.94) 100%)",
@@ -159,12 +173,12 @@ function analogBackground({ background, device, seed }) {
       src: textureUri({ width: device.width, height: device.height, seed }),
       width: device.width,
       height: device.height,
-      style: { position: "absolute", inset: 0, opacity: 0.72 },
+      style: { position: "absolute", left: 0, top: 0, right: 0, bottom: 0, opacity: 0.72 },
     }),
-  ]
+  ].filter(Boolean)
 }
 
-function deviceFrame({ device, screenshot }) {
+export function deviceFrame({ device, screenshot }) {
   const isPhone = device.name === "iphone"
   const screenUri = roundedScreenUri({ device, screenshot })
 

@@ -1,0 +1,398 @@
+[
+  {
+    "language": "en",
+    "variant": "classic",
+    "asset": "header",
+    "label": "Product page header",
+    "placement": "Above the app icon on the product page (iOS 27, iPadOS 27).",
+    "width": 3840,
+    "height": 1646,
+    "safe": {
+      "width": 3200,
+      "height": 1180
+    },
+    "file": "classic/header.png",
+    "headline": "Your lyrics and chords, as files.",
+    "sources": [
+      "public/app-screenshots/ipad/light/02-Song-Detail.png",
+      "public/app-screenshots/light/01-Song-List.png"
+    ],
+    "archive": "downloads/chordlist-creative-classic.zip"
+  },
+  {
+    "language": "en",
+    "variant": "analog",
+    "asset": "header",
+    "label": "Product page header",
+    "placement": "Above the app icon on the product page (iOS 27, iPadOS 27).",
+    "width": 3840,
+    "height": 1646,
+    "safe": {
+      "width": 3200,
+      "height": 1180
+    },
+    "file": "analog/header.png",
+    "headline": "Your lyrics and chords, as files.",
+    "sources": [
+      "public/app-screenshots/ipad/light/02-Song-Detail.png",
+      "public/app-screenshots/light/01-Song-List.png"
+    ],
+    "archive": "downloads/chordlist-creative-analog.zip"
+  },
+  {
+    "language": "en",
+    "variant": "classic",
+    "asset": "search",
+    "label": "Search results",
+    "placement": "In App Store search results, in place of the first screenshots.",
+    "width": 3840,
+    "height": 2560,
+    "safe": {
+      "width": 3300,
+      "height": 2100
+    },
+    "file": "classic/search.png",
+    "headline": "Your songs. Ready to play.",
+    "sources": [
+      "public/app-screenshots/light/01-Song-List.png",
+      "public/app-screenshots/light/02-Song-Detail.png"
+    ],
+    "archive": "downloads/chordlist-creative-classic.zip"
+  },
+  {
+    "language": "en",
+    "variant": "analog",
+    "asset": "search",
+    "label": "Search results",
+    "placement": "In App Store search results, in place of the first screenshots.",
+    "width": 3840,
+    "height": 2560,
+    "safe": {
+      "width": 3300,
+      "height": 2100
+    },
+    "file": "analog/search.png",
+    "headline": "Your songs. Ready to play.",
+    "sources": [
+      "public/app-screenshots/light/01-Song-List.png",
+      "public/app-screenshots/light/02-Song-Detail.png"
+    ],
+    "archive": "downloads/chordlist-creative-analog.zip"
+  },
+  {
+    "language": "en",
+    "variant": "classic",
+    "asset": "universal",
+    "label": "Universal",
+    "placement": "One master for both the header and search results; Apple crops it to each.",
+    "width": 5244,
+    "height": 2950,
+    "safe": {
+      "width": 3688,
+      "height": 1612
+    },
+    "file": "classic/universal.png",
+    "headline": "Your lyrics and chords, as files.",
+    "sources": [
+      "public/app-screenshots/ipad/light/02-Song-Detail.png",
+      "public/app-screenshots/light/01-Song-List.png"
+    ],
+    "archive": "downloads/chordlist-creative-classic.zip"
+  },
+  {
+    "language": "en",
+    "variant": "analog",
+    "asset": "universal",
+    "label": "Universal",
+    "placement": "One master for both the header and search results; Apple crops it to each.",
+    "width": 5244,
+    "height": 2950,
+    "safe": {
+      "width": 3688,
+      "height": 1612
+    },
+    "file": "analog/universal.png",
+    "headline": "Your lyrics and chords, as files.",
+    "sources": [
+      "public/app-screenshots/ipad/light/02-Song-Detail.png",
+      "public/app-screenshots/light/01-Song-List.png"
+    ],
+    "archive": "downloads/chordlist-creative-analog.zip"
+  },
+  {
+    "language": "en",
+    "variant": "classic",
+    "asset": "event-card",
+    "label": "In-App Event card",
+    "placement": "The event card in search, Today, and on the product page. 16:9.",
+    "width": 3840,
+    "height": 2160,
+    "safe": {
+      "width": 3000,
+      "height": 1600
+    },
+    "file": "classic/event-card.png",
+    "headline": null,
+    "sources": [
+      "public/app-screenshots/ipad/dark/02-Song-Detail.png",
+      "public/app-screenshots/dark/04-Search.png"
+    ],
+    "archive": "downloads/chordlist-creative-classic.zip"
+  },
+  {
+    "language": "en",
+    "variant": "analog",
+    "asset": "event-card",
+    "label": "In-App Event card",
+    "placement": "The event card in search, Today, and on the product page. 16:9.",
+    "width": 3840,
+    "height": 2160,
+    "safe": {
+      "width": 3000,
+      "height": 1600
+    },
+    "file": "analog/event-card.png",
+    "headline": null,
+    "sources": [
+      "public/app-screenshots/ipad/dark/02-Song-Detail.png",
+      "public/app-screenshots/dark/04-Search.png"
+    ],
+    "archive": "downloads/chordlist-creative-analog.zip"
+  },
+  {
+    "language": "en",
+    "variant": "classic",
+    "asset": "event-details",
+    "label": "In-App Event details page",
+    "placement": "The full-screen event page behind the event's name and description. 9:16.",
+    "width": 2160,
+    "height": 3840,
+    "safe": {
+      "width": 1700,
+      "height": 2800
+    },
+    "file": "classic/event-details.png",
+    "headline": null,
+    "sources": [
+      "public/app-screenshots/dark/02-Song-Detail.png"
+    ],
+    "archive": "downloads/chordlist-creative-classic.zip"
+  },
+  {
+    "language": "en",
+    "variant": "analog",
+    "asset": "event-details",
+    "label": "In-App Event details page",
+    "placement": "The full-screen event page behind the event's name and description. 9:16.",
+    "width": 2160,
+    "height": 3840,
+    "safe": {
+      "width": 1700,
+      "height": 2800
+    },
+    "file": "analog/event-details.png",
+    "headline": null,
+    "sources": [
+      "public/app-screenshots/dark/02-Song-Detail.png"
+    ],
+    "archive": "downloads/chordlist-creative-analog.zip"
+  },
+  {
+    "language": "de",
+    "variant": "classic",
+    "asset": "header",
+    "label": "Product page header",
+    "placement": "Above the app icon on the product page (iOS 27, iPadOS 27).",
+    "width": 3840,
+    "height": 1646,
+    "safe": {
+      "width": 3200,
+      "height": 1180
+    },
+    "file": "de/classic/header.png",
+    "headline": "Deine Songtexte und Akkorde – immer mit dabei.",
+    "sources": [
+      "public/app-screenshots/de/ipad/light/02-Song-Detail.png",
+      "public/app-screenshots/de/light/01-Song-List.png"
+    ],
+    "archive": "downloads/chordlist-creative-de-classic.zip"
+  },
+  {
+    "language": "de",
+    "variant": "analog",
+    "asset": "header",
+    "label": "Product page header",
+    "placement": "Above the app icon on the product page (iOS 27, iPadOS 27).",
+    "width": 3840,
+    "height": 1646,
+    "safe": {
+      "width": 3200,
+      "height": 1180
+    },
+    "file": "de/analog/header.png",
+    "headline": "Deine Songtexte und Akkorde – immer mit dabei.",
+    "sources": [
+      "public/app-screenshots/de/ipad/light/02-Song-Detail.png",
+      "public/app-screenshots/de/light/01-Song-List.png"
+    ],
+    "archive": "downloads/chordlist-creative-de-analog.zip"
+  },
+  {
+    "language": "de",
+    "variant": "classic",
+    "asset": "search",
+    "label": "Search results",
+    "placement": "In App Store search results, in place of the first screenshots.",
+    "width": 3840,
+    "height": 2560,
+    "safe": {
+      "width": 3300,
+      "height": 2100
+    },
+    "file": "de/classic/search.png",
+    "headline": "Deine Songs. Sofort spielbereit.",
+    "sources": [
+      "public/app-screenshots/de/light/01-Song-List.png",
+      "public/app-screenshots/de/light/02-Song-Detail.png"
+    ],
+    "archive": "downloads/chordlist-creative-de-classic.zip"
+  },
+  {
+    "language": "de",
+    "variant": "analog",
+    "asset": "search",
+    "label": "Search results",
+    "placement": "In App Store search results, in place of the first screenshots.",
+    "width": 3840,
+    "height": 2560,
+    "safe": {
+      "width": 3300,
+      "height": 2100
+    },
+    "file": "de/analog/search.png",
+    "headline": "Deine Songs. Sofort spielbereit.",
+    "sources": [
+      "public/app-screenshots/de/light/01-Song-List.png",
+      "public/app-screenshots/de/light/02-Song-Detail.png"
+    ],
+    "archive": "downloads/chordlist-creative-de-analog.zip"
+  },
+  {
+    "language": "de",
+    "variant": "classic",
+    "asset": "universal",
+    "label": "Universal",
+    "placement": "One master for both the header and search results; Apple crops it to each.",
+    "width": 5244,
+    "height": 2950,
+    "safe": {
+      "width": 3688,
+      "height": 1612
+    },
+    "file": "de/classic/universal.png",
+    "headline": "Deine Songtexte und Akkorde – immer mit dabei.",
+    "sources": [
+      "public/app-screenshots/de/ipad/light/02-Song-Detail.png",
+      "public/app-screenshots/de/light/01-Song-List.png"
+    ],
+    "archive": "downloads/chordlist-creative-de-classic.zip"
+  },
+  {
+    "language": "de",
+    "variant": "analog",
+    "asset": "universal",
+    "label": "Universal",
+    "placement": "One master for both the header and search results; Apple crops it to each.",
+    "width": 5244,
+    "height": 2950,
+    "safe": {
+      "width": 3688,
+      "height": 1612
+    },
+    "file": "de/analog/universal.png",
+    "headline": "Deine Songtexte und Akkorde – immer mit dabei.",
+    "sources": [
+      "public/app-screenshots/de/ipad/light/02-Song-Detail.png",
+      "public/app-screenshots/de/light/01-Song-List.png"
+    ],
+    "archive": "downloads/chordlist-creative-de-analog.zip"
+  },
+  {
+    "language": "de",
+    "variant": "classic",
+    "asset": "event-card",
+    "label": "In-App Event card",
+    "placement": "The event card in search, Today, and on the product page. 16:9.",
+    "width": 3840,
+    "height": 2160,
+    "safe": {
+      "width": 3000,
+      "height": 1600
+    },
+    "file": "de/classic/event-card.png",
+    "headline": null,
+    "sources": [
+      "public/app-screenshots/de/ipad/dark/02-Song-Detail.png",
+      "public/app-screenshots/de/dark/04-Search.png"
+    ],
+    "archive": "downloads/chordlist-creative-de-classic.zip"
+  },
+  {
+    "language": "de",
+    "variant": "analog",
+    "asset": "event-card",
+    "label": "In-App Event card",
+    "placement": "The event card in search, Today, and on the product page. 16:9.",
+    "width": 3840,
+    "height": 2160,
+    "safe": {
+      "width": 3000,
+      "height": 1600
+    },
+    "file": "de/analog/event-card.png",
+    "headline": null,
+    "sources": [
+      "public/app-screenshots/de/ipad/dark/02-Song-Detail.png",
+      "public/app-screenshots/de/dark/04-Search.png"
+    ],
+    "archive": "downloads/chordlist-creative-de-analog.zip"
+  },
+  {
+    "language": "de",
+    "variant": "classic",
+    "asset": "event-details",
+    "label": "In-App Event details page",
+    "placement": "The full-screen event page behind the event's name and description. 9:16.",
+    "width": 2160,
+    "height": 3840,
+    "safe": {
+      "width": 1700,
+      "height": 2800
+    },
+    "file": "de/classic/event-details.png",
+    "headline": null,
+    "sources": [
+      "public/app-screenshots/de/dark/02-Song-Detail.png"
+    ],
+    "archive": "downloads/chordlist-creative-de-classic.zip"
+  },
+  {
+    "language": "de",
+    "variant": "analog",
+    "asset": "event-details",
+    "label": "In-App Event details page",
+    "placement": "The full-screen event page behind the event's name and description. 9:16.",
+    "width": 2160,
+    "height": 3840,
+    "safe": {
+      "width": 1700,
+      "height": 2800
+    },
+    "file": "de/analog/event-details.png",
+    "headline": null,
+    "sources": [
+      "public/app-screenshots/de/dark/02-Song-Detail.png"
+    ],
+    "archive": "downloads/chordlist-creative-de-analog.zip"
+  }
+]

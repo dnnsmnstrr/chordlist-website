@@ -30,6 +30,7 @@ yarn lockfiles).
 | `pnpm build:og` | Regenerate `public/og.png`, one card per static page in `public/og/`, **and** one per blog post in `public/blog/og/` |
 | `pnpm build:social` | Regenerate every social asset in `public/social/` from `content/social/` |
 | `pnpm build:emails` | Regenerate every email in `public/emails/` from `content/emails/` |
+| `pnpm build:creative` | Regenerate the App Store header, search results, universal, and In-App Event images in `public/app-store-creative/` |
 
 There is no test suite. `pnpm check` is the gate.
 
@@ -213,7 +214,7 @@ enabled in `next.config.mjs`, so `<Link href>` values are checked against real r
 
 ## Generated and synced assets
 
-Five categories of files in `public/` are **outputs — edit the generator, not the file**:
+These categories of files in `public/` are **outputs — edit the generator, not the file**:
 
 - **Icons** (`favicon.ico`, `icon.svg`, `icon-{light,dark}-32x32.png`, `apple-icon.png`) —
   `pnpm build:icons`.
@@ -262,6 +263,10 @@ Five categories of files in `public/` are **outputs — edit the generator, not 
   product wording from `VOCABULARY.md` through `scripts/lib/vocabulary.mjs`. Each language renders
   from its own captures, never English ones. `docs/app-store-screenshot-system.md` is the source of
   truth; `/screens` is the review and download page.
+- **App Store creative assets** (`public/app-store-creative/`, plus `manifest.json` and the ZIPs in `downloads/`) — `pnpm build:creative`:
+  the product page header, search results, and universal assets for iOS 27, and In-App Event media, at Apple's
+  template sizes. Formats, safe areas, and art direction live in the script's `CONFIG` block; the words are
+  `creativeCopy` in `scripts/lib/app-store-copy.mjs`. Documented in `docs/app-store-screenshot-system.md`.
 
 `public/songs/morning-light.md` is a real sample song file: it is both rendered by
 `components/lyric-preview.tsx` (read at build time with `fs.readFile`) and offered as a download,

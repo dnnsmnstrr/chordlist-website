@@ -90,3 +90,27 @@ export const appStoreCopy = {
 
 /// The languages the App Store sets can be built in, in upload order.
 export const copyLanguages = Object.keys(appStoreCopy)
+
+/**
+ * The words on the creative assets — the product page header, the search results asset, and the
+ * universal asset that can serve as both.
+ *
+ * Nothing new is written here. The header and universal assets carry the tagline — whole, or its
+ * opening words closed with a full stop — hand-broken into lines that
+ * `scripts/build-app-store-creative.mjs` checks against `VOCABULARY.md`, and the search
+ * results asset repeats the first screenshot's message, which is the one the listing leads with.
+ * Apple shows these at a fraction of their pixel size, so they carry a headline and no paragraph.
+ *
+ * In-App Event media has no entry: the App Store sets the event's name, badge, and description over
+ * it from App Store Connect, so words in the image would say everything twice.
+ */
+export const creativeCopy = {
+  en: {
+    tagline: ["Your lyrics", "and chords,", "as files."],
+    search: "01-library",
+  },
+  de: {
+    tagline: ["Deine Songtexte", "und Akkorde –", "immer mit dabei."],
+    search: "01-library",
+  },
+}

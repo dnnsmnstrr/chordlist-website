@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises"
 import path from "node:path"
 import type { Metadata } from "next"
+import Image from "next/image"
 import Link from "next/link"
 import { Download } from "lucide-react"
 
@@ -25,6 +26,19 @@ type AppStoreScreenshot = {
   file: string
   headline: string
   supporting: string
+  archive: string
+}
+
+/// One entry of `public/app-store-creative/manifest.json`, written by `pnpm build:creative`.
+type CreativeAsset = {
+  language: string
+  variant: ScreenshotVariant
+  asset: string
+  label: string
+  placement: string
+  width: number
+  height: number
+  file: string
   archive: string
 }
 
@@ -92,6 +106,22 @@ async function readManifest(): Promise<AppStoreScreenshot[]> {
   }
 }
 
+/**
+ * The creative assets are optional on this page: an empty list rather than an error when
+ * `build:creative` has not run, or is running and has emptied its directory.
+ */
+async function readCreativeManifest(): Promise<CreativeAsset[]> {
+  try {
+    const contents = await readFile(
+      path.join(process.cwd(), "public", "app-store-creative", "manifest.json"),
+      "utf8",
+    )
+    return JSON.parse(contents) as CreativeAsset[]
+  } catch {
+    return []
+  }
+}
+
 export const metadata: Metadata = pageMetadata({
   path: "/screens",
   title: screensCopy.metadata.title,
@@ -113,6 +143,7 @@ export default async function ScreensPage({ searchParams }: ScreensPageProps) {
   // empty page, so a hand-typed URL and a stale link both still show something.
   const active = requested && languages.includes(requested) ? requested : languages[0]
   const sets = screenshotSets(screenshots.filter((screenshot) => screenshot.language === active))
+  const creative = (await readCreativeManifest()).filter((entry) => entry.language === active)
 
   return (
     <main className="min-h-screen bg-background text-foreground">
@@ -177,11 +208,92 @@ export default async function ScreensPage({ searchParams }: ScreensPageProps) {
               </section>
             )
           })}
+
+          {creative.length > 0 ? <CreativeAssets assets={creative} /> : null}
         </div>
       </article>
 
       <SiteFooter />
     </main>
+  )
+}
+
+/// The creative assets for one language, a row per treatment in the same order as the sets above.
+function CreativeAssets({ assets }: { assets: CreativeAsset[] }) {
+  const variants = [...new Set(setOrder.map((set) => set.variant))]
+
+  return (
+    <section id="creative" className="flex flex-col gap-10">
+      <div className="border-b border-border pb-5">
+        <h2 className="text-2xl font-semibold tracking-tight">{screensCopy.creative.title}</h2>
+        <p className="mt-2 max-w-2xl text-pretty text-sm leading-relaxed text-muted-foreground">
+          {screensCopy.creative.description}
+        </p>
+      </div>
+
+      {variants.map((variant) => {
+        const entries = assets.filter((entry) => entry.variant === variant)
+        const first = entries[0]
+        if (!first) return null
+        const variantTitle = screensCopy.variants[variant].title
+
+        return (
+          <div key={variant}>
+            <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+              <h3 className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
+                {screensCopy.creative.setTitle(languageName(first.language), variantTitle)}
+              </h3>
+              <Button
+                size="lg"
+                nativeButton={false}
+                render={
+                  <a href={`/app-store-creative/${first.archive}`} download>
+                    <Download aria-hidden="true" />
+                    {screensCopy.downloadSet}
+                  </a>
+                }
+              />
+            </div>
+            <ul className="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {entries.map((entry) => (
+                <li key={entry.file} className="flex flex-col gap-3">
+                  <a
+                    href={`/app-store-creative/${entry.file}`}
+                    className="block overflow-hidden rounded-lg border border-border bg-black"
+                  >
+                    <Image
+                      src={`/app-store-creative/${entry.file}`}
+                      width={entry.width}
+                      height={entry.height}
+                      alt={screensCopy.creative.alt(entry.label, languageName(entry.language), variantTitle)}
+                      sizes="(max-width: 640px) calc(100vw - 3rem), (max-width: 1024px) 45vw, 400px"
+                      className="mx-auto max-h-80 w-auto object-contain"
+                    />
+                  </a>
+                  <div>
+                    <p className="text-sm font-medium">{entry.label}</p>
+                    <p className="mt-1 text-pretty text-sm leading-snug text-muted-foreground">{entry.placement}</p>
+                    <div className="mt-2 flex items-center justify-between gap-4">
+                      <p className="font-mono text-xs text-muted-foreground">
+                        {screensCopy.creative.meta(entry.width, entry.height)}
+                      </p>
+                      <a
+                        href={`/app-store-creative/${entry.file}`}
+                        download
+                        className="inline-flex items-center gap-1.5 text-sm font-medium hover:underline"
+                      >
+                        <Download aria-hidden="true" className="size-4" />
+                        {screensCopy.creative.download}
+                      </a>
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )
+      })}
+    </section>
   )
 }
 

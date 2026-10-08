@@ -77,3 +77,45 @@ A language that has only been captured in one appearance still gets a full set: 
 borrows the other appearance's capture. A language with no captures for a device is skipped rather than faked. Both
 cases are printed at the end of the build with the command that fixes them — English is the exception and fails, because
 that set has to exist.
+
+## Creative assets
+
+iOS 27 and iPadOS 27 add placements beyond the screenshots, described in Apple's
+[asset best practices](https://developer.apple.com/app-store/asset-best-practices/). `pnpm build:creative` renders
+them from the same captures, copy, and treatments:
+
+| Asset | Size | Where it appears |
+| --- | --- | --- |
+| `header.png` | 3840×1646 | Product page header, above the app icon |
+| `search.png` | 3840×2560 (3:2) | Search results, in place of the first screenshots |
+| `universal.png` | 5244×2950 (16:9) | One master Apple crops into either of the above |
+| `event-card.png` | 3840×2160 (16:9) | In-App Event card |
+| `event-details.png` | 2160×3840 (9:16) | In-App Event details page |
+
+```text
+scripts/build-app-store-creative.mjs         Formats, safe areas, and art direction (CONFIG)
+scripts/lib/app-store-creative-template.mjs  Landscape and event composition
+scripts/lib/app-store-copy.mjs               creativeCopy — which words each asset carries
+public/app-store-creative/                   Generated PNGs and manifest, per language and treatment
+```
+
+The header, search, and universal sizes are the canvases of Apple's own templates; the event sizes are the maximum
+App Store Connect accepts, twice its minimum. Apple publishes no pixel insets for safe areas — its templates draw a
+centred one and the crop varies by device — so each format's `safe` box in `CONFIG` is that centred area, and
+everything with words or a device stays inside it. The universal asset's safe area is derived rather than chosen: the
+middle that survives both the header crop and the search crop, inset by the stricter of their safe areas. Check each
+one in App Store Connect's preview before submitting, and adjust `safe` there if Apple's crop disagrees.
+
+Nothing new is written for these images. The header and universal assets carry the tagline, checked against
+`VOCABULARY.md` like the Open Graph card; the search asset repeats the first screenshot's eyebrow and headline. Apple
+shows them at about a tenth of their pixel size, so they carry no paragraph, and the builder warns when a headline has
+to shrink below what reads at that size. In-App Event media has no words at all: App Store Connect sets the event's
+name, badge, and description over it, and Apple applies its own crops and gradients.
+
+Apple's content rules for every asset apply here too: no prices, discounts, URLs, copyright symbols, awards, other
+platforms' logos, or Apple recognitions.
+
+The images are opaque PNGs, as Apple requires. Each language and treatment also gets a ZIP of its five assets in
+`public/app-store-creative/downloads/`, and `/screens` lists every file under the screenshot sets with that ZIP beside
+each group.
+
