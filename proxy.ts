@@ -70,6 +70,8 @@ export const config = {
   // Each prefix is listed twice — bare and with `/:path*` — rather than relying on `*` matching
   // zero segments. The bare form is the one a person actually types.
   matcher: [
+    "/admin",
+    "/admin/:path*",
     "/api/editorial",
     "/api/editorial/:path*",
     "/api/translations",

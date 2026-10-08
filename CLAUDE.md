@@ -384,6 +384,8 @@ first revalidation.
 
 `/emails`, `/screens`, `/copy`, `/gallery`, `/social/posts`, `/social/editor`, `/translations`,
 `/editorial`, `/api/translations/*`, and `/api/editorial` are behind a Supabase Auth login at `/login` (`/logout` signs out).
+`/admin` is the dashboard that links every one of them and the admin backend at `siteConfig.adminBackendUrl`
+(admin.chordlist.app); signing in lands there. A new tool gets a card in its `sections` list as well.
 `lib/admin-routes.ts` is the single list of protected prefixes and the `ADMIN_EMAILS` allowlist.
 
 `proxy.ts` refreshes the session and redirects; it is **not** the authorization, because a proxy

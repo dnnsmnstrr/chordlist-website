@@ -14,7 +14,7 @@ import {
 } from "../lib/admin-routes"
 
 test("the internal tools are behind the login and the marketing site is not", () => {
-  for (const path of ["/emails", "/emails/", "/translations", "/social/editor", "/api/translations/languages", "/copy", "/editorial", "/editorial/a-post", "/api/editorial"]) {
+  for (const path of ["/admin", "/emails", "/emails/", "/translations", "/social/editor", "/api/translations/languages", "/copy", "/editorial", "/editorial/a-post", "/api/editorial"]) {
     assert.equal(isProtectedRoute(path), true, path)
   }
   for (const path of ["/", "/de", "/chordlink", "/blog/a-post", "/privacy", "/press", "/chordlink/notified"]) {
@@ -34,6 +34,7 @@ test("a prefix does not capture a route that merely starts with the same letters
   // /copywriting is not /copy, and /emails-archive is not /emails.
   assert.equal(isAdminRoute("/copywriting"), false)
   assert.equal(isAdminRoute("/emails-archive"), false)
+  assert.equal(isAdminRoute("/administration"), false)
   assert.equal(isAdminRoute("/social/posts-public"), false)
   assert.equal(isAdminRoute("/social/posts/anything"), true)
 })
@@ -74,11 +75,11 @@ test("the allowlist ignores spacing and case", () => {
 test("the post-login redirect cannot be pointed off-site", () => {
   // Otherwise /login?next=//evil.example turns this login into an open redirect that lends the
   // site's name to somebody else's phishing page.
-  assert.equal(safeRedirectPath("//evil.example"), "/emails")
-  assert.equal(safeRedirectPath("/\\evil.example"), "/emails")
-  assert.equal(safeRedirectPath("https://evil.example"), "/emails")
-  assert.equal(safeRedirectPath("evil"), "/emails")
-  assert.equal(safeRedirectPath(null), "/emails")
+  assert.equal(safeRedirectPath("//evil.example"), "/admin")
+  assert.equal(safeRedirectPath("/\\evil.example"), "/admin")
+  assert.equal(safeRedirectPath("https://evil.example"), "/admin")
+  assert.equal(safeRedirectPath("evil"), "/admin")
+  assert.equal(safeRedirectPath(null), "/admin")
   assert.equal(safeRedirectPath("/translations"), "/translations")
 })
 
@@ -101,6 +102,7 @@ test("every protected page actually calls the guard", () => {
   // cover Server Functions — so each page has to ask for itself. This test is what makes forgetting
   // one a failing build rather than a quiet hole.
   const guarded = {
+    "app/(en)/admin/page.tsx": "requireAdmin",
     "app/(en)/copy/page.tsx": "requireAdmin",
     "app/(en)/editorial/page.tsx": "requireAdmin",
     "app/(en)/editorial/[slug]/page.tsx": "requireAdmin",

@@ -11,6 +11,7 @@
  * App Store sets, so it is part of the public site and a login in front of it is a dead link.
  */
 export const adminRoutePrefixes = [
+  "/admin",
   "/api/editorial",
   "/api/translations",
   "/copy",
@@ -69,9 +70,10 @@ export function isAdminEmail(email: string | null | undefined, allowlist: string
  * Only same-site absolute paths survive: a `next` parameter is attacker-controlled, and echoing
  * one back into a redirect is how a login page becomes an open redirect that lends the site's
  * name to somebody else's phishing page. `//evil.example` and `/\evil.example` are both rejected
- * because browsers read them as protocol-relative URLs.
+ * because browsers read them as protocol-relative URLs. Without one, the dashboard at `/admin` is
+ * where every tool is a click away.
  */
-export function safeRedirectPath(value: string | null | undefined, fallback = "/emails"): string {
+export function safeRedirectPath(value: string | null | undefined, fallback = "/admin"): string {
   if (typeof value !== "string" || value.length === 0) return fallback
   if (!value.startsWith("/")) return fallback
   if (value.startsWith("//") || value.startsWith("/\\")) return fallback

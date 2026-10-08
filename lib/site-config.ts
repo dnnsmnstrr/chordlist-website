@@ -24,6 +24,9 @@ export const siteConfig = {
     links: [] as { label: string; url: string }[],
   },
   url: "https://chordlist.app",
+  /// The admin backend — chordlink orders, settings, and everything else that lives in a database
+  /// rather than in this checkout. `/admin` links to it beside the site's own internal tools.
+  adminBackendUrl: "https://admin.chordlist.app",
   launchDate: "2026-10-10",
   minimumOSVersion: 18,
   freeSongLimit: 10,

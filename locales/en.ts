@@ -1245,6 +1245,66 @@ export const pianoCopy = {
   chordModeActive: "Chord mode · Shift for minor · Esc to exit",
 } as const
 
+export const adminCopy = {
+  metadata: {
+    title: "Admin",
+    description: `The internal tools behind ${siteConfig.name}, in one place.`,
+  },
+  eyebrow: "Internal",
+  title: "Admin",
+  introduction:
+    "Every internal page of this site, and the way to the admin backend. Tools marked local only edit files in the checkout, so they open under pnpm dev and nowhere else.",
+  backend: {
+    title: "Admin backend",
+    description: "chordlink orders, settings, and everything else that lives in the database.",
+    host: siteConfig.adminBackendUrl.replace(/^https?:\/\//, ""),
+    label: "Open the admin backend",
+  },
+  sections: {
+    content: "Content",
+    marketing: "Marketing assets",
+  },
+  badges: {
+    localOnly: "Local only",
+    public: "Public",
+  },
+  tools: {
+    editorial: {
+      title: "Editorial",
+      description: "Plan, write, and approve blog posts.",
+    },
+    translations: {
+      title: "Translations",
+      description: "Edit the app's strings and the shared glossary in every language.",
+    },
+    copy: {
+      title: "Copy variants",
+      description: "The alternative home page wordings, side by side.",
+    },
+    screens: {
+      title: "App Store assets",
+      description: "Screenshot sets and creative assets, ready to upload.",
+    },
+    socialPosts: {
+      title: "Social posts",
+      description: "Browse, share, and download ready-to-publish posts.",
+    },
+    socialEditor: {
+      title: "Social post editor",
+      description: "Compose, preview, and export social post configurations.",
+    },
+    emails: {
+      title: "Email templates",
+      description: "Review the built emails before pasting them into Brevo.",
+    },
+    gallery: {
+      title: "Gallery",
+      description: "Imagery and video made for the brand.",
+    },
+  },
+  signOut: "Sign out",
+} as const
+
 export const copyReviewCopy = {
   metadata: {
     title: "Copy variants",
