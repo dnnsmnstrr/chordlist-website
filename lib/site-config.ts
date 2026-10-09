@@ -58,7 +58,7 @@ export const siteConfig = {
     // Add the public App Store URL here once the listing is live. It is the same
     // URL as the pre-order above, so setting it on launch day is what flips every
     // CTA from "Pre-order" to "Download".
-    appStore: null as string | null,
+    appStore: "https://apps.apple.com/us/app/chordlist-personal-songbook/id6798344297" as string | null,
     pressKitArchive: "/press/chordlist-press-kit.zip" as string | null,
     terms: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/",
   },
