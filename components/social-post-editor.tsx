@@ -2,6 +2,7 @@
 
 import designTokens from "@/design/tokens.json"
 import designMark from "@/design/mark.json"
+import photographyCatalog from "@/assets/visual-references/analog-photography/catalog.json"
 
 import { useCallback, useEffect, useMemo, useRef, useState, type ComponentType } from "react"
 import Link from "next/link"
@@ -32,7 +33,7 @@ type BackgroundMode = "plain" | "texture" | "image"
 type TextureName = "studio" | "stage" | "sampler" | "guitar" | "piano-keys" | "piano-score"
 type ScreenshotMode = "full" | "detail"
 
-type EditorConfig = {
+export type EditorConfig = {
   slug: string
   template: TemplateName
   theme: ThemeName
@@ -97,14 +98,60 @@ const photos = [
   { name: "sampler-pads-in-motion.png", label: "Sampler", src: "/textures/sampler-pads.webp" },
 ] as const
 
-const textureOptions: { name: TextureName; label: string; src: string }[] = [
-  { name: "studio", label: "Studio haze", src: "/textures/studio-microphone.webp" },
-  { name: "stage", label: "Stage bloom", src: "/textures/stage-microphone.webp" },
-  { name: "sampler", label: "Sampler grain", src: "/textures/sampler-and-keyboard.webp" },
-  { name: "guitar", label: "Guitar motion", src: "/gallery/guitarist-in-motion.png" },
-  { name: "piano-keys", label: "Piano keys", src: "/gallery/piano-keys-in-motion.png" },
-  { name: "piano-score", label: "Piano score", src: "/gallery/piano-with-sheet-music.png" },
+/** `file` is the master each texture is cut from, as in `CONFIG.textures` in scripts/build-social.mjs. */
+const textureOptions: { name: TextureName; label: string; src: string; file: string }[] = [
+  { name: "studio", label: "Studio haze", src: "/textures/studio-microphone.webp", file: "studio-microphone-in-motion.png" },
+  { name: "stage", label: "Stage bloom", src: "/textures/stage-microphone.webp", file: "stage-microphone-in-motion.png" },
+  { name: "sampler", label: "Sampler grain", src: "/textures/sampler-and-keyboard.webp", file: "sampler-and-keyboard-in-motion.png" },
+  { name: "guitar", label: "Guitar motion", src: "/gallery/guitarist-in-motion.png", file: "guitarist-in-motion.png" },
+  { name: "piano-keys", label: "Piano keys", src: "/gallery/piano-keys-in-motion.png", file: "piano-keys-in-motion.png" },
+  { name: "piano-score", label: "Piano score", src: "/gallery/piano-with-sheet-music.png", file: "piano-with-sheet-music.png" },
 ]
+
+/**
+ * The closing sentence the alt text gets for the photograph behind the copy, from the alt the
+ * photography catalog already holds for each master — written once, against the picture.
+ * A texture is set faintly, so it says so. An uploaded photo has no entry and gets no sentence.
+ */
+function backgroundSentence(config: EditorConfig): string | null {
+  const usesFullImage = config.template === "photo" || config.backgroundMode === "image"
+  const file = usesFullImage
+    ? config.photo
+    : config.backgroundMode === "texture"
+      ? textureOptions.find((texture) => texture.name === config.texture)?.file
+      : undefined
+  const description = file ? photoDescription(file) : undefined
+  return description ? describeBackground(description, !usesFullImage) : null
+}
+
+function photoDescription(file: string): string | undefined {
+  return (photographyCatalog as Record<string, { alt?: string }>)[file]?.alt
+}
+
+function describeBackground(description: string, faint: boolean) {
+  const phrase = description.charAt(0).toLowerCase() + description.slice(1)
+  return `${faint ? "Faintly behind it" : "Behind it"}, ${phrase}`
+}
+
+/** Every sentence `backgroundSentence` can produce, so a previous one can be recognised and replaced. */
+const backgroundSentences = Object.values(photographyCatalog as Record<string, { alt?: string }>)
+  .flatMap(({ alt }) => (alt ? [describeBackground(alt, false), describeBackground(alt, true)] : []))
+
+/**
+ * Keeps the alt text's closing background sentence in step with the background, when an edit
+ * changed which photograph sits behind the copy. The rest of the alt is the author's and is left
+ * alone; so is an alt whose background sentence was rewritten by hand, which no longer matches.
+ */
+export function withBackgroundAlt(next: EditorConfig, previous: EditorConfig): EditorConfig {
+  const sentence = backgroundSentence(next)
+  if (sentence === backgroundSentence(previous)) return next
+
+  const trimmed = next.alt.trim()
+  const stale = backgroundSentences.find((candidate) => trimmed === candidate || trimmed.endsWith(` ${candidate}`))
+  const base = stale ? trimmed.slice(0, trimmed.length - stale.length).trim() : trimmed
+  const alt = sentence ? [base, sentence].filter(Boolean).join(" ") : base
+  return alt === next.alt ? next : { ...next, alt }
+}
 
 const screenshots = [
   "01-Song-List.png",
@@ -116,7 +163,7 @@ const screenshots = [
   "07-Song-Suggestions.png",
 ] as const
 
-const initialConfig: EditorConfig = {
+export const initialConfig: EditorConfig = {
   slug: "files-in-your-pocket",
   template: "statement",
   theme: "ink",
@@ -989,12 +1036,18 @@ export function SocialPostEditor({ configMarkdown: initialMarkdown }: { configMa
     return () => window.removeEventListener("keydown", handleEscape)
   }, [importOpen])
 
+  // Every edit made in the form goes through here, so a change of background also updates the
+  // alt text. Imports and Reset call setConfig directly: their alt is already the one intended.
+  const edit = (change: (current: EditorConfig) => EditorConfig) => {
+    setConfig((current) => withBackgroundAlt(change(current), current))
+  }
+
   const update = <Key extends keyof EditorConfig>(key: Key, value: EditorConfig[Key]) => {
-    setConfig((current) => ({ ...current, [key]: value }))
+    edit((current) => ({ ...current, [key]: value }))
   }
 
   const toggleFormat = (name: FormatName) => {
-    setConfig((current) => {
+    edit((current) => {
       const exists = current.formats.includes(name)
       if (exists && current.formats.length === 1) return current
       return {
@@ -1159,7 +1212,7 @@ export function SocialPostEditor({ configMarkdown: initialMarkdown }: { configMa
                   key={template.name}
                   type="button"
                   onClick={() => {
-                    setConfig((current) => ({
+                    edit((current) => ({
                       ...current,
                       template: template.name,
                       backgroundMode: template.name === "photo" ? "image" : current.backgroundMode,
@@ -1249,7 +1302,7 @@ export function SocialPostEditor({ configMarkdown: initialMarkdown }: { configMa
                     key={mode}
                     type="button"
                     onClick={() => {
-                      setConfig((current) => ({
+                      edit((current) => ({
                         ...current,
                         backgroundMode: mode,
                         theme: mode === "texture" ? "ink" : current.theme,
