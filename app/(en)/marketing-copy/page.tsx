@@ -9,7 +9,7 @@ import { CopyableMarkdown } from "@/components/copyable-markdown"
 import { SiteFooter } from "@/components/site-footer"
 import { SiteHeader } from "@/components/site-header"
 import { renderMarkdown } from "@/lib/markdown"
-import { marketingCopyPath, prepareMarketingCopy } from "@/lib/marketing-copy"
+import { prepareMarketingCopy } from "@/lib/marketing-copy"
 import { pageMetadata } from "@/lib/page-metadata"
 import { requireAdmin } from "@/lib/server/admin-auth"
 import { marketingCopyPageCopy as copy } from "@/locales/en"
@@ -30,7 +30,9 @@ export const metadata: Metadata = pageMetadata({
 export default async function MarketingCopyPage() {
   await requireAdmin("/marketing-copy")
 
-  const source = await readFile(path.join(process.cwd(), marketingCopyPath), "utf8")
+  // Spelled out rather than built from marketingCopyPath: the bundler can only scope its file
+  // tracing to a literal path, and a computed one makes it trace the whole project.
+  const source = await readFile(path.join(process.cwd(), "docs", "launch-copy.md"), "utf8")
   const html = renderMarkdown(prepareMarketingCopy(source))
 
   return (
