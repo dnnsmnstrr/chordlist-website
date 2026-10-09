@@ -216,6 +216,19 @@ function readDefinition(file, data) {
   ) {
     fail(`"screenshotMode" must be "full" or "detail"`)
   }
+  if (data.screenshotScale !== undefined) {
+    const scale = Number.parseFloat(String(data.screenshotScale))
+    if (!/^\s*-?[\d.]+%?\s*$/.test(String(data.screenshotScale)) || !(scale >= 50 && scale <= 150)) {
+      fail(`"screenshotScale" must be between 50% and 150%`)
+    }
+  }
+  if (data.screenshotFocus !== undefined) {
+    const parts = String(data.screenshotFocus).trim().split(/\s+/)
+    const valid =
+      parts.length === 2 &&
+      parts.every((part) => /^-?[\d.]+%?$/.test(part) && Math.abs(Number.parseFloat(part)) <= 20)
+    if (!valid) fail(`"screenshotFocus" must be two percentages from -20% to 20%, such as "5% -3%"`)
+  }
   if (data.screenshotLayout !== undefined && !["beside", "centered"].includes(data.screenshotLayout)) {
     fail(`"screenshotLayout" must be "beside" or "centered"`)
   }

@@ -511,9 +511,11 @@ function screenshot({ definition, tokens, scale, inner, format, assets }) {
   // own and so may not be taller than the box the frame leaves for it; oversized
   // on the portrait formats, where it is a cropped backdrop to the copy.
   const contained = format.name === "card"
-  const shotHeight = contained
-    ? Math.min(Math.round(format.height * ratios.height), inner.height)
-    : Math.round(format.height * ratios.height)
+  const adjust = screenshotAdjustments(definition, format)
+  const shotHeight = Math.round(
+    (contained ? Math.min(format.height * ratios.height, inner.height) : format.height * ratios.height) *
+      adjust.scale,
+  )
   const shotWidth = Math.round(shotHeight * (detail ? ratios.detail : screenshotRatio))
   const outerPadding = (format.width - inner.width) / 2
   const deviceBorder = Math.max(2, Math.round(2 * scale))
@@ -538,9 +540,16 @@ function screenshot({ definition, tokens, scale, inner, format, assets }) {
   // Absolute against the body box on the portrait formats, a flex child in the
   // card's two-column row — which is what centres it vertically without the
   // template having to know how tall the body box came out.
+  // The sliders' offsets go on top of either placement, as the editor's preview applies them.
   const placement = contained
-    ? { position: "relative", flexShrink: 0, marginLeft: column.left - (definition.headline ? copyWidth : 0) }
-    : { position: "absolute", right: shotRight, top: shotTop }
+    ? {
+        position: "relative",
+        flexShrink: 0,
+        marginLeft: column.left - (definition.headline ? copyWidth : 0),
+        left: adjust.left,
+        top: adjust.top,
+      }
+    : { position: "absolute", right: shotRight - adjust.left, top: shotTop + adjust.top }
 
   let shot
   if (deviceFrame) {
@@ -658,21 +667,18 @@ function centeredScreenshot({ definition, scale, inner, format, source }) {
   const ratio = detail
     ? { card: 0.76, post: 0.62, story: 0.58 }[format.name]
     : 1242 / 2688
+  const adjust = screenshotAdjustments(definition, format)
   const fitted = Math.min(inner.height, inner.width / ratio)
-  const shotHeight = Math.round(fitted * percentage(definition.screenshotScale, 100, 50, 150))
+  const shotHeight = Math.round(fitted * adjust.scale)
   const shotWidth = Math.round(shotHeight * ratio)
-  const [offsetX, offsetY] = String(definition.screenshotFocus ?? "0% 0%")
-    .trim()
-    .split(/\s+/)
-    .map((part) => percentage(part, 0, -20, 20))
   const deviceBorder = Math.max(2, Math.round(2 * scale))
   const imageFit = detail ? "cover" : "contain"
   const imagePosition = detail ? "top" : "center"
   const nudge = {
     position: "relative",
     flexShrink: 0,
-    left: Math.round((offsetX ?? 0) * format.width),
-    top: Math.round((offsetY ?? 0) * format.height),
+    left: adjust.left,
+    top: adjust.top,
   }
 
   let shot
@@ -752,7 +758,21 @@ function centeredScreenshot({ definition, scale, inner, format, source }) {
   }
 }
 
-/** `120%` or `1.2` as a fraction, clamped; the editor writes the first form. */
+/**
+ * The editor's Scale and Position sliders, as the build applies them in both layouts:
+ * `screenshotScale` multiplies the shot's height (50–150%), and `screenshotFocus` moves it by a
+ * share of the canvas (each axis −20 to 20%), right and down for positive values.
+ */
+export function screenshotAdjustments(definition, format) {
+  const [x, y] = String(definition.screenshotFocus ?? "0% 0%").trim().split(/\s+/)
+  return {
+    scale: percentage(definition.screenshotScale, 100, 50, 150),
+    left: Math.round(percentage(x, 0, -20, 20) * format.width),
+    top: Math.round(percentage(y, 0, -20, 20) * format.height),
+  }
+}
+
+/** A percentage such as `120%` (or a bare `120`) as a fraction, clamped to [min, max]. */
 function percentage(value, fallback, min, max) {
   if (value === undefined || value === null || value === "") return fallback / 100
   const parsed = Number.parseFloat(String(value))

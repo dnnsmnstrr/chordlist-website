@@ -245,7 +245,9 @@ whoever posts it is not rewriting copy that was already reviewed.
 | `filename` | no | A `file`'s name, set above a hairline rule. |
 | `screenshot` | `screenshot` | A filename in `public/app-screenshots/dark/`. |
 | `screenshotMode` | no | Screenshot framing: `full` keeps the complete screen visible; `detail` uses a larger top-aligned crop. Defaults to `full`. |
-| `screenshotLayout` | no | `beside` (default) sets the screenshot beside or behind the headline. `centered` sets it whole in the middle of the frame with no copy over it, in every format; a `headline` is then rejected. The lockup and the footnote still frame it — leave `eyebrow` and `footnote` out for the barest version. `screenshotScale` (`50%`–`150%`) and `screenshotFocus` (`x% y%`, each −20 to 20) resize and nudge it, matching the editor's sliders. |
+| `screenshotLayout` | no | `beside` (default) sets the screenshot beside or behind the headline. `centered` sets it whole in the middle of the frame with no copy over it, in every format; a `headline` is then rejected. The lockup and the footnote still frame it — leave `eyebrow` and `footnote` out for the barest version. |
+| `screenshotScale` | no | Resizes the screenshot from `50%` to `150%`, in either layout. Defaults to `100%`. |
+| `screenshotFocus` | no | Moves the screenshot by a share of the canvas, `x% y%`, each from `-20%` to `20%`; positive is right and down. Defaults to `0% 0%`. Both match the editor's Scale and Position sliders. |
 | `deviceFrame` | no | `true` adds a dark hardware shell and camera island around a screenshot. Defaults to `false`. |
 | `photo` | `photo` | A master filename in `assets/visual-references/analog-photography/`. |
 | `focus` | no | Steers the crop for `photo` and `backgroundImage`, e.g. `60% 40%`. Defaults to centre. |

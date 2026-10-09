@@ -761,17 +761,29 @@ function importedLines(value: unknown) {
   return importedString(value)
 }
 
-function importedFocus(value: unknown, fallback = "50% 50%") {
+/**
+ * Two percentages, `x% y%`. A photo's focus is a point in the frame, 0–100; a screenshot's
+ * `screenshotFocus` is an offset from where the layout puts it, −20 to 20, so the range is the
+ * caller's.
+ */
+function importedFocus(value: unknown, fallback = "50% 50%", [min, max] = [0, 100]) {
   const parts = importedString(value, fallback).trim().split(/\s+/)
-  const coordinate = (part: string | undefined, fb: number) => {
-    const parsed = Number.parseFloat(part ?? "")
-    return Number.isFinite(parsed) ? Math.min(100, Math.max(0, parsed)) : fb
-  }
   const fallbackParts = fallback.trim().split(/\s+/)
-  return {
-    x: coordinate(parts[0], Number.parseFloat(fallbackParts[0] ?? "") || 50),
-    y: coordinate(parts[1], Number.parseFloat(fallbackParts[1] ?? "") || 50),
+  const coordinate = (part: string | undefined, fallbackPart: string | undefined) => {
+    const parsed = Number.parseFloat(part ?? "")
+    const fb = Number.parseFloat(fallbackPart ?? "")
+    return Number.isFinite(parsed) ? Math.min(max, Math.max(min, parsed)) : Number.isFinite(fb) ? fb : 50
   }
+  return {
+    x: coordinate(parts[0], fallbackParts[0]),
+    y: coordinate(parts[1], fallbackParts[1]),
+  }
+}
+
+/** `screenshotScale`, 50–150% as the slider allows. */
+function importedScreenshotScale(value: unknown) {
+  const parsed = Number.parseFloat(importedString(value, "100"))
+  return Number.isFinite(parsed) ? Math.round(Math.min(150, Math.max(50, parsed))) : 100
 }
 
 function importedBackgroundScale(value: unknown) {
@@ -831,7 +843,7 @@ function parseImportedConfig(source: string): EditorConfig {
   const focus = importedFocus(data.focus)
   const headline = importedLines(data.headline)
   const screenshotMode = importedString(data.screenshotMode, "full")
-  const screenshotFocus = importedFocus(data.screenshotFocus, "0% 0%")
+  const screenshotFocus = importedFocus(data.screenshotFocus, "0% 0%", [-20, 20])
 
   return {
     ...initialConfig,
@@ -855,7 +867,7 @@ function parseImportedConfig(source: string): EditorConfig {
     screenshotLayout: data.screenshotLayout === "centered" ? "centered" : "beside",
     screenshotX: screenshotFocus.x,
     screenshotY: screenshotFocus.y,
-    screenshotScale: importedBackgroundScale(data.screenshotScale),
+    screenshotScale: importedScreenshotScale(data.screenshotScale),
     deviceFrame: data.deviceFrame === true,
     photo,
     focusX: focus.x,
