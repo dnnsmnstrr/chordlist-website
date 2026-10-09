@@ -52,6 +52,42 @@ export function AppCTA({ large = false, language = defaultLanguage }: AppCTAProp
   )
 }
 
+type AppStoreBadgeProps = {
+  language?: Language
+}
+
+function badgeSource(color: "black" | "white", locale: string) {
+  return `https://toolbox.marketingtools.apple.com/api/v2/badges/download-on-the-app-store/${color}/${locale}`
+}
+
+/**
+ * Apple's official App Store badge, served unmodified from Apple's marketing tools as their
+ * guidelines require. The white artwork follows the system dark mode, which is the only dark mode
+ * the site has. Apple only offers a badge for a live listing, so until the App Store link is set
+ * this falls back to the large CTA button.
+ */
+export function AppStoreBadge({ language = defaultLanguage }: AppStoreBadgeProps) {
+  const { storeBadge } = dictionary(language).common.appCta
+
+  if (!primaryAppLink || ctaState !== "download") {
+    return <AppCTA large language={language} />
+  }
+
+  return (
+    <a href={primaryAppLink} className="inline-block rounded-[10px] transition-opacity hover:opacity-80">
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcSet={badgeSource("white", storeBadge.locale)} />
+        <img
+          src={badgeSource("black", storeBadge.locale)}
+          alt={storeBadge.alt}
+          className="h-14 w-auto"
+          height={56}
+        />
+      </picture>
+    </a>
+  )
+}
+
 type AppCTANoteProps = {
   className?: string
   language?: Language
