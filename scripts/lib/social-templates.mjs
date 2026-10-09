@@ -483,6 +483,9 @@ function quote({ definition, tokens, scale, inner }) {
  * card does not, because at 1.91:1 there is room for the phone to sit inside the
  * frame — it is placed in the subject column instead, whole, and vertically
  * centred rather than cropped by the bottom edge.
+ *
+ * `screenshotLayout: centered` drops the copy entirely and sets the phone whole
+ * in the middle of the frame, in every format: the screen is the whole post.
  */
 function screenshot({ definition, tokens, scale, inner, format, assets }) {
   const source = assets.screenshots.get(definition.screenshot)
@@ -491,6 +494,9 @@ function screenshot({ definition, tokens, scale, inner, format, assets }) {
       `unknown screenshot "${definition.screenshot}" — expected a file in the screenshot directory ` +
         `(available: ${assets.screenshots.names().join(", ") || "none"})`,
     )
+  }
+  if (definition.screenshotLayout === "centered") {
+    return centeredScreenshot({ definition, scale, inner, format, source })
   }
 
   const detail = definition.screenshotMode === "detail"
@@ -505,9 +511,11 @@ function screenshot({ definition, tokens, scale, inner, format, assets }) {
   // own and so may not be taller than the box the frame leaves for it; oversized
   // on the portrait formats, where it is a cropped backdrop to the copy.
   const contained = format.name === "card"
-  const shotHeight = contained
-    ? Math.min(Math.round(format.height * ratios.height), inner.height)
-    : Math.round(format.height * ratios.height)
+  const adjust = screenshotAdjustments(definition, format)
+  const shotHeight = Math.round(
+    (contained ? Math.min(format.height * ratios.height, inner.height) : format.height * ratios.height) *
+      adjust.scale,
+  )
   const shotWidth = Math.round(shotHeight * (detail ? ratios.detail : screenshotRatio))
   const outerPadding = (format.width - inner.width) / 2
   const deviceBorder = Math.max(2, Math.round(2 * scale))
@@ -532,9 +540,16 @@ function screenshot({ definition, tokens, scale, inner, format, assets }) {
   // Absolute against the body box on the portrait formats, a flex child in the
   // card's two-column row — which is what centres it vertically without the
   // template having to know how tall the body box came out.
+  // The sliders' offsets go on top of either placement, as the editor's preview applies them.
   const placement = contained
-    ? { position: "relative", flexShrink: 0, marginLeft: column.left - (definition.headline ? copyWidth : 0) }
-    : { position: "absolute", right: shotRight, top: shotTop }
+    ? {
+        position: "relative",
+        flexShrink: 0,
+        marginLeft: column.left - (definition.headline ? copyWidth : 0),
+        left: adjust.left,
+        top: adjust.top,
+      }
+    : { position: "absolute", right: shotRight - adjust.left, top: shotTop + adjust.top }
 
   let shot
   if (deviceFrame) {
@@ -638,6 +653,131 @@ function screenshot({ definition, tokens, scale, inner, format, assets }) {
     ),
     footer: definition.footnote,
   }
+}
+
+/**
+ * The phone alone, whole, in the middle of the body box. Sized to the box rather
+ * than to the canvas, so it never runs under the lockup or the footnote, then
+ * scaled and nudged by `screenshotScale` and `screenshotFocus` the way the
+ * editor's sliders preview it.
+ */
+function centeredScreenshot({ definition, scale, inner, format, source }) {
+  const detail = definition.screenshotMode === "detail"
+  const deviceFrame = definition.deviceFrame === true
+  const ratio = detail
+    ? { card: 0.76, post: 0.62, story: 0.58 }[format.name]
+    : 1242 / 2688
+  const adjust = screenshotAdjustments(definition, format)
+  const fitted = Math.min(inner.height, inner.width / ratio)
+  const shotHeight = Math.round(fitted * adjust.scale)
+  const shotWidth = Math.round(shotHeight * ratio)
+  const deviceBorder = Math.max(2, Math.round(2 * scale))
+  const imageFit = detail ? "cover" : "contain"
+  const imagePosition = detail ? "top" : "center"
+  const nudge = {
+    position: "relative",
+    flexShrink: 0,
+    left: adjust.left,
+    top: adjust.top,
+  }
+
+  let shot
+  if (deviceFrame) {
+    const framePadding = Math.round(Math.max(7 * scale, Math.min(shotWidth, shotHeight) * 0.022))
+    const frameRadius = Math.round(Math.min(shotWidth * 0.13, 52 * scale))
+    const screenRadius = Math.max(8, frameRadius - framePadding)
+    const islandWidth = Math.round(Math.min((shotWidth - framePadding * 2) * 0.24, 112 * scale))
+    const islandHeight = Math.round(Math.max(8 * scale, framePadding * 0.72))
+    shot = h(
+      "div",
+      {
+        style: {
+          display: "flex",
+          ...nudge,
+          width: shotWidth,
+          height: shotHeight,
+          background: "#050505",
+          border: `${deviceBorder}px solid #3F3F46`,
+          borderRadius: frameRadius,
+        },
+      },
+      h("img", {
+        src: source,
+        style: {
+          position: "absolute",
+          left: framePadding,
+          top: framePadding,
+          width: shotWidth - framePadding * 2,
+          height: shotHeight - framePadding * 2,
+          objectFit: imageFit,
+          objectPosition: imagePosition,
+          borderRadius: screenRadius,
+        },
+      }),
+      h("div", {
+        style: {
+          position: "absolute",
+          left: Math.round((shotWidth - islandWidth) / 2),
+          top: Math.round(framePadding * 1.45),
+          width: islandWidth,
+          height: islandHeight,
+          background: "#050505",
+          borderRadius: islandHeight,
+        },
+      }),
+    )
+  } else {
+    shot = h("img", {
+      src: source,
+      style: {
+        ...nudge,
+        width: shotWidth,
+        height: shotHeight,
+        objectFit: imageFit,
+        objectPosition: imagePosition,
+        borderRadius: detail ? Math.round(22 * scale) : 0,
+      },
+    })
+  }
+
+  return {
+    body: h(
+      "div",
+      {
+        style: {
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          width: "100%",
+          height: "100%",
+        },
+      },
+      shot,
+    ),
+    footer: definition.footnote,
+  }
+}
+
+/**
+ * The editor's Scale and Position sliders, as the build applies them in both layouts:
+ * `screenshotScale` multiplies the shot's height (50–150%), and `screenshotFocus` moves it by a
+ * share of the canvas (each axis −20 to 20%), right and down for positive values.
+ */
+export function screenshotAdjustments(definition, format) {
+  const [x, y] = String(definition.screenshotFocus ?? "0% 0%").trim().split(/\s+/)
+  return {
+    scale: percentage(definition.screenshotScale, 100, 50, 150),
+    left: Math.round(percentage(x, 0, -20, 20) * format.width),
+    top: Math.round(percentage(y, 0, -20, 20) * format.height),
+  }
+}
+
+/** A percentage such as `120%` (or a bare `120`) as a fraction, clamped to [min, max]. */
+function percentage(value, fallback, min, max) {
+  if (value === undefined || value === null || value === "") return fallback / 100
+  const parsed = Number.parseFloat(String(value))
+  if (!Number.isFinite(parsed)) return fallback / 100
+  return Math.min(max, Math.max(min, parsed)) / 100
 }
 
 /**

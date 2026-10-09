@@ -14,7 +14,7 @@ import {
 } from "../lib/admin-routes"
 
 test("the internal tools are behind the login and the marketing site is not", () => {
-  for (const path of ["/admin", "/emails", "/emails/", "/translations", "/social/editor", "/api/translations/languages", "/copy", "/editorial", "/editorial/a-post", "/api/editorial"]) {
+  for (const path of ["/admin", "/emails", "/emails/", "/translations", "/social/editor", "/api/translations/languages", "/copy", "/editorial", "/editorial/a-post", "/api/editorial", "/marketing-copy"]) {
     assert.equal(isProtectedRoute(path), true, path)
   }
   for (const path of ["/", "/de", "/chordlink", "/blog/a-post", "/privacy", "/press", "/chordlink/notified"]) {

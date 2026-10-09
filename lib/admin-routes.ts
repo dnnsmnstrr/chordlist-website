@@ -19,6 +19,7 @@ export const adminRoutePrefixes = [
   "/emails",
   "/gallery",
   "/login",
+  "/marketing-copy",
   "/social-editor",
   "/social/editor",
   "/social/posts",

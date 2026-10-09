@@ -2,6 +2,7 @@
 
 import designTokens from "@/design/tokens.json"
 import designMark from "@/design/mark.json"
+import photographyCatalog from "@/assets/visual-references/analog-photography/catalog.json"
 
 import { useCallback, useEffect, useMemo, useRef, useState, type ComponentType } from "react"
 import Link from "next/link"
@@ -18,11 +19,14 @@ import {
   ImagePlus,
   Link2,
   RotateCcw,
+  Share2,
   X,
 } from "lucide-react"
 import { parse as parseYaml } from "yaml"
 
+import { HashtagField } from "@/components/hashtag-field"
 import { Button, buttonVariants } from "@/components/ui/button"
+import { captionWithHashtags, normalizeHashtags, suggestedHashtags } from "@/lib/social-hashtags"
 import { cn } from "@/lib/utils"
 
 type FormatName = "card" | "post" | "story"
@@ -31,8 +35,10 @@ type ThemeName = "ink" | "paper" | "blueprint"
 type BackgroundMode = "plain" | "texture" | "image"
 type TextureName = "studio" | "stage" | "sampler" | "guitar" | "piano-keys" | "piano-score"
 type ScreenshotMode = "full" | "detail"
+/** `beside`: the phone next to or behind the headline. `centered`: the phone alone, no copy. */
+type ScreenshotLayout = "beside" | "centered"
 
-type EditorConfig = {
+export type EditorConfig = {
   slug: string
   template: TemplateName
   theme: ThemeName
@@ -50,6 +56,7 @@ type EditorConfig = {
   fileLines: string
   screenshot: string
   screenshotMode: ScreenshotMode
+  screenshotLayout: ScreenshotLayout
   screenshotX: number
   screenshotY: number
   screenshotScale: number
@@ -60,6 +67,7 @@ type EditorConfig = {
   backgroundScale: number
   alt: string
   caption: string
+  hashtags: string[]
   created: string
   scheduled: string
   draft: boolean
@@ -97,14 +105,60 @@ const photos = [
   { name: "sampler-pads-in-motion.png", label: "Sampler", src: "/textures/sampler-pads.webp" },
 ] as const
 
-const textureOptions: { name: TextureName; label: string; src: string }[] = [
-  { name: "studio", label: "Studio haze", src: "/textures/studio-microphone.webp" },
-  { name: "stage", label: "Stage bloom", src: "/textures/stage-microphone.webp" },
-  { name: "sampler", label: "Sampler grain", src: "/textures/sampler-and-keyboard.webp" },
-  { name: "guitar", label: "Guitar motion", src: "/gallery/guitarist-in-motion.png" },
-  { name: "piano-keys", label: "Piano keys", src: "/gallery/piano-keys-in-motion.png" },
-  { name: "piano-score", label: "Piano score", src: "/gallery/piano-with-sheet-music.png" },
+/** `file` is the master each texture is cut from, as in `CONFIG.textures` in scripts/build-social.mjs. */
+const textureOptions: { name: TextureName; label: string; src: string; file: string }[] = [
+  { name: "studio", label: "Studio haze", src: "/textures/studio-microphone.webp", file: "studio-microphone-in-motion.png" },
+  { name: "stage", label: "Stage bloom", src: "/textures/stage-microphone.webp", file: "stage-microphone-in-motion.png" },
+  { name: "sampler", label: "Sampler grain", src: "/textures/sampler-and-keyboard.webp", file: "sampler-and-keyboard-in-motion.png" },
+  { name: "guitar", label: "Guitar motion", src: "/gallery/guitarist-in-motion.png", file: "guitarist-in-motion.png" },
+  { name: "piano-keys", label: "Piano keys", src: "/gallery/piano-keys-in-motion.png", file: "piano-keys-in-motion.png" },
+  { name: "piano-score", label: "Piano score", src: "/gallery/piano-with-sheet-music.png", file: "piano-with-sheet-music.png" },
 ]
+
+/**
+ * The closing sentence the alt text gets for the photograph behind the copy, from the alt the
+ * photography catalog already holds for each master — written once, against the picture.
+ * A texture is set faintly, so it says so. An uploaded photo has no entry and gets no sentence.
+ */
+function backgroundSentence(config: EditorConfig): string | null {
+  const usesFullImage = config.template === "photo" || config.backgroundMode === "image"
+  const file = usesFullImage
+    ? config.photo
+    : config.backgroundMode === "texture"
+      ? textureOptions.find((texture) => texture.name === config.texture)?.file
+      : undefined
+  const description = file ? photoDescription(file) : undefined
+  return description ? describeBackground(description, !usesFullImage) : null
+}
+
+function photoDescription(file: string): string | undefined {
+  return (photographyCatalog as Record<string, { alt?: string }>)[file]?.alt
+}
+
+function describeBackground(description: string, faint: boolean) {
+  const phrase = description.charAt(0).toLowerCase() + description.slice(1)
+  return `${faint ? "Faintly behind it" : "Behind it"}, ${phrase}`
+}
+
+/** Every sentence `backgroundSentence` can produce, so a previous one can be recognised and replaced. */
+const backgroundSentences = Object.values(photographyCatalog as Record<string, { alt?: string }>)
+  .flatMap(({ alt }) => (alt ? [describeBackground(alt, false), describeBackground(alt, true)] : []))
+
+/**
+ * Keeps the alt text's closing background sentence in step with the background, when an edit
+ * changed which photograph sits behind the copy. The rest of the alt is the author's and is left
+ * alone; so is an alt whose background sentence was rewritten by hand, which no longer matches.
+ */
+export function withBackgroundAlt(next: EditorConfig, previous: EditorConfig): EditorConfig {
+  const sentence = backgroundSentence(next)
+  if (sentence === backgroundSentence(previous)) return next
+
+  const trimmed = next.alt.trim()
+  const stale = backgroundSentences.find((candidate) => trimmed === candidate || trimmed.endsWith(` ${candidate}`))
+  const base = stale ? trimmed.slice(0, trimmed.length - stale.length).trim() : trimmed
+  const alt = sentence ? [base, sentence].filter(Boolean).join(" ") : base
+  return alt === next.alt ? next : { ...next, alt }
+}
 
 const screenshots = [
   "01-Song-List.png",
@@ -116,7 +170,7 @@ const screenshots = [
   "07-Song-Suggestions.png",
 ] as const
 
-const initialConfig: EditorConfig = {
+export const initialConfig: EditorConfig = {
   slug: "files-in-your-pocket",
   template: "statement",
   theme: "ink",
@@ -134,6 +188,7 @@ const initialConfig: EditorConfig = {
   fileLines: "[Verse]\nC        G        Am       F",
   screenshot: screenshots[1],
   screenshotMode: "detail",
+  screenshotLayout: "beside",
   screenshotX: 0,
   screenshotY: 0,
   screenshotScale: 100,
@@ -144,6 +199,7 @@ const initialConfig: EditorConfig = {
   backgroundScale: 100,
   alt: "A chordlist social card reading “Your lyrics and chords, as files in your pocket.”",
   caption: "Your songbook should feel like yours. chordlist keeps lyrics and chords in plain Markdown files you control.",
+  hashtags: [],
   created: new Date().toISOString().slice(0, 10),
   scheduled: "",
   draft: false,
@@ -598,7 +654,21 @@ async function renderPost(
     }
   }
 
-  if (config.template === "screenshot") {
+  if (config.template === "screenshot" && isCenteredScreenshot(config)) {
+    // Mirrors centeredScreenshot() in scripts/lib/social-templates.mjs: the phone
+    // whole in the middle of the body box, then scaled and nudged by the sliders.
+    const image = await loadImage(`/app-screenshots/dark/${config.screenshot}`)
+    const detail = config.screenshotMode === "detail"
+    const ratio = detail
+      ? activeFormatRatio(formatName, { card: 0.76, post: 0.62, story: 0.58 })
+      : image.naturalWidth / image.naturalHeight
+    const screenshotScale = Math.min(150, Math.max(50, config.screenshotScale)) / 100
+    const shotHeight = Math.min(innerHeight, innerWidth / ratio) * screenshotScale
+    const shotWidth = shotHeight * ratio
+    const shotX = (format.width - shotWidth) / 2 + (config.screenshotX / 100) * format.width
+    const shotY = bodyTop + (bodyHeight - shotHeight) / 2 + (config.screenshotY / 100) * format.height
+    drawScreenshot(context, image, shotX, shotY, shotWidth, shotHeight, scale, detail, config.deviceFrame)
+  } else if (config.template === "screenshot") {
     const image = await loadImage(`/app-screenshots/dark/${config.screenshot}`)
     const detail = config.screenshotMode === "detail"
     const screenshotRatio = image.naturalWidth / image.naturalHeight
@@ -650,6 +720,18 @@ async function renderPost(
   }
 }
 
+function downloadFile(file: File) {
+  const link = document.createElement("a")
+  link.href = URL.createObjectURL(file)
+  link.download = file.name
+  link.click()
+  URL.revokeObjectURL(link.href)
+}
+
+function isCenteredScreenshot(config: EditorConfig) {
+  return config.template === "screenshot" && config.screenshotLayout === "centered"
+}
+
 function activeFormatRatio<Value>(format: FormatName, values: Record<FormatName, Value>) {
   return values[format]
 }
@@ -688,17 +770,29 @@ function importedLines(value: unknown) {
   return importedString(value)
 }
 
-function importedFocus(value: unknown, fallback = "50% 50%") {
+/**
+ * Two percentages, `x% y%`. A photo's focus is a point in the frame, 0–100; a screenshot's
+ * `screenshotFocus` is an offset from where the layout puts it, −20 to 20, so the range is the
+ * caller's.
+ */
+function importedFocus(value: unknown, fallback = "50% 50%", [min, max] = [0, 100]) {
   const parts = importedString(value, fallback).trim().split(/\s+/)
-  const coordinate = (part: string | undefined, fb: number) => {
-    const parsed = Number.parseFloat(part ?? "")
-    return Number.isFinite(parsed) ? Math.min(100, Math.max(0, parsed)) : fb
-  }
   const fallbackParts = fallback.trim().split(/\s+/)
-  return {
-    x: coordinate(parts[0], Number.parseFloat(fallbackParts[0] ?? "") || 50),
-    y: coordinate(parts[1], Number.parseFloat(fallbackParts[1] ?? "") || 50),
+  const coordinate = (part: string | undefined, fallbackPart: string | undefined) => {
+    const parsed = Number.parseFloat(part ?? "")
+    const fb = Number.parseFloat(fallbackPart ?? "")
+    return Number.isFinite(parsed) ? Math.min(max, Math.max(min, parsed)) : Number.isFinite(fb) ? fb : 50
   }
+  return {
+    x: coordinate(parts[0], fallbackParts[0]),
+    y: coordinate(parts[1], fallbackParts[1]),
+  }
+}
+
+/** `screenshotScale`, 50–150% as the slider allows. */
+function importedScreenshotScale(value: unknown) {
+  const parsed = Number.parseFloat(importedString(value, "100"))
+  return Number.isFinite(parsed) ? Math.round(Math.min(150, Math.max(50, parsed))) : 100
 }
 
 function importedBackgroundScale(value: unknown) {
@@ -758,7 +852,7 @@ function parseImportedConfig(source: string): EditorConfig {
   const focus = importedFocus(data.focus)
   const headline = importedLines(data.headline)
   const screenshotMode = importedString(data.screenshotMode, "full")
-  const screenshotFocus = importedFocus(data.screenshotFocus, "0% 0%")
+  const screenshotFocus = importedFocus(data.screenshotFocus, "0% 0%", [-20, 20])
 
   return {
     ...initialConfig,
@@ -779,9 +873,10 @@ function parseImportedConfig(source: string): EditorConfig {
     fileLines: importedLines(data.lines),
     screenshot: importedString(data.screenshot, initialConfig.screenshot),
     screenshotMode: screenshotMode === "detail" ? "detail" : "full",
+    screenshotLayout: data.screenshotLayout === "centered" ? "centered" : "beside",
     screenshotX: screenshotFocus.x,
     screenshotY: screenshotFocus.y,
-    screenshotScale: importedBackgroundScale(data.screenshotScale),
+    screenshotScale: importedScreenshotScale(data.screenshotScale),
     deviceFrame: data.deviceFrame === true,
     photo,
     focusX: focus.x,
@@ -789,6 +884,7 @@ function parseImportedConfig(source: string): EditorConfig {
     backgroundScale: importedBackgroundScale(data.backgroundScale),
     alt: importedString(data.alt),
     caption: (split[2] ?? "").trim(),
+    hashtags: normalizeHashtags(data.hashtags),
     created: importedString(data.created, new Date().toISOString().slice(0, 10)),
     scheduled: importedString(data.scheduled),
     draft: data.draft === true,
@@ -819,6 +915,7 @@ function configMarkdown(config: EditorConfig) {
   if (config.template === "screenshot") {
     output.push(`screenshot: ${yamlString(config.screenshot)}`)
     output.push(`screenshotMode: ${config.screenshotMode}`)
+    if (config.screenshotLayout === "centered") output.push("screenshotLayout: centered")
     if (config.screenshotX !== 0 || config.screenshotY !== 0) {
       output.push(`screenshotFocus: ${config.screenshotX}% ${config.screenshotY}%`)
     }
@@ -841,12 +938,15 @@ function configMarkdown(config: EditorConfig) {
     const body = fileRows(config.fileLines)
     if (body.length) output.push("lines:", ...body.map((line) => `  - ${yamlString(line)}`))
   }
-  const headline = lines(config.headline)
+  // The centred screenshot carries no copy, and the build rejects a headline there.
+  const headline = isCenteredScreenshot(config) ? [] : lines(config.headline)
   if (headline.length) output.push("headline:", ...headline.map((line) => `  - ${yamlString(line)}`))
   if (config.template === "quote" && config.attribution.trim()) {
     output.push(`attribution: ${yamlString(config.attribution.trim())}`)
   }
   if (config.footnote.trim()) output.push(`footnote: ${yamlString(config.footnote.trim())}`)
+  // Without the "#", which YAML would read as the start of a comment.
+  if (config.hashtags.length) output.push("hashtags:", ...config.hashtags.map((tag) => `  - ${tag}`))
   output.push(`alt: ${yamlString(config.alt.trim())}`)
   output.push(`created: ${config.created}`)
   if (config.scheduled) output.push(`scheduled: ${config.scheduled}`)
@@ -889,11 +989,18 @@ function Field({ label, hint, children }: { label: string; hint?: string; childr
   )
 }
 
-export function SocialPostEditor({ configMarkdown: initialMarkdown }: { configMarkdown?: string } = {}) {
+export function SocialPostEditor({
+  configMarkdown: initialMarkdown,
+  usedHashtags = [],
+}: {
+  configMarkdown?: string
+  /** Every tag already used in content/social, offered beside the curated list. */
+  usedHashtags?: string[]
+} = {}) {
   const [config, setConfig] = useState(initialConfig)
   const [activeFormat, setActiveFormat] = useState<FormatName>("post")
   const [customPhoto, setCustomPhoto] = useState<{ name: string; src: string } | null>(null)
-  const [status, setStatus] = useState<"idle" | "copied" | "exported" | "imported">("idle")
+  const [status, setStatus] = useState<"idle" | "copied" | "exported" | "imported" | "shared">("idle")
   const [importOpen, setImportOpen] = useState(false)
   const [importText, setImportText] = useState("")
   const [importError, setImportError] = useState("")
@@ -904,6 +1011,7 @@ export function SocialPostEditor({ configMarkdown: initialMarkdown }: { configMa
   const [previewCollapsed, setPreviewCollapsed] = useState(false)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const appliedInitialConfig = useRef(false)
+  const hashtagSuggestions = useMemo(() => normalizeHashtags([...suggestedHashtags, ...usedHashtags]), [usedHashtags])
 
   useEffect(() => {
     if (appliedInitialConfig.current || !initialMarkdown) return
@@ -989,12 +1097,18 @@ export function SocialPostEditor({ configMarkdown: initialMarkdown }: { configMa
     return () => window.removeEventListener("keydown", handleEscape)
   }, [importOpen])
 
+  // Every edit made in the form goes through here, so a change of background also updates the
+  // alt text. Imports and Reset call setConfig directly: their alt is already the one intended.
+  const edit = (change: (current: EditorConfig) => EditorConfig) => {
+    setConfig((current) => withBackgroundAlt(change(current), current))
+  }
+
   const update = <Key extends keyof EditorConfig>(key: Key, value: EditorConfig[Key]) => {
-    setConfig((current) => ({ ...current, [key]: value }))
+    edit((current) => ({ ...current, [key]: value }))
   }
 
   const toggleFormat = (name: FormatName) => {
-    setConfig((current) => {
+    edit((current) => {
       const exists = current.formats.includes(name)
       if (exists && current.formats.length === 1) return current
       return {
@@ -1017,17 +1131,45 @@ export function SocialPostEditor({ configMarkdown: initialMarkdown }: { configMa
     setStatus("copied")
   }
 
+  /**
+   * Hands the PNG to the system share sheet, with the caption and hashtags as its text, so a post
+   * can go straight to Instagram or Messages without a trip through Downloads. The canvas already
+   * shows the current config, so it is read as is rather than redrawn: share() has to run soon
+   * after the tap, and Safari refuses it once a slow redraw has used up that moment. A browser that
+   * cannot share files gets the download instead.
+   */
+  const shareImage = async () => {
+    // Looked up by id rather than through canvasRef: this handler lives in the action list that is
+    // mapped during render, and the hooks lint cannot tell that the ref is only read on click.
+    const canvas = document.getElementById("preview-canvas")
+    if (!(canvas instanceof HTMLCanvasElement)) return
+    const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/png"))
+    if (!blob) return
+    const file = new File([blob], `${config.slug || "chordlist-social"}-${activeFormat}.png`, { type: "image/png" })
+
+    if (!navigator.canShare?.({ files: [file] })) {
+      downloadFile(file)
+      setStatus("exported")
+      return
+    }
+    try {
+      await navigator.share({ files: [file], text: captionWithHashtags(config.caption, config.hashtags) })
+      setStatus("shared")
+    } catch (error) {
+      // Dismissing the sheet rejects with AbortError, which is not a failure worth a fallback.
+      if (error instanceof DOMException && error.name === "AbortError") return
+      downloadFile(file)
+      setStatus("exported")
+    }
+  }
+
   const exportImage = async () => {
     const canvas = canvasRef.current
     if (!canvas) return
     await renderPost(canvas, config, activeFormat, photoSrc, textureSrc)
     canvas.toBlob((blob) => {
       if (!blob) return
-      const link = document.createElement("a")
-      link.href = URL.createObjectURL(blob)
-      link.download = `${config.slug || "chordlist-social"}-${activeFormat}.png`
-      link.click()
-      URL.revokeObjectURL(link.href)
+      downloadFile(new File([blob], `${config.slug || "chordlist-social"}-${activeFormat}.png`, { type: "image/png" }))
       setStatus("exported")
     }, "image/png")
   }
@@ -1035,6 +1177,12 @@ export function SocialPostEditor({ configMarkdown: initialMarkdown }: { configMa
   const selectedFormat = formats[activeFormat]
 
   const secondaryActions: HeaderAction[] = [
+    {
+      key: "shareImage",
+      label: status === "shared" ? "Shared" : "Share image",
+      icon: status === "shared" ? Check : Share2,
+      onClick: shareImage,
+    },
     { key: "posts", label: "Posts", icon: Images, href: "/social/posts" },
     {
       key: "import",
@@ -1159,7 +1307,7 @@ export function SocialPostEditor({ configMarkdown: initialMarkdown }: { configMa
                   key={template.name}
                   type="button"
                   onClick={() => {
-                    setConfig((current) => ({
+                    edit((current) => ({
                       ...current,
                       template: template.name,
                       backgroundMode: template.name === "photo" ? "image" : current.backgroundMode,
@@ -1222,9 +1370,19 @@ export function SocialPostEditor({ configMarkdown: initialMarkdown }: { configMa
               </>
             ) : null}
 
-            <Field label="Headline" hint={config.template === "file" ? "Optional" : "One rendered line per row"}>
+            <Field
+              label="Headline"
+              hint={
+                isCenteredScreenshot(config)
+                  ? "Not shown in the centred layout"
+                  : config.template === "file"
+                    ? "Optional"
+                    : "One rendered line per row"
+              }
+            >
               <textarea
-                className={`${inputClass} min-h-28 resize-y leading-relaxed`}
+                className={`${inputClass} min-h-28 resize-y leading-relaxed disabled:opacity-50`}
+                disabled={isCenteredScreenshot(config)}
                 value={config.headline}
                 onChange={(event) => update("headline", event.target.value)}
               />
@@ -1249,7 +1407,7 @@ export function SocialPostEditor({ configMarkdown: initialMarkdown }: { configMa
                     key={mode}
                     type="button"
                     onClick={() => {
-                      setConfig((current) => ({
+                      edit((current) => ({
                         ...current,
                         backgroundMode: mode,
                         theme: mode === "texture" ? "ink" : current.theme,
@@ -1371,6 +1529,26 @@ export function SocialPostEditor({ configMarkdown: initialMarkdown }: { configMa
 
           {config.template === "screenshot" ? (
             <Section title="App screenshot">
+              <div className="grid grid-cols-2 rounded-xl bg-muted p-1" role="group" aria-label="Screenshot layout">
+                {([
+                  { name: "beside", label: "With headline" },
+                  { name: "centered", label: "Centred, no text" },
+                ] as { name: ScreenshotLayout; label: string }[]).map((layout) => (
+                  <button
+                    key={layout.name}
+                    type="button"
+                    onClick={() => update("screenshotLayout", layout.name)}
+                    aria-pressed={config.screenshotLayout === layout.name}
+                    className={`rounded-lg px-3 py-2 text-xs font-medium transition ${
+                      config.screenshotLayout === layout.name
+                        ? "bg-background text-foreground shadow-sm"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    {layout.label}
+                  </button>
+                ))}
+              </div>
               <div className="grid grid-cols-2 rounded-xl bg-muted p-1">
                 {([
                   { name: "detail", label: "Detail crop" },
@@ -1481,6 +1659,11 @@ export function SocialPostEditor({ configMarkdown: initialMarkdown }: { configMa
             <Field label="Caption" hint="Saved below frontmatter">
               <textarea className={`${inputClass} min-h-28 resize-y`} value={config.caption} onChange={(event) => update("caption", event.target.value)} />
             </Field>
+            <HashtagField
+              value={config.hashtags}
+              onChange={(tags) => update("hashtags", tags)}
+              suggestions={hashtagSuggestions}
+            />
           </Section>
         </aside>
 

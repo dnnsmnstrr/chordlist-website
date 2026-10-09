@@ -54,6 +54,34 @@ images — `public/og.png` and one card per blog post — which must not change 
 
 A definition that names no `formats` gets `card` and `post`.
 
+### Other sizes
+
+A `formats` entry can also be a pixel size, such as `1270x760`. It takes the layout of the named
+format nearest in aspect ratio — a landscape size is laid out as a `card`, a square or a tall one as
+a `post` — and scales that format's type to the canvas, so it reads like its sibling. Custom sizes get
+no platform safe area. Declare one in a definition when the size ships with the asset; the PNG lands
+beside the others as `public/social/<slug>/1270x760.png`.
+
+For a one-off, render without touching a definition:
+
+```bash
+pnpm build:social --only out-now --size 1270x760
+```
+
+Both flags take comma-separated lists. Either one switches the run to `out/social/`, which git
+ignores, and leaves `public/social` and its manifest alone.
+
+| Placement | Size |
+| --- | --- |
+| Product Hunt gallery | `1270x760` |
+| X header | `1500x500` |
+| LinkedIn and Facebook link image | `1200x627` |
+| Square feed post (Mastodon, Bluesky, Threads) | `1080x1080` |
+| YouTube thumbnail | `1280x720` |
+
+Check a very wide size such as the X header in the PNG: the frame keeps the lockup and the footer, so
+a long headline on a short canvas comes out small.
+
 Two cropping rules the build cannot enforce for you:
 
 - Instagram's profile grid crops a 4:5 post to 3:4. Keep anything essential — the end of a headline,
@@ -82,8 +110,9 @@ footnote so the asset stays self-sourcing when it is screenshotted onward. Requi
 On a `post` or a `story` it runs large off the right edge; on a `card` it sits whole inside the
 subject column (see [Composing a card](#composing-a-card)). `full` keeps the complete screen
 visible; `detail` uses a larger top-aligned crop when the interface needs to read at timeline size.
-Screenshots are never tinted or perspective-tilted. Requires `screenshot`, naming a file in that
-directory.
+Screenshots are never tinted or perspective-tilted. `screenshotLayout: centered` drops the copy and
+sets the screen alone in the middle of the frame, for when the interface is the whole post. Requires
+`screenshot`, naming a file in that directory.
 
 **`file`** — a song as it sits on disk: an optional filename, an optional frontmatter block, and the
 chord and lyric lines, set in the mono face with the spacing preserved exactly as authored. The
@@ -204,6 +233,7 @@ whoever posts it is not rewriting copy that was already reviewed.
 | --- | --- | --- |
 | `template` | yes | One of the six above. An unknown name fails the build. |
 | `alt` | yes | Describes the visible asset. Never empty — these are published images. |
+| `hashtags` | no | Up to five tags, one per entry, **without** the `#` (YAML reads `#` as a comment). Pick from `lib/social-hashtags.ts`; the gallery appends them to the caption when copying. More than five warns, since Instagram accepts five. |
 | `headline` | per template | One list entry per rendered line. Line breaks are an editorial decision. |
 | `formats` | no | Defaults to `card` and `post`. |
 | `eyebrow` | no | A short label beside the wordmark: `Launch`, `Feature`, `From the blog`. Written as prose, rendered lowercase to match the wordmark. |
@@ -215,6 +245,9 @@ whoever posts it is not rewriting copy that was already reviewed.
 | `filename` | no | A `file`'s name, set above a hairline rule. |
 | `screenshot` | `screenshot` | A filename in `public/app-screenshots/dark/`. |
 | `screenshotMode` | no | Screenshot framing: `full` keeps the complete screen visible; `detail` uses a larger top-aligned crop. Defaults to `full`. |
+| `screenshotLayout` | no | `beside` (default) sets the screenshot beside or behind the headline. `centered` sets it whole in the middle of the frame with no copy over it, in every format; a `headline` is then rejected. The lockup and the footnote still frame it — leave `eyebrow` and `footnote` out for the barest version. |
+| `screenshotScale` | no | Resizes the screenshot from `50%` to `150%`, in either layout. Defaults to `100%`. |
+| `screenshotFocus` | no | Moves the screenshot by a share of the canvas, `x% y%`, each from `-20%` to `20%`; positive is right and down. Defaults to `0% 0%`. Both match the editor's Scale and Position sliders. |
 | `deviceFrame` | no | `true` adds a dark hardware shell and camera island around a screenshot. Defaults to `false`. |
 | `photo` | `photo` | A master filename in `assets/visual-references/analog-photography/`. |
 | `focus` | no | Steers the crop for `photo` and `backgroundImage`, e.g. `60% 40%`. Defaults to centre. |

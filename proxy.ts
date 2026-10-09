@@ -86,6 +86,8 @@ export const config = {
     "/gallery/:path*",
     "/login",
     "/login/:path*",
+    "/marketing-copy",
+    "/marketing-copy/:path*",
     "/social-editor",
     "/social-editor/:path*",
     "/social/editor",

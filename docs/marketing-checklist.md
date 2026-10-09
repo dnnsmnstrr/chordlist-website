@@ -78,7 +78,7 @@ date does not survive another slip.
 
 - [ ] **P0 — Render the launch cut.** `pnpm sync:video`, then `pnpm video:studio` with `copyVariant`
   set to match the shipping site copy, then `pnpm video:render:short`. Commit the render.
-- [ ] **P0 — Write the launch-day text and leave it in a file.** Show HN title, the r/apple and
+- [x] **P0 — Write the launch-day text and leave it in a file.** Done: [Launch copy](launch-copy.md). Show HN title, the r/apple and
   r/iosapps posts, and the reply to everyone who ever answered a pitch. Writing these on the day is
   how they come out worse.
 

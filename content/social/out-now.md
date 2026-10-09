@@ -9,6 +9,12 @@ headline:
   - Out now on
   - iPhone and iPad.
 footnote: chordlist.app
+hashtags:
+  - songbook
+  - guitarchords
+  - musicapp
+  - iosapp
+  - indiedev
 alt: A dark chordlist card reading "Out now on iPhone and iPad."
 created: 2026-08-14
 scheduled: 2026-10-10

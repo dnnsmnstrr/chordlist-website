@@ -7,6 +7,7 @@ import { Calendar, Check, Copy, Download, ExternalLink, Images, Pencil, Share2 }
 
 import { SocialPostCalendar } from "@/components/social-post-calendar"
 import { Button, buttonVariants } from "@/components/ui/button"
+import { captionWithHashtags, formatHashtags } from "@/lib/social-hashtags"
 import { cn } from "@/lib/utils"
 
 type SocialFormat = "card" | "post" | "story"
@@ -24,6 +25,8 @@ export type SocialManifestEntry = {
   template: string
   alt: string
   caption: string
+  /** Without the "#". Older manifests have none. */
+  hashtags?: string[]
   created: string | null
   scheduled: string | null
   outputs: SocialOutput[]
@@ -191,6 +194,9 @@ function SocialPostCard({ post, assets, copied, sharing, onCopy, onShare }: Soci
         <p className="mt-4 line-clamp-3 whitespace-pre-line text-sm leading-6 text-muted-foreground">
           {asset.caption}
         </p>
+        {asset.hashtags?.length ? (
+          <p className="mt-2 font-mono text-xs leading-5 text-muted-foreground">{formatHashtags(asset.hashtags)}</p>
+        ) : null}
 
         <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
           {post.created && <span>Created {formatDate(post.created)}</span>}
@@ -240,7 +246,7 @@ export function SocialPostGallery({ posts }: { posts: SocialManifestEntry[] }) {
   )
 
   const copyCaption = async (asset: GalleryAsset) => {
-    await navigator.clipboard.writeText(asset.caption)
+    await navigator.clipboard.writeText(captionWithHashtags(asset.caption, asset.hashtags ?? []))
     setCopied(asset.key)
     window.setTimeout(() => setCopied((current) => (current === asset.key ? null : current)), 1800)
   }
@@ -258,7 +264,7 @@ export function SocialPostGallery({ posts }: { posts: SocialManifestEntry[] }) {
       if (navigator.canShare?.({ files: [file] })) {
         await navigator.share({
           files: [file],
-          text: asset.caption,
+          text: captionWithHashtags(asset.caption, asset.hashtags ?? []),
           title: asset.title,
         })
       } else {

@@ -17,6 +17,15 @@ import { campaign } from './lib/design-tokens.mjs'
  *
  * Layouts live in scripts/lib/social-templates.mjs. Copy, colours, formats, and
  * sizing live in the CONFIG block below.
+ *
+ * Any other pixel size can be rendered on demand, without touching a definition:
+ *
+ *   pnpm build:social --only out-now --size 1270x760
+ *
+ * `--only` takes one or more comma-separated slugs and `--size` one or more
+ * WIDTHxHEIGHT values. Either flag switches to a one-off run that writes to
+ * out/social/ (ignored by git) and leaves public/social and its manifest alone.
+ * A size that should ship belongs in the definition's `formats` instead.
  */
 import { mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises"
 import path from "node:path"
@@ -68,6 +77,21 @@ const CONFIG = {
     // Instagram story, full bleed.
     story: { width: 1080, height: 1920, scale: 1.34, safeTop: 190, safeBottom: 240 },
   },
+
+  /**
+   * A format may also be a pixel size, `1270x760`. It borrows the layout of the
+   * named format nearest in aspect ratio — a 1270×760 gallery image is laid out
+   * as a card — and scales that format's type by how much smaller or larger the
+   * canvas is, so the result reads like its sibling rather than a stretched one.
+   * Custom sizes get no platform safe area; that is a property of the story.
+   */
+  customFormatLimits: { min: 200, max: 8000 },
+
+  /** Where one-off `--size` / `--only` runs write, outside the committed output. */
+  adHocOutputDirectory: "out/social",
+
+  /** Instagram's cap on hashtags per post, mirrored from lib/social-hashtags.ts. */
+  hashtagLimit: 5,
 
   /** Formats a definition gets when its frontmatter does not name any. */
   defaultFormats: ["card", "post"],
@@ -192,6 +216,25 @@ function readDefinition(file, data) {
   ) {
     fail(`"screenshotMode" must be "full" or "detail"`)
   }
+  if (data.screenshotScale !== undefined) {
+    const scale = Number.parseFloat(String(data.screenshotScale))
+    if (!/^\s*-?[\d.]+%?\s*$/.test(String(data.screenshotScale)) || !(scale >= 50 && scale <= 150)) {
+      fail(`"screenshotScale" must be between 50% and 150%`)
+    }
+  }
+  if (data.screenshotFocus !== undefined) {
+    const parts = String(data.screenshotFocus).trim().split(/\s+/)
+    const valid =
+      parts.length === 2 &&
+      parts.every((part) => /^-?[\d.]+%?$/.test(part) && Math.abs(Number.parseFloat(part)) <= 20)
+    if (!valid) fail(`"screenshotFocus" must be two percentages from -20% to 20%, such as "5% -3%"`)
+  }
+  if (data.screenshotLayout !== undefined && !["beside", "centered"].includes(data.screenshotLayout)) {
+    fail(`"screenshotLayout" must be "beside" or "centered"`)
+  }
+  if (data.screenshotLayout === "centered" && data.headline !== undefined) {
+    fail(`"screenshotLayout: centered" shows the screenshot alone — remove "headline"`)
+  }
   if (data.deviceFrame !== undefined && typeof data.deviceFrame !== "boolean") {
     fail(`"deviceFrame" must be true or false`)
   }
@@ -233,19 +276,34 @@ function readDefinition(file, data) {
     }
   }
 
-  const formats = data.formats ?? CONFIG.defaultFormats
+  const formats = (data.formats ?? CONFIG.defaultFormats).map?.(String)
   if (!Array.isArray(formats) || formats.length === 0) fail(`"formats" must be a non-empty list`)
   for (const name of formats) {
-    if (!(name in CONFIG.formats)) {
-      fail(`unknown format "${name}" (expected one of ${Object.keys(CONFIG.formats).join(", ")})`)
+    try {
+      resolveFormat(name)
+    } catch (error) {
+      fail(error.message)
     }
+  }
+
+  // Stored without the "#": in YAML it starts a comment, so "- #songbook" would
+  // silently become an empty entry. lib/social-hashtags.ts adds it back on copy.
+  const hashtags = data.hashtags ?? []
+  if (!Array.isArray(hashtags)) fail(`"hashtags" must be a list, one tag per entry`)
+  for (const tag of hashtags) {
+    if (typeof tag !== "string" || !/^[\p{L}\p{N}_]+$/u.test(tag)) {
+      fail(`hashtag ${JSON.stringify(tag)} must be letters, digits or underscores, without the "#"`)
+    }
+  }
+  if (hashtags.length > CONFIG.hashtagLimit) {
+    console.warn(`  ${file}: ${hashtags.length} hashtags; Instagram accepts ${CONFIG.hashtagLimit}`)
   }
 
   // Headlines are authored as one array entry per rendered line so line breaks
   // stay an editorial decision rather than a side effect of the type size.
   const headline = data.headline === undefined ? undefined : [data.headline].flat().map(String)
 
-  return { ...data, template, theme, formats, headline }
+  return { ...data, template, theme, formats, headline, hashtags }
 }
 
 /**
@@ -285,6 +343,58 @@ async function imageLoader(directory) {
 }
 
 /**
+ * Turns a format entry — a named format or a `WIDTHxHEIGHT` size — into the
+ * canvas a template renders. `key` names the output file; `name` is the layout
+ * the templates branch on, which for a custom size is its nearest named format.
+ */
+function resolveFormat(entry) {
+  if (entry in CONFIG.formats) return { key: entry, name: entry, ...CONFIG.formats[entry] }
+
+  const match = /^(\d+)x(\d+)$/.exec(entry)
+  if (!match) {
+    throw new Error(
+      `unknown format "${entry}" (expected one of ${Object.keys(CONFIG.formats).join(", ")}, ` +
+        `or a size such as 1270x760)`,
+    )
+  }
+  const width = Number(match[1])
+  const height = Number(match[2])
+  const { min, max } = CONFIG.customFormatLimits
+  if ([width, height].some((side) => side < min || side > max)) {
+    throw new Error(`format "${entry}" must be between ${min} and ${max} pixels on each side`)
+  }
+
+  const ratio = Math.log(width / height)
+  const [name, reference] = Object.entries(CONFIG.formats).reduce((best, candidate) =>
+    Math.abs(Math.log(candidate[1].width / candidate[1].height) - ratio) <
+    Math.abs(Math.log(best[1].width / best[1].height) - ratio)
+      ? candidate
+      : best,
+  )
+  const scale = reference.scale * Math.min(width / reference.width, height / reference.height)
+  return { key: entry, name, width, height, scale: Math.round(scale * 1000) / 1000 }
+}
+
+/** `--only a,b` and `--size 1270x760`, each repeatable. */
+function parseArguments(argv) {
+  const options = { only: [], sizes: [] }
+  for (let index = 0; index < argv.length; index += 1) {
+    const flag = argv[index]
+    if (flag === "--") continue
+    const value = argv[index + 1]
+    if ((flag === "--only" || flag === "--size") && value && !value.startsWith("--")) {
+      const list = value.split(",").map((item) => item.trim()).filter(Boolean)
+      ;(flag === "--only" ? options.only : options.sizes).push(...list)
+      index += 1
+    } else {
+      throw new Error(`unknown argument "${flag}" (expected --only <slug> or --size <WIDTHxHEIGHT>)`)
+    }
+  }
+  for (const size of options.sizes) resolveFormat(size)
+  return options
+}
+
+/**
  * Reports how much of a source image is discarded when it is cropped to fill a
  * target frame, as a fraction of its area.
  */
@@ -296,7 +406,10 @@ function cropLoss(source, target) {
 }
 
 async function main() {
-  const { source, outputDirectory } = CONFIG
+  const options = parseArguments(process.argv.slice(2))
+  const adHoc = options.only.length > 0 || options.sizes.length > 0
+  const { source } = CONFIG
+  const outputDirectory = adHoc ? CONFIG.adHocOutputDirectory : CONFIG.outputDirectory
 
   const fonts = await Promise.all(
     CONFIG.fonts.map(async ({ file, name, weight }) => ({
@@ -315,6 +428,9 @@ async function main() {
   const sourceDirectory = path.join(projectRoot, source)
   const entries = await readdir(sourceDirectory, { withFileTypes: true })
   const files = entries.filter((entry) => entry.isFile() && entry.name.endsWith(".md")).map((entry) => entry.name)
+  for (const slug of options.only) {
+    if (!files.includes(`${slug}.md`)) throw new Error(`--only: no definition ${source}/${slug}.md`)
+  }
 
   // First pass: parse and validate everything, and resolve the images that are
   // actually referenced. Nothing renders until every definition is known good,
@@ -327,7 +443,11 @@ async function main() {
     const split = splitFrontmatter(raw)
     if (split === null) throw new Error(`${source}/${file}: missing YAML frontmatter`)
 
+    const slug = file.slice(0, -".md".length)
+    if (options.only.length > 0 && !options.only.includes(slug)) continue
+
     const definition = readDefinition(file, parseYaml(split.frontmatter) ?? {})
+    if (options.sizes.length > 0) definition.formats = options.sizes
     if (definition.draft === true) {
       console.log(`  skipped ${file.slice(0, -".md".length)} (draft)`)
       continue
@@ -371,7 +491,7 @@ async function main() {
     if (fullBleedImage) {
       const intrinsic = resolved.photos.get(fullBleedImage)
       for (const name of definition.formats) {
-        const loss = cropLoss(intrinsic, CONFIG.formats[name])
+        const loss = cropLoss(intrinsic, resolveFormat(name))
         if (loss >= CONFIG.cropWarningThreshold) {
           console.warn(
             `  ${file}: "${fullBleedImage}" is ${intrinsic.width}×${intrinsic.height} and loses ` +
@@ -413,7 +533,7 @@ async function main() {
     )
 
     for (const name of definition.formats) {
-      const format = { name, ...CONFIG.formats[name] }
+      const format = resolveFormat(name)
       const scale = format.scale
       const padding = Math.round(CONFIG.layout.padding * scale)
 
@@ -470,9 +590,9 @@ async function main() {
 
       const directory = path.join(destinationRoot, slug)
       await mkdir(directory, { recursive: true })
-      await writeFile(path.join(directory, `${name}.png`), buffer)
+      await writeFile(path.join(directory, `${format.key}.png`), buffer)
 
-      outputs.push({ format: name, file: `${outputDirectory}/${slug}/${name}.png`, width: format.width, height: format.height })
+      outputs.push({ format: format.key, file: `${outputDirectory}/${slug}/${format.key}.png`, width: format.width, height: format.height })
       written += 1
     }
 
@@ -483,10 +603,19 @@ async function main() {
       template: definition.template,
       alt: definition.alt,
       caption,
+      hashtags: definition.hashtags,
       created: definition.created ?? null,
       scheduled: definition.scheduled ?? null,
       outputs,
     })
+  }
+
+  // A one-off run renders a subset at sizes nobody declared, so it must neither
+  // rewrite the manifest nor prune: both describe the committed set.
+  if (adHoc) {
+    for (const entry of manifest) for (const output of entry.outputs) console.log(`  ${output.file}`)
+    console.log(`Wrote ${written} one-off image${written === 1 ? "" : "s"} to ${outputDirectory}/.`)
+    return
   }
 
   await writeFile(path.join(destinationRoot, "manifest.json"), `${JSON.stringify(manifest, null, 2)}\n`)
