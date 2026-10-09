@@ -334,7 +334,7 @@ export const faqCopy: Localized<typeof enFaq> = {
         "launch",
         "preorder",
       ],
-      answer: `${siteConfig.name} erscheint am ${launchDate} und lässt sich im App Store schon vorbestellen. Eine Vorbestellung lädt die App am Erscheinungstag automatisch auf dein Gerät. Bis dahin läuft eine kostenlose öffentliche Beta über TestFlight.`,
+      answer: `${siteConfig.name} ist ab dem ${launchDate} kostenlos im App Store erhältlich, für iPhone und iPad.`,
     },
     {
       question: "Was wird die App kosten?",

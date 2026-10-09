@@ -435,7 +435,7 @@ export const faqCopy = {
         "beta",
         "waiting list",
       ),
-      answer: `${siteConfig.name} is released on ${launchDate} and can be pre-ordered on the App Store now. Pre-ordering downloads the app to your device automatically on release day. A free public beta runs on TestFlight until then.`,
+      answer: `${siteConfig.name} is available on the App Store from ${launchDate}, as a free download for iPhone and iPad.`,
     },
     {
       question: "How much will it cost?",
@@ -724,7 +724,7 @@ export const pressCopy = {
   },
   availability: {
     sectionTitle: "Availability and pricing",
-    body: `${siteConfig.name} is released on ${launchDate} and is available to pre-order on the App Store now. It will be a free download with a library of up to ${siteConfig.freeSongLimit} songs and an optional one-time purchase for unlimited songs.`,
+    body: `${siteConfig.name} is available on the App Store from ${launchDate}. It is a free download with a library of up to ${siteConfig.freeSongLimit} songs and an optional one-time purchase for unlimited songs.`,
   },
   details: {
     sectionTitle: "App details",
