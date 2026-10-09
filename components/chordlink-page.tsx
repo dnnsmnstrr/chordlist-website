@@ -56,6 +56,8 @@ const copy = {
     diyTitle: "Have a 3D printer? Make your own.",
     diyBody: "The browser-based model generator is free to use for a personal chordlink. Add your own NFC tag and program its link at home.",
     diyAction: "See the DIY instructions",
+    diyHint: "Have a 3D printer?",
+    diyHintAction: "Make your own now",
     manufacturingNote: "Because every chordlink is 3D-printed, small cosmetic layer lines, marks, or variations can occur. These are part of the production method and are not considered defects. Your statutory warranty and withdrawal rights remain unaffected.",
     notify: {
       prelaunch: {
@@ -109,6 +111,8 @@ const copy = {
     diyTitle: "Du hast einen 3D-Drucker? Bau deinen eigenen.",
     diyBody: "Der Modellgenerator im Browser ist für einen persönlichen chordlink kostenlos nutzbar. Ergänze zu Hause deinen eigenen NFC-Tag und programmiere den Link.",
     diyAction: "Zur DIY-Anleitung",
+    diyHint: "Du hast einen 3D-Drucker?",
+    diyHintAction: "Bau dir deinen eigenen",
     manufacturingNote: "Da jeder chordlink 3D-gedruckt wird, können kleine kosmetische Schichtlinien, Spuren oder Abweichungen entstehen. Sie sind Teil des Herstellungsverfahrens und gelten nicht als Mangel. Deine gesetzlichen Gewährleistungs- und Widerrufsrechte bleiben unberührt.",
     notify: {
       prelaunch: {
@@ -146,6 +150,7 @@ export function ChordlinkPage({
   const text = copy[language]
   const soldOut = availability?.soldOut === true
   const checkoutAllowed = mayOpenChordlinkCheckout(availability)
+  const canBuy = checkoutAllowed && isChordlinkStripeConfigured()
   const unavailableLabel = soldOut ? text.soldOut : text.unavailable
   // Only offered where being turned away is a fact about the product rather than about an outage,
   // and only where the list can actually be reached — a form that quietly drops an address is worse
@@ -179,7 +184,7 @@ export function ChordlinkPage({
           <p className="mt-4 max-w-2xl text-pretty text-lg leading-8 text-muted-foreground lg:mt-6">{text.intro}</p>
 
           <div className="mt-8 flex flex-wrap items-center gap-4">
-            {checkoutAllowed && isChordlinkStripeConfigured() ? (
+            {canBuy ? (
               <Link className={cn(buttonVariants({ size: "lg" }), "h-11 px-5")} href={paths.checkout}>
                 {text.buy}
               </Link>
@@ -197,6 +202,17 @@ export function ChordlinkPage({
                 : text.availability(availability.available)}
             </span>
           </div>
+
+          {/* The DIY section is far below the fold on a phone, so whoever cannot buy one yet learns here that
+              they can already print their own. */}
+          {canBuy ? null : (
+            <p className="mt-4 text-sm text-muted-foreground sm:hidden">
+              {text.diyHint}{" "}
+              <Link className="font-medium text-foreground underline underline-offset-4" href={paths.diy}>
+                {text.diyHintAction}
+              </Link>
+            </p>
+          )}
 
           {checkoutNotice ? (
             <p className="mt-3 text-sm text-destructive" role="alert">
