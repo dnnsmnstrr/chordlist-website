@@ -188,6 +188,21 @@ every network; each post fits X's 280 characters.
    > Built by one person in Mainz. If something's missing or broken, reply here or write to
    > feedback@chordlist.app. I read everything.
 
+### Hashtags
+
+Instagram allows at most five per post, so each one has to be specific. Put them at the end of the
+caption, not in a comment. Generic tags like #music are too crowded to surface a small account.
+
+| Post | Tags |
+| --- | --- |
+| Launch announcement | #songbook #guitarchords #musicapp #iosapp #indiedev |
+| Progressions and chords | #chordprogression #guitarpractice #pianochords #ukulele #musictheory |
+| Plain files and Markdown | #markdown #obsidianmd #plaintext #localfirst #iosapp |
+| German posts | #gitarre #akkorde #songbook #musikapp #indiedev |
+
+On Mastodon, hashtags are how posts get found at all: use two or three in the post itself. On X,
+one or two at most, if any.
+
 ### German (300, so Mastodon and Instagram rather than X)
 
 > chordlist ist da, für iPhone und iPad.
