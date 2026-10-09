@@ -110,8 +110,9 @@ footnote so the asset stays self-sourcing when it is screenshotted onward. Requi
 On a `post` or a `story` it runs large off the right edge; on a `card` it sits whole inside the
 subject column (see [Composing a card](#composing-a-card)). `full` keeps the complete screen
 visible; `detail` uses a larger top-aligned crop when the interface needs to read at timeline size.
-Screenshots are never tinted or perspective-tilted. Requires `screenshot`, naming a file in that
-directory.
+Screenshots are never tinted or perspective-tilted. `screenshotLayout: centered` drops the copy and
+sets the screen alone in the middle of the frame, for when the interface is the whole post. Requires
+`screenshot`, naming a file in that directory.
 
 **`file`** — a song as it sits on disk: an optional filename, an optional frontmatter block, and the
 chord and lyric lines, set in the mono face with the spacing preserved exactly as authored. The
@@ -244,6 +245,7 @@ whoever posts it is not rewriting copy that was already reviewed.
 | `filename` | no | A `file`'s name, set above a hairline rule. |
 | `screenshot` | `screenshot` | A filename in `public/app-screenshots/dark/`. |
 | `screenshotMode` | no | Screenshot framing: `full` keeps the complete screen visible; `detail` uses a larger top-aligned crop. Defaults to `full`. |
+| `screenshotLayout` | no | `beside` (default) sets the screenshot beside or behind the headline. `centered` sets it whole in the middle of the frame with no copy over it, in every format; a `headline` is then rejected. The lockup and the footnote still frame it — leave `eyebrow` and `footnote` out for the barest version. `screenshotScale` (`50%`–`150%`) and `screenshotFocus` (`x% y%`, each −20 to 20) resize and nudge it, matching the editor's sliders. |
 | `deviceFrame` | no | `true` adds a dark hardware shell and camera island around a screenshot. Defaults to `false`. |
 | `photo` | `photo` | A master filename in `assets/visual-references/analog-photography/`. |
 | `focus` | no | Steers the crop for `photo` and `backgroundImage`, e.g. `60% 40%`. Defaults to centre. |

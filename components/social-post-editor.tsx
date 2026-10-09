@@ -34,6 +34,8 @@ type ThemeName = "ink" | "paper" | "blueprint"
 type BackgroundMode = "plain" | "texture" | "image"
 type TextureName = "studio" | "stage" | "sampler" | "guitar" | "piano-keys" | "piano-score"
 type ScreenshotMode = "full" | "detail"
+/** `beside`: the phone next to or behind the headline. `centered`: the phone alone, no copy. */
+type ScreenshotLayout = "beside" | "centered"
 
 export type EditorConfig = {
   slug: string
@@ -53,6 +55,7 @@ export type EditorConfig = {
   fileLines: string
   screenshot: string
   screenshotMode: ScreenshotMode
+  screenshotLayout: ScreenshotLayout
   screenshotX: number
   screenshotY: number
   screenshotScale: number
@@ -184,6 +187,7 @@ export const initialConfig: EditorConfig = {
   fileLines: "[Verse]\nC        G        Am       F",
   screenshot: screenshots[1],
   screenshotMode: "detail",
+  screenshotLayout: "beside",
   screenshotX: 0,
   screenshotY: 0,
   screenshotScale: 100,
@@ -649,7 +653,21 @@ async function renderPost(
     }
   }
 
-  if (config.template === "screenshot") {
+  if (config.template === "screenshot" && isCenteredScreenshot(config)) {
+    // Mirrors centeredScreenshot() in scripts/lib/social-templates.mjs: the phone
+    // whole in the middle of the body box, then scaled and nudged by the sliders.
+    const image = await loadImage(`/app-screenshots/dark/${config.screenshot}`)
+    const detail = config.screenshotMode === "detail"
+    const ratio = detail
+      ? activeFormatRatio(formatName, { card: 0.76, post: 0.62, story: 0.58 })
+      : image.naturalWidth / image.naturalHeight
+    const screenshotScale = Math.min(150, Math.max(50, config.screenshotScale)) / 100
+    const shotHeight = Math.min(innerHeight, innerWidth / ratio) * screenshotScale
+    const shotWidth = shotHeight * ratio
+    const shotX = (format.width - shotWidth) / 2 + (config.screenshotX / 100) * format.width
+    const shotY = bodyTop + (bodyHeight - shotHeight) / 2 + (config.screenshotY / 100) * format.height
+    drawScreenshot(context, image, shotX, shotY, shotWidth, shotHeight, scale, detail, config.deviceFrame)
+  } else if (config.template === "screenshot") {
     const image = await loadImage(`/app-screenshots/dark/${config.screenshot}`)
     const detail = config.screenshotMode === "detail"
     const screenshotRatio = image.naturalWidth / image.naturalHeight
@@ -699,6 +717,10 @@ async function renderPost(
     )
     drawTextLines(context, headline, padding, copyY, copySize, 1.18, activeTheme.text, 700, sans)
   }
+}
+
+function isCenteredScreenshot(config: EditorConfig) {
+  return config.template === "screenshot" && config.screenshotLayout === "centered"
 }
 
 function activeFormatRatio<Value>(format: FormatName, values: Record<FormatName, Value>) {
@@ -830,6 +852,7 @@ function parseImportedConfig(source: string): EditorConfig {
     fileLines: importedLines(data.lines),
     screenshot: importedString(data.screenshot, initialConfig.screenshot),
     screenshotMode: screenshotMode === "detail" ? "detail" : "full",
+    screenshotLayout: data.screenshotLayout === "centered" ? "centered" : "beside",
     screenshotX: screenshotFocus.x,
     screenshotY: screenshotFocus.y,
     screenshotScale: importedBackgroundScale(data.screenshotScale),
@@ -871,6 +894,7 @@ function configMarkdown(config: EditorConfig) {
   if (config.template === "screenshot") {
     output.push(`screenshot: ${yamlString(config.screenshot)}`)
     output.push(`screenshotMode: ${config.screenshotMode}`)
+    if (config.screenshotLayout === "centered") output.push("screenshotLayout: centered")
     if (config.screenshotX !== 0 || config.screenshotY !== 0) {
       output.push(`screenshotFocus: ${config.screenshotX}% ${config.screenshotY}%`)
     }
@@ -893,7 +917,8 @@ function configMarkdown(config: EditorConfig) {
     const body = fileRows(config.fileLines)
     if (body.length) output.push("lines:", ...body.map((line) => `  - ${yamlString(line)}`))
   }
-  const headline = lines(config.headline)
+  // The centred screenshot carries no copy, and the build rejects a headline there.
+  const headline = isCenteredScreenshot(config) ? [] : lines(config.headline)
   if (headline.length) output.push("headline:", ...headline.map((line) => `  - ${yamlString(line)}`))
   if (config.template === "quote" && config.attribution.trim()) {
     output.push(`attribution: ${yamlString(config.attribution.trim())}`)
@@ -1290,9 +1315,19 @@ export function SocialPostEditor({
               </>
             ) : null}
 
-            <Field label="Headline" hint={config.template === "file" ? "Optional" : "One rendered line per row"}>
+            <Field
+              label="Headline"
+              hint={
+                isCenteredScreenshot(config)
+                  ? "Not shown in the centred layout"
+                  : config.template === "file"
+                    ? "Optional"
+                    : "One rendered line per row"
+              }
+            >
               <textarea
-                className={`${inputClass} min-h-28 resize-y leading-relaxed`}
+                className={`${inputClass} min-h-28 resize-y leading-relaxed disabled:opacity-50`}
+                disabled={isCenteredScreenshot(config)}
                 value={config.headline}
                 onChange={(event) => update("headline", event.target.value)}
               />
@@ -1439,6 +1474,26 @@ export function SocialPostEditor({
 
           {config.template === "screenshot" ? (
             <Section title="App screenshot">
+              <div className="grid grid-cols-2 rounded-xl bg-muted p-1" role="group" aria-label="Screenshot layout">
+                {([
+                  { name: "beside", label: "With headline" },
+                  { name: "centered", label: "Centred, no text" },
+                ] as { name: ScreenshotLayout; label: string }[]).map((layout) => (
+                  <button
+                    key={layout.name}
+                    type="button"
+                    onClick={() => update("screenshotLayout", layout.name)}
+                    aria-pressed={config.screenshotLayout === layout.name}
+                    className={`rounded-lg px-3 py-2 text-xs font-medium transition ${
+                      config.screenshotLayout === layout.name
+                        ? "bg-background text-foreground shadow-sm"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    {layout.label}
+                  </button>
+                ))}
+              </div>
               <div className="grid grid-cols-2 rounded-xl bg-muted p-1">
                 {([
                   { name: "detail", label: "Detail crop" },

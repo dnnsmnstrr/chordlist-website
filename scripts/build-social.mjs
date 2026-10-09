@@ -216,6 +216,12 @@ function readDefinition(file, data) {
   ) {
     fail(`"screenshotMode" must be "full" or "detail"`)
   }
+  if (data.screenshotLayout !== undefined && !["beside", "centered"].includes(data.screenshotLayout)) {
+    fail(`"screenshotLayout" must be "beside" or "centered"`)
+  }
+  if (data.screenshotLayout === "centered" && data.headline !== undefined) {
+    fail(`"screenshotLayout: centered" shows the screenshot alone — remove "headline"`)
+  }
   if (data.deviceFrame !== undefined && typeof data.deviceFrame !== "boolean") {
     fail(`"deviceFrame" must be true or false`)
   }
