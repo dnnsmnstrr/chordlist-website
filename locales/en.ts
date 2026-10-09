@@ -1301,8 +1301,27 @@ export const adminCopy = {
       title: "Gallery",
       description: "Imagery and video made for the brand.",
     },
+    marketingCopy: {
+      title: "Marketing copy",
+      description: "Listings, launch posts, and hashtags, ready to copy.",
+    },
   },
   signOut: "Sign out",
+} as const
+
+export const marketingCopyPageCopy = {
+  metadata: {
+    title: "Marketing copy",
+    description: `The text ${siteConfig.name} posts outside its own site, ready to copy.`,
+  },
+  eyebrow: "Marketing",
+  title: "Marketing copy",
+  introduction:
+    "Every listing and post that goes out without an image of its own. Quoted blocks are ready to paste; the copy button takes the whole block and nothing around it.",
+  source: "Edit docs/launch-copy.md to change this page.",
+  backToAdmin: "Admin",
+  copy: "Copy",
+  copied: "Copied",
 } as const
 
 export const copyReviewCopy = {

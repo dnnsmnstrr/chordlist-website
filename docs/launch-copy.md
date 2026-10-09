@@ -4,6 +4,9 @@ Every piece of text that goes out under chordlist's name outside this site and t
 was entered on each platform, and the posts ready to paste. When a listing is edited or a post goes
 live, change it here in the same sitting so this file stays the record of what is actually out there.
 
+It is also readable, with a copy button on every quoted block, at `/marketing-copy` in the admin
+section.
+
 Social images and their captions live in [`content/social/`](../content/social) and are planned in
 [Social media plan](social-media-plan.md). This file covers the copy those do not: platform listings,
 community posts and threads.

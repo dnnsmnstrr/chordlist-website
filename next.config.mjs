@@ -26,6 +26,8 @@ const nextConfig = {
     "/blog/[slug]": ["./content/blog/**/*"],
     "/blog/rss.xml": ["./content/blog/**/*"],
     "/sitemap.xml": ["./content/blog/**/*"],
+    // Read at request time from docs/, which nothing imports.
+    "/marketing-copy": ["./docs/launch-copy.md"],
   },
 
   // The translation store resolves the app checkout from process.cwd(), so the tracer bundles the
