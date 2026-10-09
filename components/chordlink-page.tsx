@@ -37,10 +37,6 @@ const copy = {
     checkoutUnavailable: "Checkout is temporarily unavailable. Please try again later.",
     soldOutNotice: "The first edition is sold out. Every numbered chordlink has found an owner.",
     availability: (available: number) => `${available} available · numbered ${numbering}`,
-    availabilitySoldOut: `Sold out · numbered ${numbering}`,
-    // Shown when the count cannot be read. Stating the run without a number is the one claim that
-    // is still true during an outage.
-    availabilityUnknown: `Numbered ${numbering}`,
     unlimited: "Includes chordlist unlimited",
     howTitle: "One tap, your choice",
     how: [
@@ -94,8 +90,6 @@ const copy = {
     checkoutUnavailable: "Der Checkout ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.",
     soldOutNotice: "Die erste Edition ist ausverkauft. Jeder nummerierte chordlink hat seinen Platz gefunden.",
     availability: (available: number) => `${available} verfügbar · nummeriert ${numbering}`,
-    availabilitySoldOut: `Ausverkauft · nummeriert ${numbering}`,
-    availabilityUnknown: `Nummeriert ${numbering}`,
     unlimited: "chordlist unlimited inklusive",
     howTitle: "Ein Scan, deine Songs",
     how: [
@@ -111,7 +105,7 @@ const copy = {
     diyTitle: "Du hast einen 3D-Drucker? Bau deinen eigenen.",
     diyBody: "Der Modellgenerator im Browser ist für einen persönlichen chordlink kostenlos nutzbar. Ergänze zu Hause deinen eigenen NFC-Tag und programmiere den Link.",
     diyAction: "Zur DIY-Anleitung",
-    diyHint: "Du hast einen 3D-Drucker?",
+    diyHint: "3D-Drucker zur Hand?",
     diyHintAction: "Bau dir deinen eigenen",
     manufacturingNote: "Da jeder chordlink 3D-gedruckt wird, können kleine kosmetische Schichtlinien, Spuren oder Abweichungen entstehen. Sie sind Teil des Herstellungsverfahrens und gelten nicht als Mangel. Deine gesetzlichen Gewährleistungs- und Widerrufsrechte bleiben unberührt.",
     notify: {
@@ -194,25 +188,19 @@ export function ChordlinkPage({
                 {unavailableLabel}
               </button>
             )}
-            <span className="text-sm text-muted-foreground">
-              {availability === null
-                ? text.availabilityUnknown
-                : availability.soldOut
-                ? text.availabilitySoldOut
-                : text.availability(availability.available)}
-            </span>
+            {canBuy && availability ? (
+              <span className="text-sm text-muted-foreground">{text.availability(availability.available)}</span>
+            ) : (
+              // Nothing is for sale, so a count would only be noise. The DIY section is far below the fold on a
+              // phone, so this spot tells whoever cannot buy one yet that they can already print their own.
+              <span className="flex min-w-0 flex-1 flex-col text-sm text-muted-foreground sm:hidden">
+                {text.diyHint}
+                <Link className="font-medium text-foreground underline underline-offset-4" href={paths.diy}>
+                  {text.diyHintAction}
+                </Link>
+              </span>
+            )}
           </div>
-
-          {/* The DIY section is far below the fold on a phone, so whoever cannot buy one yet learns here that
-              they can already print their own. */}
-          {canBuy ? null : (
-            <p className="mt-4 text-sm text-muted-foreground sm:hidden">
-              {text.diyHint}{" "}
-              <Link className="font-medium text-foreground underline underline-offset-4" href={paths.diy}>
-                {text.diyHintAction}
-              </Link>
-            </p>
-          )}
 
           {checkoutNotice ? (
             <p className="mt-3 text-sm text-destructive" role="alert">
