@@ -26,7 +26,9 @@ its post is published.
    claim, `progression` for chords, `quote` for a line from an article, `screenshot` for evidence of
    app behaviour, `file` for the shape of a song on disk.
 4. Choose formats. Default to `card` and `post`. Add `story` when the asset is worth a full-screen
-   vertical, which is usually a launch or a single strong statement rather than a detailed one.
+   vertical, which is usually a launch or a single strong statement rather than a detailed one. A
+   pixel size such as `1270x760` also works; for a one-off size nobody needs committed, run
+   `pnpm build:social --only <slug> --size <WIDTHxHEIGHT>` instead, which writes to `out/social/`.
 5. Create `content/social/<slug>.md` with frontmatter and a caption body. Reuse an existing slug only
    when genuinely revising that asset.
 6. Verify every product claim against the sources under **Accuracy** below.

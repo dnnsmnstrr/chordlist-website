@@ -54,6 +54,34 @@ images — `public/og.png` and one card per blog post — which must not change 
 
 A definition that names no `formats` gets `card` and `post`.
 
+### Other sizes
+
+A `formats` entry can also be a pixel size, such as `1270x760`. It takes the layout of the named
+format nearest in aspect ratio — a landscape size is laid out as a `card`, a square or a tall one as
+a `post` — and scales that format's type to the canvas, so it reads like its sibling. Custom sizes get
+no platform safe area. Declare one in a definition when the size ships with the asset; the PNG lands
+beside the others as `public/social/<slug>/1270x760.png`.
+
+For a one-off, render without touching a definition:
+
+```bash
+pnpm build:social --only out-now --size 1270x760
+```
+
+Both flags take comma-separated lists. Either one switches the run to `out/social/`, which git
+ignores, and leaves `public/social` and its manifest alone.
+
+| Placement | Size |
+| --- | --- |
+| Product Hunt gallery | `1270x760` |
+| X header | `1500x500` |
+| LinkedIn and Facebook link image | `1200x627` |
+| Square feed post (Mastodon, Bluesky, Threads) | `1080x1080` |
+| YouTube thumbnail | `1280x720` |
+
+Check a very wide size such as the X header in the PNG: the frame keeps the lockup and the footer, so
+a long headline on a short canvas comes out small.
+
 Two cropping rules the build cannot enforce for you:
 
 - Instagram's profile grid crops a 4:5 post to 3:4. Keep anything essential — the end of a headline,

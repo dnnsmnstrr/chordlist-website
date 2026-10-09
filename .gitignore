@@ -41,3 +41,6 @@ video/public/manual/*
 
 # Untouched author drafts, saved by the blog-refine skill before it edits
 .blog-originals/
+
+# One-off social renders (pnpm build:social --size / --only)
+out/

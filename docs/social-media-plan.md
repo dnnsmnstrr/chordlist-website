@@ -9,6 +9,9 @@ the image, and posting it.
 one here — the build does not act on it, so this file and that field are the only things keeping the
 calendar honest. If a date moves, move both.
 
+Copy that goes out without an image of its own — the Product Hunt listing, Show HN, Reddit posts and
+threads — is in [Launch copy](launch-copy.md).
+
 The system that produces these is documented in [Social media system](social-media-system.md); the
 workflow for writing a new one is [`.agents/skills/social-asset/SKILL.md`](../.agents/skills/social-asset/SKILL.md).
 
