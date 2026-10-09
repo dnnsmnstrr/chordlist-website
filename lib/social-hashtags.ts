@@ -71,8 +71,27 @@ export function formatHashtags(tags: string[]): string {
   return tags.map((tag) => `#${tag}`).join(" ")
 }
 
-/// The caption as it is posted: the reviewed text, then the post's hashtags on their own line.
+/// A caption as a network shows it. Definitions wrap their captions to fit the file, and Instagram
+/// and X keep every line break they are given, so a single break inside a paragraph becomes a space.
+/// Blank lines stay paragraph breaks, and a line that starts a list item keeps its own line.
+export function unwrapCaption(caption: string): string {
+  return caption
+    .trim()
+    .split(/\n\s*\n/)
+    .map((paragraph) =>
+      paragraph
+        .split("\n")
+        .map((line) => line.trim())
+        .reduce((joined, line) =>
+          /^([-*•]|\d+\.)\s/.test(line) ? `${joined}\n${line}` : `${joined} ${line}`,
+        ),
+    )
+    .join("\n\n")
+}
+
+/// The caption as it is posted: the reviewed text, unwrapped, then the hashtags on their own line.
 export function captionWithHashtags(caption: string, tags: string[]): string {
+  const text = unwrapCaption(caption)
   const hashtags = formatHashtags(tags)
-  return hashtags ? `${caption.trim()}\n\n${hashtags}` : caption.trim()
+  return hashtags ? `${text}\n\n${hashtags}` : text
 }

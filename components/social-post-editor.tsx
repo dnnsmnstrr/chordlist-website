@@ -19,13 +19,14 @@ import {
   ImagePlus,
   Link2,
   RotateCcw,
+  Share2,
   X,
 } from "lucide-react"
 import { parse as parseYaml } from "yaml"
 
 import { HashtagField } from "@/components/hashtag-field"
 import { Button, buttonVariants } from "@/components/ui/button"
-import { normalizeHashtags, suggestedHashtags } from "@/lib/social-hashtags"
+import { captionWithHashtags, normalizeHashtags, suggestedHashtags } from "@/lib/social-hashtags"
 import { cn } from "@/lib/utils"
 
 type FormatName = "card" | "post" | "story"
@@ -719,6 +720,14 @@ async function renderPost(
   }
 }
 
+function downloadFile(file: File) {
+  const link = document.createElement("a")
+  link.href = URL.createObjectURL(file)
+  link.download = file.name
+  link.click()
+  URL.revokeObjectURL(link.href)
+}
+
 function isCenteredScreenshot(config: EditorConfig) {
   return config.template === "screenshot" && config.screenshotLayout === "centered"
 }
@@ -991,7 +1000,7 @@ export function SocialPostEditor({
   const [config, setConfig] = useState(initialConfig)
   const [activeFormat, setActiveFormat] = useState<FormatName>("post")
   const [customPhoto, setCustomPhoto] = useState<{ name: string; src: string } | null>(null)
-  const [status, setStatus] = useState<"idle" | "copied" | "exported" | "imported">("idle")
+  const [status, setStatus] = useState<"idle" | "copied" | "exported" | "imported" | "shared">("idle")
   const [importOpen, setImportOpen] = useState(false)
   const [importText, setImportText] = useState("")
   const [importError, setImportError] = useState("")
@@ -1122,17 +1131,45 @@ export function SocialPostEditor({
     setStatus("copied")
   }
 
+  /**
+   * Hands the PNG to the system share sheet, with the caption and hashtags as its text, so a post
+   * can go straight to Instagram or Messages without a trip through Downloads. The canvas already
+   * shows the current config, so it is read as is rather than redrawn: share() has to run soon
+   * after the tap, and Safari refuses it once a slow redraw has used up that moment. A browser that
+   * cannot share files gets the download instead.
+   */
+  const shareImage = async () => {
+    // Looked up by id rather than through canvasRef: this handler lives in the action list that is
+    // mapped during render, and the hooks lint cannot tell that the ref is only read on click.
+    const canvas = document.getElementById("preview-canvas")
+    if (!(canvas instanceof HTMLCanvasElement)) return
+    const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/png"))
+    if (!blob) return
+    const file = new File([blob], `${config.slug || "chordlist-social"}-${activeFormat}.png`, { type: "image/png" })
+
+    if (!navigator.canShare?.({ files: [file] })) {
+      downloadFile(file)
+      setStatus("exported")
+      return
+    }
+    try {
+      await navigator.share({ files: [file], text: captionWithHashtags(config.caption, config.hashtags) })
+      setStatus("shared")
+    } catch (error) {
+      // Dismissing the sheet rejects with AbortError, which is not a failure worth a fallback.
+      if (error instanceof DOMException && error.name === "AbortError") return
+      downloadFile(file)
+      setStatus("exported")
+    }
+  }
+
   const exportImage = async () => {
     const canvas = canvasRef.current
     if (!canvas) return
     await renderPost(canvas, config, activeFormat, photoSrc, textureSrc)
     canvas.toBlob((blob) => {
       if (!blob) return
-      const link = document.createElement("a")
-      link.href = URL.createObjectURL(blob)
-      link.download = `${config.slug || "chordlist-social"}-${activeFormat}.png`
-      link.click()
-      URL.revokeObjectURL(link.href)
+      downloadFile(new File([blob], `${config.slug || "chordlist-social"}-${activeFormat}.png`, { type: "image/png" }))
       setStatus("exported")
     }, "image/png")
   }
@@ -1140,6 +1177,12 @@ export function SocialPostEditor({
   const selectedFormat = formats[activeFormat]
 
   const secondaryActions: HeaderAction[] = [
+    {
+      key: "shareImage",
+      label: status === "shared" ? "Shared" : "Share image",
+      icon: status === "shared" ? Check : Share2,
+      onClick: shareImage,
+    },
     { key: "posts", label: "Posts", icon: Images, href: "/social/posts" },
     {
       key: "import",
