@@ -163,17 +163,17 @@ export function ChordlinkPage({
 
       {/* On phones the model takes the title's place under the eyebrow, so the product is the first thing in view;
           the title stays in the document for screen readers and search. From lg the text column sits beside the
-          model, centred by the two 1fr rows around it. */}
-      <section id="main-content" tabIndex={-1} className="mx-auto grid w-full max-w-5xl px-6 pb-20 pt-2 sm:pt-6 lg:grid-cols-[1.1fr_0.9fr] lg:grid-rows-[1fr_auto_auto_1fr] lg:gap-x-12 lg:pt-12">
-        <p className="font-mono text-sm text-muted-foreground lg:col-start-1 lg:row-start-2">{text.eyebrow}</p>
+          model, both top-aligned so the model lines up with the headline rather than the notify form below it. */}
+      <section id="main-content" tabIndex={-1} className="mx-auto grid w-full max-w-5xl px-6 pb-20 pt-2 sm:pt-6 lg:grid-cols-[1.1fr_0.9fr] lg:grid-rows-[auto_1fr] lg:gap-x-12 lg:pt-12">
+        <p className="font-mono text-sm text-muted-foreground lg:col-start-1 lg:row-start-1">{text.eyebrow}</p>
 
-        <div className="mx-auto -mb-8 -mt-2 aspect-square w-full max-w-xs sm:mb-0 sm:mt-4 sm:max-w-md lg:col-start-2 lg:row-span-4 lg:row-start-1 lg:mt-0 lg:self-center">
+        <div className="mx-auto -mb-8 -mt-2 aspect-square w-full max-w-xs sm:mb-0 sm:mt-4 sm:max-w-md lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:mt-0 lg:self-start">
           <ChordlinkModelViewer
             label={language === "de" ? "Interaktives 3D-Modell des chordlink" : "Interactive 3D model of chordlink"}
           />
         </div>
 
-        <div className="lg:col-start-1 lg:row-start-3">
+        <div className="lg:col-start-1 lg:row-start-2">
           <h1 className="sr-only max-w-3xl text-balance text-6xl font-semibold tracking-tight sm:not-sr-only sm:mt-6 sm:block lg:mt-4">{text.title}</h1>
           <p className="mt-4 max-w-2xl text-pretty text-lg leading-8 text-muted-foreground lg:mt-6">{text.intro}</p>
 
