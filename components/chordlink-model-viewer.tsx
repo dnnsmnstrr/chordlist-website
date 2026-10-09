@@ -17,10 +17,12 @@ function disposeObject(object: THREE.Object3D) {
 
 export function ChordlinkModelViewer({ label }: { label: string }) {
   const containerRef = useRef<HTMLDivElement>(null)
+  const handleRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const container = containerRef.current
-    if (!container) return
+    const handle = handleRef.current
+    if (!container || !handle) return
 
     let disposed = false
     const scene = new THREE.Scene()
@@ -31,12 +33,14 @@ export function ChordlinkModelViewer({ label }: { label: string }) {
     renderer.outputColorSpace = THREE.SRGBColorSpace
     renderer.toneMapping = THREE.ACESFilmicToneMapping
     renderer.toneMappingExposure = 1.15
-    renderer.domElement.className = "size-full touch-none"
+    // The canvas only draws; the round handle above it takes the drags. Touches on the canvas's empty
+    // corners fall through to the page, so a swipe that misses the model still scrolls it.
+    renderer.domElement.className = "pointer-events-none absolute inset-0 size-full"
     renderer.domElement.setAttribute("aria-label", label)
     renderer.domElement.setAttribute("role", "img")
-    container.append(renderer.domElement)
+    container.prepend(renderer.domElement)
 
-    const controls = new OrbitControls(camera, renderer.domElement)
+    const controls = new OrbitControls(camera, handle)
     // Event-driven rendering keeps the static product preview idle when the
     // user is not interacting. Damping would require a continuous frame loop.
     controls.enableDamping = false
@@ -100,5 +104,10 @@ export function ChordlinkModelViewer({ label }: { label: string }) {
     }
   }, [label])
 
-  return <div className="size-full bg-transparent" ref={containerRef} />
+  return (
+    <div className="relative size-full bg-transparent" ref={containerRef}>
+      {/* Sized to the tag as the camera frames it, which fills about the middle three quarters. */}
+      <div className="absolute inset-[12%] cursor-grab touch-none rounded-full active:cursor-grabbing" ref={handleRef} />
+    </div>
+  )
 }

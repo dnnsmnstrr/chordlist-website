@@ -56,6 +56,8 @@ const copy = {
     diyTitle: "Have a 3D printer? Make your own.",
     diyBody: "The browser-based model generator is free to use for a personal chordlink. Add your own NFC tag and program its link at home.",
     diyAction: "See the DIY instructions",
+    diyHint: "Have a 3D printer?",
+    diyHintAction: "Make your own now",
     manufacturingNote: "Because every chordlink is 3D-printed, small cosmetic layer lines, marks, or variations can occur. These are part of the production method and are not considered defects. Your statutory warranty and withdrawal rights remain unaffected.",
     notify: {
       prelaunch: {
@@ -109,6 +111,8 @@ const copy = {
     diyTitle: "Du hast einen 3D-Drucker? Bau deinen eigenen.",
     diyBody: "Der Modellgenerator im Browser ist für einen persönlichen chordlink kostenlos nutzbar. Ergänze zu Hause deinen eigenen NFC-Tag und programmiere den Link.",
     diyAction: "Zur DIY-Anleitung",
+    diyHint: "Du hast einen 3D-Drucker?",
+    diyHintAction: "Bau dir deinen eigenen",
     manufacturingNote: "Da jeder chordlink 3D-gedruckt wird, können kleine kosmetische Schichtlinien, Spuren oder Abweichungen entstehen. Sie sind Teil des Herstellungsverfahrens und gelten nicht als Mangel. Deine gesetzlichen Gewährleistungs- und Widerrufsrechte bleiben unberührt.",
     notify: {
       prelaunch: {
@@ -146,6 +150,7 @@ export function ChordlinkPage({
   const text = copy[language]
   const soldOut = availability?.soldOut === true
   const checkoutAllowed = mayOpenChordlinkCheckout(availability)
+  const canBuy = checkoutAllowed && isChordlinkStripeConfigured()
   const unavailableLabel = soldOut ? text.soldOut : text.unavailable
   // Only offered where being turned away is a fact about the product rather than about an outage,
   // and only where the list can actually be reached — a form that quietly drops an address is worse
@@ -162,14 +167,24 @@ export function ChordlinkPage({
     <main className="min-h-screen text-foreground">
       <SiteHeader language={language} alternates={{ en: paths.en, de: paths.de }} />
 
-      <section id="main-content" tabIndex={-1} className="mx-auto grid w-full max-w-5xl gap-12 px-6 pb-20 pt-12 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
-        <div>
-          <p className="font-mono text-sm text-muted-foreground">{text.eyebrow}</p>
-          <h1 className="mt-4 max-w-3xl text-balance text-5xl font-semibold tracking-tight sm:text-6xl">{text.title}</h1>
-          <p className="mt-6 max-w-2xl text-pretty text-lg leading-8 text-muted-foreground">{text.intro}</p>
+      {/* On phones the model takes the title's place under the eyebrow, so the product is the first thing in view;
+          the title stays in the document for screen readers and search. From lg the text column sits beside the
+          model, centred by the two 1fr rows around it. */}
+      <section id="main-content" tabIndex={-1} className="mx-auto grid w-full max-w-5xl px-6 pb-20 pt-2 sm:pt-6 lg:grid-cols-[1.1fr_0.9fr] lg:grid-rows-[1fr_auto_auto_1fr] lg:gap-x-12 lg:pt-12">
+        <p className="font-mono text-sm text-muted-foreground lg:col-start-1 lg:row-start-2">{text.eyebrow}</p>
+
+        <div className="mx-auto -mb-8 -mt-2 aspect-square w-full max-w-xs sm:mb-0 sm:mt-4 sm:max-w-md lg:col-start-2 lg:row-span-4 lg:row-start-1 lg:mt-0 lg:self-center">
+          <ChordlinkModelViewer
+            label={language === "de" ? "Interaktives 3D-Modell des chordlink" : "Interactive 3D model of chordlink"}
+          />
+        </div>
+
+        <div className="lg:col-start-1 lg:row-start-3">
+          <h1 className="sr-only max-w-3xl text-balance text-6xl font-semibold tracking-tight sm:not-sr-only sm:mt-6 sm:block lg:mt-4">{text.title}</h1>
+          <p className="mt-4 max-w-2xl text-pretty text-lg leading-8 text-muted-foreground lg:mt-6">{text.intro}</p>
 
           <div className="mt-8 flex flex-wrap items-center gap-4">
-            {checkoutAllowed && isChordlinkStripeConfigured() ? (
+            {canBuy ? (
               <Link className={cn(buttonVariants({ size: "lg" }), "h-11 px-5")} href={paths.checkout}>
                 {text.buy}
               </Link>
@@ -187,6 +202,17 @@ export function ChordlinkPage({
                 : text.availability(availability.available)}
             </span>
           </div>
+
+          {/* The DIY section is far below the fold on a phone, so whoever cannot buy one yet learns here that
+              they can already print their own. */}
+          {canBuy ? null : (
+            <p className="mt-4 text-sm text-muted-foreground sm:hidden">
+              {text.diyHint}{" "}
+              <Link className="font-medium text-foreground underline underline-offset-4" href={paths.diy}>
+                {text.diyHintAction}
+              </Link>
+            </p>
+          )}
 
           {checkoutNotice ? (
             <p className="mt-3 text-sm text-destructive" role="alert">
@@ -212,12 +238,6 @@ export function ChordlinkPage({
             <span className="inline-flex items-center gap-2"><Gift className="size-4" />{text.unlimited}</span>
           </div>
           <p className="mt-2 text-xs text-muted-foreground">{text.vat}</p>
-        </div>
-
-        <div className="mx-auto aspect-square w-full max-w-md">
-          <ChordlinkModelViewer
-            label={language === "de" ? "Interaktives 3D-Modell des chordlink" : "Interactive 3D model of chordlink"}
-          />
         </div>
       </section>
 
