@@ -191,9 +191,9 @@ export function ChordlinkPage({
             {canBuy && availability ? (
               <span className="text-sm text-muted-foreground">{text.availability(availability.available)}</span>
             ) : (
-              // Nothing is for sale, so a count would only be noise. The DIY section is far below the fold on a
-              // phone, so this spot tells whoever cannot buy one yet that they can already print their own.
-              <span className="flex min-w-0 flex-1 flex-col text-sm text-muted-foreground sm:hidden">
+              // Nothing is for sale, so a count would only be noise. This spot tells whoever cannot buy one yet
+              // that they can already print their own; the DIY section itself is far below the fold.
+              <span className="flex min-w-0 flex-1 flex-col text-sm text-muted-foreground">
                 {text.diyHint}
                 <Link className="font-medium text-foreground underline underline-offset-4" href={paths.diy}>
                   {text.diyHintAction}
