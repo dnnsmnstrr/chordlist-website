@@ -44,6 +44,12 @@ export const commonCopy = {
     preorder: "Pre-order",
     comingSoon: "Coming soon",
     largeSuffix: "on iOS",
+    // Apple's official badge, shown in the hero once there is a store listing. The alt text is the
+    // badge's own wording; `locale` picks the matching artwork from Apple's marketing tools.
+    storeBadge: {
+      locale: "en-us",
+      alt: "Download on the App Store",
+    },
     // One note per CTA state, so the line under the button always describes the
     // link that is actually configured. See components/app-cta.tsx.
     note: {
@@ -132,7 +138,6 @@ export const homeCopy = {
     // carry that job on its own.
     subheadline: "An offline songbook for musicians who want portable charts on iPhone and iPad.",
     description: `${siteConfig.name} keeps every song as a Markdown file in a folder you choose. \nNo logins or cloud sync. Your files remain portable and under your control.`,
-    formatLink: "See the format",
   },
   showcase: {
     eyebrow: "Made for the set list",

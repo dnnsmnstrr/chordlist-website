@@ -62,7 +62,6 @@ const overrides: Record<Language, Record<CopyVariant, HomeOverride>> = {
         subheadline: "Finish a song and see what else you can already play.",
         description:
           "Every song is a Markdown file in a folder you choose, and its chord progression is part of the file. \nSongs that share one are put together for you, offline.",
-        formatLink: "See the format",
       },
       features: {
         title: "The next song is already half learned.",
@@ -100,7 +99,6 @@ const overrides: Record<Language, Record<CopyVariant, HomeOverride>> = {
         subheadline: "Find a song, play it, keep moving.",
         description:
           "Search the whole library, transpose while you play, and let the chart scroll at your pace. \nEvery song stays a Markdown file in a folder you choose.",
-        formatLink: "See the format",
       },
       showcase: {
         eyebrow: "On stage and in the practice room",
@@ -148,7 +146,6 @@ const overrides: Record<Language, Record<CopyVariant, HomeOverride>> = {
         subheadline: "Spiel einen Song zu Ende und sieh, was du sonst schon spielen kannst.",
         description:
           "Jeder Song ist eine Markdown-Datei in einem Ordner deiner Wahl, und die Akkordfolge steht mit in der Datei. \nSongs mit derselben Akkordfolge legt chordlist offline für dich zusammen.",
-        formatLink: "Das Format ansehen",
       },
       features: {
         title: "Den nächsten Song kannst du halb schon.",
@@ -184,7 +181,6 @@ const overrides: Record<Language, Record<CopyVariant, HomeOverride>> = {
         subheadline: "Song finden, spielen, weitermachen.",
         description:
           "Durchsuche die ganze Bibliothek, transponiere beim Spielen und lass den Text in deinem Tempo laufen. \nJeder Song bleibt eine Markdown-Datei in einem Ordner deiner Wahl.",
-        formatLink: "Das Format ansehen",
       },
       showcase: {
         eyebrow: "Auf der Bühne und im Proberaum",

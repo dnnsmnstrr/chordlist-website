@@ -1,5 +1,4 @@
-import { AppCTA, AppCTANote } from "@/components/app-cta"
-import { Button } from "@/components/ui/button"
+import { AppCTANote, AppStoreBadge } from "@/components/app-cta"
 import { defaultLanguage, dictionary, type Language } from "@/locales"
 
 export function Hero({ language = defaultLanguage }: { language?: Language }) {
@@ -22,14 +21,8 @@ export function Hero({ language = defaultLanguage }: { language?: Language }) {
       <p className="mx-auto mt-4 max-w-xl text-pretty leading-relaxed text-muted-foreground whitespace-normal sm:whitespace-pre-line">
         {homeCopy.hero.description}
       </p>
-      <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-        <AppCTA large language={language} />
-        <Button
-          size="lg"
-          variant="outline"
-          nativeButton={false}
-          render={<a href="#preview">{homeCopy.hero.formatLink}</a>}
-        />
+      <div className="mt-8 flex justify-center">
+        <AppStoreBadge language={language} />
       </div>
       <AppCTANote className="mx-auto mt-4 max-w-sm" language={language} />
     </section>

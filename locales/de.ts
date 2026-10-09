@@ -75,6 +75,10 @@ export const commonCopy: Localized<typeof en> = {
     preorder: "Vorbestellen",
     comingSoon: "Demnächst",
     largeSuffix: "für iOS",
+    storeBadge: {
+      locale: "de-de",
+      alt: "Laden im App Store",
+    },
     note: {
       testFlight: `Kostenlose öffentliche Beta für iPhone und iPad. Benötigt Apples TestFlight-App und iOS ${siteConfig.minimumOSVersion} oder neuer.`,
       download: `Kostenloser Download für iPhone und iPad. Benötigt iOS ${siteConfig.minimumOSVersion} oder neuer.`,
@@ -164,7 +168,6 @@ export const homeCopy: Localized<typeof enHome> = {
     subheadline:
       "Ein Offline-Songbook für alle, die ihre Songs auf iPhone und iPad dabeihaben wollen.",
     description: `${siteConfig.name} sichert jeden Song als Markdown-Datei in einem Ordner deiner Wahl. \nKeine Accounts, keine Cloud-Synchronisierung. Deine Dateien bleiben portabel und in deiner Hand.`,
-    formatLink: "Das Format ansehen",
   },
   showcase: {
     eyebrow: "Gemacht für die Setlist",
