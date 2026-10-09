@@ -67,11 +67,13 @@ const CONFIG = {
       placement: "Above the app icon on the product page (iOS 27, iPadOS 27).",
       width: 3840,
       height: 1646,
-      safe: { width: 3200, height: 1180 },
+      /// The iPhone shows only about the middle 2,500px of the width, so the words and devices sit
+      /// well inside that rather than in Apple's wider template area.
+      safe: { width: 2300, height: 1180 },
       text: "tagline",
-      deviceScale: 1,
+      deviceScale: 0.9,
       deviceOverlap: 0.85,
-      gap: 160,
+      gap: 120,
       type: { wordmark: 120, eyebrow: 56, headline: 170, gap: 56 },
       devices: [
         { kind: "ipad", screenshot: "02-Song-Detail.png", appearance: "light", height: 1 },

@@ -8,7 +8,7 @@
     "width": 3840,
     "height": 1646,
     "safe": {
-      "width": 3200,
+      "width": 2300,
       "height": 1180
     },
     "file": "classic/header.png",
@@ -28,7 +28,7 @@
     "width": 3840,
     "height": 1646,
     "safe": {
-      "width": 3200,
+      "width": 2300,
       "height": 1180
     },
     "file": "analog/header.png",
@@ -88,7 +88,7 @@
     "width": 5244,
     "height": 2950,
     "safe": {
-      "width": 3688,
+      "width": 2650,
       "height": 1612
     },
     "file": "classic/universal.png",
@@ -108,7 +108,7 @@
     "width": 5244,
     "height": 2950,
     "safe": {
-      "width": 3688,
+      "width": 2650,
       "height": 1612
     },
     "file": "analog/universal.png",
@@ -206,7 +206,7 @@
     "width": 3840,
     "height": 1646,
     "safe": {
-      "width": 3200,
+      "width": 2300,
       "height": 1180
     },
     "file": "de/classic/header.png",
@@ -226,7 +226,7 @@
     "width": 3840,
     "height": 1646,
     "safe": {
-      "width": 3200,
+      "width": 2300,
       "height": 1180
     },
     "file": "de/analog/header.png",
@@ -286,7 +286,7 @@
     "width": 5244,
     "height": 2950,
     "safe": {
-      "width": 3688,
+      "width": 2650,
       "height": 1612
     },
     "file": "de/classic/universal.png",
@@ -306,7 +306,7 @@
     "width": 5244,
     "height": 2950,
     "safe": {
-      "width": 3688,
+      "width": 2650,
       "height": 1612
     },
     "file": "de/analog/universal.png",
