@@ -23,7 +23,9 @@ import {
 } from "lucide-react"
 import { parse as parseYaml } from "yaml"
 
+import { HashtagField } from "@/components/hashtag-field"
 import { Button, buttonVariants } from "@/components/ui/button"
+import { normalizeHashtags, suggestedHashtags } from "@/lib/social-hashtags"
 import { cn } from "@/lib/utils"
 
 type FormatName = "card" | "post" | "story"
@@ -61,6 +63,7 @@ export type EditorConfig = {
   backgroundScale: number
   alt: string
   caption: string
+  hashtags: string[]
   created: string
   scheduled: string
   draft: boolean
@@ -191,6 +194,7 @@ export const initialConfig: EditorConfig = {
   backgroundScale: 100,
   alt: "A chordlist social card reading “Your lyrics and chords, as files in your pocket.”",
   caption: "Your songbook should feel like yours. chordlist keeps lyrics and chords in plain Markdown files you control.",
+  hashtags: [],
   created: new Date().toISOString().slice(0, 10),
   scheduled: "",
   draft: false,
@@ -836,6 +840,7 @@ function parseImportedConfig(source: string): EditorConfig {
     backgroundScale: importedBackgroundScale(data.backgroundScale),
     alt: importedString(data.alt),
     caption: (split[2] ?? "").trim(),
+    hashtags: normalizeHashtags(data.hashtags),
     created: importedString(data.created, new Date().toISOString().slice(0, 10)),
     scheduled: importedString(data.scheduled),
     draft: data.draft === true,
@@ -894,6 +899,8 @@ function configMarkdown(config: EditorConfig) {
     output.push(`attribution: ${yamlString(config.attribution.trim())}`)
   }
   if (config.footnote.trim()) output.push(`footnote: ${yamlString(config.footnote.trim())}`)
+  // Without the "#", which YAML would read as the start of a comment.
+  if (config.hashtags.length) output.push("hashtags:", ...config.hashtags.map((tag) => `  - ${tag}`))
   output.push(`alt: ${yamlString(config.alt.trim())}`)
   output.push(`created: ${config.created}`)
   if (config.scheduled) output.push(`scheduled: ${config.scheduled}`)
@@ -936,7 +943,14 @@ function Field({ label, hint, children }: { label: string; hint?: string; childr
   )
 }
 
-export function SocialPostEditor({ configMarkdown: initialMarkdown }: { configMarkdown?: string } = {}) {
+export function SocialPostEditor({
+  configMarkdown: initialMarkdown,
+  usedHashtags = [],
+}: {
+  configMarkdown?: string
+  /** Every tag already used in content/social, offered beside the curated list. */
+  usedHashtags?: string[]
+} = {}) {
   const [config, setConfig] = useState(initialConfig)
   const [activeFormat, setActiveFormat] = useState<FormatName>("post")
   const [customPhoto, setCustomPhoto] = useState<{ name: string; src: string } | null>(null)
@@ -951,6 +965,7 @@ export function SocialPostEditor({ configMarkdown: initialMarkdown }: { configMa
   const [previewCollapsed, setPreviewCollapsed] = useState(false)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const appliedInitialConfig = useRef(false)
+  const hashtagSuggestions = useMemo(() => normalizeHashtags([...suggestedHashtags, ...usedHashtags]), [usedHashtags])
 
   useEffect(() => {
     if (appliedInitialConfig.current || !initialMarkdown) return
@@ -1534,6 +1549,11 @@ export function SocialPostEditor({ configMarkdown: initialMarkdown }: { configMa
             <Field label="Caption" hint="Saved below frontmatter">
               <textarea className={`${inputClass} min-h-28 resize-y`} value={config.caption} onChange={(event) => update("caption", event.target.value)} />
             </Field>
+            <HashtagField
+              value={config.hashtags}
+              onChange={(tags) => update("hashtags", tags)}
+              suggestions={hashtagSuggestions}
+            />
           </Section>
         </aside>
 

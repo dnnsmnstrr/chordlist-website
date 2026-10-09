@@ -1,9 +1,11 @@
-import { readFile } from "node:fs/promises"
+import { readdir, readFile } from "node:fs/promises"
 import path from "node:path"
 
 import type { Metadata } from "next"
+import { parse as parseYaml } from "yaml"
 
 import { SocialPostEditor } from "@/components/social-post-editor"
+import { normalizeHashtags } from "@/lib/social-hashtags"
 import { requireAdmin } from "@/lib/server/admin-auth"
 
 export const metadata: Metadata = {
@@ -34,6 +36,25 @@ async function loadConfigForSlug(slug: string): Promise<string | null> {
   }
 }
 
+/** Every hashtag used by a definition in content/social, so a tag added to one post is suggested for the next. */
+async function loadUsedHashtags(): Promise<string[]> {
+  const directory = path.join(process.cwd(), "content", "social")
+  const files = (await readdir(directory).catch(() => [])).filter((file) => file.endsWith(".md")).sort()
+  const tags: unknown[] = []
+  for (const file of files) {
+    const source = await readFile(path.join(directory, file), "utf8").catch(() => "")
+    const frontmatter = source.match(/^---\r?\n([\s\S]*?)\r?\n---/)?.[1]
+    if (!frontmatter) continue
+    try {
+      const data = parseYaml(frontmatter) as { hashtags?: unknown } | null
+      if (Array.isArray(data?.hashtags)) tags.push(...data.hashtags)
+    } catch {
+      // A malformed definition fails pnpm build:social loudly; here it only costs its suggestions.
+    }
+  }
+  return normalizeHashtags(tags)
+}
+
 export default async function SocialEditorPage({ searchParams }: Props) {
   await requireAdmin("/social/editor")
   const { slug, config } = await searchParams
@@ -43,5 +64,5 @@ export default async function SocialEditorPage({ searchParams }: Props) {
       ? await loadConfigForSlug(slug)
       : null
 
-  return <SocialPostEditor configMarkdown={configMarkdown ?? undefined} />
+  return <SocialPostEditor configMarkdown={configMarkdown ?? undefined} usedHashtags={await loadUsedHashtags()} />
 }

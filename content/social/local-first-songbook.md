@@ -8,9 +8,14 @@ headline:
   - Your lyrics and chords,
   - as files in your pocket.
 footnote: chordlist.app
+hashtags:
+  - localfirst
+  - songbook
+  - plaintext
+  - iosapp
+  - indiedev
 alt: A dark chordlist card reading "Your lyrics and chords, as files in your pocket."
 created: 2026-08-09
-scheduled: 2026-09-13
 ---
 
 Every song you save is a plain Markdown file in a folder you choose. No account, no export

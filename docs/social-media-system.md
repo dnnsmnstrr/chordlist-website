@@ -232,6 +232,7 @@ whoever posts it is not rewriting copy that was already reviewed.
 | --- | --- | --- |
 | `template` | yes | One of the six above. An unknown name fails the build. |
 | `alt` | yes | Describes the visible asset. Never empty — these are published images. |
+| `hashtags` | no | Up to five tags, one per entry, **without** the `#` (YAML reads `#` as a comment). Pick from `lib/social-hashtags.ts`; the gallery appends them to the caption when copying. More than five warns, since Instagram accepts five. |
 | `headline` | per template | One list entry per rendered line. Line breaks are an editorial decision. |
 | `formats` | no | Defaults to `card` and `post`. |
 | `eyebrow` | no | A short label beside the wordmark: `Launch`, `Feature`, `From the blog`. Written as prose, rendered lowercase to match the wordmark. |

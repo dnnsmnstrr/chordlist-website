@@ -11,9 +11,14 @@ headline:
   - Play more,
   - file less.
 footnote: chordlist.app
+hashtags:
+  - guitarpractice
+  - acousticguitar
+  - songbook
+  - hobbymusician
+  - musicapp
 alt: A blurred black-and-white photograph of a guitarist mid chord change under hard stage light, with a chordlist headline over it.
 created: 2026-08-09
-scheduled: 2026-09-16
 ---
 
 Your songbook should get out of the way. Open the folder, hit shuffle, and let autoscroll keep

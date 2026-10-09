@@ -190,7 +190,9 @@ every network; each post fits X's 280 characters.
 
 ### Hashtags
 
-Instagram allows at most five per post, so each one has to be specific. Put them at the end of the
+Each definition in `content/social/` now carries its own `hashtags`, and the editor suggests from
+`lib/social-hashtags.ts`. The sets below are the starting points. Instagram allows at most five per
+post, so each one has to be specific. Put them at the end of the
 caption, not in a comment. Generic tags like #music are too crowded to surface a small account.
 
 | Post | Tags |

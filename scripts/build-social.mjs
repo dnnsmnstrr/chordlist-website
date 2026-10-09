@@ -90,6 +90,9 @@ const CONFIG = {
   /** Where one-off `--size` / `--only` runs write, outside the committed output. */
   adHocOutputDirectory: "out/social",
 
+  /** Instagram's cap on hashtags per post, mirrored from lib/social-hashtags.ts. */
+  hashtagLimit: 5,
+
   /** Formats a definition gets when its frontmatter does not name any. */
   defaultFormats: ["card", "post"],
 
@@ -264,11 +267,24 @@ function readDefinition(file, data) {
     }
   }
 
+  // Stored without the "#": in YAML it starts a comment, so "- #songbook" would
+  // silently become an empty entry. lib/social-hashtags.ts adds it back on copy.
+  const hashtags = data.hashtags ?? []
+  if (!Array.isArray(hashtags)) fail(`"hashtags" must be a list, one tag per entry`)
+  for (const tag of hashtags) {
+    if (typeof tag !== "string" || !/^[\p{L}\p{N}_]+$/u.test(tag)) {
+      fail(`hashtag ${JSON.stringify(tag)} must be letters, digits or underscores, without the "#"`)
+    }
+  }
+  if (hashtags.length > CONFIG.hashtagLimit) {
+    console.warn(`  ${file}: ${hashtags.length} hashtags; Instagram accepts ${CONFIG.hashtagLimit}`)
+  }
+
   // Headlines are authored as one array entry per rendered line so line breaks
   // stay an editorial decision rather than a side effect of the type size.
   const headline = data.headline === undefined ? undefined : [data.headline].flat().map(String)
 
-  return { ...data, template, theme, formats, headline }
+  return { ...data, template, theme, formats, headline, hashtags }
 }
 
 /**
@@ -568,6 +584,7 @@ async function main() {
       template: definition.template,
       alt: definition.alt,
       caption,
+      hashtags: definition.hashtags,
       created: definition.created ?? null,
       scheduled: definition.scheduled ?? null,
       outputs,
