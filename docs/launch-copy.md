@@ -28,7 +28,7 @@ Every claim in a post has to match these. Check `lib/site-config.ts` and the app
 
 | | |
 | --- | --- |
-| Platforms | iPhone and iPad, iOS and iPadOS 18 or later. No Android version planned. |
+| Platforms | iPhone and iPad, iOS and iPadOS 26 or later. No Android version planned. |
 | Released | 10 October 2026 |
 | Price | Free for the first 10 songs. Unlimited songs are a one-time purchase: **€6.99 launch price until 31 January 2027, €9.99 from 1 February**. Other currencies follow Apple's price table, so quote euros or say "launch price" rather than a percentage. |
 | Privacy | No account. chordlist does not upload or sync the song library. Analytics and chord sharing are opt-in. |
@@ -123,7 +123,7 @@ the old captures.
 > Keeping the progression out of the lyrics turned out to be the interesting part. With it as its
 > own field, the app can normalise progressions across keys and show which songs share one.
 >
-> It is native SwiftUI, iOS 18+. The first 10 songs are free; unlimited songs are a one-time
+> It is native SwiftUI, iOS 26+. The first 10 songs are free; unlimited songs are a one-time
 > purchase (€6.99 until the end of January). I wrote about why I think songbooks should be plain
 > text here: https://chordlist.app/blog/why-plain-text-songbooks-last
 >
@@ -150,7 +150,7 @@ subreddit's current self-promotion rules on the day; they change.
 > - Finds songs in your library that share a chord progression
 > - Transpose, autoscroll, tags, search and shuffle
 > - Import from a website or the share sheet
-> - iPhone and iPad, iOS 18 or later
+> - iPhone and iPad, iOS 26 or later
 >
 > Price: your first 10 songs are free, then a one-time unlock, no subscription. It's €6.99 until
 > 31 January, €9.99 after.
