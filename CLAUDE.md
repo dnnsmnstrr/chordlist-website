@@ -417,8 +417,8 @@ When the privacy policy changes materially, update `privacyCopy.lastUpdated`.
 ## Third-party services
 
 Repo skills live in `.agents/skills/<name>/SKILL.md` and are mirrored into `.cursor/rules/<name>.mdc`
-with Cursor's frontmatter dialect, and symlinked into `.claude/skills/`. There are four:
-`stripe-projects-cli`, `blog-post`, `blog-refine`, and `social-asset`.
+with Cursor's frontmatter dialect, and symlinked into `.claude/skills/`. There are five:
+`stripe-projects-cli`, `blog-post`, `blog-refine`, `social-asset`, and `video-content`.
 
 `.projects/state.json` tracks resources provisioned via the Stripe Projects CLI (currently
 RevenueCat). See `AGENTS.md` and `.agents/skills/stripe-projects-cli/` for that workflow.

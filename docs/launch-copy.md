@@ -22,6 +22,14 @@ Voice follows the [blog guidelines](blog-editorial-guidelines.md): calm, direct,
 `chordlist` lowercase, *Markdown* capitalised. No exclamation marks, no "ultimate", no "level up".
 Let the file and the progressions make the case.
 
+## Schedule
+
+| When | What |
+| --- | --- |
+| Sat 10 Oct | Product Hunt goes live. Post the maker comment straight away, then the launch thread below with the `out-now` image, and answer comments all day. |
+| Sun 11 Oct | Reddit: the post below in r/apple, which allows self-promotion on Sundays, and in r/iOSapps. Stay in both threads. |
+| From 12 Oct | Video: start with *These four songs are the same song* and *I learned one song and got three* from [Video scripts and storyboards](video-scripts.md), then *Your songbook is a folder*. Post each with the matching still from `content/social/`. |
+
 ## Facts
 
 Every claim in a post has to match these. Check `lib/site-config.ts` and the app before changing one.
@@ -136,28 +144,86 @@ Post in the morning, European time, then stay in the thread.
 Post as a person, not a brand: the app named once, the answers in the comments. Read each
 subreddit's current self-promotion rules on the day; they change.
 
-### r/apple (App Saturday) and r/iOSapps
+### r/apple and r/iOSapps, Sunday 11 October
+
+r/apple allows self-promotion on Sundays, so both posts go out the same day; check its current
+rules on the morning. Post as the developer and say so; most subreddits require it.
 
 **Title:**
 
-> I made chordlist, a songbook for iPhone and iPad that keeps every song as a Markdown file
+> I built chordlist, a songbook for iPhone and iPad that keeps every song as a Markdown file
 
 **Body:**
 
-> Hi all. chordlist is out today. It's a songbook for the songs you play: lyrics, chords and tags,
-> one Markdown file per song, in a folder you choose. No account, and your library is never uploaded.
+> I built chordlist, a songbook app for iPhone and iPad (iOS 26 or later). Lyrics and chords live
+> in one Markdown file per song, in a folder you choose, so they work with iCloud Drive, Obsidian or
+> any text editor. No account, and your library is never uploaded.
 >
-> - Finds songs in your library that share a chord progression
-> - Transpose, autoscroll, tags, search and shuffle
-> - Import from a website or the share sheet
-> - iPhone and iPad, iOS 26 or later
+> What sets it apart from services like Ultimate Guitar is that the chords are stored separately
+> from the lyrics. That lets chordlist find songs in your library that share a progression, even in
+> different keys, so learning one song teaches you others, and two songs with the same changes make
+> an easy mashup.
 >
-> Price: your first 10 songs are free, then a one-time unlock, no subscription. It's €6.99 until
-> 31 January, €9.99 after.
+> **Features**
+>
+> - Transpose and autoscroll
+> - Filter by tags, search and shuffle
+> - Import from a web link or the share sheet
+>
+> **Pricing:** your first 10 songs are free, then a one-time unlock for unlimited songs, no
+> subscription. The launch price is €6.99 / $5.99 until 31 January; after that it's €9.99 / $8.99.
+> For this subreddit: code **[CODE]** gets it for €4.99 [until DATE / for the first N people].
 >
 > App Store: https://apps.apple.com/app/id6798344297
+> Website: https://chordlist.app
 >
-> Feedback very welcome, I'm the only developer and I read everything.
+> I'm the only developer and I read every comment. What's the one thing that would make you switch
+> from what you use now?
+
+**Before posting, set up the offer code and redeem one yourself.**
+
+- Check in App Store Connect what an offer code can do for the one-time unlock: it may only make it
+  free rather than €4.99. Adjust the line above to whatever the code really does.
+- A one-time-use code is gone after the first redemption. For a subreddit, use a custom code with a
+  redemption limit and an end date, and fill both into the brackets.
+- Redemption happens in the App Store, outside the app; confirm the unlock appears in chordlist
+  afterwards (Settings → Restore Purchases if it does not show straight away).
+
+## LinkedIn
+
+Written for the people who know you: the developer story, with the product in the first two lines,
+because LinkedIn folds everything after about the third line behind "…see more". The link goes in
+the first comment rather than the post.
+
+> After years of side-project iterations, chordlist is on the App Store: a songbook for iPhone and
+> iPad for musicians who play from chords rather than sheet music. It's my first self-published app.
+>
+> I've been building versions of this idea for years: React Native, Expo, then SwiftUI. One of them
+> worked exactly how I wanted, but only for me. It synced through GitHub Gists, which is fine for a
+> developer and impossible for anyone else.
+>
+> The missing piece came from Obsidian, and from Steph Ango's idea of "file over app". In chordlist,
+> every song is a plain Markdown file in a folder you choose. No account, no server, nothing to
+> export. Your songbook stays readable in any text editor long after the app is gone. And because
+> the app never hosts anyone's lyrics, it stays out of the copyright questions most chord sites live
+> with.
+>
+> Keeping the chords separate from the lyrics also unlocked my favourite feature: it shows which
+> songs in your library share a progression, so learning one song teaches you several.
+>
+> To be honest about how it shipped: AI coding tools are the reason this left my laptop. They turned
+> years of half-finished versions into something I could release.
+>
+> It's free for your first 10 songs. Link in the comments.
+>
+> Musicians: how do you keep track of the songs you play today?
+>
+> #indiedev #iosdev #obsidian #musicians #localfirst
+
+**First comment**, posted straight away:
+
+> App Store: https://apps.apple.com/app/id6798344297
+> Website: https://chordlist.app
 
 ## X, Bluesky, Threads and Mastodon
 
