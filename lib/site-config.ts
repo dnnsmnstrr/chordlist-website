@@ -28,7 +28,7 @@ export const siteConfig = {
   /// rather than in this checkout. `/admin` links to it beside the site's own internal tools.
   adminBackendUrl: "https://admin.chordlist.app",
   launchDate: "2026-10-10",
-  minimumOSVersion: 18,
+  minimumOSVersion: 26,
   freeSongLimit: 10,
   contact: {
     support: "support@chordlist.app",
