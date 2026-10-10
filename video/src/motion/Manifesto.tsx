@@ -1,7 +1,8 @@
-import {AbsoluteFill, interpolate, useCurrentFrame} from 'remotion';
+import {AbsoluteFill, Sequence, interpolate, useCurrentFrame} from 'remotion';
 import {motionCopy} from './copy';
 import {useLayout} from './layout';
-import {Backdrop, LogoTile, Lockup, RiseText, progressAt} from './primitives';
+import {Backdrop, LogoTile, RiseText, progressAt} from './primitives';
+import {SocialFrame} from './scaffold';
 import {paletteFor, sans, type MotionProps} from './theme';
 
 const copy = motionCopy.manifesto;
@@ -16,13 +17,13 @@ export function Manifesto({campaign}: MotionProps) {
   const frame = useCurrentFrame();
   const layout = useLayout();
   const palette = paletteFor(campaign);
-  const {shape, pad, width, height} = layout;
-  const size = {story: 128, portrait: 120, square: 100, wide: 132}[shape];
+  const {shape, pad} = layout;
+  const size = {story: 128, post: 116, square: 100, wide: 132}[shape];
   const closeAt = FIRST + copy.words.length * BEAT + 16;
   const stackOut = progressAt(frame, closeAt - 8, 16);
 
   return (
-    <Backdrop palette={palette}>
+    <Backdrop palette={palette} campaign={campaign}>
       <AbsoluteFill style={{justifyContent: 'center', paddingLeft: pad, paddingRight: pad}}>
         <div style={{opacity: 1 - stackOut, transform: `translateY(${-stackOut * 60}px)`}}>
           {copy.words.map((word, index) => {
@@ -36,7 +37,7 @@ export function Manifesto({campaign}: MotionProps) {
                 style={{
                   fontFamily: sans,
                   fontSize: size,
-                  fontWeight: 650,
+                  fontWeight: 700,
                   letterSpacing: -size * 0.045,
                   lineHeight: 1.02,
                   color: palette.text,
@@ -58,19 +59,19 @@ export function Manifesto({campaign}: MotionProps) {
             <LogoTile size={size * 1.1} />
           </div>
           <RiseText
-            text={shape === 'wide' ? copy.closing : copy.closing.replace(', as', ',\nas')}
+            text={copy.headline}
             start={closeAt + 10}
             palette={palette}
-            size={size * (shape === 'wide' ? 0.38 : 0.5)}
-            weight={500}
+            size={Math.round(size * (shape === 'wide' ? 0.38 : 0.44))}
+            weight={700}
             align="center"
             stagger={2}
           />
         </AbsoluteFill>
       ) : null}
-      <div style={{position: 'absolute', left: 0, right: 0, bottom: pad, display: 'flex', justifyContent: 'center', opacity: progressAt(frame, closeAt + 30, 16)}}>
-        <Lockup palette={palette} size={Math.round(Math.min(width, height) * 0.04)} />
-      </div>
+      <Sequence from={closeAt} layout="none">
+        <SocialFrame layout={layout} palette={palette} eyebrow={copy.eyebrow} footnote={copy.footnote} />
+      </Sequence>
     </Backdrop>
   );
 }

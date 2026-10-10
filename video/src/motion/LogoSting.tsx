@@ -11,6 +11,7 @@ const [, , viewWidth = 270, viewHeight = 613] = mark.viewBox.split(' ').map(Numb
  * down from them, and the mono wordmark types out beside it. Geometry is the canonical mark.
  */
 export function LogoSting({campaign}: MotionProps) {
+  // The sting is the lockup itself, so it carries no frame of its own.
   const frame = useCurrentFrame();
   const {fps, width, height} = useVideoConfig();
   const palette = paletteFor(campaign);
@@ -52,7 +53,7 @@ export function LogoSting({campaign}: MotionProps) {
   });
 
   return (
-    <Backdrop palette={palette}>
+    <Backdrop palette={palette} campaign={campaign}>
       <AbsoluteFill style={{alignItems: 'center', justifyContent: 'center'}}>
         <div
           style={{
@@ -88,9 +89,9 @@ export function LogoSting({campaign}: MotionProps) {
               width: wordWidth,
               paddingLeft: tile * 0.36,
               fontFamily: mono,
-              fontWeight: 600,
+              fontWeight: 400,
               fontSize,
-              letterSpacing: -fontSize * 0.02,
+              letterSpacing: '-0.03em',
               color: palette.text,
               whiteSpace: 'pre',
               opacity: slide,
@@ -123,7 +124,7 @@ export function LogoSting({campaign}: MotionProps) {
           start={82}
           palette={palette}
           size={short * 0.036}
-          weight={500}
+          weight={400}
           color={palette.muted}
           stagger={2}
           align="center"

@@ -2,7 +2,7 @@ import {AbsoluteFill, interpolate, spring, useCurrentFrame, useVideoConfig} from
 import {motionCopy} from './copy';
 import {useLayout} from './layout';
 import {Backdrop, ChordPill, progressAt} from './primitives';
-import {Caption, CopyBlock, Footer} from './scaffold';
+import {Arrive, Headline, SocialFrame, fitHeadline} from './scaffold';
 import {accentFor, brand, sans, paletteFor, type MotionProps, type Palette} from './theme';
 
 const copy = motionCopy.keyboard;
@@ -139,60 +139,51 @@ function Progress({palette, size}: {palette: Palette; size: number}) {
 
 /** Morning Light played on the chord keyboard, one chord at a time, as it is entered in the app. */
 export function ChordKeys({campaign}: MotionProps) {
-  const frame = useCurrentFrame();
   const layout = useLayout();
   const palette = paletteFor(campaign);
   const accent = accentFor(campaign, campaign === 'ink' ? 'blue' : 'neutral');
-  const {shape, pad, width} = layout;
+  const {shape, content} = layout;
+  const isWide = shape === 'wide';
 
-  const stage = {
-    story: {left: pad, top: 640, width: width - pad * 2, name: 300},
-    portrait: {left: pad, top: 480, width: width - pad * 2, name: 220},
-    square: {left: pad + 60, top: 300, width: width - pad * 2 - 120, name: 130},
-    wide: {left: 820, top: 170, width: 1000, name: 240},
-  }[shape];
-  const enter = progressAt(frame, 10, 24);
+  const headlineWidth = isWide ? content.width * 0.36 : content.width;
+  const headSize = fitHeadline(layout, copy.headline, headlineWidth);
+  const stageWidth = isWide ? content.width * 0.56 : content.width;
+  const name = {story: 300, post: 190, square: 150, wide: 230}[shape];
+  // Name, keyboard (14 white keys at 4.6:1) and progression pill, centred in what the copy leaves.
+  const stageHeight = name * 1.1 + name * 0.32 + (stageWidth / 14) * 4.6 + name * 0.45;
+  const spaceTop = isWide ? content.top : content.top + copy.headline.length * headSize * 1.14;
+  const stageTop = spaceTop + Math.max(0, (content.bottom - spaceTop - stageHeight) / 2);
 
   return (
-    <Backdrop palette={palette}>
+    <Backdrop palette={palette} campaign={campaign}>
       <AbsoluteFill>
-        <div style={{position: 'absolute', left: pad, top: shape === 'wide' ? 200 : pad + 20}}>
-          <CopyBlock layout={layout} palette={palette} eyebrow={copy.eyebrow} headline={copy.headline} />
-        </div>
-        <div
+        <Headline
+          layout={layout}
+          palette={palette}
+          lines={copy.headline}
+          maxWidth={headlineWidth}
+          style={{position: 'absolute', left: content.left, top: isWide ? content.top + content.height * 0.3 : content.top}}
+        />
+        <Arrive
+          start={10}
           style={{
             position: 'absolute',
-            left: stage.left,
-            top: stage.top,
-            width: stage.width,
+            left: isWide ? content.right - stageWidth : content.left,
+            top: stageTop,
+            width: stageWidth,
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            gap: stage.name * 0.18,
-            opacity: enter,
-            transform: `translateY(${(1 - enter) * 30}px)`,
+            gap: name * 0.16,
           }}
         >
-          <ChordName size={stage.name} palette={palette} />
-          <Keyboard palette={palette} width={stage.width} accent={accent} />
-          <div style={{marginTop: stage.name * 0.1}}>
-            <Progress palette={palette} size={stage.name * 0.17} />
+          <ChordName size={name} palette={palette} />
+          <Keyboard palette={palette} width={stageWidth} accent={accent} />
+          <div style={{marginTop: name * 0.1}}>
+            <Progress palette={palette} size={Math.round(name * 0.16)} />
           </div>
-        </div>
-        <Caption
-          layout={layout}
-          palette={palette}
-          text={copy.caption}
-          start={40}
-          style={{
-            position: 'absolute',
-            left: pad,
-            top: shape === 'wide' ? 200 + layout.headline * 3.3 : undefined,
-            bottom: shape === 'wide' ? undefined : pad + layout.short * 0.04 + 36,
-            maxWidth: shape === 'wide' ? 600 : undefined,
-          }}
-        />
-        <Footer layout={layout} palette={palette} start={50} />
+        </Arrive>
+        <SocialFrame layout={layout} palette={palette} eyebrow={copy.eyebrow} footnote={copy.footnote} />
       </AbsoluteFill>
     </Backdrop>
   );

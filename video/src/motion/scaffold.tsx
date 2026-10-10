@@ -1,56 +1,86 @@
-import type {CSSProperties} from 'react';
+import type {CSSProperties, ReactNode} from 'react';
 import {interpolate, useCurrentFrame} from 'remotion';
 import type {Layout} from './layout';
-import {Eyebrow, Lockup, RiseText, progressAt} from './primitives';
-import {sans, type Palette} from './theme';
+import {Lockup, RiseText, progressAt} from './primitives';
+import {mono, type Palette} from './theme';
 
-type CopyBlockProps = {
+type FrameProps = {layout: Layout; palette: Palette; eyebrow?: string; footnote?: string; exitAt?: number};
+
+/**
+ * The frame every social still shares (social-templates.mjs `frame`): the lockup with its lowercase
+ * label at the top, the footnote at the bottom, both inside the story's safe areas. It is drawn
+ * over the piece so a subject may bleed under it, exactly as a screenshot does in the stills.
+ */
+export function SocialFrame({layout, palette, eyebrow, footnote, exitAt}: FrameProps) {
+  const frame = useCurrentFrame();
+  const top = progressAt(frame, 0, 14);
+  const bottom = progressAt(frame, 12, 16);
+  const exit = exitAt === undefined ? 0 : progressAt(frame, exitAt, 12);
+  return (
+    <>
+      <div
+        style={{
+          position: 'absolute',
+          left: layout.pad,
+          top: layout.pad + layout.safeTop,
+          opacity: top * (1 - exit),
+          transform: `translateY(${(1 - top) * -10}px)`,
+        }}
+      >
+        <Lockup palette={palette} size={layout.mark} label={eyebrow} />
+      </div>
+      {footnote ? (
+        <div
+          style={{
+            position: 'absolute',
+            left: layout.pad,
+            bottom: layout.pad + layout.safeBottom,
+            fontFamily: mono,
+            fontSize: layout.footnote,
+            color: palette.muted,
+            opacity: bottom * (1 - exit),
+          }}
+        >
+          {footnote}
+        </div>
+      ) : null}
+    </>
+  );
+}
+
+type HeadlineProps = {
   layout: Layout;
   palette: Palette;
-  eyebrow?: string;
-  headline: string;
+  lines: readonly string[];
   start?: number;
   exitAt?: number;
-  align?: 'left' | 'center';
   scale?: number;
+  align?: 'left' | 'center';
+  /** Shrink to fit this width rather than wrap, as the still build's fitSize does. */
+  maxWidth?: number;
   style?: CSSProperties;
 };
 
-/** Eyebrow and headline: the one idea of the asset, set before anything else moves. */
-export function CopyBlock({
-  layout,
-  palette,
-  eyebrow,
-  headline,
-  start = 4,
-  exitAt,
-  align = 'left',
-  scale = 1,
-  style,
-}: CopyBlockProps) {
-  const frame = useCurrentFrame();
-  const eyebrowIn = progressAt(frame, start, 18);
-  const exit = exitAt === undefined ? 0 : progressAt(frame, exitAt, 14);
+// An estimate of Geist Bold's average advance at -0.025em tracking; generous, so a fitted line
+// comes out a little narrow rather than overflowing. Check the render.
+const ADVANCE = 0.53;
+
+export function fitHeadline(layout: Layout, lines: readonly string[], maxWidth?: number, scale = 1) {
+  const size = layout.headline * scale;
+  if (!maxWidth) return Math.round(size);
+  const longest = Math.max(...lines.map((line) => line.length));
+  return Math.round(Math.min(size, maxWidth / (longest * ADVANCE)));
+}
+
+/** The headline, set like the `statement` template: Geist 700, authored line breaks. */
+export function Headline({layout, palette, lines, start = 6, exitAt, scale = 1, align = 'left', maxWidth, style}: HeadlineProps) {
   return (
-    <div style={{display: 'flex', flexDirection: 'column', alignItems: align === 'center' ? 'center' : 'flex-start', ...style}}>
-      {eyebrow ? (
-        <Eyebrow
-          palette={palette}
-          size={layout.eyebrow * scale}
-          style={{
-            marginBottom: layout.headline * 0.32 * scale,
-            opacity: eyebrowIn * (1 - exit),
-            transform: `translateY(${(1 - eyebrowIn) * 16}px)`,
-          }}
-        >
-          {eyebrow}
-        </Eyebrow>
-      ) : null}
+    <div style={style}>
       <RiseText
-        text={headline}
-        start={start + 4}
+        text={lines}
+        start={start}
         palette={palette}
-        size={layout.headline * scale}
+        size={fitHeadline(layout, lines, maxWidth, scale)}
         align={align}
         exitAt={exitAt}
       />
@@ -58,49 +88,13 @@ export function CopyBlock({
   );
 }
 
-type CaptionProps = {layout: Layout; palette: Palette; text: string; start: number; style?: CSSProperties};
-
-export function Caption({layout, palette, text, start, style}: CaptionProps) {
+/** Fades and lifts its children in, for a subject that arrives after the headline. */
+export function Arrive({start, children, distance = 30, style}: {start: number; children: ReactNode; distance?: number; style?: CSSProperties}) {
   const frame = useCurrentFrame();
-  const enter = progressAt(frame, start, 20);
+  const enter = progressAt(frame, start, 24);
   return (
-    <div
-      style={{
-        fontFamily: sans,
-        fontSize: layout.body,
-        fontWeight: 450,
-        lineHeight: 1.35,
-        color: palette.muted,
-        opacity: enter,
-        transform: `translateY(${interpolate(enter, [0, 1], [18, 0])}px)`,
-        ...style,
-      }}
-    >
-      {text}
-    </div>
-  );
-}
-
-type FooterProps = {layout: Layout; palette: Palette; start: number; align?: 'left' | 'center'};
-
-/** The lockup that signs every piece, in the bottom margin. */
-export function Footer({layout, palette, start, align = 'left'}: FooterProps) {
-  const frame = useCurrentFrame();
-  const enter = progressAt(frame, start, 20);
-  return (
-    <div
-      style={{
-        position: 'absolute',
-        left: layout.pad,
-        right: layout.pad,
-        bottom: layout.pad,
-        display: 'flex',
-        justifyContent: align === 'center' ? 'center' : 'flex-start',
-        opacity: enter,
-        transform: `translateY(${interpolate(enter, [0, 1], [14, 0])}px)`,
-      }}
-    >
-      <Lockup palette={palette} size={Math.round(layout.short * 0.04)} />
+    <div style={{opacity: enter, transform: `translateY(${interpolate(enter, [0, 1], [distance, 0])}px)`, ...style}}>
+      {children}
     </div>
   );
 }

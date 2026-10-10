@@ -1,7 +1,8 @@
 import {ChordlistIcon} from '../../../components/chordlist-icon';
 import type {CSSProperties, ReactNode} from 'react';
 import {AbsoluteFill, Img, OffthreadVideo, interpolate, staticFile, useCurrentFrame} from 'remotion';
-import {brand, easeOut, mono, sans, shadows, type Palette} from './theme';
+import {PaperBackground} from '../ChordlistDemo';
+import {brand, easeOut, mono, sans, shadows, type Campaign, type Palette} from './theme';
 
 /** 0 → 1 over `duration` frames starting at `start`, on the shared arrival curve. */
 export function useProgress(start: number, duration: number, easing = easeOut) {
@@ -21,9 +22,18 @@ export function progressAt(frame: number, start: number, duration: number, easin
   });
 }
 
-/** Base canvas: flat, per DESIGN.md §6. A campaign may add rules, never texture over product. */
-export function Backdrop({palette, children}: {palette: Palette; children?: ReactNode}) {
-  return <AbsoluteFill style={{backgroundColor: palette.background, overflow: 'hidden'}}>{children}</AbsoluteFill>;
+/**
+ * Base canvas: flat, per DESIGN.md §6, except warm-stage, which is the promo's campaign and keeps
+ * its paper texture (the same effect and settings as ChordlistDemo) so a motion piece cut next to
+ * the promo sits on the same ground. The seed is fixed, so the texture never shimmers.
+ */
+export function Backdrop({palette, campaign, children}: {palette: Palette; campaign?: Campaign; children?: ReactNode}) {
+  return (
+    <AbsoluteFill style={{backgroundColor: palette.background, overflow: 'hidden'}}>
+      {campaign === 'warm-stage' ? <PaperBackground seed={185} /> : null}
+      {children}
+    </AbsoluteFill>
+  );
 }
 
 type TileProps = {size: number; style?: CSSProperties};
@@ -52,52 +62,29 @@ export function LogoTile({size, style}: TileProps) {
   );
 }
 
-type LockupProps = {palette: Palette; size?: number; style?: CSSProperties};
+type LockupProps = {palette: Palette; size?: number; label?: string; style?: CSSProperties};
 
-export function Lockup({palette, size = 44, style}: LockupProps) {
+/**
+ * The social lockup (scripts/lib/social-templates.mjs): tile, mono wordmark at regular weight, and
+ * an optional lowercase label in the footnote size beside it.
+ */
+export function Lockup({palette, size = 56, label, style}: LockupProps) {
+  const scale = size / 56;
   return (
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: size * 0.36,
-        fontFamily: mono,
-        fontSize: size * 0.64,
-        fontWeight: 600,
-        letterSpacing: -size * 0.012,
-        color: palette.text,
-        ...style,
-      }}
-    >
+    <div style={{display: 'flex', alignItems: 'center', gap: Math.round(18 * scale), ...style}}>
       <LogoTile size={size} />
-      chordlist
-    </div>
-  );
-}
-
-type EyebrowProps = {children: ReactNode; palette: Palette; size?: number; style?: CSSProperties};
-
-/** Mono is the site's accent voice: eyebrows, filenames, compact labels. */
-export function Eyebrow({children, palette, size = 26, style}: EyebrowProps) {
-  return (
-    <div
-      style={{
-        fontFamily: mono,
-        fontSize: size,
-        fontWeight: 500,
-        letterSpacing: size * 0.08,
-        textTransform: 'uppercase',
-        color: palette.muted,
-        ...style,
-      }}
-    >
-      {children}
+      <span style={{fontFamily: mono, fontSize: Math.round(34 * scale), letterSpacing: '-0.03em', color: palette.text}}>
+        chordlist
+      </span>
+      {label ? (
+        <span style={{fontFamily: mono, fontSize: Math.round(24 * scale), color: palette.muted}}>{label.toLowerCase()}</span>
+      ) : null}
     </div>
   );
 }
 
 type RiseTextProps = {
-  text: string;
+  text: string | readonly string[];
   start: number;
   palette: Palette;
   size: number;
@@ -112,25 +99,25 @@ type RiseTextProps = {
 };
 
 /**
- * A heading revealed word by word from behind its own baseline. Line breaks in `text` are kept,
- * so wrapping is chosen deliberately rather than left to the renderer.
+ * A heading revealed word by word from behind its own baseline. Lines are authored, as in a social
+ * definition, so wrapping is an editorial decision rather than the renderer's.
  */
 export function RiseText({
   text,
   start,
   palette,
   size,
-  weight = 600,
+  weight = 700,
   color,
   stagger = 3,
   font = sans,
   align = 'left',
   maxWidth,
-  lineHeight = 1.04,
+  lineHeight = 1.14,
   exitAt,
 }: RiseTextProps) {
   const frame = useCurrentFrame();
-  const lines = text.split('\n');
+  const lines = typeof text === 'string' ? text.split('\n') : text;
   let index = 0;
   const exit = exitAt === undefined ? 0 : progressAt(frame, exitAt, 14);
 
@@ -140,7 +127,7 @@ export function RiseText({
         fontFamily: font,
         fontSize: size,
         fontWeight: weight,
-        letterSpacing: font === sans ? -size * 0.034 : -size * 0.01,
+        letterSpacing: font === sans ? '-0.025em' : '-0.01em',
         lineHeight,
         color: color ?? palette.text,
         textAlign: align,

@@ -1,10 +1,11 @@
 import {AbsoluteFill, Img, OffthreadVideo, Sequence, interpolate, staticFile, useCurrentFrame} from 'remotion';
 import {motionCopy} from './copy';
 import {useLayout} from './layout';
-import {Backdrop, Lockup, Phone, RiseText, media, progressAt} from './primitives';
-import {CopyBlock} from './scaffold';
+import {EndCardScene} from './EndCard';
+import {Backdrop, Phone, media, progressAt} from './primitives';
+import {Headline, SocialFrame} from './scaffold';
 import {chaptersFor, chordKeyboardOnScreen} from './recording';
-import {mono, paletteFor, seconds, type MotionProps, type Palette} from './theme';
+import {paletteFor, seconds, type MotionProps, type Palette} from './theme';
 
 const copy = motionCopy.reel;
 
@@ -58,42 +59,51 @@ function ChapterTicks({palette, width}: {palette: Palette; width: number}) {
   );
 }
 
-/** A thirty-second tour: one feature per scene, each shown by the real app. */
+/** A thirty-second tour: one feature per scene, each shown by the real app, ending on the end card. */
 export function FeatureReel({campaign, appearance}: MotionProps) {
   const frame = useCurrentFrame();
   const layout = useLayout();
   const palette = paletteFor(campaign);
-  const {shape, pad, width, height} = layout;
+  const {shape, content, width, height, pad} = layout;
   const isWide = shape === 'wide';
   const sources = shotsFor(appearance);
 
+  const phoneHeight = isWide ? height - pad * 1.2 : 1120;
   const phone = isWide
-    ? {h: 940, x: width - pad - 940 * 0.462 - 140, y: 70}
-    : {h: 1100, x: (width - 1100 * 0.462) / 2, y: 500};
+    ? {h: phoneHeight, x: content.right - phoneHeight * 0.462 - 120, y: (height - phoneHeight) / 2}
+    : // Off the right edge like the screenshot stills, which keeps the footnote clear.
+      {h: phoneHeight, x: width - phoneHeight * 0.462 * 0.86, y: content.top + layout.headline * 3.5 + 20};
   const phoneIn = progressAt(frame, INTRO - 16, 26);
   const phoneOut = progressAt(frame, OUTRO_AT - 4, 18);
-  const copyTop = isWide ? 300 : pad + 40;
+  const copyLeft = content.left;
+  const copyTop = isWide ? content.top + content.height * 0.3 : content.top;
+  const copyWidth = isWide ? content.width * 0.42 : content.width;
 
   return (
-    <Backdrop palette={palette}>
+    <Backdrop palette={palette} campaign={campaign}>
       <AbsoluteFill>
         <Sequence durationInFrames={INTRO} layout="none">
-          <div style={{position: 'absolute', left: pad, top: isWide ? 360 : 700}}>
-            <RiseText text={copy.intro} start={6} palette={palette} size={layout.headline * 1.3} exitAt={INTRO - 14} />
-          </div>
+          <Headline
+            layout={layout}
+            palette={palette}
+            lines={copy.intro}
+            scale={1.3}
+            maxWidth={copyWidth}
+            exitAt={INTRO - 14}
+            style={{position: 'absolute', left: copyLeft, top: content.top + content.height * 0.36}}
+          />
         </Sequence>
         {shots.map((item, index) => (
           <Sequence key={index} from={starts[index]!} durationInFrames={seconds(item.duration)} layout="none">
-            <div style={{position: 'absolute', left: pad, top: copyTop}}>
-              <CopyBlock
-                layout={layout}
-                palette={palette}
-                eyebrow={copy.scenes[index]!.eyebrow}
-                headline={copy.scenes[index]!.headline}
-                start={2}
-                exitAt={seconds(item.duration) - 14}
-              />
-            </div>
+            <Headline
+              layout={layout}
+              palette={palette}
+              lines={copy.scenes[index]!}
+              start={2}
+              maxWidth={copyWidth}
+              exitAt={seconds(item.duration) - 14}
+              style={{position: 'absolute', left: copyLeft, top: copyTop}}
+            />
           </Sequence>
         ))}
         <div
@@ -133,26 +143,24 @@ export function FeatureReel({campaign, appearance}: MotionProps) {
             })}
           </Phone>
         </div>
-        <div style={{position: 'absolute', left: pad, bottom: pad, width: isWide ? 560 : width - pad * 2}}>
-          <ChapterTicks palette={palette} width={isWide ? 560 : width - pad * 2} />
+        <div
+          style={{
+            position: 'absolute',
+            left: copyLeft,
+            // Wide: under the longest (three-line) headline. Story: between the lockup and the copy.
+            top: isWide ? copyTop + layout.headline * 3.9 : content.top - layout.headline * 0.45,
+            width: isWide ? 520 : content.width,
+          }}
+        >
+          <ChapterTicks palette={palette} width={isWide ? 520 : content.width} />
         </div>
+        <Sequence durationInFrames={OUTRO_AT} layout="none">
+          <SocialFrame layout={layout} palette={palette} eyebrow={copy.eyebrow} footnote={copy.footnote} exitAt={OUTRO_AT - 14} />
+        </Sequence>
         <Sequence from={OUTRO_AT} layout="none">
-          <AbsoluteFill style={{alignItems: 'center', justifyContent: 'center', gap: 56, flexDirection: 'column'}}>
-            <RiseText text={copy.outro} start={8} palette={palette} size={layout.headline * 1.2} align="center" />
-            <OutroLockup palette={palette} size={Math.round(layout.short * 0.06)} />
-          </AbsoluteFill>
+          <EndCardScene campaign={campaign} />
         </Sequence>
       </AbsoluteFill>
     </Backdrop>
-  );
-}
-
-function OutroLockup({palette, size}: {palette: Palette; size: number}) {
-  const frame = useCurrentFrame();
-  const enter = progressAt(frame, 20, 20);
-  return (
-    <div style={{opacity: enter, transform: `translateY(${(1 - enter) * 16}px)`, fontFamily: mono}}>
-      <Lockup palette={palette} size={size} />
-    </div>
   );
 }

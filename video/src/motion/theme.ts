@@ -79,10 +79,16 @@ export const easeOut = Easing.bezier(0.16, 1, 0.3, 1);
 export const easeInOut = Easing.bezier(0.65, 0, 0.35, 1);
 export const easeIn = Easing.bezier(0.7, 0, 0.84, 0);
 
+// The social format matrix (scripts/build-social.mjs), plus a 16:9 master for YouTube and the site.
+// `scale` multiplies the social type sizes exactly as the still build does, and the story keeps
+// Instagram's profile row and reply bar clear, so a motion piece and its still share one frame.
 export const formats = {
-  story: {width: 1080, height: 1920},
-  square: {width: 1080, height: 1080},
-  portrait: {width: 1080, height: 1350},
-  wide: {width: 1920, height: 1080},
+  story: {width: 1080, height: 1920, scale: 1.34, safeTop: 190, safeBottom: 240},
+  post: {width: 1080, height: 1350, scale: 1.16, safeTop: 0, safeBottom: 0},
+  square: {width: 1080, height: 1080, scale: 1.16, safeTop: 0, safeBottom: 0},
+  wide: {width: 1920, height: 1080, scale: 1.3, safeTop: 0, safeBottom: 0},
 } as const;
 export type FormatName = keyof typeof formats;
+
+// Base sizes at scale 1, copied from the social build's CONFIG.type and CONFIG.layout.
+export const socialType = {wordmark: 34, lockupMark: 56, headline: 78, footnote: 24, padding: 80} as const;

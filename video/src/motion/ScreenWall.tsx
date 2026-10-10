@@ -1,8 +1,9 @@
 import {AbsoluteFill, interpolate, useCurrentFrame, useVideoConfig} from 'remotion';
 import {motionCopy} from './copy';
 import {useLayout} from './layout';
-import {Backdrop, Eyebrow, Lockup, Phone, RiseText, SCREEN_ASPECT, media, progressAt} from './primitives';
-import {paletteFor, type MotionProps} from './theme';
+import {Backdrop, Lockup, Phone, RiseText, SCREEN_ASPECT, media, progressAt} from './primitives';
+import {fitHeadline} from './scaffold';
+import {mono, paletteFor, type MotionProps} from './theme';
 
 const copy = motionCopy.wall;
 
@@ -38,9 +39,10 @@ export function ScreenWall({campaign, appearance}: MotionProps) {
 
   const panelIn = progressAt(frame, 8, 26);
   const panelWidth = shape === 'wide' ? 1040 : width * 0.84;
+  const panelPadding = shape === 'wide' ? 72 : 56;
 
   return (
-    <Backdrop palette={palette}>
+    <Backdrop palette={palette} campaign={campaign}>
       <AbsoluteFill style={{opacity: fadeIn}}>
         {Array.from({length: columns}, (_, column) => {
           const direction = column % 2 === 0 ? -1 : 1;
@@ -79,7 +81,7 @@ export function ScreenWall({campaign, appearance}: MotionProps) {
         <div
           style={{
             width: panelWidth,
-            padding: shape === 'wide' ? '64px 72px' : '56px 56px',
+            padding: `${panelPadding}px`,
             boxSizing: 'border-box',
             borderRadius: 28,
             backgroundColor: palette.background,
@@ -92,16 +94,9 @@ export function ScreenWall({campaign, appearance}: MotionProps) {
             transform: `translateY(${(1 - panelIn) * 40}px) scale(${interpolate(panelIn, [0, 1], [0.96, 1])})`,
           }}
         >
-          <Lockup palette={palette} size={shape === 'wide' ? 56 : 52} />
-          <RiseText
-            text={copy.headline.replace(', as', ',\nas')}
-            start={20}
-            palette={palette}
-            size={shape === 'wide' ? 76 : 70}
-          />
-          <Eyebrow palette={palette} size={layout.eyebrow}>
-            {copy.eyebrow}
-          </Eyebrow>
+          <Lockup palette={palette} size={layout.mark} label={copy.eyebrow} />
+          <RiseText text={copy.headline} start={20} palette={palette} size={fitHeadline(layout, copy.headline, panelWidth - panelPadding * 2, 0.9)} />
+          <div style={{fontFamily: mono, fontSize: layout.footnote, color: palette.muted}}>{copy.detail}</div>
         </div>
       </AbsoluteFill>
     </Backdrop>

@@ -2,7 +2,7 @@ import {AbsoluteFill, interpolate, useCurrentFrame} from 'remotion';
 import {motionCopy} from './copy';
 import {useLayout} from './layout';
 import {Backdrop, ChordPill, progressAt} from './primitives';
-import {Caption, CopyBlock, Footer} from './scaffold';
+import {Arrive, Headline, SocialFrame, fitHeadline} from './scaffold';
 import {chordColumns, morningLightChart, transposeChord} from './song';
 import {mono, paletteFor, sans, type MotionProps, type Palette} from './theme';
 
@@ -39,14 +39,14 @@ function RollingChord({from, to, progress, height}: {from: string; to: string; p
   );
 }
 
-function Chart({palette, fontSize, lines}: {palette: Palette; fontSize: number; lines: number}) {
+function Chart({palette, fontSize}: {palette: Palette; fontSize: number}) {
   const {step, previous, sinceChange} = useSteps();
   const lineHeight = fontSize * 1.45;
   let chordIndex = 0;
 
   return (
     <div style={{fontFamily: mono, fontSize, color: palette.text, whiteSpace: 'pre'}}>
-      {morningLightChart.slice(0, lines).map((line, lineIndex) => {
+      {morningLightChart.slice(0, morningLightChart.findIndex((line) => line.kind === 'blank')).map((line, lineIndex) => {
         if (line.kind === 'section') {
           return (
             <div key={lineIndex} style={{display: 'flex', alignItems: 'center', gap: fontSize * 0.6, marginBottom: fontSize * 0.5}}>
@@ -144,7 +144,7 @@ function Stepper({palette, size}: {palette: Palette; size: number}) {
         <span style={{padding: `${size * 0.3}px ${size * 0.7}px`, borderLeft: `2px solid ${palette.rule}`}}>+</span>
       </div>
       <div style={{fontFamily: mono, fontSize: size * 0.8, color: palette.muted}}>
-        Key <span style={{color: palette.text, fontWeight: 600}}>{key}</span>
+        {copy.key} <span style={{color: palette.text, fontWeight: 600}}>{key}</span>
       </div>
     </div>
   );
@@ -155,53 +155,35 @@ function Stepper({palette, size}: {palette: Palette; size: number}) {
  * rolls in place and keeps the column it was written in, while the words never move.
  */
 export function Transpose({campaign}: MotionProps) {
-  const frame = useCurrentFrame();
   const layout = useLayout();
   const palette = paletteFor(campaign);
-  const {shape, pad} = layout;
-  const chartFont = {story: 42, portrait: 32, square: 27, wide: 34}[shape];
-  const chartIn = progressAt(frame, 10, 24);
+  const {shape, content} = layout;
+  const isWide = shape === 'wide';
 
-  const chartBox =
-    shape === 'wide'
-      ? {left: 900, top: 170}
-      : shape === 'square'
-        ? {left: pad, top: 335}
-        : {left: pad, top: shape === 'story' ? 470 : 440};
+  const headlineWidth = isWide ? content.width * 0.36 : content.width;
+  const headSize = fitHeadline(layout, copy.headline, headlineWidth);
+  // The longest chart line is 37 characters, and Geist Mono advances exactly 0.6em.
+  const chartWidth = isWide ? content.width * 0.58 : content.width;
+  const chartFont = Math.min({story: 40, post: 34, square: 30, wide: 36}[shape], chartWidth / (37 * 0.6));
+  const chartTop = isWide ? content.top + content.height * 0.08 : content.top + copy.headline.length * headSize * 1.14 + 64 * layout.scale;
 
   return (
-    <Backdrop palette={palette}>
+    <Backdrop palette={palette} campaign={campaign}>
       <AbsoluteFill>
-        <div style={{position: 'absolute', left: pad, top: shape === 'wide' ? 200 : pad + 20}}>
-          <CopyBlock layout={layout} palette={palette} eyebrow={copy.eyebrow} headline={copy.headline} />
-        </div>
-        <div
-          style={{
-            position: 'absolute',
-            ...chartBox,
-            opacity: chartIn,
-            transform: `translateY(${(1 - chartIn) * 30}px)`,
-          }}
-        >
-          <Chart palette={palette} fontSize={chartFont} lines={shape === 'story' ? morningLightChart.length : 9} />
-          <div style={{marginTop: chartFont * 1.6}}>
-            <Stepper palette={palette} size={chartFont * 1.1} />
-          </div>
-        </div>
-        <Caption
+        <Headline
           layout={layout}
           palette={palette}
-          text={copy.caption}
-          start={40}
-          style={{
-            position: 'absolute',
-            left: pad,
-            top: shape === 'wide' ? 200 + layout.headline * 2.9 : undefined,
-            bottom: shape === 'wide' ? undefined : pad + layout.short * 0.04 + 36,
-            maxWidth: shape === 'wide' ? 600 : undefined,
-          }}
+          lines={copy.headline}
+          maxWidth={headlineWidth}
+          style={{position: 'absolute', left: content.left, top: isWide ? content.top + content.height * 0.3 : content.top}}
         />
-        <Footer layout={layout} palette={palette} start={50} />
+        <Arrive start={12} style={{position: 'absolute', left: isWide ? content.right - chartWidth : content.left, top: chartTop}}>
+          <Chart palette={palette} fontSize={chartFont} />
+          <div style={{marginTop: chartFont * 1.4}}>
+            <Stepper palette={palette} size={chartFont * 1.05} />
+          </div>
+        </Arrive>
+        <SocialFrame layout={layout} palette={palette} eyebrow={copy.eyebrow} footnote={copy.footnote} />
       </AbsoluteFill>
     </Backdrop>
   );

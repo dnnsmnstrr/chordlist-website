@@ -54,7 +54,7 @@ function paletteFor(): Palette {
 const normalizeLineBreaks = (text: string) =>
   text.replace(/\\r\\n|\\n|\\r/g, '\n');
 
-const Background: React.FC<{
+export const PaperBackground: React.FC<{
   seed: number;
 }> = ({seed}) => {
   const {height, width} = useVideoConfig();
@@ -140,7 +140,7 @@ const HookCard: React.FC<{
 
   return (
     <AbsoluteFill>
-      <Background seed={paperSeed} />
+      <PaperBackground seed={paperSeed} />
       <div
         style={{
           position: 'absolute',
@@ -386,7 +386,7 @@ const ProductScene: React.FC<{
 
   return (
     <AbsoluteFill>
-      <Background seed={paperSeed} />
+      <PaperBackground seed={paperSeed} />
       {scene.clips.length > 0 ? (
         <Series>
           {scene.clips.map((clip, clipIndex) => (
@@ -508,7 +508,7 @@ const EndCard: React.FC<{
 
   return (
     <AbsoluteFill>
-      <Background seed={paperSeed} />
+      <PaperBackground seed={paperSeed} />
       <div
         style={{
           position: 'absolute',

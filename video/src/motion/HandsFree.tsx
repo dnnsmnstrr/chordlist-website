@@ -1,8 +1,8 @@
-import {AbsoluteFill, interpolate, useCurrentFrame, useVideoConfig} from 'remotion';
+import {AbsoluteFill, useCurrentFrame, useVideoConfig} from 'remotion';
 import {motionCopy} from './copy';
-import {useLayout} from './layout';
-import {Backdrop, Phone, media, progressAt} from './primitives';
-import {Caption, CopyBlock, Footer} from './scaffold';
+import {phoneBeside, useLayout} from './layout';
+import {Backdrop, Phone, SCREEN_ASPECT, media} from './primitives';
+import {Arrive, Headline, SocialFrame, fitHeadline} from './scaffold';
 import {chaptersFor} from './recording';
 import {mono, paletteFor, seconds, type MotionProps, type Palette} from './theme';
 
@@ -14,97 +14,42 @@ function TouchCounter({palette, size, start}: {palette: Palette; size: number; s
   const {fps} = useVideoConfig();
   const elapsed = Math.max(0, frame - start) / fps;
   const clock = `00:${String(Math.floor(elapsed)).padStart(2, '0')}`;
-  const enter = progressAt(frame, start - 10, 18);
   return (
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'baseline',
-        gap: size * 0.8,
-        fontFamily: mono,
-        fontSize: size,
-        color: palette.text,
-        opacity: enter,
-      }}
-    >
-      <span style={{fontWeight: 600, fontVariantNumeric: 'tabular-nums'}}>{clock}</span>
+    <div style={{display: 'flex', alignItems: 'baseline', gap: size * 0.8, fontFamily: mono, fontSize: size, color: palette.text}}>
+      <span style={{fontVariantNumeric: 'tabular-nums'}}>{clock}</span>
       <span style={{color: palette.muted}}>
-        <span style={{color: palette.text, fontWeight: 600}}>0</span> {copy.timer}
+        <span style={{color: palette.text}}>0</span> {copy.touches}
       </span>
     </div>
   );
 }
 
-/** The longest shot of the press demo — the chart travelling on its own — framed for social. */
+/** The longest shot of the press demo, the chart travelling on its own, set like a screenshot still. */
 export function HandsFree({campaign, appearance}: MotionProps) {
-  const frame = useCurrentFrame();
   const layout = useLayout();
   const palette = paletteFor(campaign);
-  const {shape, pad, width, height} = layout;
-
-  const phone = {
-    story: {h: 1180, x: (width - 1180 * 0.462) / 2, y: 430},
-    portrait: {h: 860, x: width - pad - 860 * 0.462, y: 380},
-    square: {h: 920, x: width - pad - 920 * 0.462, y: 80},
-    wide: {h: 940, x: width - pad - 940 * 0.462 - 200, y: 70},
-  }[shape];
-  const enter = progressAt(frame, 6, 26);
-  const counterSize = {story: 34, portrait: 30, square: 28, wide: 30}[shape];
+  const {phone, copy: column} = phoneBeside(layout, SCREEN_ASPECT);
+  const headSize = fitHeadline(layout, copy.headline, column.width);
+  const counterSize = Math.round(layout.footnote * 1.3);
 
   return (
-    <Backdrop palette={palette}>
+    <Backdrop palette={palette} campaign={campaign}>
       <AbsoluteFill>
-        <div style={{position: 'absolute', left: pad, top: shape === 'story' ? pad + 20 : shape === 'portrait' ? pad + 20 : 200}}>
-          <CopyBlock
-            layout={layout}
-            palette={palette}
-            eyebrow={copy.eyebrow}
-            headline={copy.headline}
-            scale={shape === 'square' ? 0.66 : 1}
-          />
-        </div>
-        <div
-          style={{
-            position: 'absolute',
-            left: phone.x,
-            top: phone.y,
-            opacity: enter,
-            transform: `translateY(${interpolate(enter, [0, 1], [height * 0.1, 0])}px)`,
-          }}
-        >
+        <Arrive start={4} distance={layout.height * 0.06} style={{position: 'absolute', left: phone.left, top: phone.top}}>
           <Phone
             palette={palette}
-            height={phone.h}
+            height={phone.height}
             video={media.recording(appearance)}
             trimBefore={seconds(chaptersFor(appearance).handsFree.start)}
           />
+        </Arrive>
+        <div style={{position: 'absolute', left: column.left, top: column.top, width: column.width}}>
+          <Headline layout={layout} palette={palette} lines={copy.headline} maxWidth={column.width} />
+          <Arrive start={24} distance={12} style={{marginTop: headSize * 0.5}}>
+            <TouchCounter palette={palette} size={counterSize} start={24} />
+          </Arrive>
         </div>
-        <div
-          style={{
-            position: 'absolute',
-            left: pad,
-            ...(shape === 'story'
-              ? {bottom: pad + layout.short * 0.04 + 40, right: pad, display: 'flex', justifyContent: 'space-between'}
-              : {top: 200 + layout.headline * 0.82 * 3.6}),
-          }}
-        >
-          <TouchCounter palette={palette} size={counterSize} start={20} />
-        </div>
-        <Caption
-          layout={layout}
-          palette={palette}
-          text={copy.caption}
-          start={36}
-          style={{
-            position: 'absolute',
-            left: pad,
-            ...(shape === 'story'
-              ? {bottom: pad + layout.short * 0.04 + 40 + counterSize * 1.8}
-              : {top: 200 + layout.headline * 0.82 * 3.6 + counterSize * 2.2}),
-            maxWidth: shape === 'story' ? undefined : 420,
-          }}
-        />
-        <Footer layout={layout} palette={palette} start={50} />
+        <SocialFrame layout={layout} palette={palette} eyebrow={copy.eyebrow} footnote={copy.footnote} />
       </AbsoluteFill>
     </Backdrop>
   );

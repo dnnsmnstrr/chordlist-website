@@ -1,8 +1,8 @@
-import {AbsoluteFill, interpolate, useCurrentFrame} from 'remotion';
+import {AbsoluteFill, useCurrentFrame} from 'remotion';
 import {motionCopy} from './copy';
 import {useLayout} from './layout';
 import {Backdrop, progressAt} from './primitives';
-import {Caption, CopyBlock, Footer} from './scaffold';
+import {Headline, SocialFrame, fitHeadline} from './scaffold';
 import {matchingSongs, romanNumerals} from './song';
 import {mono, sans, paletteFor, type MotionProps, type Palette} from './theme';
 
@@ -80,90 +80,60 @@ function SongRow({
 
 /**
  * Seven songs from the app's own library, each in its own key. Their chords fold into Roman
- * numerals and every row turns out to read the same: the matching-progressions feature, shown.
+ * numerals and every row turns out to read the same: the matching-progressions still, in motion.
  */
 export function SameChords({campaign}: MotionProps) {
   const frame = useCurrentFrame();
   const layout = useLayout();
   const palette = paletteFor(campaign);
-  const {shape, pad, width} = layout;
+  const {shape, content} = layout;
+  const isWide = shape === 'wide';
 
-  const list = {
-    story: {left: pad, top: 480, width: width - pad * 2, row: 140, gap: 18, font: 40},
-    portrait: {left: pad, top: 400, width: width - pad * 2, row: 96, gap: 14, font: 30},
-    square: {left: pad, top: 335, width: width - pad * 2, row: 58, gap: 8, font: 22},
-    wide: {left: 860, top: 150, width: 980, row: 96, gap: 14, font: 30},
-  }[shape];
+  const headlineWidth = isWide ? content.width * 0.36 : content.width;
+  const headSize = fitHeadline(layout, copy.headline, headlineWidth, shape === 'story' ? 0.86 : 1);
+  const listWidth = isWide ? content.width * 0.58 : content.width;
+  const listTop = isWide ? content.top : content.top + copy.headline.length * headSize * 1.14 + 48 * layout.scale;
+  const room = content.bottom - listTop;
+  const gap = Math.round(8 * layout.scale);
+  const row = Math.min(Math.round(84 * layout.scale), Math.floor((room - gap * (matchingSongs.length - 1)) / matchingSongs.length));
+  const font = Math.round(row * 0.36);
 
-  const columnWidth = list.font * 2.7 * 4;
+  const columnWidth = font * 2.7 * 4;
   const bandIn = progressAt(frame, FOLD_AT + 30, 24);
-  const listHeight = matchingSongs.length * (list.row + list.gap) - list.gap;
+  const listHeight = matchingSongs.length * (row + gap) - gap;
 
   return (
-    <Backdrop palette={palette}>
+    <Backdrop palette={palette} campaign={campaign}>
       <AbsoluteFill>
-        <div style={{position: 'absolute', left: pad, top: shape === 'wide' ? 200 : pad + 20}}>
-          <CopyBlock layout={layout} palette={palette} eyebrow={copy.eyebrow} headline={copy.headline} />
-        </div>
-        <div style={{position: 'absolute', left: list.left, top: list.top, width: list.width}}>
+        <Headline
+          layout={layout}
+          palette={palette}
+          lines={copy.headline}
+          maxWidth={headlineWidth}
+          scale={shape === 'story' ? 0.86 : 1}
+          style={{position: 'absolute', left: content.left, top: isWide ? content.top + content.height * 0.28 : content.top}}
+        />
+        <div style={{position: 'absolute', left: isWide ? content.right - listWidth : content.left, top: listTop, width: listWidth}}>
           {/* The band that ties the folded columns together once every row reads the same. */}
           <div
             style={{
               position: 'absolute',
-              right: list.font * 0.9 - list.font * 0.3,
-              top: -list.gap,
-              width: columnWidth + list.font * 0.6,
-              height: (listHeight + list.gap * 2) * bandIn,
-              borderRadius: 18,
+              right: font * 0.6,
+              top: -gap,
+              width: columnWidth + font * 0.6,
+              height: (listHeight + gap * 2) * bandIn,
+              borderRadius: 14,
               border: `2px solid ${palette.muted}`,
               opacity: bandIn,
             }}
           />
-          <div style={{display: 'flex', flexDirection: 'column', gap: list.gap}}>
+          <div style={{display: 'flex', flexDirection: 'column', gap}}>
             {matchingSongs.map((song, index) => (
-              <SongRow
-                key={song.title}
-                song={song}
-                index={index}
-                palette={palette}
-                width={list.width}
-                height={list.row}
-                font={list.font}
-              />
+              <SongRow key={song.title} song={song} index={index} palette={palette} width={listWidth} height={row} font={font} />
             ))}
           </div>
-          <div
-            style={{
-              marginTop: list.gap * 2.4,
-              display: 'flex',
-              justifyContent: 'flex-end',
-              fontFamily: mono,
-              fontSize: list.font * 1.1,
-              fontWeight: 600,
-              color: palette.text,
-              opacity: bandIn,
-              transform: `translateY(${interpolate(bandIn, [0, 1], [20, 0])}px)`,
-              paddingRight: list.font * 0.9,
-              width: '100%',
-            }}
-          >
-            {copy.roman}
-          </div>
         </div>
-        <Caption
-          layout={layout}
-          palette={palette}
-          text={copy.caption}
-          start={FOLD_AT + 50}
-          style={{
-            position: 'absolute',
-            left: pad,
-            top: shape === 'wide' ? 200 + layout.headline * 3.3 : undefined,
-            bottom: shape === 'wide' ? undefined : pad + layout.short * 0.04 + 36,
-            maxWidth: shape === 'wide' ? 600 : undefined,
-          }}
-        />
-        <Footer layout={layout} palette={palette} start={FOLD_AT + 60} />
+        <SocialFrame layout={layout} palette={palette} eyebrow={copy.eyebrow} footnote={copy.footnote} />
       </AbsoluteFill>
     </Backdrop>
   );

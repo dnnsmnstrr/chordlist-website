@@ -258,9 +258,11 @@ These categories of files in `public/` are **outputs — edit the generator, not
   to the `screenshots` arrays in `components/app-showcase.tsx` / `app/press/page.tsx`, plus its copy
   in `locales/en.ts`.
 - **Motion graphics** (`public/video/motion/<piece>-<format>.{mp4,jpg}`) — `pnpm video:render:motion`,
-  which renders every composition in the Remotion **Motion** folder (`video/src/motion/`). Words live
-  in `video/src/motion/copy.ts`, shared wording comes from `locales/vocabulary.json`, and each piece
-  takes a named campaign theme as a prop. `docs/motion-suite.md` is the catalogue and the rules.
+  which renders every composition in the Remotion **Motion** folder (`video/src/motion/`). They are
+  the social stills in motion: the same frame, formats and type scale as `pnpm build:social`, and a
+  piece with a twin in `content/social/` reads its headline, eyebrow and footnote from that definition
+  through `video/src/motion/generated/social-copy.json`, which `pnpm sync:motion` regenerates. Edit
+  the definition, not the JSON. `docs/motion-suite.md` is the catalogue and the rules.
 - **App Store screenshot sets** (`public/app-store-screenshots/`, plus `manifest.json` and the ZIPs
   in `downloads/`) — `pnpm build:screens`. Art direction lives in the script's `CONFIG` block; the
   words live in `scripts/lib/app-store-copy.mjs`, keyed by language and then slide, and read shared
