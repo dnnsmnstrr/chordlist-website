@@ -189,6 +189,42 @@ rules on the morning. Post as the developer and say so; most subreddits require 
 - Redemption happens in the App Store, outside the app; confirm the unlock appears in chordlist
   afterwards (Settings → Restore Purchases if it does not show straight away).
 
+## LinkedIn
+
+Written for the people who know you: the developer story, with the product in the first two lines,
+because LinkedIn folds everything after about the third line behind "…see more". The link goes in
+the first comment rather than the post.
+
+> After years of side-project iterations, chordlist is on the App Store: a songbook for iPhone and
+> iPad for musicians who play from chords rather than sheet music. It's my first self-published app.
+>
+> I've been building versions of this idea for years: React Native, Expo, then SwiftUI. One of them
+> worked exactly how I wanted, but only for me. It synced through GitHub Gists, which is fine for a
+> developer and impossible for anyone else.
+>
+> The missing piece came from Obsidian, and from Steph Ango's idea of "file over app". In chordlist,
+> every song is a plain Markdown file in a folder you choose. No account, no server, nothing to
+> export. Your songbook stays readable in any text editor long after the app is gone. And because
+> the app never hosts anyone's lyrics, it stays out of the copyright questions most chord sites live
+> with.
+>
+> Keeping the chords separate from the lyrics also unlocked my favourite feature: it shows which
+> songs in your library share a progression, so learning one song teaches you several.
+>
+> To be honest about how it shipped: AI coding tools are the reason this left my laptop. They turned
+> years of half-finished versions into something I could release.
+>
+> It's free for your first 10 songs. Link in the comments.
+>
+> Musicians: how do you keep track of the songs you play today?
+>
+> #indiedev #iosdev #obsidian #musicians #localfirst
+
+**First comment**, posted straight away:
+
+> App Store: https://apps.apple.com/app/id6798344297
+> Website: https://chordlist.app
+
 ## X, Bluesky, Threads and Mastodon
 
 Post the [`out-now`](../content/social/out-now.md) image with the first post. The thread works on
