@@ -80,7 +80,63 @@ with the progression cards in [`content/social/`](../content/social).
 | These are the most underrated chord progressions for musicians | idea | `doo-wop-changes`, `two-five-one`, `twelve-bar-blues` | | |
 | These are the chords every musician should know | idea | `four-chords` and the chord keyboard | | |
 
-### Needs a fix before use
+## chordlink
+
+The NFC tag gets its own angles: it is a physical object, so these videos can show hands, an
+instrument and a tap, which the app videos mostly cannot. Facts to keep every hook true, from
+`lib/site-config.ts` and the FAQ:
+
+- A numbered, 3D-printed NFC tag that goes on the instrument or its case.
+- The first scan sets what it does: open the library, shuffle, or add a song. Every later tap goes
+  straight there.
+- First edition of 20, 10 of them for sale, €9.99 including postage **within Germany only**, and it
+  comes with chordlist unlimited.
+- With a 3D printer of your own, the model generator and the tag-setup instructions are free.
+
+**Sales hooks only while the sales switch is open.** Anything that says "ten for sale" or sends people
+to buy waits for that; a closed storefront wastes the post. The ritual, maker and DIY angles work
+either way.
+
+### The ritual — tap the instrument, start playing
+
+| Hook | Status | Pairs with | Saves + shares / 1k | Watched to end |
+| --- | --- | --- | --- | --- |
+| I tap my guitar and my songbook opens. | idea | `[A]` phone to the tag on the headstock or case, chordlist opens | | |
+| My piano picks tonight's song for me. | idea | Tag set to shuffle: tap, a random song appears, start playing it | | |
+| The fastest way from picking up the guitar to playing a song | idea | Pick up, tap, play, all in one take | | |
+| I stopped scrolling for songs. Now I just tap. | idea | Before: scrolling a list. After: one tap | | |
+
+### The object — the maker story
+
+| Hook | Status | Pairs with | Saves + shares / 1k | Watched to end |
+| --- | --- | --- | --- | --- |
+| Twenty of these exist. | scripted | [3.1](video-scripts.md), the finished tag turning in the hand | | |
+| Eleven of them didn't make it. | idea | The row of failed prints, worst first | | |
+| Number 7 of 20 | idea | Close-up of a printed number, then the tag on an instrument; one video per number is a series | | |
+| I 3D-printed an NFC tag for my piano. | idea | The print coming off the bed, then the first tap | | |
+
+"Eleven of them didn't make it" restates the 3.1 script; count the failed prints before filming and
+use the real number.
+
+### Make your own — the free file
+
+For the maker communities (r/functionalprint, r/3Dprinting, Printables, MakerWorld), where giving
+the file away is the pitch.
+
+| Hook | Status | Pairs with | Saves + shares / 1k | Watched to end |
+| --- | --- | --- | --- | --- |
+| One HTML file that makes an STL. | scripted | [3.2](video-scripts.md), `model.html` opening offline | | |
+| Print your own instrument tag. The file is free. | idea | Sliders in the generator, the export, the print | | |
+| No server, no account: this file runs offline and exports an STL. | idea | Same, Wi-Fi visibly off | | |
+
+### For someone who plays — the gift (sales open only)
+
+| Hook | Status | Pairs with | Saves + shares / 1k | Watched to end |
+| --- | --- | --- | --- | --- |
+| A gift for the musician who has everything | idea | Unboxing the tag, sticking it on, the first tap | | |
+| €9.99, and it comes with the app's unlimited songs | idea | The tag, then the unlocked library; say "shipping within Germany" on screen | | |
+
+## Needs a fix before use
 
 | Noted as | Problem | Use instead |
 | --- | --- | --- |

@@ -57,6 +57,17 @@ it.
 - Import from a web link or the iOS share sheet.
 - iPhone and iPad, iOS and iPadOS 26 or later. First 10 songs free, then a one-time unlock.
 
+chordlink, the NFC tag (facts in `lib/site-config.ts` under `chordlink`, and the FAQ in
+`locales/en.ts`):
+
+- A numbered, 3D-printed NFC tag for the instrument or its case. The first scan sets what it does:
+  open the library, shuffle, or add a song; every later tap goes straight there.
+- First edition of 20, 10 for sale, €9.99 including postage within Germany only, and it comes with
+  chordlist unlimited. The model generator and setup instructions are free for people who print
+  their own.
+- Hooks that sell it ("ten for sale", "buy", the price as an offer) wait until the sales switch is
+  open. Read the current state from the backend or ask; never assume.
+
 Not true today, so never in a hook:
 
 - Moving on to the next song by itself when autoscroll finishes, or "playing for hours without
