@@ -27,8 +27,7 @@ Let the file and the progressions make the case.
 | When | What |
 | --- | --- |
 | Sat 10 Oct | Product Hunt goes live. Post the maker comment straight away, then the launch thread below with the `out-now` image, and answer comments all day. |
-| Sun 11 Oct | Reddit: the r/iOSapps post below, then stay in the thread. |
-| Sat 17 Oct | The same post in r/apple's App Saturday thread. |
+| Sun 11 Oct | Reddit: the post below in r/apple, which allows self-promotion on Sundays, and in r/iOSapps. Stay in both threads. |
 | From 12 Oct | Video: start with *These four songs are the same song* and *I learned one song and got three* from [Video scripts and storyboards](video-scripts.md), then *Your songbook is a folder*. Post each with the matching still from `content/social/`. |
 
 ## Facts
@@ -145,10 +144,10 @@ Post in the morning, European time, then stay in the thread.
 Post as a person, not a brand: the app named once, the answers in the comments. Read each
 subreddit's current self-promotion rules on the day; they change.
 
-### r/iOSapps, Sunday 11 October
+### r/apple and r/iOSapps, Sunday 11 October
 
-r/apple's App Saturday thread only takes posts on a Saturday, so the same post goes there on
-**Saturday 17 October**. Post as the developer and say so; most subreddits require it.
+r/apple allows self-promotion on Sundays, so both posts go out the same day; check its current
+rules on the morning. Post as the developer and say so; most subreddits require it.
 
 **Title:**
 
