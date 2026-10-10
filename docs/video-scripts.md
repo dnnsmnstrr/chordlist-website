@@ -1,6 +1,8 @@
 # Video scripts and storyboards
 
-The scripts behind the video channel in [Marketing plan](marketing-plan.md). Two production systems,
+The scripts behind the video channel in [Marketing plan](marketing-plan.md). Hooks, the angles
+they test, and how each performed are collected in [Video hooks](video-hooks.md); the `video-content`
+skill writes new ones. Two production systems,
 deliberately not merged:
 
 - **Remotion** — `video/`, documented in [`video/README.md`](../video/README.md). Owns the product
