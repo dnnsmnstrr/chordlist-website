@@ -3,7 +3,7 @@ import {motionCopy} from './copy';
 import {useLayout} from './layout';
 import {Backdrop, Lockup, Phone, RiseText, media, progressAt} from './primitives';
 import {CopyBlock} from './scaffold';
-import {chaptersFor} from './recording';
+import {chaptersFor, chordKeyboardOnScreen} from './recording';
 import {mono, paletteFor, seconds, type MotionProps, type Palette} from './theme';
 
 const copy = motionCopy.reel;
@@ -16,7 +16,7 @@ const shotsFor = (appearance: 'light' | 'dark'): {shot: Shot; duration: number}[
   const chapters = chaptersFor(appearance);
   return [
     {shot: {image: '01-Song-List'}, duration: 3.2},
-    {shot: {video: true, from: chapters.chordKeyboard.start + 1.5}, duration: 4},
+    {shot: {video: true, from: chordKeyboardOnScreen[appearance]}, duration: 3.6},
     {shot: {video: true, from: chapters.search.start + 0.6}, duration: 4.5},
     {shot: {video: true, from: chapters.matchingSongs.start + 1}, duration: 3.6},
     {shot: {video: true, from: chapters.transposeControl.start - 0.3}, duration: 4.6},

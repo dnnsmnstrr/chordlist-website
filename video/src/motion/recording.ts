@@ -56,3 +56,8 @@ export const colorScrollStops = [
   {accent: 'green', start: 6.93},
 ] as const;
 export const colorScrollDuration = 8;
+
+// When the chord keyboard is actually up in each take, measured from the masters. The chapter starts
+// on the chord field, and the keyboard is dismissed (then a Discard dialog appears) within seconds,
+// so a cut timed from the chapter boundary alone lands on the dialog in the dark take.
+export const chordKeyboardOnScreen = {light: 22.7, dark: 19.1} as const;
