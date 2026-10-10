@@ -2,8 +2,6 @@ import designTokens from '../../design/tokens.json';
 import {ChordlistIcon} from '../../components/chordlist-icon';
 import {linearTiming, TransitionSeries} from '@remotion/transitions';
 import {fade} from '@remotion/transitions/fade';
-import {loadFont as loadGeist} from '@remotion/google-fonts/Geist';
-import {loadFont as loadGeistMono} from '@remotion/google-fonts/GeistMono';
 import {paper} from '@remotion/effects/paper';
 import type {ReactNode} from 'react';
 import {
@@ -29,6 +27,7 @@ import {
   type ResolvedScene,
 } from './timeline';
 import {resolveCopy} from './copy';
+import {mono as monoFont, sans as baseFont} from './motion/theme';
 import type {VideoProps} from './video-schema';
 
 type Palette = {
@@ -51,15 +50,6 @@ function paletteFor(): Palette {
     shadow: 'rgba(0, 0, 0, 0.62)',
   };
 }
-
-const {fontFamily: baseFont} = loadGeist('normal', {
-  weights: ['400', '500', '600', '700'],
-  subsets: ['latin'],
-});
-const {fontFamily: monoFont} = loadGeistMono('normal', {
-  weights: ['400', '500', '600'],
-  subsets: ['latin'],
-});
 
 const normalizeLineBreaks = (text: string) =>
   text.replace(/\\r\\n|\\n|\\r/g, '\n');

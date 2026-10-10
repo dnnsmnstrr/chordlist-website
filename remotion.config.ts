@@ -20,3 +20,8 @@ Config.overrideWebpackConfig((config) => ({
     },
   },
 }));
+
+// Containers that ship their own Chromium (and cannot download Remotion's) point at it here.
+if (process.env.REMOTION_BROWSER_EXECUTABLE) {
+  Config.setBrowserExecutable(process.env.REMOTION_BROWSER_EXECUTABLE);
+}

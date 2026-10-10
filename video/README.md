@@ -20,6 +20,9 @@ The template provides:
 - the settings still followed by the frame-aligned light theme-colour scroll imported
   directly from the app press kit.
 
+The **Motion** folder in the same Studio holds the motion suite — short one-idea loops and stings
+in story, square, and wide formats. See [docs/motion-suite.md](../docs/motion-suite.md).
+
 ## Open the editor
 
 Install the website dependencies once, from the website repository root:

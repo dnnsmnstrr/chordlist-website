@@ -1,5 +1,6 @@
 import {Composition} from 'remotion';
 import {ChordlistDemo} from './ChordlistDemo';
+import {MotionCompositions} from './motion/MotionRoot';
 import {FPS, getDurationInFrames} from './timeline';
 import {videoSchema, type VideoProps} from './video-schema';
 
@@ -165,6 +166,7 @@ export const ChordlistRoot: React.FC = () => {
           ],
         }}
       />
+      <MotionCompositions />
     </>
   );
 };
