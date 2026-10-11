@@ -155,7 +155,8 @@ export function TapScene({palette, appearance, box, pace = 1}: TapSceneProps) {
   const phoneHeight = Math.min(fitByHeight, fitByWidth, 1400);
   const phoneWidth = phoneHeight * SCREEN_ASPECT;
   const tagSize = phoneWidth * tagShare * 1.4;
-  const phoneLeft = box.left + (box.width - phoneWidth) / 2 - tagSize * 0.18;
+  // The tag stays inside the phone's width, so the phone itself is centred in the box.
+  const phoneLeft = box.left + (box.width - phoneWidth) / 2;
   const phoneTop = box.top + box.height - phoneHeight;
   const screenWidth = phoneWidth * 0.976;
 
@@ -233,10 +234,18 @@ export function TapScene({palette, appearance, box, pace = 1}: TapSceneProps) {
   );
 }
 
-type TapLayoutProps = {layout: Layout; palette: Palette; appearance: 'light' | 'dark'; lines: readonly string[]; pace?: number};
+type TapLayoutProps = {
+  layout: Layout;
+  palette: Palette;
+  appearance: 'light' | 'dark';
+  lines: readonly string[];
+  pace?: number;
+  /** Whether the frame shows a footnote; without one the portrait phone grows into its place. */
+  footnote?: boolean;
+};
 
 /** The tap with its headline and status: the piece's layout, shared with the wizard's template. */
-export function TapLayout({layout, palette, appearance, lines, pace = 1}: TapLayoutProps) {
+export function TapLayout({layout, palette, appearance, lines, pace = 1, footnote = true}: TapLayoutProps) {
   const {content, shape} = layout;
   const isWide = shape === 'wide';
   const statusSize = Math.round(layout.footnote * 1.15);
@@ -272,13 +281,14 @@ export function TapLayout({layout, palette, appearance, lines, pace = 1}: TapLay
   const size = fitHeadline(layout, lines, content.width);
   const statusTop = content.top + size * 1.14 * lines.length + size * 0.35;
   const sceneTop = statusTop + statusSize * 1.3 + size * 0.5;
+  const sceneBottom = footnote ? content.bottom : layout.height - layout.pad - layout.safeBottom;
   return (
     <>
       <TapScene
         pace={pace}
         palette={palette}
         appearance={appearance}
-        box={{top: sceneTop, bottom: content.bottom, left: content.left, right: content.right, width: content.width, height: content.bottom - sceneTop}}
+        box={{top: sceneTop, bottom: sceneBottom, left: content.left, right: content.right, width: content.width, height: sceneBottom - sceneTop}}
       />
       <Headline layout={layout} palette={palette} lines={lines} maxWidth={content.width} style={{position: 'absolute', left: content.left, top: content.top}} />
       <div style={{position: 'absolute', left: content.left, top: statusTop}}>
@@ -292,10 +302,12 @@ export function TapLayout({layout, palette, appearance, lines, pace = 1}: TapLay
 export function ChordlinkTap({campaign, appearance}: MotionProps) {
   const layout = useLayout();
   const palette = paletteFor(campaign);
+  const isStory = layout.shape === 'story';
   return (
     <Backdrop palette={palette} campaign={campaign}>
-      <TapLayout layout={layout} palette={palette} appearance={appearance} lines={copy.tap.headline} />
-      <SocialFrame layout={layout} palette={palette} eyebrow={copy.eyebrow} footnote={copy.footnote} />
+      {/* The reel drops the address so the phone can be as large as the frame allows. */}
+      <TapLayout layout={layout} palette={palette} appearance={appearance} lines={copy.tap.headline} footnote={!isStory} />
+      <SocialFrame layout={layout} palette={palette} eyebrow={copy.eyebrow} footnote={isStory ? undefined : copy.footnote} />
     </Backdrop>
   );
 }

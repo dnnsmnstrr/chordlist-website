@@ -240,7 +240,7 @@ function ChordlinkModelTemplate({definition, layout, palette}: TemplateProps) {
 /** `chordlink-tap`: a locked phone, the tag, and the app opening onto a song, paced to the duration. */
 function ChordlinkTapTemplate({definition, layout, palette}: TemplateProps) {
   const pace = (definition.duration * FPS) / tapTimeline(FPS).end;
-  return <TapLayout layout={layout} palette={palette} appearance={definition.appearance} lines={lines(definition)} pace={pace} />;
+  return <TapLayout layout={layout} palette={palette} appearance={definition.appearance} lines={lines(definition)} pace={pace} footnote={Boolean(definition.footnote)} />;
 }
 
 const templates: Record<MotionDefinition['template'], (props: TemplateProps) => ReactNode> = {
