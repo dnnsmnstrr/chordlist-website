@@ -26,6 +26,7 @@ const nextConfig = {
     "/blog/[slug]": ["./content/blog/**/*"],
     "/blog/rss.xml": ["./content/blog/**/*"],
     "/sitemap.xml": ["./content/blog/**/*"],
+    "/api/search/[language]": ["./content/blog/**/*"],
     // Read at request time from docs/, which nothing imports.
     "/marketing-copy": ["./docs/launch-copy.md"],
   },

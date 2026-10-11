@@ -69,3 +69,13 @@ export async function refuseUnlessAdmin(): Promise<Response | null> {
   if ((await localDeveloperUser()) ?? (await readAdminUser())) return null
   return Response.json({ error: "Not authorized." }, { status: 401 })
 }
+
+/**
+ * Whether this request comes from an administrator, for the header's admin link.
+ *
+ * A yes/no answer and nothing more, so it is safe to give anyone who asks: it never says who is
+ * signed in, and the tools behind the link still run `requireAdmin()` for themselves.
+ */
+export async function isAdminRequest(): Promise<boolean> {
+  return ((await localDeveloperUser()) ?? (await readAdminUser())) !== null
+}

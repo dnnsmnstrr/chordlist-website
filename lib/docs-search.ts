@@ -1,5 +1,5 @@
 import { plainInlineText } from "@/lib/inline-markup"
-import { findSearchMatches, matchesSearchTokens, searchTokens } from "@/lib/text-search"
+import { matchesSearchTokens, searchSnippet, searchTokens } from "@/lib/text-search"
 import { docsCopy } from "@/locales/en"
 
 type SectionKey = keyof typeof docsCopy.sections
@@ -195,27 +195,7 @@ export function searchDocs(entries: readonly DocsSearchEntry[], query: string): 
     .map(({ entry }) => entry)
 }
 
-/**
- * A window of the passage around its first match, trimmed to whole words, so a long answer shows
- * the sentence that matched rather than its opening.
- */
+/** A window of the passage around its first match. See `searchSnippet` in lib/text-search.ts. */
 export function docsSnippet(text: string, tokens: readonly string[], length = 140): string {
-  if (text.length <= length) return text
-
-  const first = findSearchMatches(text, tokens)[0]
-  const center = first ? first.start : 0
-  let start = Math.max(0, center - Math.floor(length / 3))
-  let end = Math.min(text.length, start + length)
-  start = Math.max(0, end - length)
-
-  if (start > 0) {
-    const space = text.indexOf(" ", start)
-    if (space !== -1 && space < center) start = space + 1
-  }
-  if (end < text.length) {
-    const space = text.lastIndexOf(" ", end)
-    if (space > center) end = space
-  }
-
-  return `${start > 0 ? "… " : ""}${text.slice(start, end)}${end < text.length ? " …" : ""}`
+  return searchSnippet(text, tokens, length)
 }

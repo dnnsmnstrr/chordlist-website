@@ -151,6 +151,20 @@ English wording should not have to translate their own question first. `searchAl
 `locales/en.ts` widens each list to `string[]`, because a tuple would force every translation to
 invent exactly as many synonyms as English has.
 
+#### The site-wide search
+
+Every search field — `/docs`, `/faq`, `/support`, `/blog`, and `/admin` — filters its own page first,
+then lists up to five matches from the other pages under **Elsewhere on chordlist**
+(`components/site-search-results.tsx`). The index is built on the server by `lib/site-search-index.ts`
+and served per language from `app/api/search/[language]`, which the field fetches once, on focus, so it
+is never in a page's bundle. Ranking and matching are `searchSite()` in `lib/site-search.ts`. Docs and
+blog entries are English on every language's index and say so. Results link to an answer by its
+anchor — `faqQuestionId()` for a question, the docs' own ids for a passage — and `useRevealHashTarget()`
+opens the `<details>` the anchor names on arrival, which a browser will not do by itself.
+
+Search fields set their text to `text-base pointer-fine:text-sm`: iOS Safari zooms into any focused
+field below 16px, and keying it to the pointer rather than the width also covers a phone in landscape.
+
 #### Copy variants
 
 `locales/copy-variants.ts` holds alternative wordings of the home page — currently `files`
@@ -373,10 +387,11 @@ the rewrite; nothing in the site reads that folder. The `blog-refine` skill poli
 
 **Scheduling.** In production, a post that is unapproved, whose `published` date is in the future — or
 that carries `draft: true` — is hidden from the index, the sitemap, the RSS feed, and its own URL (which 404s).
-`/blog`, `/blog/[slug]`, `app/sitemap.ts`, and `app/blog/rss.xml` all export `revalidate = 3600`, so a
-scheduled post goes live within about an hour of its date with no redeploy. `generateStaticParams`
+`/blog`, `/blog/[slug]`, `app/sitemap.ts`, `app/blog/rss.xml`, and the site-search index at
+`app/api/search/[language]` all export `revalidate = 3600`, so a scheduled post goes live within about
+an hour of its date with no redeploy. `generateStaticParams`
 prerenders only visible slugs; a future URL renders on demand, hits `notFound()`, and starts resolving
-once the date passes. Keep the four `revalidate` values in step.
+once the date passes. Keep the five `revalidate` values in step.
 
 **Previews show unreleased posts.** `showsUnreleasedPosts()` in `lib/blog.ts` reads `VERCEL_ENV`, so
 branch previews and the dev server list drafts and future-dated posts while production hides them.
@@ -410,12 +425,12 @@ lazy `<img>` and bypass `next/image`. Only a `cover` goes through `next/image`: 
 the **key visual** and sets it from any image in the post's folder, and the post page and index card
 crop it to 1200 × 630. `readdir` on
 `content/blog` is invisible to the bundle tracer, which is why `next.config.mjs` carries
-`outputFileTracingIncludes` for the four blog-aware routes — remove it and production breaks on the
+`outputFileTracingIncludes` for the five blog-aware routes — remove it and production breaks on the
 first revalidation.
 
 ## Internal tools and sign-in
 
-`/emails`, `/screens`, `/copy`, `/gallery`, `/social/posts`, `/social/editor`, `/translations`,
+`/emails`, `/copy`, `/social/posts`, `/social/editor`, `/translations`,
 `/editorial`, `/motion`, `/api/translations/*`, `/api/editorial`, and `/api/motion` are behind a Supabase Auth login at `/login` (`/logout` signs out).
 `/admin` is the dashboard that links every one of them and the admin backend at `siteConfig.adminBackendUrl`
 (admin.chordlist.app); signing in lands there. A new tool gets a card in its `sections` list as well.

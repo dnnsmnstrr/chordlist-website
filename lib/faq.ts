@@ -1,5 +1,5 @@
 import { plainInlineText } from "@/lib/inline-markup"
-import { matchesSearchTokens, searchTokens } from "@/lib/text-search"
+import { matchesSearchTokens, normalizeForSearch, searchTokens } from "@/lib/text-search"
 
 export type FaqEntry = {
   question: string
@@ -43,4 +43,18 @@ export function matchingFaqEntries(entries: readonly FaqEntry[], query: string):
   if (tokens.length === 0) return entries
 
   return entries.filter((entry) => matchesSearchTokens(faqSearchText(entry), tokens))
+}
+
+/**
+ * The anchor a question renders under, so the site-wide search can link straight to its answer.
+ *
+ * Derived from the question rather than its position, so adding a question above it does not send
+ * an old link to the wrong answer. Rewording the question does change it; the link then lands at
+ * the top of the list, which is the right page still.
+ */
+export function faqQuestionId(question: string): string {
+  const slug = normalizeForSearch(plainInlineText(question))
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+  return `q-${slug}`
 }

@@ -107,3 +107,28 @@ export function findSearchMatches(text: string, tokens: readonly string[]): Sear
     return merged
   }, [])
 }
+
+/**
+ * A window of the passage around its first match, trimmed to whole words, so a long answer shows
+ * the sentence that matched rather than its opening.
+ */
+export function searchSnippet(text: string, tokens: readonly string[], length = 140): string {
+  if (text.length <= length) return text
+
+  const first = findSearchMatches(text, tokens)[0]
+  const center = first ? first.start : 0
+  let start = Math.max(0, center - Math.floor(length / 3))
+  let end = Math.min(text.length, start + length)
+  start = Math.max(0, end - length)
+
+  if (start > 0) {
+    const space = text.indexOf(" ", start)
+    if (space !== -1 && space < center) start = space + 1
+  }
+  if (end < text.length) {
+    const space = text.lastIndexOf(" ", end)
+    if (space > center) end = space
+  }
+
+  return `${start > 0 ? "… " : ""}${text.slice(start, end)}${end < text.length ? " …" : ""}`
+}

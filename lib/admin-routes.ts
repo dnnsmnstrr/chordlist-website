@@ -8,7 +8,8 @@
  * None of these are linked from the public site — the `/social/posts` link in
  * `components/site-footer.tsx` is commented out — so protecting them removes nothing a visitor
  * can reach today. `/screens` is deliberately absent: `/press` sends journalists there for the
- * App Store sets, so it is part of the public site and a login in front of it is a dead link.
+ * App Store sets, so it is part of the public site and a login in front of it is a dead link. `/gallery`
+ * is public for the same reason: it is brand imagery made to be shared, and nothing in it is private.
  */
 export const adminRoutePrefixes = [
   "/admin",
@@ -18,7 +19,6 @@ export const adminRoutePrefixes = [
   "/copy",
   "/editorial",
   "/emails",
-  "/gallery",
   "/login",
   "/marketing-copy",
   "/motion",
