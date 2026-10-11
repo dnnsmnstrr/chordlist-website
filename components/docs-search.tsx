@@ -7,6 +7,7 @@ import { InlineMarkup } from "@/components/inline-markup"
 import { docsSearchEntries, docsSnippet, searchDocs, type DocsSearchEntry } from "@/lib/docs-search"
 import { revealElement } from "@/lib/reveal-element"
 import { searchTokens } from "@/lib/text-search"
+import { cn } from "@/lib/utils"
 import { docsCopy } from "@/locales/en"
 
 /** How many results are listed before the reader is asked to narrow the search. */
@@ -83,7 +84,7 @@ export function DocsSearch() {
   return (
     <search
       ref={containerRef}
-      className="relative min-w-0 flex-1 sm:w-72 sm:flex-none"
+      className="relative w-44 shrink-0 sm:w-72"
       onKeyDown={(event) => {
         if (event.key !== "Escape") return
         // First Escape closes the panel; a second, with it already closed, clears the query.
@@ -126,8 +127,14 @@ export function DocsSearch() {
           aria-describedby={statusId}
           aria-controls={panelId}
           autoComplete="off"
-          // appearance-none drops Safari's own clear button, which would sit under ours.
-          className="w-full appearance-none rounded-lg border border-border bg-background py-2 pl-9 pr-9 text-sm transition-colors placeholder:text-muted-foreground focus-visible:border-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [&::-webkit-search-cancel-button]:hidden"
+          // appearance-none drops Safari's own clear button, which would sit under ours. 16px text below sm,
+          // because iOS Safari zooms the page into any focused field set smaller than that.
+          // Room on the right only for what sits there: the clear button while searching, the "/" hint
+          // on wide screens. Without it the placeholder has space to show in full on a phone.
+          className={cn(
+            "w-full appearance-none rounded-lg border border-border bg-background py-1.5 pl-9 text-base transition-colors placeholder:text-muted-foreground focus-visible:border-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:py-2 sm:text-sm [&::-webkit-search-cancel-button]:hidden",
+            isSearching ? "pr-9" : "pr-3 lg:pr-9",
+          )}
         />
         {isSearching ? (
           <button
