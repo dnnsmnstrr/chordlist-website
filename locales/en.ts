@@ -607,7 +607,8 @@ export const docsCopy = {
         },
         {
           title: "No ads",
-          body: "The small advert for another independent app, shown at the end of the song list and of each song, goes away.",
+          body: "The small advert for another independent app, shown at the end of the song list and of each song, goes away. Those adverts come from Kickstart Exchange, where independent apps promote one another.",
+          link: { href: "https://exchange.kickstart.tools/", label: "About Kickstart Exchange" },
         },
         {
           title: "Pay once",

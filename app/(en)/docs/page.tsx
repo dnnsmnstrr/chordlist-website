@@ -412,13 +412,13 @@ function AnnotatedFigure({ screenshots, figureId, callouts, wide = false }: Anno
   )
 }
 
-function FeatureList({
-  features,
-  columns = 2,
-}: {
-  features: readonly { title: string; body: string }[]
+type FeatureListProps = {
+  /** A `link` renders under the body as an external link, in a new tab. */
+  features: readonly { title: string; body: string; link?: { href: string; label: string } }[]
   columns?: 2 | 3
-}) {
+}
+
+function FeatureList({ features, columns = 2 }: FeatureListProps) {
   return (
     <dl className={columns === 3 ? "grid gap-5 sm:grid-cols-2 xl:grid-cols-3" : "grid gap-5 sm:grid-cols-2"}>
       {features.map((feature) => (
@@ -427,6 +427,11 @@ function FeatureList({
           <dd className="mt-2 text-sm leading-relaxed">
             <InlineMarkup text={feature.body} />
           </dd>
+          {feature.link ? (
+            <dd className="mt-3 text-sm">
+              <ExternalLink href={feature.link.href}>{feature.link.label}</ExternalLink>
+            </dd>
+          ) : null}
         </div>
       ))}
     </dl>
