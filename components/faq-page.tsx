@@ -25,7 +25,7 @@ export function FaqPage({ language }: FaqPageProps) {
           <p className="mt-4 max-w-xl text-pretty leading-relaxed text-muted-foreground">{copy.introduction}</p>
         </header>
 
-        <FaqSearch items={copy.questions} language={language} />
+        <FaqSearch items={copy.questions} language={language} page="faq" />
 
         <p className="mt-10 text-sm text-muted-foreground">
           {copy.contactPrefix}{" "}

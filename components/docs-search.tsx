@@ -4,9 +4,11 @@ import { useEffect, useId, useMemo, useRef, useState } from "react"
 import { Search, X } from "lucide-react"
 
 import { InlineMarkup } from "@/components/inline-markup"
+import { SiteSearchResults, useSiteSearch } from "@/components/site-search-results"
 import { docsSearchEntries, docsSnippet, searchDocs, type DocsSearchEntry } from "@/lib/docs-search"
 import { revealElement } from "@/lib/reveal-element"
 import { searchTokens } from "@/lib/text-search"
+import { useRevealHashTarget } from "@/lib/use-reveal-hash-target"
 import { cn } from "@/lib/utils"
 import { docsCopy } from "@/locales/en"
 
@@ -43,6 +45,10 @@ export function DocsSearch() {
   const isSearching = tokens.length > 0
   const isPanelOpen = isOpen && isSearching
   const shown = matches.slice(0, MAX_RESULTS)
+  const site = useSiteSearch("en", query, "docs")
+
+  // A site-wide result elsewhere links to one passage here by its anchor.
+  useRevealHashTarget()
 
   useEffect(() => {
     function focusOnSlash(event: KeyboardEvent) {
@@ -127,19 +133,23 @@ export function DocsSearch() {
             setQuery(event.target.value)
             setIsOpen(true)
           }}
-          onFocus={() => setIsOpen(true)}
+          onFocus={() => {
+            setIsOpen(true)
+            site.prefetch()
+          }}
           // Focus alone misses the case where Escape closed the panel and the field kept focus.
           onClick={() => setIsOpen(true)}
           placeholder={copy.placeholder}
           aria-describedby={statusId}
           aria-controls={panelId}
           autoComplete="off"
-          // appearance-none drops Safari's own clear button, which would sit under ours. 16px text below sm,
-          // because iOS Safari zooms the page into any focused field set smaller than that.
+          // appearance-none drops Safari's own clear button, which would sit under ours. 16px text on touch
+          // screens, because iOS Safari zooms the page into any focused field set smaller than that — keyed
+          // to the pointer rather than the width, since a phone in landscape is wider than sm.
           // Room on the right only for what sits there: the clear button while searching, the "/" hint
           // on wide screens. Without it the placeholder has space to show in full on a phone.
           className={cn(
-            "w-full appearance-none rounded-lg border border-border bg-background py-1.5 pl-9 text-base transition-colors placeholder:text-muted-foreground focus-visible:border-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:py-2 sm:text-sm [&::-webkit-search-cancel-button]:hidden",
+            "w-full appearance-none rounded-lg border border-border bg-background py-1.5 pl-9 text-base transition-colors placeholder:text-muted-foreground focus-visible:border-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:py-2 pointer-fine:text-sm [&::-webkit-search-cancel-button]:hidden",
             isSearching ? "pr-9" : "pr-3 lg:pr-9",
           )}
         />
@@ -216,6 +226,13 @@ export function DocsSearch() {
             ) : null}
           </>
         )}
+        <SiteSearchResults
+          language="en"
+          query={query}
+          matches={site.matches}
+          variant="panel"
+          onNavigate={() => setIsOpen(false)}
+        />
       </div>
     </search>
   )

@@ -102,6 +102,10 @@ export const commonCopy: Localized<typeof en> = {
     resultCount: (count: number) => (count === 1 ? "1 Frage" : `${count} Fragen`),
     empty: "Keine Frage passt zu dieser Suche.",
   },
+  siteSearch: {
+    title: `Mehr auf ${siteConfig.name}`,
+    inEnglish: "Auf Englisch",
+  },
   skipToContent: "Zum Inhalt springen",
   notFound: {
     title: "Seite nicht gefunden",

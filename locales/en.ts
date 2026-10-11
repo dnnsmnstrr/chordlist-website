@@ -82,6 +82,12 @@ export const commonCopy = {
     resultCount: (count: number) => (count === 1 ? "1 question" : `${count} questions`),
     empty: "No question matches that search.",
   },
+  /** The results from the rest of the site, under a page's own. See lib/site-search.ts. */
+  siteSearch: {
+    title: `Elsewhere on ${siteConfig.name}`,
+    /** Beside a docs or blog result on a translated page, which are English only. */
+    inEnglish: "In English",
+  },
   skipToContent: "Skip to content",
   notFound: {
     title: "Page not found",

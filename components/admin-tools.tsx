@@ -5,6 +5,7 @@ import type { Route } from "next"
 import Link from "next/link"
 import { ChevronRight, Search } from "lucide-react"
 
+import { SiteSearchResults, useSiteSearch } from "@/components/site-search-results"
 import { matchesSearchTokens, searchTokens } from "@/lib/text-search"
 import { adminCopy } from "@/locales/en"
 
@@ -51,6 +52,7 @@ export function AdminTools({ heading, backend, sections }: AdminToolsProps) {
   const inputId = useId()
   const [query, setQuery] = useState("")
   const tokens = searchTokens(query)
+  const site = useSiteSearch("en", query)
 
   const visible = sections
     .map((section) => ({
@@ -82,9 +84,10 @@ export function AdminTools({ heading, backend, sections }: AdminToolsProps) {
               type="search"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
+              onFocus={site.prefetch}
               placeholder={adminCopy.search.placeholder}
               autoComplete="off"
-              className="h-9 w-full rounded-md border border-border bg-background pl-9 pr-3 text-base outline-none transition-colors placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring sm:text-sm"
+              className="h-9 w-full rounded-md border border-border bg-background pl-9 pr-3 text-base outline-none transition-colors placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring pointer-fine:text-sm"
             />
           </div>
           <Link
@@ -116,6 +119,7 @@ export function AdminTools({ heading, backend, sections }: AdminToolsProps) {
             {adminCopy.search.empty(query.trim())}
           </p>
         ) : null}
+        <SiteSearchResults language="en" query={query} matches={site.matches} />
       </div>
     </>
   )
