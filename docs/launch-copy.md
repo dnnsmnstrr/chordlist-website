@@ -38,7 +38,7 @@ made twice in the same place. Add a row in the same sitting as posting.
 | Date | Where | Link |
 | --- | --- | --- |
 | Sat 10 Oct | Product Hunt | https://www.producthunt.com/products/chordlist |
-| Sun 11 Oct | Reddit, r/apple | https://www.reddit.com/r/apple/s/6b7Gp6K82f |
+| Sun 11 Oct | Reddit, r/apple | https://www.reddit.com/r/apple/comments/1x37aa2/i_built_chordlist_a_songbook_for_iphone_and_ipad/ |
 
 ## Facts
 
