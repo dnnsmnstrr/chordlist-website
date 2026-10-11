@@ -42,7 +42,8 @@ export function LaunchCard({campaign, appearance}: MotionProps) {
                 left: fanCenter + (index - 1) * phoneWidth * 0.82 - phoneWidth / 2,
                 top: fanTop + (isCenter ? 0 : phoneHeight * 0.08),
                 zIndex: isCenter ? 2 : 1,
-                transform: `translateY(${interpolate(rise, [0, 1], [height * 0.6, 0])}px)`,
+                // Each starts wholly below the frame, whatever the format, so nothing shows before it rises.
+                transform: `translateY(${interpolate(rise, [0, 1], [height - fanTop + 40, 0])}px)`,
               }}
             >
               <Phone palette={palette} height={isCenter ? phoneHeight : phoneHeight * 0.9} image={media.screen(appearance, name)} />
