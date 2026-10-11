@@ -47,7 +47,7 @@ const CONFIG = {
     {
       slug: "docs",
       title: "Documentation",
-      description: "Organize the Markdown files, work with Obsidian, and keep an iCloud song folder offline.",
+      description: "Set up a songs folder, play and transpose songs, and write chords in plain Markdown.",
     },
     {
       slug: "blog",
