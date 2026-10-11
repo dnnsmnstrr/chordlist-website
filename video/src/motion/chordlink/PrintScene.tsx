@@ -12,7 +12,7 @@ const GRAPHITE = '#1c1c1e';
 // The tag is 1.6 mm tall and 32 mm wide; at true scale its layers are hairlines from any distance
 // that shows the whole tag. Heights are drawn four times over so the layers, the pocket and the
 // sealed lid read. Widths, and every proportion within a layer, are true.
-const EXAGGERATION = 4;
+const EXAGGERATION = 2.5;
 
 /**
  * The print's timeline in frames, derived from its events so a change of layer count or pace
@@ -87,20 +87,23 @@ function Nozzle({position, visible}: {position: [number, number, number]; visibl
 /** The NFC sticker: a white inlay with its copper antenna and chip, as it is dropped in. */
 function NfcTag({y}: {y: number}) {
   const rings = [12.4, 11.7, 11.0, 10.3];
+  // Drawn a little thinner than the pocket, with the coil and chip printed flat on its face, so
+  // nothing on it reaches the lid's first layer.
+  const body = TAG.nfcHeight * 0.8;
   return (
     <group position={[0, y, 0]}>
-      <mesh position={[0, TAG.nfcHeight / 2, 0]}>
-        <cylinderGeometry args={[TAG.nfcDiameter / 2, TAG.nfcDiameter / 2, TAG.nfcHeight, 96]} />
+      <mesh position={[0, body / 2, 0]}>
+        <cylinderGeometry args={[TAG.nfcDiameter / 2, TAG.nfcDiameter / 2, body, 96]} />
         <meshStandardMaterial color="#e8e6df" roughness={0.6} />
       </mesh>
       {rings.map((radius) => (
-        <mesh key={radius} position={[0, TAG.nfcHeight + 0.01, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <mesh key={radius} position={[0, body + 0.005, 0]} rotation={[-Math.PI / 2, 0, 0]}>
           <ringGeometry args={[radius - 0.18, radius, 96]} />
           <meshStandardMaterial color="#b87333" metalness={0.7} roughness={0.35} side={THREE.DoubleSide} />
         </mesh>
       ))}
-      <mesh position={[4.5, TAG.nfcHeight + 0.15, 4.5]}>
-        <boxGeometry args={[2.2, 0.3, 2.2]} />
+      <mesh position={[4.5, body + 0.01, 4.5]}>
+        <boxGeometry args={[2.2, 0.02, 2.2]} />
         <meshStandardMaterial color="#202022" roughness={0.4} />
       </mesh>
     </group>

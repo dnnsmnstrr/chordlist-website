@@ -66,7 +66,7 @@ so every frame is deterministic and renders headless like the rest of the suite.
   first edition's defaults: a 32 mm squircle, a 1.2 mm plate, a 28 mm pocket from 0.4 to 0.8 mm
   for the 27 mm tag, and the logo's keys raised 0.4 mm in graphite. Change the tag there and in
   `model.html` together.
-- Layers are drawn 0.1 mm thick and the whole print is stretched ×4 in height (`EXAGGERATION`
+- Layers are drawn 0.1 mm thick and the whole print is stretched ×2.5 in height (`EXAGGERATION`
   in `PrintScene.tsx`), because a 1.6 mm object is otherwise a sheet of paper on camera. The
   proportions in plan are true.
 
