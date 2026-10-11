@@ -30,6 +30,13 @@ test("the App Store screenshot sets are public", () => {
   assert.ok(press.includes('href="/screens"'), "press no longer links /screens — is it still public?")
 })
 
+test("the gallery is public", () => {
+  // Brand imagery made to be shared: a login in front of it only gets in the way of sharing it.
+  assert.equal(isAdminRoute("/gallery"), false)
+  const gallery = readFileSync(new URL("../app/(en)/gallery/page.tsx", import.meta.url), "utf8")
+  assert.equal(gallery.includes("requireAdmin"), false, "/gallery is public, so it must not ask for a login")
+})
+
 test("a prefix does not capture a route that merely starts with the same letters", () => {
   // /copywriting is not /copy, and /emails-archive is not /emails.
   assert.equal(isAdminRoute("/copywriting"), false)
@@ -107,7 +114,6 @@ test("every protected page actually calls the guard", () => {
     "app/(en)/editorial/page.tsx": "requireAdmin",
     "app/(en)/editorial/[slug]/page.tsx": "requireAdmin",
     "app/(en)/emails/page.tsx": "requireAdmin",
-    "app/(en)/gallery/page.tsx": "requireAdmin",
     "app/(en)/motion/page.tsx": "requireAdmin",
     "app/(en)/motion/library/page.tsx": "requireAdmin",
     "app/(en)/social-editor/page.tsx": "requireAdmin",

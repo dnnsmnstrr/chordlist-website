@@ -59,6 +59,7 @@ export const commonCopy: Localized<typeof en> = {
     footerLabel: "Fußzeile",
     docs: "Doku",
     blog: "Blog",
+    admin: "Admin",
     faq: "FAQ",
     support: "Support",
     press: "Presse",

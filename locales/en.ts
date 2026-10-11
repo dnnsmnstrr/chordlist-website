@@ -28,6 +28,7 @@ export const commonCopy = {
     footerLabel: "Footer",
     docs: "Docs",
     blog: "Blog",
+    admin: "Admin",
     faq: "FAQ",
     support: "Support",
     press: "Press",
@@ -1744,7 +1745,7 @@ export const adminCopy = {
   eyebrow: "Internal",
   title: "Admin",
   introduction:
-    "Every internal page of this site, and the way to the admin backend. Tools marked local only edit files in the checkout, so they open under pnpm dev and nowhere else.",
+    "Every internal page of this site, and the way to the admin backend. Tools marked internal need this login; local only ones edit files in the checkout, so they open under pnpm dev and nowhere else; public ones are open to everyone.",
   backend: {
     title: "Admin backend",
     description: "chordlink orders, settings, and everything else that lives in the database.",
@@ -1756,8 +1757,14 @@ export const adminCopy = {
     marketing: "Marketing assets",
   },
   badges: {
+    internal: "Internal",
     localOnly: "Local only",
     public: "Public",
+  },
+  search: {
+    label: "Search the tools",
+    placeholder: "Search tools…",
+    empty: (query: string) => `No tool matches “${query}”.`,
   },
   tools: {
     editorial: {
