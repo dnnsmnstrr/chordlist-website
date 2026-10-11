@@ -69,11 +69,14 @@ export function FeatureReel({campaign, appearance}: MotionProps) {
   const isWide = shape === 'wide';
   const sources = shotsFor(appearance);
 
-  const phoneHeight = isWide ? height - pad * 1.2 : 1120;
+  // Story: the scene headlines are set a step smaller so the phone fits whole between the longest
+  // (three-line) headline and the footnote, with the frame's own gap on either side of it.
+  const sceneScale = isWide ? 1 : 0.8;
+  const storyTop = content.top + 3 * layout.headline * sceneScale * 1.14 + 48 * layout.scale;
+  const phoneHeight = isWide ? height - pad * 1.2 : content.bottom - storyTop;
   const phone = isWide
     ? {h: phoneHeight, x: content.right - phoneHeight * 0.462 - 120, y: (height - phoneHeight) / 2}
-    : // Off the right edge like the screenshot stills, which keeps the footnote clear.
-      {h: phoneHeight, x: width - phoneHeight * 0.462 * 0.86, y: content.top + layout.headline * 3.5 + 20};
+    : {h: phoneHeight, x: (width - phoneHeight * 0.462) / 2, y: storyTop};
   const phoneIn = progressAt(frame, INTRO - 16, 26);
   const phoneOut = progressAt(frame, OUTRO_AT - 4, 18);
   const copyLeft = content.left;
@@ -100,6 +103,7 @@ export function FeatureReel({campaign, appearance}: MotionProps) {
               layout={layout}
               palette={palette}
               lines={copy.scenes[index]!}
+              scale={sceneScale}
               start={2}
               maxWidth={copyWidth}
               exitAt={seconds(item.duration) - 14}

@@ -8,6 +8,8 @@ import {mono, sans, paletteFor, type MotionProps, type Palette} from './theme';
 
 const copy = motionCopy.sameChords;
 const FOLD_AT = 105;
+// When the seven identical rows give way to the one progression they share.
+const MERGE_AT = FOLD_AT + 75;
 
 /** One library row: title first, artist second, the progression in fixed columns on the right. */
 function SongRow({
@@ -80,7 +82,8 @@ function SongRow({
 
 /**
  * Seven songs from the app's own library, each in its own key. Their chords fold into Roman
- * numerals and every row turns out to read the same: the matching-progressions still, in motion.
+ * numerals, every row turns out to read the same, and the seven rows merge into the one
+ * progression they share, centred.
  */
 export function SameChords({campaign}: MotionProps) {
   const frame = useCurrentFrame();
@@ -102,6 +105,15 @@ export function SameChords({campaign}: MotionProps) {
   const bandIn = progressAt(frame, FOLD_AT + 30, 24);
   const listHeight = matchingSongs.length * (row + gap) - gap;
 
+  // The merge: the rows fade back while one large numeral line grows out of the band and travels
+  // to the centre of the space the list held. Geist Mono advances 0.6em, so the size is exact.
+  const merge = progressAt(frame, MERGE_AT, 30);
+  const listLeft = isWide ? content.right - listWidth : content.left;
+  const bigFont = Math.min(listWidth * 0.86 / (copy.roman.length * 0.6), row * 1.8);
+  const bandCentre = listLeft + listWidth - font * 0.6 - (columnWidth + font * 0.6) / 2;
+  const target = {x: listLeft + listWidth / 2, y: listTop + listHeight / 2};
+  const startScale = font / bigFont;
+
   return (
     <Backdrop palette={palette} campaign={campaign}>
       <AbsoluteFill>
@@ -113,7 +125,16 @@ export function SameChords({campaign}: MotionProps) {
           scale={shape === 'story' ? 0.86 : 1}
           style={{position: 'absolute', left: content.left, top: isWide ? content.top + content.height * 0.28 : content.top}}
         />
-        <div style={{position: 'absolute', left: isWide ? content.right - listWidth : content.left, top: listTop, width: listWidth}}>
+        <div
+          style={{
+            position: 'absolute',
+            left: listLeft,
+            top: listTop,
+            width: listWidth,
+            opacity: 1 - merge,
+            transform: `scale(${1 - merge * 0.08})`,
+          }}
+        >
           {/* The band that ties the folded columns together once every row reads the same. */}
           <div
             style={{
@@ -132,6 +153,23 @@ export function SameChords({campaign}: MotionProps) {
               <SongRow key={song.title} song={song} index={index} palette={palette} width={listWidth} height={row} font={font} />
             ))}
           </div>
+        </div>
+        <div
+          style={{
+            position: 'absolute',
+            left: target.x,
+            top: target.y,
+            fontFamily: mono,
+            fontWeight: 600,
+            fontSize: bigFont,
+            lineHeight: 1,
+            whiteSpace: 'nowrap',
+            color: palette.text,
+            opacity: merge,
+            transform: `translate(-50%, -50%) translateX(${(bandCentre - target.x) * (1 - merge)}px) scale(${startScale + (1 - startScale) * merge})`,
+          }}
+        >
+          {copy.roman}
         </div>
         <SocialFrame layout={layout} palette={palette} eyebrow={copy.eyebrow} footnote={copy.footnote} />
       </AbsoluteFill>

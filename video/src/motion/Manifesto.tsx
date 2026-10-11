@@ -1,8 +1,8 @@
 import {AbsoluteFill, Sequence, interpolate, useCurrentFrame} from 'remotion';
 import {motionCopy} from './copy';
 import {useLayout} from './layout';
-import {Backdrop, LogoTile, RiseText, progressAt} from './primitives';
-import {SocialFrame} from './scaffold';
+import {LogoBlock} from './LogoReveal';
+import {Backdrop, progressAt} from './primitives';
 import {paletteFor, sans, type MotionProps} from './theme';
 
 const copy = motionCopy.manifesto;
@@ -11,7 +11,7 @@ const FIRST = 12;
 
 /**
  * Kinetic type: four short claims land on the beat, each pushing the last up and out of the way,
- * until the tagline and the lockup close it. Built to read with the sound off.
+ * until the logo, the name and the address close it. Built to read with the sound off.
  */
 export function Manifesto({campaign}: MotionProps) {
   const frame = useCurrentFrame();
@@ -53,24 +53,11 @@ export function Manifesto({campaign}: MotionProps) {
           })}
         </div>
       </AbsoluteFill>
-      {frame >= closeAt ? (
-        <AbsoluteFill style={{alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: size * 0.4}}>
-          <div style={{transform: `scale(${progressAt(frame, closeAt, 18)})`}}>
-            <LogoTile size={size * 1.1} />
-          </div>
-          <RiseText
-            text={copy.headline}
-            start={closeAt + 10}
-            palette={palette}
-            size={Math.round(size * (shape === 'wide' ? 0.38 : 0.44))}
-            weight={700}
-            align="center"
-            stagger={2}
-          />
-        </AbsoluteFill>
-      ) : null}
+      {/* The close is the logo and the name alone, the address centred under them: no frame. */}
       <Sequence from={closeAt} layout="none">
-        <SocialFrame layout={layout} palette={palette} eyebrow={copy.eyebrow} footnote={copy.footnote} />
+        <AbsoluteFill style={{alignItems: 'center', justifyContent: 'center'}}>
+          <LogoBlock palette={palette} tile={Math.round(Math.min(layout.width, layout.height) * 0.26)} link={copy.footnote} />
+        </AbsoluteFill>
       </Sequence>
     </Backdrop>
   );

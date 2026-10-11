@@ -7,6 +7,7 @@ import {EndCard} from './EndCard';
 import {FeatureReel, featureReelSeconds} from './FeatureReel';
 import {HandsFree} from './HandsFree';
 import {LaunchCard} from './LaunchCard';
+import {LogoReveal, LogoRevealBadge} from './LogoReveal';
 import {LogoSting} from './LogoSting';
 import {Manifesto} from './Manifesto';
 import {PlainText} from './PlainText';
@@ -34,15 +35,17 @@ const ink: MotionProps = {campaign: 'ink', appearance: 'dark'};
 // beside Motion-Transpose-post.
 export const motionPieces: Piece[] = [
   {id: 'LogoSting', component: LogoSting, durationInSeconds: 4.5, formats: all, defaults: ink},
+  {id: 'LogoReveal', component: LogoReveal, durationInSeconds: 4, formats: all, defaults: ink},
+  {id: 'LogoRevealBadge', component: LogoRevealBadge, durationInSeconds: 4, formats: all, defaults: ink},
   {id: 'PlainText', component: PlainText, durationInSeconds: 8, formats: all, defaults: {campaign: 'paper', appearance: 'light'}},
   {id: 'Transpose', component: Transpose, durationInSeconds: 9, formats: all, defaults: ink},
-  {id: 'SameChords', component: SameChords, durationInSeconds: 8, formats: all, defaults: {campaign: 'blueprint', appearance: 'dark'}},
+  {id: 'SameChords', component: SameChords, durationInSeconds: 9, formats: all, defaults: {campaign: 'blueprint', appearance: 'dark'}},
   {id: 'ChordKeys', component: ChordKeys, durationInSeconds: 8, formats: all, defaults: ink},
   {id: 'HandsFree', component: HandsFree, durationInSeconds: 8, formats: all, defaults: {campaign: 'warm-stage', appearance: 'light'}},
   {id: 'ThemeSpectrum', component: ThemeSpectrum, durationInSeconds: 8, formats: all, defaults: {campaign: 'ink', appearance: 'light'}},
   {id: 'FeatureReel', component: FeatureReel, durationInSeconds: featureReelSeconds, formats: ['wide', 'story'], defaults: ink},
   {id: 'ScreenWall', component: ScreenWall, durationInSeconds: 16, formats: all, defaults: ink},
-  {id: 'Manifesto', component: Manifesto, durationInSeconds: 6, formats: all, defaults: ink},
+  {id: 'Manifesto', component: Manifesto, durationInSeconds: 7, formats: all, defaults: ink},
   {id: 'LaunchCard', component: LaunchCard, durationInSeconds: 6, formats: all, defaults: ink},
   {id: 'EndCard', component: EndCard, durationInSeconds: 3, formats: all, defaults: {campaign: 'warm-stage', appearance: 'light'}},
 ];

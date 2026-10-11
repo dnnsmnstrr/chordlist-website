@@ -37,15 +37,17 @@ Rendered files live in `public/video/motion/<piece>-<format>.mp4`, each with a p
 | Piece | Idea | Social twin | Theme | Use |
 | --- | --- | --- | --- | --- |
 | `logo-sting` | The logo builds itself: keys drop, strings draw, the wordmark types out, then the tagline | — | `ink` | Opener for any video; profile video |
+| `logo-reveal` | The logo assembles itself larger and centred; the name fades in beneath it | — | `ink` | Profile video, opener, splash |
+| `logo-reveal-badge` | The same, with Apple's official App Store badge below the name (vendored unmodified in `video/public/badges/`) | — | `ink` | Ad end slate, launch posts |
 | `plain-text` | `morning-light.md` types out as the `file` template, then the app's view of the same song slides in | (own copy, `file` frame) | `paper` | Series 2, *The file* |
 | `transpose` | Morning Light's verse moves +2, then +5, then home; chords roll in place and keep their columns | — | `ink` | Feature post for transpose |
-| `same-chords` | Seven library songs in seven keys fold into Roman numerals and all read I – V – vi – IV | `matching-progressions` | `blueprint` | Series 1, *The party trick* |
+| `same-chords` | Seven library songs in seven keys fold into Roman numerals, all read I – V – vi – IV, then merge into that one progression, centred | `matching-progressions` (eyebrow and footnote; its own, simpler headline) | `blueprint` | Series 1, *The party trick* |
 | `chord-keys` | Morning Light played on a keyboard drawn like the mark, one chord at a time | `chord-keyboard` | `ink` | Songwriting angle |
 | `hands-free` | The hands-free autoscroll shot, with a running clock beside "0 touches" | — | `warm-stage` | Reels/TikTok/Shorts |
-| `theme-spectrum` | The colour-scroll master with the app's seven tints as swatches | — | `ink` | Customisation angle |
+| `theme-spectrum` | The colour-scroll master centred, with the app's seven tints as unlabelled swatches beneath it | — | `ink` | Customisation angle |
 | `feature-reel` | A 31-second tour of six scenes from the real recording, ending on the end card | quotes `song-library`, `chord-keyboard`, `search-across-everything`, `matching-progressions` | `ink` | Website, YouTube, launch thread |
 | `screen-wall` | Every screen drifting past in columns, the tagline on a solid panel | `local-first-songbook` | `ink` | Hero backdrop, Product Hunt gallery |
-| `manifesto` | *Your lyrics. Your chords. Your files. Your songbook.* on the beat, closing on the tagline | `local-first-songbook` | `ink` | Brand statement, story slide |
+| `manifesto` | *Your lyrics. Your chords. Your files. Your songbook.* on the beat, closing on the logo, the name and the address, centred | `local-first-songbook` (footnote) | `ink` | Brand statement, story slide |
 | `launch-card` | "Out now on iPhone and iPad", the free-limit line, three screens rising | `out-now` | `ink` | Launch-day posts; pinned post |
 | `end-card` | The promo's end card on its own | — | `warm-stage` | The last seconds of every phone edit |
 

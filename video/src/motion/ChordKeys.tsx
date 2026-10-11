@@ -148,11 +148,16 @@ export function ChordKeys({campaign}: MotionProps) {
   const headlineWidth = isWide ? content.width * 0.36 : content.width;
   const headSize = fitHeadline(layout, copy.headline, headlineWidth);
   const stageWidth = isWide ? content.width * 0.56 : content.width;
-  const name = {story: 300, post: 190, square: 150, wide: 230}[shape];
-  // Name, keyboard (14 white keys at 4.6:1) and progression pill, centred in what the copy leaves.
-  const stageHeight = name * 1.1 + name * 0.32 + (stageWidth / 14) * 4.6 + name * 0.45;
+  // Name, keyboard (14 white keys at 4.6:1) and progression pill, centred in what the copy leaves,
+  // with at least `breathing` above and below. The chord name gives way first: it shrinks until
+  // the stage fits, so it never crowds the headline.
+  const keyboardHeight = (stageWidth / 14) * 4.6;
   const spaceTop = isWide ? content.top : content.top + copy.headline.length * headSize * 1.14;
-  const stageTop = spaceTop + Math.max(0, (content.bottom - spaceTop - stageHeight) / 2);
+  const breathing = isWide ? 0 : Math.round(72 * layout.scale);
+  const room = content.bottom - spaceTop - breathing * 2;
+  const name = Math.round(Math.min({story: 300, post: 190, square: 150, wide: 230}[shape], (room - keyboardHeight) / 1.87));
+  const stageHeight = name * 1.87 + keyboardHeight;
+  const stageTop = spaceTop + Math.max(breathing, (content.bottom - spaceTop - stageHeight) / 2);
 
   return (
     <Backdrop palette={palette} campaign={campaign}>

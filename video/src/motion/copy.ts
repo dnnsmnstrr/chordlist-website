@@ -34,7 +34,12 @@ export const motionCopy = {
     stepLabel: (steps: number) => `${steps > 0 ? '+' : ''}${steps} semitones`,
     key: 'Key',
   },
-  sameChords: social('matching-progressions'),
+  // The still's eyebrow and footnote, but a simpler headline than the still's three lines.
+  sameChords: {
+    ...social('matching-progressions'),
+    headline: ['Songs with the', 'same progression.'],
+    roman: 'I – V – vi – IV',
+  },
   keyboard: social('chord-keyboard'),
   handsFree: {
     eyebrow: 'Feature',

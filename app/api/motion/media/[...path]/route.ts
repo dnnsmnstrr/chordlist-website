@@ -24,6 +24,7 @@ const TYPES: Record<string, string> = {
   ".webp": "image/webp",
   ".avif": "image/avif",
   ".woff2": "font/woff2",
+  ".svg": "image/svg+xml",
 }
 
 export async function GET(request: Request, { params }: { params: Promise<{ path: string[] }> }) {

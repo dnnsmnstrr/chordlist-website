@@ -1,10 +1,10 @@
 import {AbsoluteFill, interpolate, useCurrentFrame, useVideoConfig} from 'remotion';
 import {motionCopy} from './copy';
-import {phoneBeside, useLayout} from './layout';
+import {useLayout} from './layout';
 import {Backdrop, Phone, SCREEN_ASPECT, media, progressAt} from './primitives';
 import {Arrive, Headline, SocialFrame, fitHeadline} from './scaffold';
 import {colorScrollStops} from './recording';
-import {accents, mono, paletteFor, type MotionProps, type Palette} from './theme';
+import {accents, paletteFor, type MotionProps, type Palette} from './theme';
 
 const copy = motionCopy.themes;
 
@@ -49,48 +49,46 @@ function Swatches({palette, size, vertical}: {palette: Palette; size: number; ve
   );
 }
 
-function SwatchName({palette, size}: {palette: Palette; size: number}) {
-  const {active, since} = useActiveStop();
-  const enter = progressAt(since, 0, 12);
-  return (
-    <div
-      style={{
-        fontFamily: mono,
-        fontSize: size,
-        fontWeight: 500,
-        letterSpacing: size * 0.08,
-        textTransform: 'uppercase',
-        color: palette.text,
-        height: size * 1.3,
-        overflow: 'hidden',
-      }}
-    >
-      <div style={{transform: `translateY(${(1 - enter) * 100}%)`}}>{colorScrollStops[active]!.accent}</div>
-    </div>
-  );
-}
-
-/** The app's colour-scroll master, with the tint it is showing named beside it. */
+/**
+ * The app's colour-scroll master centred in the frame, with the seven tints as a row of swatches
+ * beneath it, the current one ringed. No labels: the change of colour is the whole message, so
+ * the screen is sized to leave the row room rather than to be as large as possible.
+ */
 export function ThemeSpectrum({campaign}: MotionProps) {
   const layout = useLayout();
   const palette = paletteFor(campaign);
-  const {phone, copy: column} = phoneBeside(layout, SCREEN_ASPECT);
-  const headSize = fitHeadline(layout, copy.headline, column.width);
-  const swatch = Math.round(layout.footnote * 1.6);
+  const {shape, content, width} = layout;
+  const isWide = shape === 'wide';
+
+  const swatch = Math.round(layout.footnote * (isWide ? 1.5 : 1.7));
+  const row = swatch * 1.4;
+  const gap = Math.round(40 * layout.scale);
+  const copyWidth = isWide ? content.width * 0.3 : content.width;
+  const headSize = fitHeadline(layout, copy.headline, copyWidth);
+  const top = isWide ? content.top : content.top + copy.headline.length * headSize * 1.14 + gap;
+  const phoneHeight = content.bottom - top - gap - row;
+  const phoneLeft = (width - phoneHeight * SCREEN_ASPECT) / 2;
 
   return (
     <Backdrop palette={palette} campaign={campaign}>
       <AbsoluteFill>
-        <Arrive start={4} distance={layout.height * 0.06} style={{position: 'absolute', left: phone.left, top: phone.top}}>
-          <Phone palette={palette} height={phone.height} video={media.colorScroll} />
+        <Headline
+          layout={layout}
+          palette={palette}
+          lines={copy.headline}
+          maxWidth={copyWidth}
+          style={{position: 'absolute', left: content.left, top: isWide ? content.top + content.height * 0.3 : content.top}}
+        />
+        <Arrive start={4} distance={layout.height * 0.05} style={{position: 'absolute', left: phoneLeft, top}}>
+          <Phone palette={palette} height={phoneHeight} video={media.colorScroll} />
         </Arrive>
-        <div style={{position: 'absolute', left: column.left, top: column.top, width: column.width}}>
-          <Headline layout={layout} palette={palette} lines={copy.headline} maxWidth={column.width} />
-          <Arrive start={16} distance={12} style={{marginTop: headSize * 0.6, display: 'flex', flexDirection: 'column', gap: swatch * 0.6}}>
-            <Swatches palette={palette} size={swatch} vertical={false} />
-            <SwatchName palette={palette} size={layout.footnote} />
-          </Arrive>
-        </div>
+        <Arrive
+          start={14}
+          distance={12}
+          style={{position: 'absolute', left: 0, right: 0, top: top + phoneHeight + gap, display: 'flex', justifyContent: 'center'}}
+        >
+          <Swatches palette={palette} size={swatch} vertical={false} />
+        </Arrive>
         <SocialFrame layout={layout} palette={palette} eyebrow={copy.eyebrow} footnote={copy.footnote} />
       </AbsoluteFill>
     </Backdrop>
