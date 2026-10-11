@@ -45,6 +45,9 @@ await copy(
   path.join(target, 'press', 'smooth-color-scroll-light-only.mp4'),
 );
 
+// The chordlink model the site's viewer shows, for the turntable.
+await copy(path.join(websiteRoot, 'public', 'models', 'chordlink.glb'), path.join(target, 'models', 'chordlink.glb'));
+
 // Photography masters for the `photo` template, and each definition's own uploads from
 // assets/motion/<slug>/, where the /motion wizard saves them.
 const photoSource = path.join(websiteRoot, 'assets', 'visual-references', 'analog-photography');

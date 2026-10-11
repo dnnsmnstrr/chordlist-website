@@ -41,7 +41,7 @@ Rendered files live in `public/video/motion/<piece>-<format>.mp4`, each with a p
 | `logo-reveal-badge` | The same, with Apple's official App Store badge below the name (vendored unmodified in `video/public/badges/`) | — | `ink` | Ad end slate, launch posts |
 | `plain-text` | `morning-light.md` types out as the `file` template, then the app's view of the same song slides in | (own copy, `file` frame) | `paper` | Series 2, *The file* |
 | `transpose` | Morning Light's verse moves +2, then +5, then home; chords roll in place and keep their columns | — | `ink` | Feature post for transpose |
-| `same-chords` | Seven library songs in seven keys fold into Roman numerals, all read I – V – vi – IV, then merge into that one progression, centred | `matching-progressions` (eyebrow and footnote; its own, simpler headline) | `blueprint` | Series 1, *The party trick* |
+| `same-chords` | Seven library songs in seven keys fold into Roman numerals, all read I – V – vi – IV, then merge into that one progression, centred, and flip to C – G – Am – F, the key the app compares them in | `matching-progressions` (eyebrow and footnote; its own, simpler headline) | `blueprint` | Series 1, *The party trick* |
 | `chord-keys` | Morning Light played on a keyboard drawn like the mark, one chord at a time | `chord-keyboard` | `ink` | Songwriting angle |
 | `hands-free` | The hands-free autoscroll shot, with a running clock beside "0 touches" | — | `warm-stage` | Reels/TikTok/Shorts |
 | `theme-spectrum` | The colour-scroll master centred, with the app's seven tints as unlabelled swatches beneath it | — | `ink` | Customisation angle |
@@ -50,6 +50,25 @@ Rendered files live in `public/video/motion/<piece>-<format>.mp4`, each with a p
 | `manifesto` | *Your lyrics. Your chords. Your files. Your songbook.* on the beat, closing on the logo, the name and the address, centred | `local-first-songbook` (footnote) | `ink` | Brand statement, story slide |
 | `launch-card` | "Out now on iPhone and iPad", the free-limit line, three screens rising | `out-now` | `ink` | Launch-day posts; pinned post |
 | `end-card` | The promo's end card on its own | — | `warm-stage` | The last seconds of every phone edit |
+| `chordlink-print` | The chordlink tag 3D-printed layer by layer: the round pocket opens, the print pauses while the NFC tag drops in, the lid seals it, and the filament changes to graphite for the logo | — | `ink` | chordlink launch, how-it's-made post |
+| `chordlink-spin` | The finished chordlink model (`public/models/chordlink.glb`) on a slow turntable, with what one tap does | — | `ink` | chordlink page, product posts |
+
+### chordlink in 3D
+
+Both chordlink pieces render with `@remotion/three` (react-three-fiber inside a Remotion canvas),
+so every frame is deterministic and renders headless like the rest of the suite.
+
+- `chordlink-spin` loads the same GLB the `/chordlink` page shows, copied into
+  `video/public/generated/motion/models/` by `pnpm sync:motion`.
+- `chordlink-print` cannot use that file: the print needs what the finished model hides — the
+  floor under the pocket, the pocket, and the lid — as separate bodies. `video/src/motion/chordlink/geometry.ts`
+  rebuilds the tag from the configurator in `public/model.html` (its `build` function) at the
+  first edition's defaults: a 32 mm squircle, a 1.2 mm plate, a 28 mm pocket from 0.4 to 0.8 mm
+  for the 27 mm tag, and the logo's keys raised 0.4 mm in graphite. Change the tag there and in
+  `model.html` together.
+- Layers are drawn 0.1 mm thick and the whole print is stretched ×4 in height (`EXAGGERATION`
+  in `PrintScene.tsx`), because a 1.6 mm object is otherwise a sheet of paper on camera. The
+  proportions in plan are true.
 
 ## Rules the suite keeps
 
@@ -96,6 +115,8 @@ is what renders.
 | `progression` | A chord row over its numerals, the headline a step below | — |
 | `file` | A song as it sits on disk, typed out with its spacing kept | — |
 | `photo` | A photograph full bleed, drifting slowly under the photo scrim | photography master, upload |
+| `chordlink-print` | The `chordlink-print` scene, paced to the chosen duration (10 s or more reads best), with the headline above | — |
+| `chordlink-model` | The finished chordlink on a turntable, with the headline and an optional subline | — |
 
 ### Snippets
 

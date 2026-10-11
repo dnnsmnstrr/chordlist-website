@@ -1,6 +1,8 @@
 import {Composition, Folder} from 'remotion';
 import type {ComponentType} from 'react';
 import {ChordKeys} from './ChordKeys';
+import {ChordlinkPrint, chordlinkPrintSeconds} from './ChordlinkPrint';
+import {ChordlinkSpin} from './ChordlinkSpin';
 import {CustomVideo, customDuration} from './custom/CustomVideo';
 import {customPropsSchema, emptyDefinition, motionFormats, type CustomProps} from './custom/schema';
 import {EndCard} from './EndCard';
@@ -47,6 +49,8 @@ export const motionPieces: Piece[] = [
   {id: 'ScreenWall', component: ScreenWall, durationInSeconds: 16, formats: all, defaults: ink},
   {id: 'Manifesto', component: Manifesto, durationInSeconds: 7, formats: all, defaults: ink},
   {id: 'LaunchCard', component: LaunchCard, durationInSeconds: 6, formats: all, defaults: ink},
+  {id: 'ChordlinkPrint', component: ChordlinkPrint, durationInSeconds: chordlinkPrintSeconds, formats: all, defaults: ink},
+  {id: 'ChordlinkSpin', component: ChordlinkSpin, durationInSeconds: 8, formats: all, defaults: ink},
   {id: 'EndCard', component: EndCard, durationInSeconds: 3, formats: all, defaults: {campaign: 'warm-stage', appearance: 'light'}},
 ];
 

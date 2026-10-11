@@ -1,11 +1,14 @@
 import type {ReactNode} from 'react';
 import {AbsoluteFill, Freeze, Img, OffthreadVideo, Sequence, interpolate, useCurrentFrame, useVideoConfig} from 'remotion';
+import {PrintStatus} from '../ChordlinkPrint';
+import {PrintScene, printTimeline} from '../chordlink/PrintScene';
+import {SpinScene} from '../chordlink/SpinScene';
 import {EndCardScene} from '../EndCard';
 import {headlineHeight, phoneBeside, useLayout, type Layout} from '../layout';
 import {Backdrop, Phone, SCREEN_ASPECT, progressAt} from '../primitives';
 import {Arrive, Headline, SocialFrame, fitHeadline} from '../scaffold';
 import {morningLightFile} from '../song';
-import {mono, paletteFor, sans, seconds, type Palette} from '../theme';
+import {FPS, mono, paletteFor, sans, seconds, type Palette} from '../theme';
 import {mediaSrc, resolveMedia, type ResolvedMedia} from './media';
 import {totalSeconds, type CustomProps, type MotionDefinition} from './schema';
 
@@ -190,12 +193,57 @@ function Photo(props: TemplateProps) {
   );
 }
 
+/** `chordlink-print`: the tag printed in 3D, its pace stretched to the definition's length. */
+function ChordlinkPrintTemplate({definition, layout, palette}: TemplateProps) {
+  const {content, shape, width, height} = layout;
+  const isWide = shape === 'wide';
+  const pace = (definition.duration * FPS) / printTimeline(FPS).end;
+  return (
+    <>
+      <AbsoluteFill>
+        <PrintScene palette={palette} width={width} height={height} pace={pace} />
+      </AbsoluteFill>
+      <Headline
+        layout={layout}
+        palette={palette}
+        lines={lines(definition)}
+        maxWidth={isWide ? content.width * 0.4 : content.width}
+        style={{position: 'absolute', left: content.left, top: isWide ? content.top + content.height * 0.3 : content.top}}
+      />
+      <div style={{position: 'absolute', left: content.left, bottom: layout.pad + layout.safeBottom + layout.footnote * 2.4}}>
+        <PrintStatus size={Math.round(layout.footnote * 1.15)} color={palette.text} muted={palette.muted} pace={pace} />
+      </div>
+    </>
+  );
+}
+
+/** `chordlink-model`: the site's 3D model of the tag turning once beside the copy. */
+function ChordlinkModelTemplate({definition, layout, palette}: TemplateProps) {
+  const {content, shape, width, height} = layout;
+  const isWide = shape === 'wide';
+  const copyWidth = isWide ? content.width * 0.42 : content.width;
+  const size = fitHeadline(layout, lines(definition), copyWidth);
+  return (
+    <>
+      <AbsoluteFill>
+        <SpinScene width={width} height={height} offsetX={isWide ? 16 : 0} />
+      </AbsoluteFill>
+      <div style={{position: 'absolute', left: content.left, top: isWide ? content.top + content.height * 0.3 : content.top, width: copyWidth, color: palette.text}}>
+        <Headline layout={layout} palette={palette} lines={lines(definition)} maxWidth={copyWidth} />
+        <Subline definition={definition} size={size} start={20} />
+      </div>
+    </>
+  );
+}
+
 const templates: Record<MotionDefinition['template'], (props: TemplateProps) => ReactNode> = {
   statement: Statement,
   screen: Screen,
   progression: Progression,
   file: File,
   photo: Photo,
+  'chordlink-print': ChordlinkPrintTemplate,
+  'chordlink-model': ChordlinkModelTemplate,
 };
 
 /**

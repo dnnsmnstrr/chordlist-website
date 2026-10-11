@@ -73,6 +73,22 @@ export const motionCopy = {
     words: ['Your lyrics.', 'Your chords.', 'Your files.', 'Your songbook.'],
   },
   launch: {...social('out-now'), freeLimit},
+  chordlink: {
+    eyebrow: 'chordlink',
+    footnote: 'chordlist.app/chordlink',
+    print: {
+      headline: ['Printed in layers,', 'with a tag inside.'],
+      layer: (layer: number, total: number) => `Layer ${layer} of ${total}`,
+      pause: 'Pause · the NFC tag goes in',
+      swap: 'Filament change · graphite',
+      done: 'Sealed in. Ready to tap.',
+    },
+    spin: {
+      headline: ['A tag for', 'your instrument.'],
+      // What the FAQ says a tap does: the action chosen at the first scan.
+      subline: 'One tap opens your library, shuffles, or adds a song.',
+    },
+  },
   endCard: {
     // The promo's end line, so a phone edit ending on this card matches the launch cut.
     headline: ['Your chords', 'Your lyrics', 'Your files'],

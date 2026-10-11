@@ -234,7 +234,14 @@ export function MotionEditor({ saved, socialStarts, photos, recordingsSynced, ca
                 setDirty(true)
               }}
               template={definition.template}
-              onTemplate={(template) => update({ template, media: defaultMedia(template, photos) })}
+              onTemplate={(template) =>
+                update({
+                  template,
+                  media: defaultMedia(template, photos),
+                  // The print reads as a print only when it has time to lay its layers down.
+                  ...(template === "chordlink-print" && definition.duration < 10 ? { duration: 10 } : {}),
+                })
+              }
               socialStarts={socialStarts}
               catalog={catalog}
               onSocial={(start) => {
@@ -493,7 +500,7 @@ function WordsStep({ definition, update, caption, onCaption, snippets }: WordsSt
         onChange={(headline) => update({ headline })}
         snippets={snippets}
       />
-      {template === "statement" || template === "screen" || template === "photo" ? (
+      {template === "statement" || template === "screen" || template === "photo" || template === "chordlink-model" ? (
         <LinkableField
           id="motion-subline"
           kind="subline"

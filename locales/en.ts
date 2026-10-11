@@ -1353,6 +1353,11 @@ export const motionEditorCopy = {
     progression: { title: "Progression", description: "A chord row over its Roman numerals." },
     file: { title: "File", description: "A song as it sits on disk, typed out line by line." },
     photo: { title: "Photo", description: "A photograph from the collection, full bleed, with the type over it." },
+    "chordlink-print": {
+      title: "chordlink print",
+      description: "The tag printed in 3D, layer by layer: the pocket, the NFC tag dropping in, the lid, and the logo in graphite.",
+    },
+    "chordlink-model": { title: "chordlink model", description: "The finished tag, the site's 3D model, turning once beside your words." },
   },
   words: {
     eyebrow: "Label",

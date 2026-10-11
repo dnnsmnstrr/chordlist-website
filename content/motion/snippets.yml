@@ -14,6 +14,7 @@ eyebrows:
   privacy: Privacy
   from-the-blog: From the blog
   tour: Tour
+  chordlink: chordlink
 
 # Headlines, one entry per rendered line.
 headlines:
@@ -32,12 +33,19 @@ headlines:
   out-now:
     - Out now on
     - iPhone and iPad.
+  printed-in-layers:
+    - Printed in layers,
+    - with a tag inside.
+  tag-for-your-instrument:
+    - A tag for
+    - your instrument.
 
 # The optional smaller line under a headline. The free limit and the tagline are also offered from
 # VOCABULARY.md, so they are not repeated here.
 sublines:
   markdown-you-control: Lyrics and chords in portable Markdown files you control.
   no-account: No account, and your song library is never uploaded.
+  chordlink-tap: One tap opens your library, shuffles, or adds a song.
 
 # The address at the foot of the frame: the page the post points to, never a store link.
 footnotes:
@@ -49,6 +57,7 @@ footnotes:
   docs-file-format: chordlist.app/docs#file-format
   faq: chordlist.app/faq
   privacy: chordlist.app/privacy
+  chordlink: chordlist.app/chordlink
 
 # Pieces of a caption, inserted into the caption as text.
 captions:
