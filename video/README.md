@@ -17,7 +17,7 @@ The template provides:
 - one shared `mediaPadding` setting around every app clip, defaulting to 28 pixels;
 - optional voiceover, music, shot labels, and a separately recorded Files/Markdown reveal;
 - scene switches and copy that can be edited from Remotion Studio's Props panel;
-- the settings still followed by the frame-aligned light theme-colour scroll imported
+- the settings still followed by the frame-aligned light theme-color scroll imported
   directly from the app press kit.
 
 The **Motion** folder in the same Studio holds the motion suite — short one-idea loops and stings
@@ -66,7 +66,7 @@ clips from the sibling `chordlist-app` checkout into Remotion's local media fold
 manifest from each take's WebVTT file. Set `CHORDLIST_APP_REPO` to an absolute path when the app
 repository is not the default sibling. Titles, descriptions, and take-specific durations therefore
 continue to come from the capture pipeline. Sync also copies the settings screenshot
-into Remotion's generated feature assets, then copies the finished light colour-scroll master to
+into Remotion's generated feature assets, then copies the finished light color-scroll master to
 `public/video/` for the website and into the same feature asset directory.
 
 For a complete website-side refresh, including screenshots, the press archive, and video clips:

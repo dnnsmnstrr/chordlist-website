@@ -88,7 +88,7 @@ These are strongly held in this codebase — follow them rather than generic Nex
 
 Every visible string — headings, body text, button labels, `aria-label`s, alt text, metadata
 titles and descriptions — is exported from `locales/en.ts` as a `const` object and imported into
-the component. Components contain layout and behaviour only. When adding a section, add its copy
+the component. Components contain layout and behavior only. When adding a section, add its copy
 object (`homeCopy`, `docsCopy`, `faqCopy`, `pressCopy`, `privacyCopy`, `commonCopy`,
 `metadataCopy`, plus small per-component objects like `pianoCopy` and `screenshotGalleryCopy`)
 and read from it.
@@ -100,6 +100,14 @@ is a contract.
 Components on a translated route read `dictionary(language)` from `@/locales` instead of importing
 `@/locales/en` directly — see Localization. Everything else still imports `@/locales/en`, which is
 correct for a page that only exists in English.
+
+#### American English
+
+Every English word a reader sees — site copy, metadata, blog posts, social and motion assets, emails,
+App Store images, video — uses American spelling: *color*, *center*, *normalize*, *gray*,
+*fulfill*, *practice* as a verb. `DESIGN.md` makes this a rule for the app as well, and the blog
+guides (`docs/blog-voice.md`, `docs/blog-editorial-guidelines.md`) already ask for it. Quoted user
+content and song files keep their own spelling.
 
 #### Inline markup in copy
 
@@ -238,7 +246,7 @@ These categories of files in `public/` are **outputs — edit the generator, not
   drift apart. Each script has a `CONFIG` block at the top for copy, colors, and sizing.
 - **Social assets** (`public/social/<slug>/<format>.png` plus `manifest.json`) — `pnpm build:social`,
   which renders every definition in `content/social/` into the `card`, `post`, and `story` formats it
-  declares. Layouts live in `scripts/lib/social-templates.mjs`; copy, colours, and the format matrix
+  declares. Layouts live in `scripts/lib/social-templates.mjs`; copy, colors, and the format matrix
   live in the script's `CONFIG` block. It is deliberately separate from `build:og`: that build owns
   `public/og.png` and the page and post cards, which must not change when a campaign does. Deleting a
   definition prunes its images on the next run. `docs/social-media-system.md` is the design source of
@@ -427,7 +435,7 @@ ordering comment in `lib/supabase/server.ts` before touching it.
 
 `app/privacy/page.tsx`, `app/press/page.tsx`, and `faqCopy` and `supportCopy` in every
 language describe real product
-behaviour: local file storage, TelemetryDeck analytics, optional chord-data contribution, StoreKit
+behavior: local file storage, TelemetryDeck analytics, optional chord-data contribution, StoreKit
 and RevenueCat purchases, Vercel hosting and Web Analytics. Do not invent, soften, or embellish
 claims about data handling, pricing, or availability — those strings are legal and press copy.
 When the privacy policy changes materially, update `privacyCopy.lastUpdated`.
@@ -540,7 +548,7 @@ which is what re-extracts the keys.
 
 Provisioning deliberately stops short of the steps that need judgement or that risk a file worth
 protecting: `knownRegions` in the Xcode project, a `case` in the capture script, a fixture set of
-songs a speaker would recognise, and `locales/<code>.ts` here. The UI lists them when it finishes.
+songs a speaker would recognize, and `locales/<code>.ts` here. The UI lists them when it finishes.
 A provisioned language starts empty rather than machine-translated — an untranslated string is
 visible and fails the build, a plausible wrong one is not.
 

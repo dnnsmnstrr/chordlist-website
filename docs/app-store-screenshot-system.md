@@ -104,7 +104,7 @@ public/app-store-creative/                   Generated PNGs and manifest, per la
 
 The header, search, and universal sizes are the canvases of Apple's own templates; the event sizes are the maximum
 App Store Connect accepts, twice its minimum. Apple publishes no pixel insets for safe areas — its templates draw a
-centred one and the crop varies by device — so each format's `safe` box in `CONFIG` is that centred area, and
+centered one and the crop varies by device — so each format's `safe` box in `CONFIG` is that centered area, and
 everything with words or a device stays inside it. The universal asset's safe area is derived rather than chosen: the
 middle that survives both the header crop and the search crop, inset by the stricter of their safe areas. Check each
 one in App Store Connect's preview before submitting, and adjust `safe` there if Apple's crop disagrees.

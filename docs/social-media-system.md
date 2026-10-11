@@ -87,7 +87,7 @@ Two cropping rules the build cannot enforce for you:
 - Instagram's profile grid crops a 4:5 post to 3:4. Keep anything essential — the end of a headline,
   a URL — out of the top and bottom eighth of a `post`.
 - Instagram draws the profile row and the reply bar over a story. The `story` format reserves 190px
-  at the top and 240px at the bottom for this, which is why its copy sits closer to the centre than
+  at the top and 240px at the bottom for this, which is why its copy sits closer to the center than
   the other two.
 
 ## Templates
@@ -99,7 +99,7 @@ change to the system; reaching for an existing one is the normal case.
 anything where the sentence is the whole asset. Requires `headline`.
 
 **`progression`** — a chord row over its Roman numerals, with an optional line beneath. The only
-template that shows the product's subject rather than describing it, and the one most recognisably
+template that shows the product's subject rather than describing it, and the one most recognizably
 chordlist. Requires `chords`; `numerals` and `headline` are optional.
 
 **`quote`** — a line lifted from an article, credited to its post, with the canonical URL in the
@@ -132,7 +132,7 @@ the copy in a left column and the subject — a screenshot, a file excerpt — i
 The division is the golden section: copy takes the major part, the subject the minor. It yields to
 the copy rather than colliding with it, so a headline that renders wider than its share pushes the
 subject right until it is flush with the padding, and the gap between them stays the same either
-way. A screenshot, which is a fixed-size object rather than a block of text, is centred in whatever
+way. A screenshot, which is a fixed-size object rather than a block of text, is centered in whatever
 the column leaves over — with a short headline that puts it around two thirds across. It is also
 sized to the drawing box rather than overrunning it, so a card shows the whole screen.
 
@@ -190,7 +190,7 @@ every placement, and the current masters make that concrete: three are 3:2 lands
 `phone-on-sheet-music.png` is 4:5, which is natively the `post` format.
 
 `focus` steers the crop, taking a CSS-like string — `focus: 60% 40%` keeps the point 60% across and
-40% down. It defaults to centre.
+40% down. It defaults to center.
 
 The build warns when a master loses 45% or more of its area to a format, naming the file, the format,
 and the percentage. A 3:2 master in a 9:16 story loses about 63%. The warning does not fail the
@@ -250,9 +250,9 @@ whoever posts it is not rewriting copy that was already reviewed.
 | `screenshotFocus` | no | Moves the screenshot by a share of the canvas, `x% y%`, each from `-20%` to `20%`; positive is right and down. Defaults to `0% 0%`. Both match the editor's Scale and Position sliders. |
 | `deviceFrame` | no | `true` adds a dark hardware shell and camera island around a screenshot. Defaults to `false`. |
 | `photo` | `photo` | A master filename in `assets/visual-references/analog-photography/`. |
-| `focus` | no | Steers the crop for `photo` and `backgroundImage`, e.g. `60% 40%`. Defaults to centre. |
+| `focus` | no | Steers the crop for `photo` and `backgroundImage`, e.g. `60% 40%`. Defaults to center. |
 | `backgroundScale` | no | Zooms `photo` or `backgroundImage` from `100%` to `200%` before applying focus. Defaults to `100%`. |
-| `theme` | no | Colour system: `ink` (default), `paper`, or `blueprint`. Photo assets normally keep `ink` for white overlay type. |
+| `theme` | no | Color system: `ink` (default), `paper`, or `blueprint`. Photo assets normally keep `ink` for white overlay type. |
 | `texture` | no | A subtle website-derived background: `studio`, `stage`, `sampler`, `guitar`, `piano-keys`, or `piano-score`. Available on every template except `photo`. |
 | `backgroundImage` | no | A full-bleed master filename for any non-`photo` template. Uses `focus` and the standard photo scrim. |
 | `created` | no | The date the definition was written. |
@@ -264,7 +264,7 @@ kebab-case, and stable once anything links to it.
 
 ### Copy
 
-Follow the blog guidelines' voice — practical, calm, direct, musician-first, British English, and
+Follow the blog guidelines' voice — practical, calm, direct, musician-first, American English, and
 `chordlist` lowercase. Beyond that, the frame is small and unforgiving:
 
 - One idea per asset. If a headline needs a comma splice to fit two, it is two assets.

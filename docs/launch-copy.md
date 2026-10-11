@@ -121,7 +121,7 @@ the old captures.
 > server holding your songs.
 >
 > Keeping the progression out of the lyrics turned out to be the interesting part. With it as its
-> own field, the app can normalise progressions across keys and show which songs share one.
+> own field, the app can normalize progressions across keys and show which songs share one.
 >
 > It is native SwiftUI, iOS 26+. The first 10 songs are free; unlimited songs are a one-time
 > purchase (€6.99 until the end of January). I wrote about why I think songbooks should be plain

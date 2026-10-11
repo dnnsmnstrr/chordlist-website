@@ -24,7 +24,7 @@ its post is published.
    missing choice would change the copy.
 3. Choose the template from what the asset says, not from what is convenient: `statement` for a
    claim, `progression` for chords, `quote` for a line from an article, `screenshot` for evidence of
-   app behaviour, `file` for the shape of a song on disk.
+   app behavior, `file` for the shape of a song on disk.
 4. Choose formats. Default to `card` and `post`. Add `story` when the asset is worth a full-screen
    vertical, which is usually a launch or a single strong statement rather than a detailed one. A
    pixel size such as `1270x760` also works; for a one-off size nobody needs committed, run
@@ -114,7 +114,7 @@ Treat repository sources as authoritative, exactly as the blog skill does:
 - `lib/site-config.ts` for URLs, launch status, platform version, and numeric configuration;
 - `locales/en.ts` for current product, FAQ, and press wording;
 - `app/privacy/page.tsx` for privacy and data-handling claims; and
-- the sibling chordlist iOS repository for app behaviour the website does not specify.
+- the sibling chordlist iOS repository for app behavior the website does not specify.
 
 Do not print a TestFlight, App Store, or pre-order URL into an image. Availability changes and
 `siteConfig.links` is the only thing that can follow it; use `chordlist.app` instead.

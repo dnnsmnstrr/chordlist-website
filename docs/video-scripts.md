@@ -55,7 +55,7 @@ The pilot. If only one video is ever made, make this one.
 
 **Song choice is the whole video.** Four genuinely well-known songs on I–V–vi–IV, played as chords
 only — no lyrics sung, no melody long enough to be the recording. Chord progressions are not
-copyrightable; a recognisable vocal line is a different question, so keep it instrumental and short.
+copyrightable; a recognizable vocal line is a different question, so keep it instrumental and short.
 [Learn a four-chord pop progression](../content/blog/how-to-play-almost-any-pop-song.md) is the
 written version and the safe list of examples.
 

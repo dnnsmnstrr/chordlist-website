@@ -7,7 +7,7 @@ Historical findings and outstanding migration work live in [docs/design-audit.md
 Machine-readable values are in [design/tokens.json](design/tokens.json); generated files must not be hand-edited.
 Run `python3 design/build.py --check` to verify the local bundle. To adopt a new canonical bundle in a consumer,
 run `python3 design/sync.py /absolute/path/to/chordlist`, then review and commit the result.
-Native SwiftUI uses semantic system colours and Dynamic Type; web and admin use the same core tokens.
+Native SwiftUI uses semantic system colors and Dynamic Type; web and admin use the same core tokens.
 
 ## 1. Visual Theme & Atmosphere
 
@@ -42,11 +42,11 @@ The core palette is shared by web, admin and email. The committed sRGB values in
 | `brand.tile` | `#FAFAFA` | `#FAFAFA` | Standard icon tile |
 | `brand.glyph` | `#0A0A0A` | `#0A0A0A` | Standard icon glyph |
 
-SwiftUI maps these roles to semantic system colours and materials. Preserve `.primary`, `.secondary` and native background roles instead of replacing them with web hex values. The common contract is hierarchy, contrast and state meaning.
+SwiftUI maps these roles to semantic system colors and materials. Preserve `.primary`, `.secondary` and native background roles instead of replacing them with web hex values. The common contract is hierarchy, contrast and state meaning.
 
-Separate interaction emphasis from status. `action.accent` follows the user’s app appearance choice; success, warning and destructive states keep their meanings regardless of that choice. On web, existing shadcn `accent` means a subtle surface, so do not alias it blindly to the app’s coloured tint.
+Separate interaction emphasis from status. `action.accent` follows the user’s app appearance choice; success, warning and destructive states keep their meanings regardless of that choice. On web, existing shadcn `accent` means a subtle surface, so do not alias it blindly to the app’s colored tint.
 
-Existing app choices remain neutral, blue, green, orange, pink, purple and teal. A colour picker must expose the selection through a checkmark/accessible state as well as colour. Neutral toggles may retain their native grey adaptation.
+Existing app choices remain neutral, blue, green, orange, pink, purple and teal. A color picker must expose the selection through a checkmark/accessible state as well as color. Neutral toggles may retain their native gray adaptation.
 
 ### Campaign themes
 
@@ -57,7 +57,7 @@ Existing app choices remain neutral, blue, green, orange, pink, purple and teal.
 | `blueprint` | `#102131`, `#F7F9FB`, muted `#A7B5C1` | Existing blue social treatment |
 | `warm-stage` | `#161411`, `#25221D`, `#FAFAF8`, muted `#A6A29A` | Warm video treatment |
 
-Campaign themes may change backdrop, decorative rules and editorial emphasis. They must not recolour a real app screenshot. Declare the theme in composition data so a campaign remains consistent across formats.
+Campaign themes may change backdrop, decorative rules and editorial emphasis. They must not recolor a real app screenshot. Declare the theme in composition data so a campaign remains consistent across formats.
 
 
 ## 3. Typography Rules
@@ -89,7 +89,7 @@ Use tight tracking on large headings, normal tracking for reading. Preserve auth
 | Song row | Title first, artist or chord summary second, tags tertiary | Preserve native list density and existing overflow count |
 | Panel/callout | Border, quiet surface, concise heading and actionable content | Docs instructions may be roomier than admin records |
 | Input | Persistent label, useful validation, visible focus | Keep native keyboards/autocorrection rules for musical input |
-| Status | Explicit text, optional icon, colour as reinforcement | Admin production/local indicator remains visible and unambiguous |
+| Status | Explicit text, optional icon, color as reinforcement | Admin production/local indicator remains visible and unambiguous |
 | Empty/error/loading | Explain state and next action; preserve useful entered data | Use native progress indicators or web status regions |
 
 State requirements: idle, hover where applicable, focused, pressed/selected, disabled, loading, success and error must be specified for interactive components. Derived input states must describe the current value; asynchronous responses must not restore stale state.
@@ -116,25 +116,26 @@ Do not stretch song/file content into a wide marketing grid. Keep whitespace in 
 Use surface hierarchy before shadows. Native sheets/popovers use system materials and elevation.
 Radius roles: control 8px, base 10px, web panel 14px, roomy panel/email card 16px, pill fully rounded.
 The standard logo is a fixed `#FAFAFA` tile with `#0A0A0A` glyph in both modes. Fit the glyph to the tile height,
-centred horizontally, with no independent inset. Use the canonical app SVG geometry: square key tops and rounded
+centered horizontally, with no independent inset. Use the canonical app SVG geometry: square key tops and rounded
 bottoms. Campaign backdrop variation never silently changes the standard logo.
 
 ## 7. Do’s and Don’ts
 
 - Use semantic tokens and shared components. Do not introduce an independent neutral palette in a template.
 - Use a mono wordmark and sans headings; do not use a headline font for the brand lockup.
-- Retain native system styles and user-selected accents; do not hardcode web hex colours into SwiftUI chrome.
+- Retain native system styles and user-selected accents; do not hardcode web hex colors into SwiftUI chrome.
 - Choose black/white labels using resolved accent contrast; do not assume white works on every tint.
-- Keep screenshot pixels unfiltered; do not grain, blur, recolour or perspective-tilt the product evidence.
+- Keep screenshot pixels unfiltered; do not grain, blur, recolor or perspective-tilt the product evidence.
 - Keep generated typography out of photographic masters; typeset it as a separate layer.
 - Preserve `ink`, `paper`, `blueprint` and `warm-stage` as named campaigns; do not turn one into the default UI.
-- Keep selected, focus, error and production states understandable without colour alone.
+- Keep selected, focus, error and production states understandable without color alone.
 - Generate derivatives from their sources; never patch a PNG or generated token file by hand.
 - Preserve readable file alignment and song spelling; never globally lowercase or translate user content.
+- Write every English word a reader sees in American English — color, center, normalize, practice (verb), gray — in the app, the website, App Store copy, images and video; do not mix in British spellings. User content keeps its own spelling.
 
 ## 8. Responsive Behavior
 
-| Width/context | Required behaviour |
+| Width/context | Required behavior |
 | --- | --- |
 | Below 640px | Single-column web hero/CTAs; icon may stand alone with accessible brand name; preserve 24px gutters |
 | 640–767px | Allow inline hero actions and wordmark where they fit; prose wraps naturally |
@@ -149,7 +150,7 @@ adaptations. Keep visible 2px focus outlines with 2px offset. Test keyboard navi
 light/dark mode and text contrast (4.5:1 ordinary text; 3:1 large text and meaningful non-text controls).
 Do not infer contrast from a token alone when photography or transparency sits behind it.
 
-Hover/focus colour transitions use 150ms; small state transitions 200–250ms. Decorative motion stops when reduced
+Hover/focus color transitions use 150ms; small state transitions 200–250ms. Decorative motion stops when reduced
 motion is enabled, including a change during the session. User-started autoscroll retains pause and speed controls.
 
 ## 9. Agent Prompt Guide
@@ -159,7 +160,7 @@ Use this starting instruction for new UI:
 > Read DESIGN.md and the repository’s agent instructions. Reuse the shared design tokens and existing components.
 > Keep neutral light/dark surfaces, the canonical fixed logo tile, a mono wordmark and sans UI headings.
 > Preserve native SwiftUI semantics and Dynamic Type on iOS. Use real product captures for demonstrations.
-> Implement all relevant control states and responsive behaviour. Run the design bundle check and the repository’s
+> Implement all relevant control states and responsive behavior. Run the design bundle check and the repository’s
 > normal checks, then inspect changed surfaces at actual display size in light/dark and English/German.
 
 For marketing:

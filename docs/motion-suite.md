@@ -21,7 +21,7 @@ Rendered files live in `public/video/motion/<piece>-<format>.mp4`, each with a p
 - **The same words as the still.** A piece with a twin in `content/social/` reads its eyebrow,
   headline and footnote from that definition: `pnpm sync:motion` writes them to
   `video/src/motion/generated/social-copy.json`. Change the definition and both the PNG and the MP4
-  follow on their next build. The feature reel's scenes quote the stills they summarise.
+  follow on their next build. The feature reel's scenes quote the stills they summarize.
 - **The social formats.** `story` (1080 × 1920) and `post` (1080 × 1350), as in the social matrix,
   plus a `wide` 1920 × 1080 master for YouTube and the site. `square` is laid out as well, for the
   Mastodon/Bluesky/Threads size, and can be switched on per piece in `MotionRoot.tsx`.
@@ -37,17 +37,17 @@ Rendered files live in `public/video/motion/<piece>-<format>.mp4`, each with a p
 | Piece | Idea | Social twin | Theme | Use |
 | --- | --- | --- | --- | --- |
 | `logo-sting` | The logo builds itself: keys drop, strings draw, the wordmark types out, then the tagline | — | `ink` | Opener for any video; profile video |
-| `logo-reveal` | The logo assembles itself larger and centred; the name fades in beneath it | — | `ink` | Profile video, opener, splash |
+| `logo-reveal` | The logo assembles itself larger and centered; the name fades in beneath it | — | `ink` | Profile video, opener, splash |
 | `logo-reveal-badge` | The same, with Apple's official App Store badge below the name (vendored unmodified in `video/public/badges/`) | — | `ink` | Ad end slate, launch posts |
 | `plain-text` | `morning-light.md` types out as the `file` template, then the app's view of the same song slides in | (own copy, `file` frame) | `paper` | Series 2, *The file* |
 | `transpose` | Morning Light's verse moves +2, then +5, then home; chords roll in place and keep their columns | — | `ink` | Feature post for transpose |
-| `same-chords` | Seven library songs in seven keys fold into Roman numerals, all read I – V – vi – IV, then merge into that one progression, centred, and flip to C – G – Am – F, the key the app compares them in | `matching-progressions` (eyebrow and footnote; its own, simpler headline) | `blueprint` | Series 1, *The party trick* |
+| `same-chords` | Seven library songs in seven keys fold into Roman numerals, all read I – V – vi – IV, then merge into that one progression, centered, and flip to C – G – Am – F, the key the app compares them in | `matching-progressions` (eyebrow and footnote; its own, simpler headline) | `blueprint` | Series 1, *The party trick* |
 | `chord-keys` | Morning Light played on a keyboard drawn like the mark, one chord at a time | `chord-keyboard` | `ink` | Songwriting angle |
 | `hands-free` | The hands-free autoscroll shot, with a running clock beside "0 touches" | — | `warm-stage` | Reels/TikTok/Shorts |
-| `theme-spectrum` | The colour-scroll master centred, with the app's seven tints as unlabelled swatches beneath it | — | `ink` | Customisation angle |
+| `theme-spectrum` | The color-scroll master centered, with the app's seven tints as unlabeled swatches beneath it | — | `ink` | Customization angle |
 | `feature-reel` | A 31-second tour of six scenes from the real recording, ending on the end card | quotes `song-library`, `chord-keyboard`, `search-across-everything`, `matching-progressions` | `ink` | Website, YouTube, launch thread |
 | `screen-wall` | Every screen drifting past in columns, the tagline on a solid panel | `local-first-songbook` | `ink` | Hero backdrop, Product Hunt gallery |
-| `manifesto` | *Your lyrics. Your chords. Your files. Your songbook.* on the beat, closing on the logo, the name and the address, centred | `local-first-songbook` (footnote) | `ink` | Brand statement, story slide |
+| `manifesto` | *Your lyrics. Your chords. Your files. Your songbook.* on the beat, closing on the logo, the name and the address, centered | `local-first-songbook` (footnote) | `ink` | Brand statement, story slide |
 | `launch-card` | "Out now on iPhone and iPad", the free-limit line, three screens rising | `out-now` | `ink` | Launch-day posts; pinned post |
 | `end-card` | The promo's end card on its own | — | `warm-stage` | The last seconds of every phone edit |
 | `chordlink-print` | The chordlink tag 3D-printed layer by layer: the round pocket opens, the print pauses while the NFC tag drops in, the lid seals it, and the filament changes to graphite for the logo | — | `ink` | chordlink launch, how-it's-made post |
@@ -106,7 +106,7 @@ new videos in the same frame without writing code:
 2. **Words** — the lowercase label, the headline line by line, an optional second line, the
    footnote, the caption, and the template's own fields (chords and numerals, or a file excerpt).
 3. **Media** — for `screen`: an app screenshot, a clip of the press recording chosen by chapter and
-   start point, the colour scroll, or a file you upload; for `photo`: a photography master or an
+   start point, the color scroll, or a file you upload; for `photo`: a photography master or an
    upload.
 4. **Look** — theme, light or dark captures, formats, length, and whether to end on the end card.
 5. **Render** — save, then render on this machine with a progress bar and the finished files.
@@ -117,7 +117,7 @@ is what renders.
 | Template | Is | Media |
 | --- | --- | --- |
 | `statement` | One claim, set large, with an optional second line | — |
-| `screen` | The `screenshot` still: copy beside a phone that runs off the edge | screenshot, recording clip, colour scroll, upload |
+| `screen` | The `screenshot` still: copy beside a phone that runs off the edge | screenshot, recording clip, color scroll, upload |
 | `progression` | A chord row over its numerals, the headline a step below | — |
 | `file` | A song as it sits on disk, typed out with its spacing kept | — |
 | `photo` | A photograph full bleed, drifting slowly under the photo scrim | photography master, upload |

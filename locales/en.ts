@@ -718,7 +718,7 @@ export const pressCopy = {
       },
       {
         title: "Settings",
-        description: "Choose the app's accent colour and preferred light, dark, or system appearance.",
+        description: "Choose the app's accent color and preferred light, dark, or system appearance.",
       },
       {
         title: "Matching songs",
@@ -770,7 +770,7 @@ export const screensCopy = {
   variants: {
     classic: {
       title: "Classic",
-      description: "Product screenshots framed by chordlist's coloured gradient treatment.",
+      description: "Product screenshots framed by chordlist's colored gradient treatment.",
     },
     analog: {
       title: "Analog",
@@ -796,7 +796,7 @@ export const screensCopy = {
   creative: {
     title: "Creative assets",
     description:
-      "The product page header, the search results asset, the universal asset that can serve as either, and In-App Event media, for iOS 27 and iPadOS 27. Each is drawn at the size of Apple's template, with its words and devices inside the centred safe area Apple crops around.",
+      "The product page header, the search results asset, the universal asset that can serve as either, and In-App Event media, for iOS 27 and iPadOS 27. Each is drawn at the size of Apple's template, with its words and devices inside the centered safe area Apple crops around.",
     setTitle: (language: string, variant: string) => `${language} · ${variant}`,
     meta: (width: number, height: number) => `${width} × ${height} PNG`,
     download: "Download PNG",
@@ -865,7 +865,7 @@ export const privacyCopy = {
       paragraphs: [
         `Until the unlimited-song unlock is purchased, ${siteConfig.name} shows a small advert for another independent app at the end of the song list and of each song. Adverts are provided by Kickstart Exchange, operated by Hudson Heavy Industries Ltd in the United Kingdom, which decides independently how it processes this data.`,
         "To show and count adverts, Kickstart Exchange receives your App Store country and records which advert was shown or tapped. According to Kickstart Exchange, it does not collect IP addresses, device identifiers, the advertising identifier, or cookies, does not track you across apps or build profiles, and keeps advert records for about 30 days before keeping only daily totals. Its network provider, Cloudflare, carries the connection; Kickstart Exchange states that it does not retain IP addresses.",
-        `${siteConfig.operator} shows these adverts on the basis of its legitimate interest in financing the free version of ${siteConfig.name} (Art. 6(1)(f) GDPR). Buying the unlimited-song unlock removes the adverts. The European Commission has recognised the United Kingdom as providing an adequate level of data protection.`,
+        `${siteConfig.operator} shows these adverts on the basis of its legitimate interest in financing the free version of ${siteConfig.name} (Art. 6(1)(f) GDPR). Buying the unlimited-song unlock removes the adverts. The European Commission has recognized the United Kingdom as providing an adequate level of data protection.`,
       ],
       linkPrefix: "Kickstart Exchange describes its handling of this data in its",
       linkLabel: "privacy notice",
@@ -885,7 +885,7 @@ export const privacyCopy = {
     chordlinkOrders: {
       title: "chordlink orders",
       paragraphs: [
-        `When chordlink sales open, Stripe will process the checkout, buyer email, payment, and German delivery address. ${siteConfig.operator} will use that information to fulfil the physical order and send the individual Apple offer-code redemption link. Payment-card and bank-account details remain with Stripe.`,
+        `When chordlink sales open, Stripe will process the checkout, buyer email, payment, and German delivery address. ${siteConfig.operator} will use that information to fulfill the physical order and send the individual Apple offer-code redemption link. Payment-card and bank-account details remain with Stripe.`,
         "The private chordlink inventory stores only the Stripe Checkout Session reference, the unit's public number and edition metadata, fulfillment state, an optional operator note, and its assigned Apple offer code. The public NFC number is not used as an entitlement secret. Buyer email and delivery address are not copied into the chordlist database.",
         `That inventory is a Postgres database hosted by Supabase, which stores and processes it as a service provider on behalf of ${siteConfig.operator} and under its instructions. Supabase may also process the connection, request, and security information needed to operate the database and the functions that read it.`,
         "The database is located in Supabase's Ireland region, so these records are stored in the European Union. Supabase is a company based in the United States, and it may access stored data from outside the European Union where that is necessary to operate, secure, and support the service, under the terms and transfer safeguards of its data-processing agreement.",
@@ -1386,7 +1386,7 @@ export const motionEditorCopy = {
     sources: {
       screenshot: "Screenshot",
       recording: "Screen recording",
-      colorScroll: "Colour scroll",
+      colorScroll: "Color scroll",
       photo: "Photography",
       upload: "Your files",
     },
@@ -1497,7 +1497,7 @@ export const copyReviewCopy = {
     "Set NEXT_PUBLIC_COPY_VARIANT on the deployment and rebuild. Unset ships the default. An unknown value fails the build rather than quietly shipping the default, which would look exactly like a variant that did not work.",
   languageLabel: "Language",
   unchangedLabel: "unchanged",
-  unchangedHint: "Grey cells repeat the shipping wording.",
+  unchangedHint: "Gray cells repeat the shipping wording.",
   variants: {
     files: {
       name: "Files",
