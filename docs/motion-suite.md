@@ -97,10 +97,40 @@ is what renders.
 | `file` | A song as it sits on disk, typed out with its spacing kept | — |
 | `photo` | A photograph full bleed, drifting slowly under the photo scrim | photography master, upload |
 
+### Snippets
+
+Wording that recurs — the labels, the footnote addresses, a headline used in several cuts — can be
+kept as a snippet instead of being retyped. Beside each text field the wizard offers:
+
+- **Use a snippet** — links the field to a snippet. The definition then stores a reference such as
+  `eyebrow: {snippet: feature}` rather than the words, and the words are looked up when the video
+  is previewed or rendered. Change the snippet and every video linked to it changes on its next
+  render (`pnpm build:motion`); the field shows how many saved videos use it.
+- **Edit snippet** — changes one of the wizard's own snippets in place, for every video using it.
+- **Unlink** — turns the field back into plain text for this video only.
+- **Save as snippet** — names the text in the field and links it.
+
+The catalog has three sources, and only the first is edited here:
+
+| Source | Ids | Changed in |
+| --- | --- | --- |
+| `content/motion/snippets.yml` | `feature`, `docs-playing` | the wizard, or the file itself (comments and order are kept) |
+| VOCABULARY.md, via `locales/vocabulary.json` | `vocabulary/tagline`, `vocabulary/free-limit` | the app repository |
+| `content/social/*.md` | `social/out-now` | the still's definition — the still and the video change together |
+
+Starting from a social still links the eyebrow, headline and footnote to that still this way, so a
+video made from a still keeps saying what the still says. Captions are the exception: a caption is
+usually assembled from pieces, so a caption snippet is inserted as text rather than linked.
+
+A reference to a snippet that does not exist is refused when the definition is saved, and fails
+`pnpm build:motion` with the definition's name, so a renamed snippet cannot silently drop words
+from a video.
+
 What it writes, and where:
 
 - **The definition**, `content/motion/<slug>.md` — YAML frontmatter that builds the video, a body
-  that is its caption, in the shape of a `content/social/` definition. It is validated by the zod
+  that is its caption, in the shape of a `content/social/` definition. Its words may be snippet
+  references, resolved at preview and render time. It is validated by the zod
   schema in `video/src/motion/custom/schema.ts`, which the wizard, its API, the composition and the
   render script all share.
 - **Uploads**, `assets/motion/<slug>/` — images resized and re-encoded as WebP, videos kept as they

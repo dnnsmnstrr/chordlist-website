@@ -1,5 +1,6 @@
 import {z} from 'zod';
 import {campaignSchema} from '../campaigns';
+import {resolveField, snippetRefSchema, type SnippetCatalog} from './snippets';
 
 // A motion definition: the shape of content/motion/<slug>.md, written by the /motion wizard and
 // rendered by `pnpm build:motion`. It deliberately mirrors a content/social definition — the same
@@ -111,5 +112,28 @@ export const emptyDefinition: MotionDefinition = {
 
 export const END_CARD_SECONDS = 3;
 
-export const totalSeconds = (definition: MotionDefinition) =>
+export const totalSeconds = (definition: Pick<MotionDefinition, 'duration' | 'endCard'>) =>
   definition.duration + (definition.endCard ? END_CARD_SECONDS : 0);
+
+// What content/motion/<slug>.md holds: the definition, except that its words may be references to
+// snippets (see snippets.ts). Resolved into a plain MotionDefinition before it is previewed or
+// rendered, so the composition never sees a reference.
+const linkable = <T extends z.ZodType>(value: T) => z.union([value, snippetRefSchema]);
+
+export const storedDefinitionSchema = definitionSchema.extend({
+  eyebrow: linkable(definitionSchema.shape.eyebrow),
+  headline: linkable(definitionSchema.shape.headline),
+  subline: linkable(definitionSchema.shape.subline),
+  footnote: linkable(definitionSchema.shape.footnote),
+});
+export type StoredDefinition = z.infer<typeof storedDefinitionSchema>;
+
+export function resolveDefinition(stored: StoredDefinition, catalog: SnippetCatalog): MotionDefinition {
+  return definitionSchema.parse({
+    ...stored,
+    eyebrow: resolveField(stored.eyebrow, 'eyebrow', catalog),
+    headline: resolveField(stored.headline, 'headline', catalog),
+    subline: resolveField(stored.subline, 'subline', catalog),
+    footnote: resolveField(stored.footnote, 'footnote', catalog),
+  });
+}

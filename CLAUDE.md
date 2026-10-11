@@ -59,7 +59,8 @@ content/blog/        Blog posts as Markdown + frontmatter — the filename is th
 content/blog-schedule.json  The blog's release cadence — see Blog
 content/blog-archive/  Old machine-drafted versions of reset posts — reference only, read by nothing
 content/social/      Social asset definitions — frontmatter builds the image, body is the caption
-content/motion/      Motion video definitions, written by /motion — frontmatter builds the video, body is the caption
+content/motion/      Motion video definitions, written by /motion — frontmatter builds the video, body is the caption;
+                     snippets.yml holds the reusable wording their fields can link to
 lib/site-config.ts   Single source of truth for facts about the product
 lib/blog.ts          Reads content/blog: validation, visibility, tags, related posts
 lib/blog-approval.ts The approval digest — what "approved" means for a post
@@ -270,7 +271,10 @@ These categories of files in `public/` are **outputs — edit the generator, not
   composition. Definitions are written by the `/motion` wizard; uploads they use live in
   `assets/motion/<slug>/` and are committed with them. The zod schema in
   `video/src/motion/custom/schema.ts` is shared by the wizard, its API, the composition and the
-  script, so one set of rules validates a definition wherever it is read.
+  script, so one set of rules validates a definition wherever it is read. A field may link to a
+  snippet instead of holding words — from `content/motion/snippets.yml`, `locales/vocabulary.json`,
+  or a `content/social/` still — and is resolved at preview and render time, so editing a snippet
+  changes every video that links it on its next render.
 - **App Store screenshot sets** (`public/app-store-screenshots/`, plus `manifest.json` and the ZIPs
   in `downloads/`) — `pnpm build:screens`. Art direction lives in the script's `CONFIG` block; the
   words live in `scripts/lib/app-store-copy.mjs`, keyed by language and then slide, and read shared

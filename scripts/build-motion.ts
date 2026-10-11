@@ -3,8 +3,9 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {bundle} from '@remotion/bundler';
 import {renderMedia, renderStill, selectComposition} from '@remotion/renderer';
+import {loadCatalog} from '../video/src/motion/custom/catalog-files';
 import {parseDefinitionFile} from '../video/src/motion/custom/definition-file';
-import {SLUG_PATTERN, totalSeconds, type MotionDefinition} from '../video/src/motion/custom/schema';
+import {SLUG_PATTERN, resolveDefinition, totalSeconds, type MotionDefinition} from '../video/src/motion/custom/schema';
 
 // Renders every definition in content/motion into public/motion/<slug>/<format>.mp4, with a poster
 // of the final frame beside each and public/motion/manifest.json listing them — the motion
@@ -41,12 +42,19 @@ type Entry = {slug: string; definition: MotionDefinition; caption: string};
 
 async function readDefinitions(): Promise<Entry[]> {
   const files = (await readdir(definitionsDirectory).catch(() => [])).filter((file) => file.endsWith('.md')).sort();
+  // Snippet references are resolved here, so every render uses the snippets as they are now.
+  const catalog = await loadCatalog(root);
   const entries: Entry[] = [];
   for (const file of files) {
     const slug = file.replace(/\.md$/, '');
     if (!SLUG_PATTERN.test(slug)) throw new Error(`content/motion/${file}: the filename must be a lowercase slug.`);
     const source = await readFile(path.join(definitionsDirectory, file), 'utf8');
-    entries.push({slug, ...parseDefinitionFile(source, `content/motion/${file}`)});
+    const {definition, caption} = parseDefinitionFile(source, `content/motion/${file}`);
+    try {
+      entries.push({slug, definition: resolveDefinition(definition, catalog), caption});
+    } catch (error) {
+      throw new Error(`content/motion/${file}: ${error instanceof Error ? error.message : String(error)}`);
+    }
   }
   return entries;
 }

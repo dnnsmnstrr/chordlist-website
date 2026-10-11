@@ -13,16 +13,26 @@ import { motionEditorCopy as copy } from "@/locales/en"
 import { chaptersFor } from "@/video/src/motion/recording"
 import {
   SLUG_PATTERN,
-  definitionSchema,
   emptyDefinition,
   motionFormats,
   motionTemplates,
   recordingChapters,
+  resolveDefinition,
   screenshotNames,
+  storedDefinitionSchema,
   totalSeconds,
   type MotionDefinition,
   type MotionMedia,
+  type StoredDefinition,
 } from "@/video/src/motion/custom/schema"
+import {
+  findSnippet,
+  isSnippetRef,
+  resolveField,
+  type SnippetCatalog,
+  type SnippetKind,
+  type SnippetRef,
+} from "@/video/src/motion/custom/snippets"
 
 // The Player draws with WebGL and loads fonts on import, so it never runs on the server.
 const MotionPreview = dynamic(() => import("@/components/motion-preview").then((module) => module.MotionPreview), {
@@ -31,8 +41,9 @@ const MotionPreview = dynamic(() => import("@/components/motion-preview").then((
 })
 
 type Output = { format: string; video: string; poster: string }
-type Saved = { slug: string; definition: MotionDefinition; caption: string; created: string; outputs: Output[] }
-type SocialStart = { slug: string; definition: MotionDefinition; caption: string }
+type Saved = { slug: string; definition: StoredDefinition; caption: string; created: string; outputs: Output[] }
+type SocialStart = { slug: string; definition: StoredDefinition; caption: string }
+type Usage = Record<string, number>
 type Photo = { file: string; alt: string }
 type UploadedAsset = { file: string; kind: "image" | "video"; bytes: number }
 type Job = { state: "running" | "done" | "failed"; stage: keyof typeof copy.render.stages; progress: number; message: string }
@@ -42,12 +53,23 @@ type MotionEditorProps = {
   socialStarts: SocialStart[]
   photos: Photo[]
   recordingsSynced: boolean
+  catalog: SnippetCatalog
+  usage: Usage
 }
 
 const steps = ["start", "words", "media", "look", "render"] as const
 type Step = (typeof steps)[number]
 type Template = MotionDefinition["template"]
 type Format = MotionDefinition["formats"][number]
+
+/** The headline as words, following a snippet reference, for lists and labels. */
+function headlineText(definition: StoredDefinition, catalog: SnippetCatalog) {
+  try {
+    return resolveField(definition.headline, "headline", catalog).join(" ")
+  } catch {
+    return ""
+  }
+}
 
 const mediaPath = (path: string) => `/api/motion/media/${path}`
 
@@ -70,10 +92,12 @@ async function send<T>(input: RequestInfo, init?: RequestInit): Promise<T> {
  * the definition as it will render. Saving writes content/motion/<slug>.md; rendering runs
  * `pnpm build:motion` for that one definition on this machine and lists the files it produced.
  */
-export function MotionEditor({ saved, socialStarts, photos, recordingsSynced }: MotionEditorProps) {
+export function MotionEditor({ saved, socialStarts, photos, recordingsSynced, catalog: initialCatalog, usage: initialUsage }: MotionEditorProps) {
   const [step, setStep] = useState<Step>("start")
   const [slug, setSlug] = useState("")
-  const [definition, setDefinition] = useState<MotionDefinition>(emptyDefinition)
+  const [definition, setDefinition] = useState<StoredDefinition>(emptyDefinition)
+  const [catalog, setCatalog] = useState(initialCatalog)
+  const [usage, setUsage] = useState(initialUsage)
   const [caption, setCaption] = useState("")
   const [dirty, setDirty] = useState(false)
   const [status, setStatus] = useState<{ tone: "info" | "error"; text: string } | null>(null)
@@ -82,12 +106,22 @@ export function MotionEditor({ saved, socialStarts, photos, recordingsSynced }: 
   const [outputs, setOutputs] = useState<Output[]>([])
   const [previewFormat, setPreviewFormat] = useState<Format>("story")
 
-  const update = (patch: Partial<MotionDefinition>) => {
+  const update = (patch: Partial<StoredDefinition>) => {
     setDefinition((current) => ({ ...current, ...patch }))
     setDirty(true)
   }
 
-  const validation = useMemo(() => definitionSchema.safeParse(definition), [definition])
+  const validation = useMemo(() => storedDefinitionSchema.safeParse(definition), [definition])
+  // The definition as it will render: snippet references followed, so the preview shows the
+  // snippets as they stand now, including an edit made a moment ago.
+  const resolved = useMemo((): { definition: MotionDefinition } | { error: string } => {
+    if (!validation.success) return { error: validation.error.issues[0]?.message ?? "" }
+    try {
+      return { definition: resolveDefinition(validation.data, catalog) }
+    } catch (error) {
+      return { error: error instanceof Error ? error.message : String(error) }
+    }
+  }, [validation, catalog])
   const slugValid = SLUG_PATTERN.test(slug)
   const shownFormat = definition.formats.includes(previewFormat) ? previewFormat : (definition.formats[0] ?? "story")
 
@@ -98,7 +132,7 @@ export function MotionEditor({ saved, socialStarts, photos, recordingsSynced }: 
     return () => window.removeEventListener("beforeunload", warn)
   }, [dirty])
 
-  function load(next: { slug: string; definition: MotionDefinition; caption: string }, outputsForSlug: Output[] = []) {
+  function load(next: { slug: string; definition: StoredDefinition; caption: string }, outputsForSlug: Output[] = []) {
     setSlug(next.slug)
     setDefinition(next.definition)
     setCaption(next.caption)
@@ -202,6 +236,7 @@ export function MotionEditor({ saved, socialStarts, photos, recordingsSynced }: 
               template={definition.template}
               onTemplate={(template) => update({ template, media: defaultMedia(template, photos) })}
               socialStarts={socialStarts}
+              catalog={catalog}
               onSocial={(start) => {
                 load({ ...start, slug: slug || start.slug })
                 // A still is a starting point, not a saved video: there is nothing on disk yet.
@@ -211,7 +246,25 @@ export function MotionEditor({ saved, socialStarts, photos, recordingsSynced }: 
               onSaved={(entry) => load(entry, entry.outputs)}
             />
           ) : null}
-          {step === "words" ? <WordsStep definition={definition} update={update} caption={caption} onCaption={(value) => { setCaption(value); setDirty(true) }} /> : null}
+          {step === "words" ? (
+            <WordsStep
+              definition={definition}
+              update={update}
+              caption={caption}
+              onCaption={(value) => {
+                setCaption(value)
+                setDirty(true)
+              }}
+              snippets={{
+                catalog,
+                usage,
+                onCatalog: (next, nextUsage) => {
+                  setCatalog(next)
+                  setUsage(nextUsage)
+                },
+              }}
+            />
+          ) : null}
           {step === "media" ? (
             <MediaStep slug={slugValid ? slug : ""} definition={definition} update={update} photos={photos} recordingsSynced={recordingsSynced} />
           ) : null}
@@ -219,8 +272,8 @@ export function MotionEditor({ saved, socialStarts, photos, recordingsSynced }: 
           {step === "render" ? (
             <RenderStep
               definition={definition}
-              valid={validation.success && slugValid}
-              issues={validation.success ? [] : validation.error.issues.map((issue) => `${issue.path.join(".")}: ${issue.message}`)}
+              valid={"definition" in resolved && slugValid}
+              issues={"definition" in resolved ? [] : [resolved.error]}
               dirty={dirty}
               saving={saving}
               onSave={save}
@@ -268,10 +321,10 @@ export function MotionEditor({ saved, socialStarts, photos, recordingsSynced }: 
             </select>
           </div>
           <div className={cn("mt-3 overflow-hidden rounded-xl border border-border", shownFormat === "wide" ? "" : "mx-auto max-w-xs")}>
-            {validation.success ? (
-              <MotionPreview key={shownFormat} slug={slug} definition={validation.data} format={shownFormat} />
+            {"definition" in resolved ? (
+              <MotionPreview key={shownFormat} slug={slug} definition={resolved.definition} format={shownFormat} />
             ) : (
-              <p className="p-6 text-sm text-muted-foreground">{validation.error.issues[0]?.message}</p>
+              <p className="p-6 text-sm text-muted-foreground">{resolved.error}</p>
             )}
           </div>
           {dirty ? <p className="mt-3 font-mono text-xs text-muted-foreground">{copy.render.unsaved}</p> : null}
@@ -317,6 +370,7 @@ function Choice({ selected, onClick, children, className }: { selected: boolean;
 }
 
 type StartStepProps = {
+  catalog: SnippetCatalog
   slug: string
   onSlug: (slug: string) => void
   template: Template
@@ -327,7 +381,7 @@ type StartStepProps = {
   onSaved: (entry: Saved) => void
 }
 
-function StartStep({ slug, onSlug, template, onTemplate, socialStarts, onSocial, saved, onSaved }: StartStepProps) {
+function StartStep({ catalog, slug, onSlug, template, onTemplate, socialStarts, onSocial, saved, onSaved }: StartStepProps) {
   return (
     <div className="flex flex-col gap-10">
       <Field id="motion-slug" label={copy.start.nameLabel} hint={copy.start.nameHint}>
@@ -369,7 +423,7 @@ function StartStep({ slug, onSlug, template, onTemplate, socialStarts, onSocial,
             <option value="">{copy.start.socialPlaceholder}</option>
             {socialStarts.map((start) => (
               <option key={start.slug} value={start.slug}>
-                {start.slug} — {start.definition.headline.join(" ")}
+                {start.slug} — {headlineText(start.definition, catalog)}
               </option>
             ))}
           </select>
@@ -392,7 +446,7 @@ function StartStep({ slug, onSlug, template, onTemplate, socialStarts, onSocial,
                 )}
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-mono text-sm">{entry.slug}</p>
-                  <p className="truncate text-xs text-muted-foreground">{entry.definition.headline.join(" ")}</p>
+                  <p className="truncate text-xs text-muted-foreground">{headlineText(entry.definition, catalog)}</p>
                 </div>
                 <Button variant="outline" size="sm" onClick={() => onSaved(entry)}>
                   {copy.start.edit}
@@ -406,28 +460,50 @@ function StartStep({ slug, onSlug, template, onTemplate, socialStarts, onSocial,
   )
 }
 
-type StepProps = { definition: MotionDefinition; update: (patch: Partial<MotionDefinition>) => void }
+type StepProps = { definition: StoredDefinition; update: (patch: Partial<StoredDefinition>) => void }
 
-function WordsStep({ definition, update, caption, onCaption }: StepProps & { caption: string; onCaption: (value: string) => void }) {
+type SnippetProps = {
+  catalog: SnippetCatalog
+  usage: Usage
+  onCatalog: (catalog: SnippetCatalog, usage: Usage) => void
+}
+
+type WordsStepProps = StepProps & { caption: string; onCaption: (value: string) => void; snippets: SnippetProps }
+
+function WordsStep({ definition, update, caption, onCaption, snippets }: WordsStepProps) {
   const { template } = definition
   return (
     <div className="flex flex-col gap-6">
-      <Field id="motion-eyebrow" label={copy.words.eyebrow} hint={copy.words.eyebrowHint}>
-        <input id="motion-eyebrow" className={inputClass} value={definition.eyebrow} maxLength={24} onChange={(event) => update({ eyebrow: event.target.value })} />
-      </Field>
-      <Field id="motion-headline" label={copy.words.headline} hint={copy.words.headlineHint}>
-        <textarea
-          id="motion-headline"
-          className={cn(inputClass, "min-h-28 text-base font-semibold")}
-          rows={4}
-          value={definition.headline.join("\n")}
-          onChange={(event) => update({ headline: event.target.value.split("\n").slice(0, 4) })}
-        />
-      </Field>
+      <LinkableField
+        id="motion-eyebrow"
+        kind="eyebrow"
+        label={copy.words.eyebrow}
+        hint={copy.words.eyebrowHint}
+        value={definition.eyebrow}
+        onChange={(eyebrow) => update({ eyebrow })}
+        snippets={snippets}
+        maxLength={24}
+      />
+      <LinkableField
+        id="motion-headline"
+        kind="headline"
+        label={copy.words.headline}
+        hint={copy.words.headlineHint}
+        value={definition.headline}
+        onChange={(headline) => update({ headline })}
+        snippets={snippets}
+      />
       {template === "statement" || template === "screen" || template === "photo" ? (
-        <Field id="motion-subline" label={copy.words.subline} hint={copy.words.sublineHint}>
-          <input id="motion-subline" className={inputClass} value={definition.subline} maxLength={90} onChange={(event) => update({ subline: event.target.value })} />
-        </Field>
+        <LinkableField
+          id="motion-subline"
+          kind="subline"
+          label={copy.words.subline}
+          hint={copy.words.sublineHint}
+          value={definition.subline}
+          onChange={(subline) => update({ subline })}
+          snippets={snippets}
+          maxLength={90}
+        />
       ) : null}
       {template === "progression" ? (
         <div className="grid gap-6 sm:grid-cols-2">
@@ -460,13 +536,234 @@ function WordsStep({ definition, update, caption, onCaption }: StepProps & { cap
           </Field>
         </>
       ) : null}
-      <Field id="motion-footnote" label={copy.words.footnote} hint={copy.words.footnoteHint}>
-        <input id="motion-footnote" className={cn(inputClass, "font-mono")} value={definition.footnote} onChange={(event) => update({ footnote: event.target.value })} />
-      </Field>
+      <LinkableField
+        id="motion-footnote"
+        kind="footnote"
+        label={copy.words.footnote}
+        hint={copy.words.footnoteHint}
+        value={definition.footnote}
+        onChange={(footnote) => update({ footnote })}
+        snippets={snippets}
+        mono
+        maxLength={60}
+      />
       <Field id="motion-caption" label={copy.words.caption} hint={copy.words.captionHint}>
         <textarea id="motion-caption" className={cn(inputClass, "min-h-24")} value={caption} onChange={(event) => onCaption(event.target.value)} />
+        {/* A caption is usually put together from parts, so a snippet is inserted as text, not linked. */}
+        <SnippetSelect
+          kind="caption"
+          catalog={snippets.catalog}
+          placeholder={copy.snippets.insert}
+          label={`${copy.words.caption}: ${copy.snippets.insert}`}
+          onPick={(snippet) => onCaption(caption.trim() === "" ? String(snippet.value) : `${caption.trimEnd()}\n\n${String(snippet.value)}`)}
+        />
       </Field>
     </div>
+  )
+}
+
+type SnippetSelectProps = {
+  kind: SnippetKind
+  catalog: SnippetCatalog
+  placeholder: string
+  label: string
+  onPick: (snippet: SnippetCatalog[number]) => void
+}
+
+/** The catalog's snippets for one field, grouped by where they come from. */
+function SnippetSelect({ kind, catalog, placeholder, label, onPick }: SnippetSelectProps) {
+  const options = catalog.filter((snippet) => snippet.kind === kind)
+  if (options.length === 0) return null
+  const preview = (value: string | string[]) => {
+    const text = Array.isArray(value) ? value.join(" ") : value
+    return text.length > 48 ? `${text.slice(0, 47)}…` : text
+  }
+  return (
+    <select
+      aria-label={label}
+      className={cn(inputClass, "text-muted-foreground")}
+      value=""
+      onChange={(event) => {
+        const snippet = options.find((option) => option.id === event.target.value)
+        if (snippet) onPick(snippet)
+      }}
+    >
+      <option value="">{placeholder}</option>
+      {(["snippets", "vocabulary", "social"] as const).map((source) => {
+        const group = options.filter((option) => option.source === source)
+        return group.length === 0 ? null : (
+          <optgroup key={source} label={copy.snippets.sources[source]}>
+            {group.map((option) => (
+              <option key={option.id} value={option.id}>
+                {option.id} — {preview(option.value)}
+              </option>
+            ))}
+          </optgroup>
+        )
+      })}
+    </select>
+  )
+}
+
+type LinkableFieldProps<T extends string | string[]> = {
+  id: string
+  kind: SnippetKind
+  label: string
+  hint: string
+  value: T | SnippetRef
+  onChange: (value: T | SnippetRef) => void
+  snippets: SnippetProps
+  mono?: boolean
+  maxLength?: number
+}
+
+/**
+ * A text field that can hold its own words or link to a snippet. Linked, it shows the snippet's
+ * wording and where it comes from; the wizard's own snippets can be edited in place, which changes
+ * every video linked to them. Plain, it offers the catalog and can save its text as a new snippet.
+ */
+function LinkableField<T extends string | string[]>({ id, kind, label, hint, value, onChange, snippets, mono, maxLength }: LinkableFieldProps<T>) {
+  const { catalog, usage, onCatalog } = snippets
+  const multiline = kind === "headline"
+  const toText = (input: string | string[]) => (Array.isArray(input) ? input.join("\n") : input)
+  const fromText = (text: string) => (multiline ? text.split("\n").slice(0, 4) : text) as T
+  const linked = isSnippetRef(value) ? findSnippet(catalog, kind, value.snippet) : undefined
+  const [mode, setMode] = useState<"idle" | "editing" | "naming">("idle")
+  const [draft, setDraft] = useState("")
+  const [error, setError] = useState("")
+
+  async function store(key: string, wording: string | string[]) {
+    setError("")
+    try {
+      const result = await send<{ catalog: SnippetCatalog; usage: Usage }>("/api/motion/snippets", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ kind, key, value: wording }),
+      })
+      onCatalog(result.catalog, result.usage)
+      setMode("idle")
+      return true
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : String(caught))
+      return false
+    }
+  }
+
+  const textClass = cn(inputClass, mono && "font-mono", multiline && "min-h-28 text-base font-semibold")
+
+  return (
+    <Field id={id} label={label} hint={hint}>
+      {isSnippetRef(value) ? (
+        <div className="flex flex-col gap-3 rounded-xl border border-border p-3">
+          <p className="flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-xs text-muted-foreground">
+            <span className="text-foreground">{copy.snippets.linked(value.snippet)}</span>
+            {linked ? <span>{copy.snippets.sources[linked.source]}</span> : null}
+            {usage[`${kind}:${value.snippet}`] ? <span>{copy.snippets.usedBy(usage[`${kind}:${value.snippet}`] ?? 0)}</span> : null}
+          </p>
+          {mode === "editing" && linked ? (
+            multiline ? (
+              <textarea id={id} className={textClass} rows={4} value={draft} onChange={(event) => setDraft(event.target.value)} />
+            ) : (
+              <input id={id} className={textClass} value={draft} maxLength={maxLength} onChange={(event) => setDraft(event.target.value)} />
+            )
+          ) : (
+            <p id={id} className={cn("whitespace-pre-line text-sm", mono && "font-mono", multiline && "text-base font-semibold")}>
+              {linked ? toText(linked.value) : ""}
+            </p>
+          )}
+          {linked?.source === "vocabulary" || linked?.source === "social" ? (
+            <p className="text-xs text-muted-foreground">{copy.snippets.readOnly[linked.source]}</p>
+          ) : null}
+          {mode === "editing" ? <p className="text-xs text-muted-foreground">{copy.snippets.editHint}</p> : null}
+          <div className="flex flex-wrap gap-2">
+            {mode === "editing" && linked ? (
+              <>
+                <Button size="sm" onClick={() => void store(linked.id, fromText(draft))}>
+                  {copy.snippets.save}
+                </Button>
+                <Button size="sm" variant="ghost" onClick={() => setMode("idle")}>
+                  {copy.snippets.cancel}
+                </Button>
+              </>
+            ) : (
+              <>
+                {linked?.source === "snippets" ? (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      setDraft(toText(linked.value))
+                      setMode("editing")
+                    }}
+                  >
+                    {copy.snippets.edit}
+                  </Button>
+                ) : null}
+                <Button size="sm" variant="ghost" title={copy.snippets.unlinkHint} onClick={() => onChange((linked ? linked.value : fromText("")) as T)}>
+                  {copy.snippets.unlink}
+                </Button>
+              </>
+            )}
+          </div>
+        </div>
+      ) : (
+        <>
+          {multiline ? (
+            <textarea id={id} className={textClass} rows={4} value={toText(value)} onChange={(event) => onChange(fromText(event.target.value))} />
+          ) : (
+            <input id={id} className={textClass} value={toText(value)} maxLength={maxLength} onChange={(event) => onChange(fromText(event.target.value))} />
+          )}
+          <div className="flex flex-wrap items-start gap-2">
+            <div className="min-w-0 flex-1">
+              <SnippetSelect
+                kind={kind}
+                catalog={catalog}
+                placeholder={copy.snippets.choose}
+                label={`${label}: ${copy.snippets.choose}`}
+                onPick={(snippet) => onChange({ snippet: snippet.id })}
+              />
+            </div>
+            {mode === "naming" ? null : (
+              <Button variant="outline" disabled={toText(value).trim() === ""} onClick={() => setMode("naming")}>
+                {copy.snippets.saveAs}
+              </Button>
+            )}
+          </div>
+          {mode === "naming" ? (
+            <div className="flex flex-wrap items-end gap-2 rounded-xl border border-border p-3">
+              <div className="flex min-w-0 flex-1 flex-col gap-1">
+                <label htmlFor={`${id}-snippet-key`} className="text-xs font-medium">
+                  {copy.snippets.keyLabel}
+                </label>
+                <input
+                  id={`${id}-snippet-key`}
+                  className={cn(inputClass, "font-mono")}
+                  placeholder={copy.snippets.keyPlaceholder}
+                  value={draft}
+                  onChange={(event) => setDraft(event.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "-"))}
+                />
+              </div>
+              <Button
+                onClick={async () => {
+                  const key = draft
+                  if (await store(key, value as string | string[])) onChange({ snippet: key })
+                }}
+              >
+                {copy.snippets.save}
+              </Button>
+              <Button variant="ghost" onClick={() => setMode("idle")}>
+                {copy.snippets.cancel}
+              </Button>
+            </div>
+          ) : null}
+        </>
+      )}
+      {error ? (
+        <p role="alert" className="text-sm text-destructive">
+          {error}
+        </p>
+      ) : null}
+    </Field>
   )
 }
 
@@ -738,7 +1035,7 @@ function LookStep({ definition, update }: StepProps) {
 }
 
 type RenderStepProps = {
-  definition: MotionDefinition
+  definition: StoredDefinition
   valid: boolean
   issues: string[]
   dirty: boolean

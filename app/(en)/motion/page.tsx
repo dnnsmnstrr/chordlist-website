@@ -8,7 +8,7 @@ import { MotionEditor } from "@/components/motion-editor"
 import { SiteFooter } from "@/components/site-footer"
 import { SiteHeader } from "@/components/site-header"
 import { listSocialStarts } from "@/lib/motion/social-starts"
-import { REMOTION_PUBLIC, listDefinitions, listOutputs, listPhotos } from "@/lib/motion/store"
+import { REMOTION_PUBLIC, listDefinitions, listOutputs, listPhotos, readCatalog, snippetUsage } from "@/lib/motion/store"
 import { requireAdmin } from "@/lib/server/admin-auth"
 import { motionEditorCopy } from "@/locales/en"
 
@@ -29,6 +29,7 @@ export default async function MotionPage() {
   if (process.env.NODE_ENV === "production") notFound()
 
   const definitions = await listDefinitions()
+  const catalog = await readCatalog()
   const recordingsSynced = await access(
     path.join(REMOTION_PUBLIC, "generated", "motion", "press", "chordlist-demo-light.mp4"),
   ).then(
@@ -42,7 +43,9 @@ export default async function MotionPage() {
       <div id="main-content" tabIndex={-1}>
         <MotionEditor
           saved={await Promise.all(definitions.map(async (entry) => ({ ...entry, outputs: await listOutputs(entry.slug) })))}
-          socialStarts={await listSocialStarts()}
+          socialStarts={await listSocialStarts(catalog)}
+          catalog={catalog}
+          usage={snippetUsage(definitions)}
           photos={await listPhotos()}
           recordingsSynced={recordingsSynced}
         />

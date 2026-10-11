@@ -5,8 +5,15 @@ import path from "node:path"
 
 import sharp from "sharp"
 import photographyCatalog from "@/assets/visual-references/analog-photography/catalog.json"
+import { loadCatalog, writeSnippet } from "@/video/src/motion/custom/catalog-files"
 import { parseDefinitionFile, serializeDefinitionFile } from "@/video/src/motion/custom/definition-file"
-import { SLUG_PATTERN, definitionSchema, type MotionDefinition } from "@/video/src/motion/custom/schema"
+import {
+  SLUG_PATTERN,
+  resolveDefinition,
+  storedDefinitionSchema,
+  type StoredDefinition,
+} from "@/video/src/motion/custom/schema"
+import { SnippetError, snippetKinds, type SnippetCatalog, type SnippetKind } from "@/video/src/motion/custom/snippets"
 
 /**
  * The /motion wizard's reads and writes. A definition is content/motion/<slug>.md — the same shape
@@ -43,14 +50,15 @@ export function assertSlug(slug: string) {
   if (!SLUG_PATTERN.test(slug)) throw new MotionError(`"${slug}" is not a valid name. Use lowercase words joined by hyphens.`)
 }
 
-export type StoredDefinition = {
+export type SavedDefinition = {
   slug: string
-  definition: MotionDefinition
+  /** As stored: its words may be snippet references, resolved for the preview and the render. */
+  definition: StoredDefinition
   caption: string
   created: string
 }
 
-export async function readDefinition(slug: string): Promise<StoredDefinition> {
+export async function readDefinition(slug: string): Promise<SavedDefinition> {
   assertSlug(slug)
   const source = await readFile(path.join(DEFINITIONS, `${slug}.md`), "utf8")
   try {
@@ -60,9 +68,9 @@ export async function readDefinition(slug: string): Promise<StoredDefinition> {
   }
 }
 
-export async function listDefinitions(): Promise<StoredDefinition[]> {
+export async function listDefinitions(): Promise<SavedDefinition[]> {
   const files = (await readdir(DEFINITIONS).catch(() => [])).filter((file) => file.endsWith(".md")).sort()
-  const definitions: StoredDefinition[] = []
+  const definitions: SavedDefinition[] = []
   for (const file of files) {
     try {
       definitions.push(await readDefinition(file.replace(/\.md$/, "")))
@@ -73,11 +81,18 @@ export async function listDefinitions(): Promise<StoredDefinition[]> {
   return definitions
 }
 
-export async function writeDefinition(slug: string, input: unknown, caption: string): Promise<StoredDefinition> {
+export async function writeDefinition(slug: string, input: unknown, caption: string): Promise<SavedDefinition> {
   assertSlug(slug)
-  const parsed = definitionSchema.safeParse(input)
+  const parsed = storedDefinitionSchema.safeParse(input)
   if (!parsed.success) {
     throw new MotionError(parsed.error.issues.map((issue) => `${issue.path.join(".") || "definition"}: ${issue.message}`).join("; "))
+  }
+  // A definition that links to a snippet that does not exist would fail its render, so it is
+  // refused here, while the person who chose the snippet is still looking at it.
+  try {
+    resolveDefinition(parsed.data, await loadCatalog(root))
+  } catch (error) {
+    throw new MotionError(error instanceof Error ? error.message : String(error))
   }
   const existing = await readDefinition(slug).catch(() => null)
   const stored = { slug, definition: parsed.data, caption: caption.trim(), created: existing?.created || new Date().toISOString().slice(0, 10) }
@@ -184,4 +199,43 @@ export async function listOutputs(slug: string): Promise<RenderedOutput[]> {
       const format = file.replace(/\.mp4$/, "")
       return { format, video: `/motion/${slug}/${file}`, poster: `/motion/${slug}/${format}.jpg` }
     })
+}
+
+export async function readCatalog(): Promise<SnippetCatalog> {
+  try {
+    return await loadCatalog(root)
+  } catch (error) {
+    throw new MotionError(error instanceof Error ? error.message : String(error))
+  }
+}
+
+/** Adds or changes one of the wizard's own snippets, and returns the catalog as it now stands. */
+export async function saveSnippet(kind: unknown, key: unknown, value: unknown): Promise<SnippetCatalog> {
+  if (typeof kind !== "string" || !(snippetKinds as readonly string[]).includes(kind)) throw new MotionError("Which field is this snippet for?")
+  if (typeof key !== "string") throw new MotionError("Give the snippet a name.")
+  if (typeof value !== "string" && !(Array.isArray(value) && value.every((line) => typeof line === "string"))) {
+    throw new MotionError("A snippet is a line of text, or a list of lines for a headline.")
+  }
+  try {
+    await writeSnippet(root, kind as SnippetKind, key, value)
+  } catch (error) {
+    if (error instanceof SnippetError) throw new MotionError(error.message)
+    throw error
+  }
+  return readCatalog()
+}
+
+/** How many saved videos link each snippet, keyed by `<kind>:<id>`, so an edit shows its reach. */
+export function snippetUsage(saved: SavedDefinition[]): Record<string, number> {
+  const usage: Record<string, number> = {}
+  for (const { definition } of saved) {
+    for (const kind of ["eyebrow", "headline", "subline", "footnote"] as const) {
+      const value = definition[kind]
+      if (typeof value === "object" && !Array.isArray(value)) {
+        const key = `${kind}:${value.snippet}`
+        usage[key] = (usage[key] ?? 0) + 1
+      }
+    }
+  }
+  return usage
 }

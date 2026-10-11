@@ -1435,6 +1435,27 @@ export const motionEditorCopy = {
     heading: "Preview",
     format: "Preview format",
   },
+  snippets: {
+    choose: "Use a snippet…",
+    insert: "Insert a snippet…",
+    sources: { snippets: "Snippets", vocabulary: "Vocabulary", social: "Social stills" },
+    linked: (id: string) => `Linked to the snippet “${id}”`,
+    usedBy: (count: number) => (count === 1 ? "Used by 1 saved video" : `Used by ${count} saved videos`),
+    readOnly: {
+      vocabulary: "Shared wording from VOCABULARY.md in the app repository. Change it there.",
+      social: "The wording of a social still. Change it in content/social, and the still and this video change together.",
+    },
+    edit: "Edit snippet",
+    editHint: "Changes this wording in every video linked to it, on their next render.",
+    unlink: "Unlink",
+    unlinkHint: "Keeps the text here as plain text you can change for this video only.",
+    saveAs: "Save as snippet",
+    keyLabel: "Snippet name",
+    keyPlaceholder: "feature",
+    save: "Save snippet",
+    cancel: "Cancel",
+    saved: "Snippet saved to content/motion/snippets.yml.",
+  },
 } as const
 
 export const marketingCopyPageCopy = {

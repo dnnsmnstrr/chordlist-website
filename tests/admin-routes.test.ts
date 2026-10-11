@@ -119,6 +119,7 @@ test("every protected page actually calls the guard", () => {
     "app/api/motion/route.ts": "refuseUnlessAdmin",
     "app/api/motion/assets/route.ts": "refuseUnlessAdmin",
     "app/api/motion/render/route.ts": "refuseUnlessAdmin",
+    "app/api/motion/snippets/route.ts": "refuseUnlessAdmin",
     "app/api/motion/media/[...path]/route.ts": "refuseUnlessAdmin",
     "app/api/translations/route.ts": "refuseUnlessAdmin",
     "app/api/translations/languages/route.ts": "refuseUnlessAdmin",

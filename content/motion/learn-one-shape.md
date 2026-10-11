@@ -7,7 +7,8 @@ formats:
   - post
 duration: 6
 endCard: true
-eyebrow: Progressions
+eyebrow:
+  snippet: progressions
 headline:
   - Learn one shape,
   - hear it everywhere.
