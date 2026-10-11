@@ -215,7 +215,7 @@ export const docsCopy = {
   annotatedFigureHint: "Numbers on the screenshot match the list. Tap one to jump between them.",
   search: {
     label: "Search the documentation",
-    placeholder: "Search the docs — try “transpose” or “restore”",
+    placeholder: "Search the docs",
     clear: "Clear the search",
     resultCount: (count: number) => (count === 1 ? "1 result" : `${count} results`),
     showingFirst: (shown: number, count: number) => `Showing the first ${shown} of ${count} results. Add a word to narrow them down.`,

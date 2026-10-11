@@ -80,13 +80,17 @@ export default function DocsPage() {
       <SiteHeader />
 
       <article id="main-content" tabIndex={-1} className="mx-auto w-full max-w-5xl px-6 py-16">
-        <header className="max-w-3xl border-b border-border pb-8">
-          <p className="font-mono text-sm text-muted-foreground">{siteConfig.name}</p>
-          <h1 className="mt-3 text-balance text-4xl font-semibold tracking-tight sm:text-5xl">{docsCopy.title}</h1>
+        <header className="border-b border-border pb-8">
+          <div className="flex items-center justify-between gap-4">
+            <p className="shrink-0 font-mono text-sm text-muted-foreground">{siteConfig.name}</p>
+            <DocsSearch />
+          </div>
+          <h1 className="mt-3 max-w-3xl text-balance text-4xl font-semibold tracking-tight sm:text-5xl">
+            {docsCopy.title}
+          </h1>
           <p className="mt-4 max-w-2xl text-pretty leading-relaxed text-muted-foreground">
             {docsCopy.introduction}
           </p>
-          <DocsSearch />
         </header>
 
         <div className="mt-10 grid items-start gap-12 lg:grid-cols-[13rem_minmax(0,1fr)]">
