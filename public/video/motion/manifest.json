@@ -1,0 +1,504 @@
+[
+  {
+    "slug": "logo-sting",
+    "seconds": 4.5,
+    "formats": [
+      {
+        "format": "story",
+        "width": 1080,
+        "height": 1920,
+        "bytes": 233985,
+        "video": "/video/motion/logo-sting-story.mp4",
+        "poster": "/video/motion/logo-sting-story.jpg"
+      },
+      {
+        "format": "post",
+        "width": 1080,
+        "height": 1350,
+        "bytes": 234904,
+        "video": "/video/motion/logo-sting-post.mp4",
+        "poster": "/video/motion/logo-sting-post.jpg"
+      },
+      {
+        "format": "wide",
+        "width": 1920,
+        "height": 1080,
+        "bytes": 232943,
+        "video": "/video/motion/logo-sting-wide.mp4",
+        "poster": "/video/motion/logo-sting-wide.jpg"
+      }
+    ]
+  },
+  {
+    "slug": "logo-reveal",
+    "seconds": 4,
+    "formats": [
+      {
+        "format": "story",
+        "width": 1080,
+        "height": 1920,
+        "bytes": 208996,
+        "video": "/video/motion/logo-reveal-story.mp4",
+        "poster": "/video/motion/logo-reveal-story.jpg"
+      },
+      {
+        "format": "post",
+        "width": 1080,
+        "height": 1350,
+        "bytes": 208243,
+        "video": "/video/motion/logo-reveal-post.mp4",
+        "poster": "/video/motion/logo-reveal-post.jpg"
+      },
+      {
+        "format": "wide",
+        "width": 1920,
+        "height": 1080,
+        "bytes": 209636,
+        "video": "/video/motion/logo-reveal-wide.mp4",
+        "poster": "/video/motion/logo-reveal-wide.jpg"
+      }
+    ]
+  },
+  {
+    "slug": "logo-reveal-badge",
+    "seconds": 4,
+    "formats": [
+      {
+        "format": "story",
+        "width": 1080,
+        "height": 1920,
+        "bytes": 228675,
+        "video": "/video/motion/logo-reveal-badge-story.mp4",
+        "poster": "/video/motion/logo-reveal-badge-story.jpg"
+      },
+      {
+        "format": "post",
+        "width": 1080,
+        "height": 1350,
+        "bytes": 226513,
+        "video": "/video/motion/logo-reveal-badge-post.mp4",
+        "poster": "/video/motion/logo-reveal-badge-post.jpg"
+      },
+      {
+        "format": "wide",
+        "width": 1920,
+        "height": 1080,
+        "bytes": 228060,
+        "video": "/video/motion/logo-reveal-badge-wide.mp4",
+        "poster": "/video/motion/logo-reveal-badge-wide.jpg"
+      }
+    ]
+  },
+  {
+    "slug": "plain-text",
+    "seconds": 8,
+    "formats": [
+      {
+        "format": "story",
+        "width": 1080,
+        "height": 1920,
+        "bytes": 577612,
+        "video": "/video/motion/plain-text-story.mp4",
+        "poster": "/video/motion/plain-text-story.jpg"
+      },
+      {
+        "format": "post",
+        "width": 1080,
+        "height": 1350,
+        "bytes": 549078,
+        "video": "/video/motion/plain-text-post.mp4",
+        "poster": "/video/motion/plain-text-post.jpg"
+      },
+      {
+        "format": "wide",
+        "width": 1920,
+        "height": 1080,
+        "bytes": 660574,
+        "video": "/video/motion/plain-text-wide.mp4",
+        "poster": "/video/motion/plain-text-wide.jpg"
+      }
+    ]
+  },
+  {
+    "slug": "transpose",
+    "seconds": 9,
+    "formats": [
+      {
+        "format": "story",
+        "width": 1080,
+        "height": 1920,
+        "bytes": 709319,
+        "video": "/video/motion/transpose-story.mp4",
+        "poster": "/video/motion/transpose-story.jpg"
+      },
+      {
+        "format": "post",
+        "width": 1080,
+        "height": 1350,
+        "bytes": 649028,
+        "video": "/video/motion/transpose-post.mp4",
+        "poster": "/video/motion/transpose-post.jpg"
+      },
+      {
+        "format": "wide",
+        "width": 1920,
+        "height": 1080,
+        "bytes": 686462,
+        "video": "/video/motion/transpose-wide.mp4",
+        "poster": "/video/motion/transpose-wide.jpg"
+      }
+    ]
+  },
+  {
+    "slug": "same-chords",
+    "seconds": 10,
+    "formats": [
+      {
+        "format": "story",
+        "width": 1080,
+        "height": 1920,
+        "bytes": 886624,
+        "video": "/video/motion/same-chords-story.mp4",
+        "poster": "/video/motion/same-chords-story.jpg"
+      },
+      {
+        "format": "post",
+        "width": 1080,
+        "height": 1350,
+        "bytes": 846643,
+        "video": "/video/motion/same-chords-post.mp4",
+        "poster": "/video/motion/same-chords-post.jpg"
+      },
+      {
+        "format": "wide",
+        "width": 1920,
+        "height": 1080,
+        "bytes": 834060,
+        "video": "/video/motion/same-chords-wide.mp4",
+        "poster": "/video/motion/same-chords-wide.jpg"
+      }
+    ]
+  },
+  {
+    "slug": "chord-keys",
+    "seconds": 8,
+    "formats": [
+      {
+        "format": "story",
+        "width": 1080,
+        "height": 1920,
+        "bytes": 503238,
+        "video": "/video/motion/chord-keys-story.mp4",
+        "poster": "/video/motion/chord-keys-story.jpg"
+      },
+      {
+        "format": "post",
+        "width": 1080,
+        "height": 1350,
+        "bytes": 482389,
+        "video": "/video/motion/chord-keys-post.mp4",
+        "poster": "/video/motion/chord-keys-post.jpg"
+      },
+      {
+        "format": "wide",
+        "width": 1920,
+        "height": 1080,
+        "bytes": 489442,
+        "video": "/video/motion/chord-keys-wide.mp4",
+        "poster": "/video/motion/chord-keys-wide.jpg"
+      }
+    ]
+  },
+  {
+    "slug": "hands-free",
+    "seconds": 8,
+    "formats": [
+      {
+        "format": "story",
+        "width": 1080,
+        "height": 1920,
+        "bytes": 1798928,
+        "video": "/video/motion/hands-free-story.mp4",
+        "poster": "/video/motion/hands-free-story.jpg"
+      },
+      {
+        "format": "post",
+        "width": 1080,
+        "height": 1350,
+        "bytes": 1693550,
+        "video": "/video/motion/hands-free-post.mp4",
+        "poster": "/video/motion/hands-free-post.jpg"
+      },
+      {
+        "format": "wide",
+        "width": 1920,
+        "height": 1080,
+        "bytes": 1735941,
+        "video": "/video/motion/hands-free-wide.mp4",
+        "poster": "/video/motion/hands-free-wide.jpg"
+      }
+    ]
+  },
+  {
+    "slug": "theme-spectrum",
+    "seconds": 8,
+    "formats": [
+      {
+        "format": "story",
+        "width": 1080,
+        "height": 1920,
+        "bytes": 941981,
+        "video": "/video/motion/theme-spectrum-story.mp4",
+        "poster": "/video/motion/theme-spectrum-story.jpg"
+      },
+      {
+        "format": "post",
+        "width": 1080,
+        "height": 1350,
+        "bytes": 920358,
+        "video": "/video/motion/theme-spectrum-post.mp4",
+        "poster": "/video/motion/theme-spectrum-post.jpg"
+      },
+      {
+        "format": "wide",
+        "width": 1920,
+        "height": 1080,
+        "bytes": 899741,
+        "video": "/video/motion/theme-spectrum-wide.mp4",
+        "poster": "/video/motion/theme-spectrum-wide.jpg"
+      }
+    ]
+  },
+  {
+    "slug": "feature-reel",
+    "seconds": 30.5,
+    "formats": [
+      {
+        "format": "wide",
+        "width": 1920,
+        "height": 1080,
+        "bytes": 3405167,
+        "video": "/video/motion/feature-reel-wide.mp4",
+        "poster": "/video/motion/feature-reel-wide.jpg"
+      },
+      {
+        "format": "story",
+        "width": 1080,
+        "height": 1920,
+        "bytes": 3064666,
+        "video": "/video/motion/feature-reel-story.mp4",
+        "poster": "/video/motion/feature-reel-story.jpg"
+      }
+    ]
+  },
+  {
+    "slug": "screen-wall",
+    "seconds": 16,
+    "formats": [
+      {
+        "format": "story",
+        "width": 1080,
+        "height": 1920,
+        "bytes": 5465302,
+        "video": "/video/motion/screen-wall-story.mp4",
+        "poster": "/video/motion/screen-wall-story.jpg"
+      },
+      {
+        "format": "post",
+        "width": 1080,
+        "height": 1350,
+        "bytes": 5199530,
+        "video": "/video/motion/screen-wall-post.mp4",
+        "poster": "/video/motion/screen-wall-post.jpg"
+      },
+      {
+        "format": "wide",
+        "width": 1920,
+        "height": 1080,
+        "bytes": 5609882,
+        "video": "/video/motion/screen-wall-wide.mp4",
+        "poster": "/video/motion/screen-wall-wide.jpg"
+      }
+    ]
+  },
+  {
+    "slug": "manifesto",
+    "seconds": 7,
+    "formats": [
+      {
+        "format": "story",
+        "width": 1080,
+        "height": 1920,
+        "bytes": 470994,
+        "video": "/video/motion/manifesto-story.mp4",
+        "poster": "/video/motion/manifesto-story.jpg"
+      },
+      {
+        "format": "post",
+        "width": 1080,
+        "height": 1350,
+        "bytes": 450931,
+        "video": "/video/motion/manifesto-post.mp4",
+        "poster": "/video/motion/manifesto-post.jpg"
+      },
+      {
+        "format": "wide",
+        "width": 1920,
+        "height": 1080,
+        "bytes": 465923,
+        "video": "/video/motion/manifesto-wide.mp4",
+        "poster": "/video/motion/manifesto-wide.jpg"
+      }
+    ]
+  },
+  {
+    "slug": "launch-card",
+    "seconds": 6,
+    "formats": [
+      {
+        "format": "story",
+        "width": 1080,
+        "height": 1920,
+        "bytes": 568131,
+        "video": "/video/motion/launch-card-story.mp4",
+        "poster": "/video/motion/launch-card-story.jpg"
+      },
+      {
+        "format": "post",
+        "width": 1080,
+        "height": 1350,
+        "bytes": 541266,
+        "video": "/video/motion/launch-card-post.mp4",
+        "poster": "/video/motion/launch-card-post.jpg"
+      },
+      {
+        "format": "wide",
+        "width": 1920,
+        "height": 1080,
+        "bytes": 664004,
+        "video": "/video/motion/launch-card-wide.mp4",
+        "poster": "/video/motion/launch-card-wide.jpg"
+      }
+    ]
+  },
+  {
+    "slug": "chordlink-print",
+    "seconds": 10,
+    "formats": [
+      {
+        "format": "story",
+        "width": 1080,
+        "height": 1920,
+        "bytes": 2436300,
+        "video": "/video/motion/chordlink-print-story.mp4",
+        "poster": "/video/motion/chordlink-print-story.jpg"
+      },
+      {
+        "format": "post",
+        "width": 1080,
+        "height": 1350,
+        "bytes": 2642776,
+        "video": "/video/motion/chordlink-print-post.mp4",
+        "poster": "/video/motion/chordlink-print-post.jpg"
+      },
+      {
+        "format": "wide",
+        "width": 1920,
+        "height": 1080,
+        "bytes": 4474203,
+        "video": "/video/motion/chordlink-print-wide.mp4",
+        "poster": "/video/motion/chordlink-print-wide.jpg"
+      }
+    ]
+  },
+  {
+    "slug": "chordlink-spin",
+    "seconds": 8,
+    "formats": [
+      {
+        "format": "story",
+        "width": 1080,
+        "height": 1920,
+        "bytes": 1099510,
+        "video": "/video/motion/chordlink-spin-story.mp4",
+        "poster": "/video/motion/chordlink-spin-story.jpg"
+      },
+      {
+        "format": "post",
+        "width": 1080,
+        "height": 1350,
+        "bytes": 1084994,
+        "video": "/video/motion/chordlink-spin-post.mp4",
+        "poster": "/video/motion/chordlink-spin-post.jpg"
+      },
+      {
+        "format": "wide",
+        "width": 1920,
+        "height": 1080,
+        "bytes": 941131,
+        "video": "/video/motion/chordlink-spin-wide.mp4",
+        "poster": "/video/motion/chordlink-spin-wide.jpg"
+      }
+    ]
+  },
+  {
+    "slug": "chordlink-tap",
+    "seconds": 9,
+    "formats": [
+      {
+        "format": "story",
+        "width": 1080,
+        "height": 1920,
+        "bytes": 699103,
+        "video": "/video/motion/chordlink-tap-story.mp4",
+        "poster": "/video/motion/chordlink-tap-story.jpg"
+      },
+      {
+        "format": "post",
+        "width": 1080,
+        "height": 1350,
+        "bytes": 628405,
+        "video": "/video/motion/chordlink-tap-post.mp4",
+        "poster": "/video/motion/chordlink-tap-post.jpg"
+      },
+      {
+        "format": "wide",
+        "width": 1920,
+        "height": 1080,
+        "bytes": 746469,
+        "video": "/video/motion/chordlink-tap-wide.mp4",
+        "poster": "/video/motion/chordlink-tap-wide.jpg"
+      }
+    ]
+  },
+  {
+    "slug": "end-card",
+    "seconds": 3,
+    "formats": [
+      {
+        "format": "story",
+        "width": 1080,
+        "height": 1920,
+        "bytes": 419194,
+        "video": "/video/motion/end-card-story.mp4",
+        "poster": "/video/motion/end-card-story.jpg"
+      },
+      {
+        "format": "post",
+        "width": 1080,
+        "height": 1350,
+        "bytes": 362624,
+        "video": "/video/motion/end-card-post.mp4",
+        "poster": "/video/motion/end-card-post.jpg"
+      },
+      {
+        "format": "wide",
+        "width": 1920,
+        "height": 1080,
+        "bytes": 468617,
+        "video": "/video/motion/end-card-wide.mp4",
+        "poster": "/video/motion/end-card-wide.jpg"
+      }
+    ]
+  }
+]

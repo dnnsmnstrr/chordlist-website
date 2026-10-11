@@ -55,7 +55,7 @@ The pilot. If only one video is ever made, make this one.
 
 **Song choice is the whole video.** Four genuinely well-known songs on I–V–vi–IV, played as chords
 only — no lyrics sung, no melody long enough to be the recording. Chord progressions are not
-copyrightable; a recognisable vocal line is a different question, so keep it instrumental and short.
+copyrightable; a recognizable vocal line is a different question, so keep it instrumental and short.
 [Learn a four-chord pop progression](../content/blog/how-to-play-almost-any-pop-song.md) is the
 written version and the safe list of examples.
 
@@ -170,7 +170,11 @@ Before 10 October:
 4. Commit the render. `public/video/` is served by Next and embeds from the site.
 
 The end card is also the clip every phone edit ends with, so render it once and keep the file
-somewhere the phone can reach it.
+somewhere the phone can reach it. `pnpm video:render:motion EndCard` renders it on its own, in story,
+post and wide, to `public/video/motion/end-card-<format>.mp4`.
+
+The [motion suite](motion-suite.md) is the animated companion to the social stills: the same frame
+and words as `content/social/`, rendered as short loops for the posts that go out beside them.
 
 ---
 

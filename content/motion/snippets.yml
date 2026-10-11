@@ -1,0 +1,64 @@
+# Reusable wording for the /motion wizard. A video that links a field to one of these keys
+# picks up a change here on its next render (pnpm build:motion). See docs/motion-suite.md.
+
+# The lowercase label beside the wordmark, as the social stills use them.
+eyebrows:
+  feature: Feature
+  launch: Launch
+  release: Release
+  format: Format
+  files: Files
+  library: Library
+  progressions: Progressions
+  pricing: Pricing
+  privacy: Privacy
+  from-the-blog: From the blog
+  tour: Tour
+  chordlink: chordlink
+
+# Headlines, one entry per rendered line.
+headlines:
+  just-a-file:
+    - A song is
+    - just a file.
+  new-key:
+    - New key.
+    - Same song.
+  same-progression:
+    - Songs with the
+    - same progression.
+  hands-on-the-instrument:
+    - Keep your hands
+    - on the instrument.
+  out-now:
+    - Out now on
+    - iPhone and iPad.
+  printed-in-layers:
+    - Printed in layers,
+    - with a tag inside.
+  tag-for-your-instrument:
+    - A tag for
+    - your instrument.
+
+# The optional smaller line under a headline. The free limit and the tagline are also offered from
+# VOCABULARY.md, so they are not repeated here.
+sublines:
+  markdown-you-control: Lyrics and chords in portable Markdown files you control.
+  no-account: No account, and your song library is never uploaded.
+  chordlink-tap: One tap opens your library, shuffles, or adds a song.
+
+# The address at the foot of the frame: the page the post points to, never a store link.
+footnotes:
+  home: chordlist.app
+  preview: chordlist.app/#preview
+  docs-library: chordlist.app/docs#library
+  docs-playing: chordlist.app/docs#playing
+  docs-adding-songs: chordlist.app/docs#adding-songs
+  docs-file-format: chordlist.app/docs#file-format
+  faq: chordlist.app/faq
+  privacy: chordlist.app/privacy
+  chordlink: chordlist.app/chordlink
+
+# Pieces of a caption, inserted into the caption as text.
+captions:
+  on-the-app-store: chordlist is on the App Store for iPhone and iPad. Your first 10 songs are free.

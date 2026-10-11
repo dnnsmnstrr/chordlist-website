@@ -13,6 +13,6 @@ outline:
   - Try a familiar loop as a hypothesis, not an answer key
   - One section at a time; note how long each chord lasts
   - Write it down as you go — chords field in the frontmatter, chord sheet in the body
-  - Check the awkward bars; practise the procedure on a familiar song
+  - Check the awkward bars; practice the procedure on a familiar song
   - "Image available: public/blog/finding-the-chords-in-a-song/guitarist-in-motion.webp"
 ---

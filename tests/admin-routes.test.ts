@@ -14,7 +14,7 @@ import {
 } from "../lib/admin-routes"
 
 test("the internal tools are behind the login and the marketing site is not", () => {
-  for (const path of ["/admin", "/emails", "/emails/", "/translations", "/social/editor", "/api/translations/languages", "/copy", "/editorial", "/editorial/a-post", "/api/editorial", "/marketing-copy"]) {
+  for (const path of ["/admin", "/emails", "/emails/", "/translations", "/social/editor", "/api/translations/languages", "/copy", "/editorial", "/editorial/a-post", "/api/editorial", "/marketing-copy", "/motion", "/motion/library", "/api/motion/render"]) {
     assert.equal(isProtectedRoute(path), true, path)
   }
   for (const path of ["/", "/de", "/chordlink", "/blog/a-post", "/privacy", "/press", "/chordlink/notified"]) {
@@ -108,6 +108,8 @@ test("every protected page actually calls the guard", () => {
     "app/(en)/editorial/[slug]/page.tsx": "requireAdmin",
     "app/(en)/emails/page.tsx": "requireAdmin",
     "app/(en)/gallery/page.tsx": "requireAdmin",
+    "app/(en)/motion/page.tsx": "requireAdmin",
+    "app/(en)/motion/library/page.tsx": "requireAdmin",
     "app/(en)/social-editor/page.tsx": "requireAdmin",
     "app/(en)/social/editor/page.tsx": "requireAdmin",
     "app/(en)/social/posts/page.tsx": "requireAdmin",
@@ -115,6 +117,11 @@ test("every protected page actually calls the guard", () => {
     "app/api/editorial/route.ts": "refuseUnlessAdmin",
     "app/api/editorial/images/route.ts": "refuseUnlessAdmin",
     "app/api/editorial/collection/route.ts": "refuseUnlessAdmin",
+    "app/api/motion/route.ts": "refuseUnlessAdmin",
+    "app/api/motion/assets/route.ts": "refuseUnlessAdmin",
+    "app/api/motion/render/route.ts": "refuseUnlessAdmin",
+    "app/api/motion/snippets/route.ts": "refuseUnlessAdmin",
+    "app/api/motion/media/[...path]/route.ts": "refuseUnlessAdmin",
     "app/api/translations/route.ts": "refuseUnlessAdmin",
     "app/api/translations/languages/route.ts": "refuseUnlessAdmin",
   }

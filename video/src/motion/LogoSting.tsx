@@ -1,0 +1,89 @@
+import {AbsoluteFill, interpolate, useCurrentFrame, useVideoConfig} from 'remotion';
+import {motionCopy} from './copy';
+import {AssemblingTile} from './mark';
+import {Backdrop, RiseText, progressAt} from './primitives';
+import {easeInOut, mono, paletteFor, type MotionProps} from './theme';
+
+/**
+ * The mark assembles itself: the two keys drop onto the tile like hammers, their strings draw
+ * down from them, and the mono wordmark types out beside it. Geometry is the canonical mark.
+ */
+export function LogoSting({campaign}: MotionProps) {
+  // The sting is the lockup itself, so it carries no frame of its own.
+  const frame = useCurrentFrame();
+  const {width, height} = useVideoConfig();
+  const palette = paletteFor(campaign);
+  const short = Math.min(width, height);
+  const tile = short * 0.15;
+
+  const slide = progressAt(frame, 40, 22, easeInOut);
+
+  const word = 'chordlist';
+  const typed = Math.floor(interpolate(frame, [52, 52 + word.length * 2.2], [0, word.length], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  }));
+  const caretOn = frame < 52 + word.length * 2.2 + 18 ? Math.floor(frame / 8) % 2 === 0 || typed < word.length : false;
+  const fontSize = tile * 0.62;
+  const wordWidth = fontSize * 0.6 * word.length + tile * 0.36;
+
+  return (
+    <Backdrop palette={palette} campaign={campaign}>
+      <AbsoluteFill style={{alignItems: 'center', justifyContent: 'center'}}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            transform: `translateX(${interpolate(slide, [0, 1], [wordWidth / 2, 0])}px)`,
+          }}
+        >
+          <AssemblingTile size={tile} />
+          <div
+            style={{
+              width: wordWidth,
+              paddingLeft: tile * 0.36,
+              fontFamily: mono,
+              fontWeight: 400,
+              fontSize,
+              letterSpacing: '-0.03em',
+              color: palette.text,
+              whiteSpace: 'pre',
+              opacity: slide,
+            }}
+          >
+            {word.slice(0, typed)}
+            <span
+              style={{
+                display: 'inline-block',
+                width: fontSize * 0.08,
+                height: fontSize * 0.9,
+                marginLeft: fontSize * 0.04,
+                verticalAlign: 'middle',
+                backgroundColor: palette.muted,
+                opacity: caretOn ? 1 : 0,
+              }}
+            />
+          </div>
+        </div>
+      </AbsoluteFill>
+      <AbsoluteFill
+        style={{
+          alignItems: 'center',
+          justifyContent: 'flex-end',
+          paddingBottom: height * (width > height ? 0.16 : 0.2),
+        }}
+      >
+        <RiseText
+          text={motionCopy.logoSting.tagline}
+          start={82}
+          palette={palette}
+          size={short * 0.036}
+          weight={400}
+          color={palette.muted}
+          stagger={2}
+          align="center"
+        />
+      </AbsoluteFill>
+    </Backdrop>
+  );
+}

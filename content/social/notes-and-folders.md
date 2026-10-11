@@ -20,7 +20,7 @@ created: 2026-08-14
 ---
 
 One iCloud folder can be an Obsidian vault and a chordlist library at the same time. Write and
-organise in Obsidian, open the same files in chordlist when you play. Neither app needs a
+organize in Obsidian, open the same files in chordlist when you play. Neither app needs a
 converted copy.
 
 Read the full post: chordlist.app/blog/one-folder-obsidian-and-chordlist

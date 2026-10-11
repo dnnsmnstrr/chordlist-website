@@ -5,7 +5,7 @@ Shared identity and tokens: [DESIGN.md](../DESIGN.md).
 ## Purpose
 
 Chordlist's editorial photography should feel like a fragment of a rehearsal, performance, or
-late-night writing session: tactile, imperfect, and recognisably musical without becoming a literal
+late-night writing session: tactile, imperfect, and recognizably musical without becoming a literal
 product illustration.
 
 Use this style for blog features, atmospheric sections of the website, and supporting backgrounds
@@ -15,11 +15,11 @@ images rather than replace them.
 ## Core style
 
 - Black-and-white experimental 35mm photography.
-- A subject that is relevant to the page but only partly recognisable.
+- A subject that is relevant to the page but only partly recognizable.
 - Strong movement, unusual close crops, unstable angles, and imperfect focus.
 - Crushed blacks, blooming or blown highlights, visible grain, dust, and scratches.
 - A candid, nocturnal feeling rather than a polished studio composition.
-- No typography, logos, borders, collages, fake app interfaces, or decorative colour effects.
+- No typography, logos, borders, collages, fake app interfaces, or decorative color effects.
 
 The recurring visual idea is **music caught in motion**. The subject should give the image meaning;
 the blur and grain give it atmosphere.
@@ -105,7 +105,7 @@ article a memorable visual anchor. Do not add one simply because a post has none
 - Export ordinary body images at about 1600px wide in WebP or another efficiently compressed web
   format.
 - Create a separate 1200×630 composition if an image will be used as a post cover (the key visual).
-  The site crops a cover to that shape from the centre rather than stretching it, so a body image
+  The site crops a cover to that shape from the center rather than stretching it, so a body image
   used as one loses its top and bottom.
 - Check that the important part of the image survives narrow screens and that the file has useful
   alt text and a distinct caption.
@@ -143,7 +143,7 @@ Before publishing a new image, confirm that:
 
 - its subject has a specific relationship to the surrounding content;
 - it belongs to the same visual family as the reference masters without duplicating one;
-- the instrument, hands, and other recognisable details do not contain distracting generation
+- the instrument, hands, and other recognizable details do not contain distracting generation
   errors;
 - no accidental text, logo, border, or collage appears in the image;
 - alt text and, where useful, a distinct caption are present;

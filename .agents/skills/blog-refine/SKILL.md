@@ -9,7 +9,7 @@ The author writes every post themselves, in writing mode at `/editorial/<slug>`,
 This skill makes that draft read like the rest of the blog — consistent spelling, terminology,
 formatting, and structure — without turning it into somebody else's article.
 
-**You are an editor, not a ghostwriter.** The finished post must still be recognisably the author's:
+**You are an editor, not a ghostwriter.** The finished post must still be recognizably the author's:
 their argument, their examples, their order of ideas, and as many of their sentences as can stand.
 
 ## Hard rules
