@@ -11,7 +11,7 @@
     {
       "title": "Link import",
       "summary": "Add Song opens with the import panel ready for a web link.",
-      "durationInSeconds": 11.526,
+      "durationInSeconds": 11.749,
       "shotStartInSeconds": 1.765,
       "file": "generated/light/02-link-import.mp4",
       "poster": "generated/light/02-link-import-poster.png"
@@ -19,7 +19,7 @@
     {
       "title": "Imported song draft",
       "summary": "A stubbed Genius page fills the title, artist and lyrics without using the live network.",
-      "durationInSeconds": 7.403,
+      "durationInSeconds": 7.583,
       "shotStartInSeconds": 3,
       "file": "generated/light/03-imported-song-draft.mp4",
       "poster": "generated/light/03-imported-song-draft-poster.png"
@@ -27,7 +27,7 @@
     {
       "title": "Chord keyboard",
       "summary": "The chord field brings up the purpose-built piano keyboard for entering progressions.",
-      "durationInSeconds": 10.795,
+      "durationInSeconds": 10.639,
       "shotStartInSeconds": 3,
       "file": "generated/light/04-chord-keyboard.mp4",
       "poster": "generated/light/04-chord-keyboard-poster.png"
@@ -35,7 +35,7 @@
     {
       "title": "Shuffle",
       "summary": "Shuffle picks a song from the library and opens it immediately.",
-      "durationInSeconds": 7.81,
+      "durationInSeconds": 8.011,
       "shotStartInSeconds": 3,
       "file": "generated/light/05-shuffle.mp4",
       "poster": "generated/light/05-shuffle-poster.png"
@@ -43,7 +43,7 @@
     {
       "title": "Search",
       "summary": "Searching for “Never gonna give”. Search covers titles, artists and tags, and the library narrows as the query is typed.",
-      "durationInSeconds": 9.153,
+      "durationInSeconds": 9.203,
       "shotStartInSeconds": 3,
       "file": "generated/light/06-search.mp4",
       "poster": "generated/light/06-search-poster.png"
@@ -51,7 +51,7 @@
     {
       "title": "Matching songs",
       "summary": "The detail view surfaces songs that use the same normalized chord progression.",
-      "durationInSeconds": 5.791,
+      "durationInSeconds": 5.953,
       "shotStartInSeconds": 3,
       "file": "generated/light/07-matching-songs.mp4",
       "poster": "generated/light/07-matching-songs-poster.png"
@@ -59,7 +59,7 @@
     {
       "title": "Matching song selected",
       "summary": "Selecting Let It Be moves straight into it, without returning to the library.",
-      "durationInSeconds": 3.326,
+      "durationInSeconds": 3.242,
       "shotStartInSeconds": 3,
       "file": "generated/light/08-matching-song-selected.mp4",
       "poster": "generated/light/08-matching-song-selected-poster.png"
@@ -67,7 +67,7 @@
     {
       "title": "Next song",
       "summary": "The forward control chooses another song while keeping the player controls in place.",
-      "durationInSeconds": 5.623,
+      "durationInSeconds": 5.526,
       "shotStartInSeconds": 3,
       "file": "generated/light/09-next-song.mp4",
       "poster": "generated/light/09-next-song-poster.png"
@@ -75,7 +75,7 @@
     {
       "title": "Song opens",
       "summary": "Morning Light opens: the chord chart in the body, the progression and the playback controls pinned to the bottom bar.",
-      "durationInSeconds": 6.925,
+      "durationInSeconds": 6.975,
       "shotStartInSeconds": 3,
       "file": "generated/light/10-song-opens.mp4",
       "poster": "generated/light/10-song-opens-poster.png"
@@ -83,7 +83,7 @@
     {
       "title": "Transpose control",
       "summary": "Tapping the chord capsules opens the transpose stepper.",
-      "durationInSeconds": 2.417,
+      "durationInSeconds": 2.407,
       "shotStartInSeconds": 3,
       "file": "generated/light/11-transpose-control.mp4",
       "poster": "generated/light/11-transpose-control-poster.png"
@@ -91,7 +91,7 @@
     {
       "title": "Transposed up a semitone",
       "summary": "One semitone up. The whole chart follows — the capsules, the chords beside each section marker and the chords above the words — while the words stay put and every chord keeps the column it was written in.",
-      "durationInSeconds": 3.11,
+      "durationInSeconds": 3.06,
       "shotStartInSeconds": 3,
       "file": "generated/light/12-transposed-up-a-semitone.mp4",
       "poster": "generated/light/12-transposed-up-a-semitone-poster.png"
@@ -99,7 +99,7 @@
     {
       "title": "Autoscroll starts",
       "summary": "Play is pressed. The chart starts moving on its own and the button becomes pause.",
-      "durationInSeconds": 0.78,
+      "durationInSeconds": 0.768,
       "shotStartInSeconds": 3,
       "file": "generated/light/13-autoscroll-starts.mp4",
       "poster": "generated/light/13-autoscroll-starts-poster.png"
@@ -107,7 +107,7 @@
     {
       "title": "Speed control",
       "summary": "The speed dial opens over the running scroll, without interrupting it.",
-      "durationInSeconds": 3.928,
+      "durationInSeconds": 3.863,
       "shotStartInSeconds": 3,
       "file": "generated/light/14-speed-control.mp4",
       "poster": "generated/light/14-speed-control-poster.png"
@@ -115,7 +115,7 @@
     {
       "title": "Speed raised to maximum",
       "summary": "The slider is dragged from the middle to the top and the chart picks up pace.",
-      "durationInSeconds": 3.574,
+      "durationInSeconds": 3.6,
       "shotStartInSeconds": 3,
       "file": "generated/light/15-speed-raised-to-maximum.mp4",
       "poster": "generated/light/15-speed-raised-to-maximum-poster.png"
@@ -123,7 +123,7 @@
     {
       "title": "Hands-free autoscroll",
       "summary": "The longest shot in the cut. Nothing is touched: the chart keeps travelling by itself, hands free. This is what the video exists to show.",
-      "durationInSeconds": 8.541,
+      "durationInSeconds": 11.256,
       "shotStartInSeconds": 3,
       "file": "generated/light/16-hands-free-autoscroll.mp4",
       "poster": "generated/light/16-hands-free-autoscroll-poster.png"
