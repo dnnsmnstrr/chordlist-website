@@ -29,6 +29,7 @@ yarn lockfiles).
 | `pnpm build:icons` | Regenerate every favicon asset in `public/` |
 | `pnpm build:og` | Regenerate `public/og.png`, one card per static page in `public/og/`, **and** one per blog post in `public/blog/og/` |
 | `pnpm build:social` | Regenerate every social asset in `public/social/` from `content/social/` |
+| `pnpm build:motion` | Render every motion definition in `content/motion/` into `public/motion/` (`--only <slug>` for one) |
 | `pnpm build:emails` | Regenerate every email in `public/emails/` from `content/emails/` |
 | `pnpm build:creative` | Regenerate the App Store header, search results, universal, and In-App Event images in `public/app-store-creative/` |
 
@@ -58,6 +59,8 @@ content/blog/        Blog posts as Markdown + frontmatter — the filename is th
 content/blog-schedule.json  The blog's release cadence — see Blog
 content/blog-archive/  Old machine-drafted versions of reset posts — reference only, read by nothing
 content/social/      Social asset definitions — frontmatter builds the image, body is the caption
+content/motion/      Motion video definitions, written by /motion — frontmatter builds the video, body is the caption;
+                     snippets.yml holds the reusable wording their fields can link to
 lib/site-config.ts   Single source of truth for facts about the product
 lib/blog.ts          Reads content/blog: validation, visibility, tags, related posts
 lib/blog-approval.ts The approval digest — what "approved" means for a post
@@ -85,7 +88,7 @@ These are strongly held in this codebase — follow them rather than generic Nex
 
 Every visible string — headings, body text, button labels, `aria-label`s, alt text, metadata
 titles and descriptions — is exported from `locales/en.ts` as a `const` object and imported into
-the component. Components contain layout and behaviour only. When adding a section, add its copy
+the component. Components contain layout and behavior only. When adding a section, add its copy
 object (`homeCopy`, `docsCopy`, `faqCopy`, `pressCopy`, `privacyCopy`, `commonCopy`,
 `metadataCopy`, plus small per-component objects like `pianoCopy` and `screenshotGalleryCopy`)
 and read from it.
@@ -97,6 +100,14 @@ is a contract.
 Components on a translated route read `dictionary(language)` from `@/locales` instead of importing
 `@/locales/en` directly — see Localization. Everything else still imports `@/locales/en`, which is
 correct for a page that only exists in English.
+
+#### American English
+
+Every English word a reader sees — site copy, metadata, blog posts, social and motion assets, emails,
+App Store images, video — uses American spelling: *color*, *center*, *normalize*, *gray*,
+*fulfill*, *practice* as a verb. `DESIGN.md` makes this a rule for the app as well, and the blog
+guides (`docs/blog-voice.md`, `docs/blog-editorial-guidelines.md`) already ask for it. Quoted user
+content and song files keep their own spelling.
 
 #### Inline markup in copy
 
@@ -235,7 +246,7 @@ These categories of files in `public/` are **outputs — edit the generator, not
   drift apart. Each script has a `CONFIG` block at the top for copy, colors, and sizing.
 - **Social assets** (`public/social/<slug>/<format>.png` plus `manifest.json`) — `pnpm build:social`,
   which renders every definition in `content/social/` into the `card`, `post`, and `story` formats it
-  declares. Layouts live in `scripts/lib/social-templates.mjs`; copy, colours, and the format matrix
+  declares. Layouts live in `scripts/lib/social-templates.mjs`; copy, colors, and the format matrix
   live in the script's `CONFIG` block. It is deliberately separate from `build:og`: that build owns
   `public/og.png` and the page and post cards, which must not change when a campaign does. Deleting a
   definition prunes its images on the next run. `docs/social-media-system.md` is the design source of
@@ -257,6 +268,27 @@ These categories of files in `public/` are **outputs — edit the generator, not
   screenshot means adding its filename to `screenshotNames` in `scripts/sync-app-assets.mjs` **and**
   to the `screenshots` arrays in `components/app-showcase.tsx` / `app/press/page.tsx`, plus its copy
   in `locales/en.ts`.
+- **Motion graphics** (`public/video/motion/<piece>-<format>.{mp4,jpg}`) — `pnpm video:render:motion`,
+  which renders every composition in the Remotion **Motion** folder (`video/src/motion/`). They are
+  the social stills in motion: the same frame, formats and type scale as `pnpm build:social`, and a
+  piece with a twin in `content/social/` reads its headline, eyebrow and footnote from that definition
+  through `video/src/motion/generated/social-copy.json`, which `pnpm sync:motion` regenerates. Edit
+  the definition, not the JSON. `docs/motion-suite.md` is the catalogue and the rules.
+  The same script writes `public/video/motion/manifest.json` from the files actually rendered
+  (`--manifest` rewrites it without rendering), and `/motion/library` lists it — with the editor's
+  videos from `public/motion/manifest.json` — to share or download from a phone. Unlike the editor,
+  the library only reads committed files, so it works on the deployed site behind the login; each
+  piece's title and description are `motionLibraryCopy.pieces` in `locales/en.ts`, and
+  `tests/motion-library.test.ts` fails when a rendered piece has none.
+- **Motion videos** (`public/motion/<slug>/<format>.{mp4,jpg}` plus `manifest.json`) — `pnpm build:motion`,
+  which renders every definition in `content/motion/` through the `Motion-Custom-<format>`
+  composition. Definitions are written by the `/motion` wizard; uploads they use live in
+  `assets/motion/<slug>/` and are committed with them. The zod schema in
+  `video/src/motion/custom/schema.ts` is shared by the wizard, its API, the composition and the
+  script, so one set of rules validates a definition wherever it is read. A field may link to a
+  snippet instead of holding words — from `content/motion/snippets.yml`, `locales/vocabulary.json`,
+  or a `content/social/` still — and is resolved at preview and render time, so editing a snippet
+  changes every video that links it on its next render.
 - **App Store screenshot sets** (`public/app-store-screenshots/`, plus `manifest.json` and the ZIPs
   in `downloads/`) — `pnpm build:screens`. Art direction lives in the script's `CONFIG` block; the
   words live in `scripts/lib/app-store-copy.mjs`, keyed by language and then slide, and read shared
@@ -383,7 +415,7 @@ first revalidation.
 ## Internal tools and sign-in
 
 `/emails`, `/screens`, `/copy`, `/gallery`, `/social/posts`, `/social/editor`, `/translations`,
-`/editorial`, `/api/translations/*`, and `/api/editorial` are behind a Supabase Auth login at `/login` (`/logout` signs out).
+`/editorial`, `/motion`, `/api/translations/*`, `/api/editorial`, and `/api/motion` are behind a Supabase Auth login at `/login` (`/logout` signs out).
 `/admin` is the dashboard that links every one of them and the admin backend at `siteConfig.adminBackendUrl`
 (admin.chordlist.app); signing in lands there. A new tool gets a card in its `sections` list as well.
 `lib/admin-routes.ts` is the single list of protected prefixes and the `ADMIN_EMAILS` allowlist.
@@ -409,7 +441,7 @@ ordering comment in `lib/supabase/server.ts` before touching it.
 
 `app/privacy/page.tsx`, `app/press/page.tsx`, and `faqCopy` and `supportCopy` in every
 language describe real product
-behaviour: local file storage, TelemetryDeck analytics, optional chord-data contribution, StoreKit
+behavior: local file storage, TelemetryDeck analytics, optional chord-data contribution, StoreKit
 and RevenueCat purchases, Vercel hosting and Web Analytics. Do not invent, soften, or embellish
 claims about data handling, pricing, or availability — those strings are legal and press copy.
 When the privacy policy changes materially, update `privacyCopy.lastUpdated`.
@@ -522,7 +554,7 @@ which is what re-extracts the keys.
 
 Provisioning deliberately stops short of the steps that need judgement or that risk a file worth
 protecting: `knownRegions` in the Xcode project, a `case` in the capture script, a fixture set of
-songs a speaker would recognise, and `locales/<code>.ts` here. The UI lists them when it finishes.
+songs a speaker would recognize, and `locales/<code>.ts` here. The UI lists them when it finishes.
 A provisioned language starts empty rather than machine-translated — an untranslated string is
 visible and fails the build, a plausible wrong one is not.
 

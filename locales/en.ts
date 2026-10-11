@@ -964,7 +964,7 @@ export const pressCopy = {
       },
       {
         title: "Settings",
-        description: "Choose the app's accent colour and preferred light, dark, or system appearance.",
+        description: "Choose the app's accent color and preferred light, dark, or system appearance.",
       },
       {
         title: "Matching songs",
@@ -1016,7 +1016,7 @@ export const screensCopy = {
   variants: {
     classic: {
       title: "Classic",
-      description: "Product screenshots framed by chordlist's coloured gradient treatment.",
+      description: "Product screenshots framed by chordlist's colored gradient treatment.",
     },
     analog: {
       title: "Analog",
@@ -1042,7 +1042,7 @@ export const screensCopy = {
   creative: {
     title: "Creative assets",
     description:
-      "The product page header, the search results asset, the universal asset that can serve as either, and In-App Event media, for iOS 27 and iPadOS 27. Each is drawn at the size of Apple's template, with its words and devices inside the centred safe area Apple crops around.",
+      "The product page header, the search results asset, the universal asset that can serve as either, and In-App Event media, for iOS 27 and iPadOS 27. Each is drawn at the size of Apple's template, with its words and devices inside the centered safe area Apple crops around.",
     setTitle: (language: string, variant: string) => `${language} · ${variant}`,
     meta: (width: number, height: number) => `${width} × ${height} PNG`,
     download: "Download PNG",
@@ -1111,7 +1111,7 @@ export const privacyCopy = {
       paragraphs: [
         `Until the unlimited-song unlock is purchased, ${siteConfig.name} shows a small advert for another independent app at the end of the song list and of each song. Adverts are provided by Kickstart Exchange, operated by Hudson Heavy Industries Ltd in the United Kingdom, which decides independently how it processes this data.`,
         "To show and count adverts, Kickstart Exchange receives your App Store country and records which advert was shown or tapped. According to Kickstart Exchange, it does not collect IP addresses, device identifiers, the advertising identifier, or cookies, does not track you across apps or build profiles, and keeps advert records for about 30 days before keeping only daily totals. Its network provider, Cloudflare, carries the connection; Kickstart Exchange states that it does not retain IP addresses.",
-        `${siteConfig.operator} shows these adverts on the basis of its legitimate interest in financing the free version of ${siteConfig.name} (Art. 6(1)(f) GDPR). Buying the unlimited-song unlock removes the adverts. The European Commission has recognised the United Kingdom as providing an adequate level of data protection.`,
+        `${siteConfig.operator} shows these adverts on the basis of its legitimate interest in financing the free version of ${siteConfig.name} (Art. 6(1)(f) GDPR). Buying the unlimited-song unlock removes the adverts. The European Commission has recognized the United Kingdom as providing an adequate level of data protection.`,
       ],
       linkPrefix: "Kickstart Exchange describes its handling of this data in its",
       linkLabel: "privacy notice",
@@ -1131,7 +1131,7 @@ export const privacyCopy = {
     chordlinkOrders: {
       title: "chordlink orders",
       paragraphs: [
-        `When chordlink sales open, Stripe will process the checkout, buyer email, payment, and German delivery address. ${siteConfig.operator} will use that information to fulfil the physical order and send the individual Apple offer-code redemption link. Payment-card and bank-account details remain with Stripe.`,
+        `When chordlink sales open, Stripe will process the checkout, buyer email, payment, and German delivery address. ${siteConfig.operator} will use that information to fulfill the physical order and send the individual Apple offer-code redemption link. Payment-card and bank-account details remain with Stripe.`,
         "The private chordlink inventory stores only the Stripe Checkout Session reference, the unit's public number and edition metadata, fulfillment state, an optional operator note, and its assigned Apple offer code. The public NFC number is not used as an entitlement secret. Buyer email and delivery address are not copied into the chordlist database.",
         `That inventory is a Postgres database hosted by Supabase, which stores and processes it as a service provider on behalf of ${siteConfig.operator} and under its instructions. Supabase may also process the connection, request, and security information needed to operate the database and the functions that read it.`,
         "The database is located in Supabase's Ireland region, so these records are stored in the European Union. Supabase is a company based in the United States, and it may access stored data from outside the European Union where that is necessary to operate, secure, and support the service, under the terms and transfer safeguards of its data-processing agreement.",
@@ -1496,6 +1496,111 @@ export const pianoCopy = {
   chordModeActive: "Chord mode · Shift for minor · Esc to exit",
 } as const
 
+/** /motion/library: every rendered motion piece, ready to share or download from a phone. */
+export const motionLibraryCopy = {
+  metadata: {
+    title: "Motion library",
+    description: `Every rendered ${siteConfig.name} motion video, ready to share or download.`,
+  },
+  eyebrow: "Internal",
+  title: "Motion library",
+  introduction:
+    "Every motion video, ready to post. Pick a format, then <strong>Share</strong> opens your phone's share sheet with the video itself — choose Instagram to post it as a Reel, Story, or feed post. <strong>Download</strong> saves the file.",
+  sections: {
+    suite: "The motion suite",
+    custom: "Made in the editor",
+  },
+  formats: {
+    story: { label: "Story", ratio: "9:16", use: "Reels, Stories, TikTok, Shorts" },
+    post: { label: "Post", ratio: "4:5", use: "Feed posts" },
+    wide: { label: "Wide", ratio: "16:9", use: "YouTube, the website, X" },
+    square: { label: "Square", ratio: "1:1", use: "Mastodon, Bluesky, Threads" },
+  },
+  formatPicker: "Format",
+  seconds: (seconds: number) => `${seconds} s`,
+  megabytes: (megabytes: string) => `${megabytes} MB`,
+  share: "Share",
+  preparing: "Preparing…",
+  shareReady: "Tap again to share",
+  shareUnsupported: "This browser can't share files, so the video was downloaded instead.",
+  shareFailed: "Sharing failed. Try Download instead.",
+  download: "Download",
+  copyCaption: "Copy caption",
+  captionCopied: "Caption copied",
+  captionFrom: (slug: string) => `Caption from the ${slug} still`,
+  play: (title: string) => `Play ${title}`,
+  pieces: {
+    "logo-sting": {
+      title: "Logo sting",
+      description: "The mark assembles itself: the keys drop onto the tile, the strings draw down, the wordmark types out, then the tagline.",
+    },
+    "logo-reveal": {
+      title: "Logo reveal",
+      description: "The logo assembles itself larger and centered, and the name fades in beneath it.",
+    },
+    "logo-reveal-badge": {
+      title: "Logo reveal with badge",
+      description: "The same reveal with Apple's official App Store badge fading in below the name.",
+    },
+    "plain-text": {
+      title: "A song is just a file",
+      description: "morning-light.md types itself out, then the app's view of the same song slides in from the edge.",
+    },
+    transpose: {
+      title: "New key, same song",
+      description: "Morning Light shifts +2, then +5, then home. Each chord rolls in place and the words never move.",
+    },
+    "same-chords": {
+      title: "Songs with the same progression",
+      description: "Seven songs in seven keys fold into one I – V – vi – IV, then flip to C – G – Am – F: the key the app compares them in.",
+    },
+    "chord-keys": {
+      title: "A keyboard that speaks in chords",
+      description: "Morning Light played on a keyboard drawn like the mark, the chord name landing on each change.",
+    },
+    "hands-free": {
+      title: "Keep your hands on the instrument",
+      description: "The hands-free autoscroll, with a running clock beside a touch count that stays at zero.",
+    },
+    "theme-spectrum": {
+      title: "Many colors",
+      description: "The app scrolling through its accent colors, with the swatches beneath it.",
+    },
+    "feature-reel": {
+      title: "Feature reel",
+      description: "A 30-second tour in six scenes cut from the real recording, ending on the end card.",
+    },
+    "screen-wall": {
+      title: "Screen wall",
+      description: "Every screen drifting past in alternating columns, with the tagline on a solid panel.",
+    },
+    manifesto: {
+      title: "Manifesto",
+      description: "Your lyrics. Your chords. Your files. Your songbook. On the beat, closing on the logo and the address.",
+    },
+    "launch-card": {
+      title: "Out now",
+      description: "The release line, the free-limit line, and three screens rising into frame.",
+    },
+    "chordlink-print": {
+      title: "chordlink, printed",
+      description: "The tag 3D-printed layer by layer: the pocket, a pause for the NFC tag, the lid, and the logo in graphite.",
+    },
+    "chordlink-spin": {
+      title: "chordlink on a turntable",
+      description: "The finished chordlink model turning slowly beneath what one tap does.",
+    },
+    "chordlink-tap": {
+      title: "Tap the tag, land in a song",
+      description: "The chordlink touched to a locked phone: the NFC read, the unlock, and a shuffle straight into a song.",
+    },
+    "end-card": {
+      title: "End card",
+      description: "The promo's end card on its own: the clip every phone edit ends on.",
+    },
+  },
+} as const
+
 export const adminCopy = {
   metadata: {
     title: "Admin",
@@ -1544,6 +1649,14 @@ export const adminCopy = {
       title: "Social post editor",
       description: "Compose, preview, and export social post configurations.",
     },
+    motion: {
+      title: "Motion editor",
+      description: "Write, preview, and render short videos in the social frame.",
+    },
+    motionLibrary: {
+      title: "Motion library",
+      description: "Every rendered video, ready to share to Instagram or download from your phone.",
+    },
     emails: {
       title: "Email templates",
       description: "Review the built emails before pasting them into Brevo.",
@@ -1558,6 +1671,155 @@ export const adminCopy = {
     },
   },
   signOut: "Sign out",
+} as const
+
+export const motionEditorCopy = {
+  metadata: {
+    title: "Motion editor",
+    description: `Write, preview, and render short ${siteConfig.name} videos in the social frame.`,
+  },
+  eyebrow: "Internal · local only",
+  title: "Motion editor",
+  introduction:
+    "Make a short video in the same frame as the social stills: pick a template, write the words, choose the media, preview it here, then render it. Each video is saved as a definition in <code>content/motion/</code> and rendered into <code>public/motion/</code>, so it can be rebuilt with <code>pnpm build:motion</code>.",
+  steps: {
+    start: "Start",
+    words: "Words",
+    media: "Media",
+    look: "Look",
+    render: "Render",
+  },
+  navigation: { back: "Back", next: "Next" },
+  start: {
+    nameLabel: "Name",
+    nameHint: "Lowercase words joined by hyphens. It becomes the file name and the folder the videos land in.",
+    namePlaceholder: "learn-one-shape",
+    templateHeading: "Start from a template",
+    socialHeading: "Or start from a social still",
+    socialHint: "Copies the still's eyebrow, headline, footnote, and template, so the video and the image say the same thing.",
+    socialPlaceholder: "Choose a still…",
+    existingHeading: "Or keep working on a saved video",
+    existingEmpty: "Nothing saved yet.",
+    edit: "Edit",
+  },
+  templates: {
+    statement: { title: "Statement", description: "One short claim, set large." },
+    screen: { title: "Screen", description: "The headline beside the app, as a screenshot or a clip of the screen recording." },
+    progression: { title: "Progression", description: "A chord row over its Roman numerals." },
+    file: { title: "File", description: "A song as it sits on disk, typed out line by line." },
+    photo: { title: "Photo", description: "A photograph from the collection, full bleed, with the type over it." },
+    "chordlink-print": {
+      title: "chordlink print",
+      description: "The tag printed in 3D, layer by layer: the pocket, the NFC tag dropping in, the lid, and the logo in graphite.",
+    },
+    "chordlink-model": { title: "chordlink model", description: "The finished tag, the site's 3D model, turning once beside your words." },
+    "chordlink-tap": {
+      title: "chordlink tap",
+      description: "A locked phone touched to the tag, unlocked, and shuffling straight into a random song.",
+    },
+  },
+  words: {
+    eyebrow: "Label",
+    eyebrowHint: "Beside the wordmark, set lowercase: Feature, Launch, Format.",
+    headline: "Headline",
+    headlineHint: "One line per row, up to four. The line breaks you type are the ones that render.",
+    subline: "Second line",
+    sublineHint: "Optional, smaller, under the headline.",
+    footnote: "Footnote",
+    footnoteHint: "Usually the page the post points to. Never a store link.",
+    chords: "Chords",
+    chordsHint: "Separated by spaces, up to six.",
+    numerals: "Numerals",
+    filename: "File name",
+    fileLines: "File",
+    fileLinesHint: "Paste a real excerpt. Spacing is kept, so chords stay over their syllables. Leave empty for Morning Light.",
+    caption: "Caption",
+    captionHint: "Saved with the definition for whoever posts it. It is not rendered.",
+  },
+  media: {
+    none: "This template has no media.",
+    sources: {
+      screenshot: "Screenshot",
+      recording: "Screen recording",
+      colorScroll: "Color scroll",
+      photo: "Photography",
+      upload: "Your files",
+    },
+    recordingHint: "Cut from the press-kit recording. The clip stops at the end of its chapter.",
+    recordingMissing: "The recording is not synced. Check out the app repository beside this one and run pnpm sync:motion.",
+    offset: "Start into the chapter",
+    seconds: (value: number) => `${value.toFixed(1)} s`,
+    colorScrollHint: "The chart cycling through the app's seven tints.",
+    upload: "Add a file",
+    uploadHint: "Images are resized and saved as WebP; videos are kept as they are, up to 80 MB. Both are committed with the definition.",
+    uploading: "Uploading…",
+    uploadsEmpty: "Nothing uploaded for this video yet.",
+    nameFirst: "Give the video a name in the first step before adding files.",
+    chapters: {
+      library: "Song library",
+      chordKeyboard: "Chord keyboard",
+      search: "Search",
+      matchingSongs: "Matching songs",
+      matchingSelected: "Matching song opens",
+      songOpens: "Song opens",
+      transposeControl: "Transpose control",
+      transposed: "Transposed up a semitone",
+      autoscrollStarts: "Autoscroll starts",
+      speedControl: "Speed control",
+      speedMax: "Speed at maximum",
+      handsFree: "Hands-free autoscroll",
+    },
+  },
+  look: {
+    campaign: "Theme",
+    campaigns: { ink: "Ink", paper: "Paper", blueprint: "Blueprint", "warm-stage": "Warm stage" },
+    appearance: "Captures",
+    appearances: { light: "Light", dark: "Dark" },
+    formats: "Formats",
+    formatNames: { story: "Story · 9:16", post: "Post · 4:5", wide: "Wide · 16:9", square: "Square · 1:1" },
+    duration: "Length",
+    endCard: "End on the end card",
+    endCardHint: "Adds the promo's three-second end card.",
+  },
+  render: {
+    save: "Save",
+    saving: "Saving…",
+    saved: "Saved to content/motion.",
+    render: "Render",
+    rendering: (stage: string, percent: number) => `${stage} · ${percent}%`,
+    stages: { sync: "Copying media", bundle: "Bundling", render: "Rendering", finished: "Finished" },
+    done: "Rendered. The files are in public/motion and ready to commit.",
+    failed: "The render failed.",
+    outputs: "Rendered videos",
+    open: "Open",
+    summary: (formats: number, total: number) => `${formats} ${formats === 1 ? "format" : "formats"} · ${total} s`,
+    unsaved: "Unsaved changes",
+  },
+  preview: {
+    heading: "Preview",
+    format: "Preview format",
+  },
+  snippets: {
+    choose: "Use a snippet…",
+    insert: "Insert a snippet…",
+    sources: { snippets: "Snippets", vocabulary: "Vocabulary", social: "Social stills" },
+    linked: (id: string) => `Linked to the snippet “${id}”`,
+    usedBy: (count: number) => (count === 1 ? "Used by 1 saved video" : `Used by ${count} saved videos`),
+    readOnly: {
+      vocabulary: "Shared wording from VOCABULARY.md in the app repository. Change it there.",
+      social: "The wording of a social still. Change it in content/social, and the still and this video change together.",
+    },
+    edit: "Edit snippet",
+    editHint: "Changes this wording in every video linked to it, on their next render.",
+    unlink: "Unlink",
+    unlinkHint: "Keeps the text here as plain text you can change for this video only.",
+    saveAs: "Save as snippet",
+    keyLabel: "Snippet name",
+    keyPlaceholder: "feature",
+    save: "Save snippet",
+    cancel: "Cancel",
+    saved: "Snippet saved to content/motion/snippets.yml.",
+  },
 } as const
 
 export const marketingCopyPageCopy = {
@@ -1590,7 +1852,7 @@ export const copyReviewCopy = {
     "Set NEXT_PUBLIC_COPY_VARIANT on the deployment and rebuild. Unset ships the default. An unknown value fails the build rather than quietly shipping the default, which would look exactly like a variant that did not work.",
   languageLabel: "Language",
   unchangedLabel: "unchanged",
-  unchangedHint: "Grey cells repeat the shipping wording.",
+  unchangedHint: "Gray cells repeat the shipping wording.",
   variants: {
     files: {
       name: "Files",

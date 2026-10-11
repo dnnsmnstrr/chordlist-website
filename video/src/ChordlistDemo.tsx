@@ -2,8 +2,6 @@ import designTokens from '../../design/tokens.json';
 import {ChordlistIcon} from '../../components/chordlist-icon';
 import {linearTiming, TransitionSeries} from '@remotion/transitions';
 import {fade} from '@remotion/transitions/fade';
-import {loadFont as loadGeist} from '@remotion/google-fonts/Geist';
-import {loadFont as loadGeistMono} from '@remotion/google-fonts/GeistMono';
 import {paper} from '@remotion/effects/paper';
 import type {ReactNode} from 'react';
 import {
@@ -29,6 +27,7 @@ import {
   type ResolvedScene,
 } from './timeline';
 import {resolveCopy} from './copy';
+import {mono as monoFont, sans as baseFont} from './motion/theme';
 import type {VideoProps} from './video-schema';
 
 type Palette = {
@@ -52,19 +51,10 @@ function paletteFor(): Palette {
   };
 }
 
-const {fontFamily: baseFont} = loadGeist('normal', {
-  weights: ['400', '500', '600', '700'],
-  subsets: ['latin'],
-});
-const {fontFamily: monoFont} = loadGeistMono('normal', {
-  weights: ['400', '500', '600'],
-  subsets: ['latin'],
-});
-
 const normalizeLineBreaks = (text: string) =>
   text.replace(/\\r\\n|\\n|\\r/g, '\n');
 
-const Background: React.FC<{
+export const PaperBackground: React.FC<{
   seed: number;
 }> = ({seed}) => {
   const {height, width} = useVideoConfig();
@@ -150,7 +140,7 @@ const HookCard: React.FC<{
 
   return (
     <AbsoluteFill>
-      <Background seed={paperSeed} />
+      <PaperBackground seed={paperSeed} />
       <div
         style={{
           position: 'absolute',
@@ -396,7 +386,7 @@ const ProductScene: React.FC<{
 
   return (
     <AbsoluteFill>
-      <Background seed={paperSeed} />
+      <PaperBackground seed={paperSeed} />
       {scene.clips.length > 0 ? (
         <Series>
           {scene.clips.map((clip, clipIndex) => (
@@ -518,7 +508,7 @@ const EndCard: React.FC<{
 
   return (
     <AbsoluteFill>
-      <Background seed={paperSeed} />
+      <PaperBackground seed={paperSeed} />
       <div
         style={{
           position: 'absolute',

@@ -1374,7 +1374,7 @@ export function SocialPostEditor({
               label="Headline"
               hint={
                 isCenteredScreenshot(config)
-                  ? "Not shown in the centred layout"
+                  ? "Not shown in the centered layout"
                   : config.template === "file"
                     ? "Optional"
                     : "One rendered line per row"
@@ -1532,7 +1532,7 @@ export function SocialPostEditor({
               <div className="grid grid-cols-2 rounded-xl bg-muted p-1" role="group" aria-label="Screenshot layout">
                 {([
                   { name: "beside", label: "With headline" },
-                  { name: "centered", label: "Centred, no text" },
+                  { name: "centered", label: "Centered, no text" },
                 ] as { name: ScreenshotLayout; label: string }[]).map((layout) => (
                   <button
                     key={layout.name}
