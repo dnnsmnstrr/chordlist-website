@@ -212,7 +212,20 @@ export const docsCopy = {
   title: "Documentation",
   introduction: `${siteConfig.name} is a songbook built on ordinary Markdown files. Start with the quick start to get your first song on screen, then come back to the rest of this guide whenever you want to write chords, organize files, or sync your library.`,
   onThisPage: "On this page",
-  annotatedFigureHint: "Numbers on the screenshot match the list.",
+  annotatedFigureHint: "Numbers on the screenshot match the list. Tap one to jump between them.",
+  search: {
+    label: "Search the documentation",
+    placeholder: "Search the docs — try “transpose” or “restore”",
+    clear: "Clear the search",
+    resultCount: (count: number) => (count === 1 ? "1 result" : `${count} results`),
+    showingFirst: (shown: number, count: number) => `Showing the first ${shown} of ${count} results. Add a word to narrow them down.`,
+    empty: "Nothing in the documentation matches that search. Try fewer words, or ask in the FAQ.",
+    shortcutHint: "Press / to search",
+  },
+  markers: {
+    toCallout: (number: number, title: string) => `${number}: ${title}. Show its explanation`,
+    toMarker: (number: number) => `Show ${number} on the screenshot`,
+  },
   tableOfContents: [
     {
       label: "Songs, lyrics & chords",
@@ -244,6 +257,7 @@ export const docsCopy = {
   sections: {
     gettingStarted: {
       title: "Quick start",
+      keywords: searchAliases("setup", "set up", "first steps", "begin", "install", "folder", "choose folder", "onboarding"),
       introduction: "Three steps take you from a fresh install to a song on your music stand.",
       steps: [
         {
@@ -269,6 +283,7 @@ export const docsCopy = {
     },
     library: {
       title: "Find songs",
+      keywords: searchAliases("filter", "sort", "order", "random", "find", "look up", "apple music", "tags"),
       introduction:
         "The song list shows every song in your folder, grouped by artist. None of these tools move or rename your files — they only change what you see.",
       features: [
@@ -310,6 +325,7 @@ export const docsCopy = {
     },
     playing: {
       title: "Play a song",
+      keywords: searchAliases("key", "capo", "change key", "scroll", "speed", "hands-free", "statistics", "play count", "medley"),
       introduction:
         "Open any song to see its lyrics and chords. Everything you need while playing sits on this one screen.",
       callouts: [
@@ -354,6 +370,7 @@ export const docsCopy = {
     },
     addingSongs: {
       title: "Add and import songs",
+      keywords: searchAliases("new song", "create", "paste", "url", "link", "website", "ultimate guitar", "share sheet", "edit", "minor"),
       introduction:
         "Tap <code>+</code> on the song list to open the editor. Only the title, artist, and lyrics are required — everything else can be added later with the edit button on the song.",
       callouts: [
@@ -400,6 +417,7 @@ export const docsCopy = {
     },
     chords: {
       title: "Write chords",
+      keywords: searchAliases("chord sheet", "chordpro", "notation", "syntax", "brackets", "verse", "chorus", "bridge", "progression", "align"),
       introduction:
         "Lyrics are plain text, so chords are too. chordlist understands three ways of writing them, and you can mix them in the same song.",
       examples: [
@@ -447,6 +465,7 @@ export const docsCopy = {
     },
     fileFormat: {
       title: "Files and folders",
+      keywords: searchAliases("markdown", "yaml", "frontmatter", "metadata", "structure", "rename", "subfolder", "nested", "md file"),
       introduction:
         "Your library is just a folder. Inside it, each artist has a folder, and each song is a Markdown file in its artist’s folder. The names on disk are what you see in the app.",
       diagram: {
@@ -521,6 +540,7 @@ export const docsCopy = {
     },
     otherApps: {
       title: "Manage files with other apps",
+      keywords: searchAliases("finder", "files app", "mac", "computer", "git", "backup", "text editor", "sync"),
       introduction:
         "Because the library is made of folders and text files, chordlist is not the only way to work with it. Close the song editor before changing the same file elsewhere, then pull down on the song list when you return.",
       options: [
@@ -540,6 +560,7 @@ export const docsCopy = {
     },
     obsidian: {
       title: `Use ${siteConfig.name} with Obsidian`,
+      keywords: searchAliases("vault", "notes", "icloud", "mac"),
       introduction:
         "An Obsidian vault is also a folder of Markdown files, so the same folder can be both an Obsidian vault and a chordlist library.",
       steps: [
@@ -556,6 +577,7 @@ export const docsCopy = {
     },
     offline: {
       title: "Keep an iCloud folder available offline",
+      keywords: searchAliases("no internet", "airplane mode", "download", "gig", "rehearsal", "cloud", "sync"),
       introduction:
         "A folder in iCloud Drive can appear in Files while some of its songs are stored only in the cloud. Before a rehearsal, trip, or gig without a reliable connection, tell your device to keep the whole songs folder downloaded.",
       steps: [
@@ -575,6 +597,7 @@ export const docsCopy = {
     },
     unlimited: {
       title: `${siteConfig.name} unlimited`,
+      keywords: searchAliases("price", "pricing", "cost", "buy", "purchase", "in-app purchase", "iap", "pay", "paid", "free", "limit", "subscription", "upgrade", "pro", "premium", "restore", "refund", "money back", "receipt", "offer code", "promo code", "redeem", "ads", "advert", "family", "apple account", "screen time"),
       introduction: `${siteConfig.name} is free for your first ${siteConfig.freeSongLimit} songs. <strong>${siteConfig.name} unlimited</strong> is a one-time in-app purchase that removes that limit for good and supports the app’s development.`,
       includesTitle: "What it includes",
       includes: [
@@ -664,6 +687,7 @@ export const docsCopy = {
     },
     troubleshooting: {
       title: "Troubleshooting",
+      keywords: searchAliases("help", "problem", "bug", "broken", "missing", "not showing", "not working", "error", "support"),
       introduction: "Most problems come down to where a file is or what it is called. Start here.",
       items: [
         {

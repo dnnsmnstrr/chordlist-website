@@ -2,11 +2,13 @@ import type { Metadata } from "next"
 import Link from "next/link"
 
 import { CollapsibleSection } from "@/components/collapsible-section"
+import { DocsSearch } from "@/components/docs-search"
 import { DocsSidebar } from "@/components/docs-sidebar"
 import { CalloutList, DocsScreenshot, type DocsScreenshotName, type ScreenshotMarker } from "@/components/docs-screenshot"
 import { InlineMarkup } from "@/components/inline-markup"
 import { SiteFooter } from "@/components/site-footer"
 import { SiteHeader } from "@/components/site-header"
+import { docsFigureIds, docsQuestionId, docsSectionIds } from "@/lib/docs-search"
 import { pageMetadata } from "@/lib/page-metadata"
 import { siteConfig } from "@/lib/site-config"
 import { docsCopy } from "@/locales/en"
@@ -84,6 +86,7 @@ export default function DocsPage() {
           <p className="mt-4 max-w-2xl text-pretty leading-relaxed text-muted-foreground">
             {docsCopy.introduction}
           </p>
+          <DocsSearch />
         </header>
 
         <div className="mt-10 grid items-start gap-12 lg:grid-cols-[13rem_minmax(0,1fr)]">
@@ -91,7 +94,7 @@ export default function DocsPage() {
 
           <div className="min-w-0 flex flex-col gap-16">
             <GroupLabel>{songsGroup.label}</GroupLabel>
-            <DocsSection id="getting-started" title={sections.gettingStarted.title}>
+            <DocsSection id={docsSectionIds.gettingStarted} title={sections.gettingStarted.title}>
               <p>{sections.gettingStarted.introduction}</p>
               <ol className="grid gap-8 sm:grid-cols-3 sm:gap-5">
                 {sections.gettingStarted.steps.map((step, index) => (
@@ -116,7 +119,7 @@ export default function DocsPage() {
               <BulletList items={sections.gettingStarted.notes} />
             </DocsSection>
 
-            <DocsSection id="library" title={sections.library.title}>
+            <DocsSection id={docsSectionIds.library} title={sections.library.title}>
               <p>{sections.library.introduction}</p>
               <div className="grid grid-cols-2 gap-4 sm:max-w-md sm:gap-6">
                 {sections.library.figures.map((figure, index) => (
@@ -129,7 +132,7 @@ export default function DocsPage() {
               <FeatureList features={sections.library.features} />
             </DocsSection>
 
-            <DocsSection id="playing" title={sections.playing.title}>
+            <DocsSection id={docsSectionIds.playing} title={sections.playing.title}>
               <p>{sections.playing.introduction}</p>
               <AnnotatedFigure
                 screenshots={
@@ -138,15 +141,18 @@ export default function DocsPage() {
                       name="02-Song-Detail"
                       alt={sections.playing.figures[0].alt}
                       markers={markers.playing[0]}
+                      annotations={{ figureId: docsFigureIds.playing, titles: calloutTitles(sections.playing.callouts) }}
                     />
                     <DocsScreenshot
                       name="07-Song-Suggestions"
                       alt={sections.playing.figures[1].alt}
                       markers={markers.playing[1]}
                       firstMarker={playingOnSong + 1}
+                      annotations={{ figureId: docsFigureIds.playing, titles: calloutTitles(sections.playing.callouts) }}
                     />
                   </div>
                 }
+                figureId={docsFigureIds.playing}
                 callouts={sections.playing.callouts}
                 wide
               />
@@ -155,7 +161,7 @@ export default function DocsPage() {
               </Callout>
             </DocsSection>
 
-            <DocsSection id="adding-songs" title={sections.addingSongs.title}>
+            <DocsSection id={docsSectionIds.addingSongs} title={sections.addingSongs.title}>
               <p>
                 <InlineMarkup text={sections.addingSongs.introduction} />
               </p>
@@ -165,8 +171,10 @@ export default function DocsPage() {
                     name="03-Creation-Flow"
                     alt={sections.addingSongs.figure.alt}
                     markers={markers.addingSongs}
+                    annotations={{ figureId: docsFigureIds.addingSongs, titles: calloutTitles(sections.addingSongs.callouts) }}
                   />
                 }
+                figureId={docsFigureIds.addingSongs}
                 callouts={sections.addingSongs.callouts}
               />
               <h3 className="mt-4 text-lg font-semibold tracking-tight text-foreground">
@@ -176,7 +184,7 @@ export default function DocsPage() {
               <p className="text-sm">{sections.addingSongs.note}</p>
             </DocsSection>
 
-            <DocsSection id="chords" title={sections.chords.title}>
+            <DocsSection id={docsSectionIds.chords} title={sections.chords.title}>
               <p>{sections.chords.introduction}</p>
               <div className="flex flex-col gap-8">
                 {sections.chords.examples.map((example, index) => (
@@ -220,7 +228,7 @@ export default function DocsPage() {
             </DocsSection>
 
             <GroupLabel>{filesGroup.label}</GroupLabel>
-            <DocsSection id="file-format" title={sections.fileFormat.title}>
+            <DocsSection id={docsSectionIds.fileFormat} title={sections.fileFormat.title}>
               <p>{sections.fileFormat.introduction}</p>
               <PathDiagram label={sections.fileFormat.diagram.label} parts={sections.fileFormat.diagram.parts} />
               <CodeExample label={sections.fileFormat.fileTreeLabel} code={sections.fileFormat.fileTree} />
@@ -233,12 +241,12 @@ export default function DocsPage() {
               <BulletList items={sections.fileFormat.notes} />
             </DocsSection>
 
-            <DocsSection id="other-apps" title={sections.otherApps.title}>
+            <DocsSection id={docsSectionIds.otherApps} title={sections.otherApps.title}>
               <p>{sections.otherApps.introduction}</p>
               <FeatureList features={sections.otherApps.options} columns={3} />
             </DocsSection>
 
-            <DocsSection id="obsidian" title={sections.obsidian.title}>
+            <DocsSection id={docsSectionIds.obsidian} title={sections.obsidian.title}>
               <p>{sections.obsidian.introduction}</p>
               <NumberedList items={sections.obsidian.steps} />
               <CodeExample label={sections.obsidian.exampleLabel} code={sections.obsidian.example} />
@@ -246,7 +254,7 @@ export default function DocsPage() {
               <ExternalLink href={externalLinks.obsidianICloud}>{sections.obsidian.helpLink}</ExternalLink>
             </DocsSection>
 
-            <DocsSection id="offline" title={sections.offline.title}>
+            <DocsSection id={docsSectionIds.offline} title={sections.offline.title}>
               <p>{sections.offline.introduction}</p>
               <NumberedList items={sections.offline.steps} />
               <BulletList items={sections.offline.notes} />
@@ -254,7 +262,7 @@ export default function DocsPage() {
             </DocsSection>
 
             <GroupLabel>{otherGroup.label}</GroupLabel>
-            <DocsSection id="unlimited" title={sections.unlimited.title}>
+            <DocsSection id={docsSectionIds.unlimited} title={sections.unlimited.title}>
               <p>
                 <InlineMarkup text={sections.unlimited.introduction} />
               </p>
@@ -278,8 +286,10 @@ export default function DocsPage() {
                     name="08-Paywall"
                     alt={sections.unlimited.figure.alt}
                     markers={markers.unlimited}
+                    annotations={{ figureId: docsFigureIds.unlimited, titles: calloutTitles(sections.unlimited.callouts) }}
                   />
                 }
+                figureId={docsFigureIds.unlimited}
                 callouts={sections.unlimited.callouts}
               />
               <Callout>
@@ -290,8 +300,12 @@ export default function DocsPage() {
                 {sections.unlimited.problemsTitle}
               </h3>
               <div className="border-t border-border">
-                {sections.unlimited.problems.map((item) => (
-                  <CollapsibleSection key={item.question} title={item.question}>
+                {sections.unlimited.problems.map((item, index) => (
+                  <CollapsibleSection
+                    key={item.question}
+                    id={docsQuestionId("unlimited", index)}
+                    title={item.question}
+                  >
                     <p className="text-pretty leading-relaxed">
                       <InlineMarkup text={item.answer} />
                     </p>
@@ -308,11 +322,15 @@ export default function DocsPage() {
               </p>
             </DocsSection>
 
-            <DocsSection id="troubleshooting" title={sections.troubleshooting.title}>
+            <DocsSection id={docsSectionIds.troubleshooting} title={sections.troubleshooting.title}>
               <p>{sections.troubleshooting.introduction}</p>
               <div className="border-t border-border">
-                {sections.troubleshooting.items.map((item) => (
-                  <CollapsibleSection key={item.question} title={item.question}>
+                {sections.troubleshooting.items.map((item, index) => (
+                  <CollapsibleSection
+                    key={item.question}
+                    id={docsQuestionId("troubleshooting", index)}
+                    title={item.question}
+                  >
                     <p className="text-pretty leading-relaxed">
                       <InlineMarkup text={item.answer} />
                     </p>
@@ -341,6 +359,10 @@ export default function DocsPage() {
 const linkClassName =
   "w-fit font-medium text-foreground underline underline-offset-4 transition-colors hover:text-muted-foreground"
 
+function calloutTitles(callouts: readonly { title: string }[]): string[] {
+  return callouts.map((callout) => callout.title)
+}
+
 /** Opens a group of sections, matching the group headings in the sidebar. */
 function GroupLabel({ children }: { children: React.ReactNode }) {
   return (
@@ -361,12 +383,14 @@ function DocsSection({ id, title, children }: { id: string; title: string; child
 
 type AnnotatedFigureProps = {
   screenshots: React.ReactNode
+  /** Shared with the screenshots' `annotations`, so markers and list link to each other. */
+  figureId: string
   callouts: readonly { title: string; body: string }[]
   /** Two captures side by side need a wider column than one. */
   wide?: boolean
 }
 
-function AnnotatedFigure({ screenshots, callouts, wide = false }: AnnotatedFigureProps) {
+function AnnotatedFigure({ screenshots, figureId, callouts, wide = false }: AnnotatedFigureProps) {
   return (
     <figure
       className={
@@ -378,7 +402,7 @@ function AnnotatedFigure({ screenshots, callouts, wide = false }: AnnotatedFigur
       <div className={wide ? "max-w-md" : "max-w-60"}>{screenshots}</div>
       <figcaption>
         <p className="mb-4 font-mono text-xs uppercase tracking-wide">{docsCopy.annotatedFigureHint}</p>
-        <CalloutList items={callouts} />
+        <CalloutList items={callouts} figureId={figureId} />
       </figcaption>
     </figure>
   )
