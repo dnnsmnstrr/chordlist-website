@@ -1,4 +1,5 @@
-import {AbsoluteFill, Img, OffthreadVideo, Sequence, interpolate, staticFile, useCurrentFrame} from 'remotion';
+import {AbsoluteFill, Img, OffthreadVideo, Sequence, interpolate, useCurrentFrame} from 'remotion';
+import {mediaSrc} from './custom/media';
 import {motionCopy} from './copy';
 import {useLayout} from './layout';
 import {EndCardScene} from './EndCard';
@@ -128,10 +129,10 @@ export function FeatureReel({campaign, appearance}: MotionProps) {
                 <Sequence key={index} from={start - FADE} durationInFrames={duration + FADE * 2} layout="none">
                   <AbsoluteFill style={{opacity: index === 0 ? 1 : opacity}}>
                     {item.shot.image ? (
-                      <Img src={staticFile(media.screen(appearance, item.shot.image))} style={{width: '100%', height: '100%'}} />
+                      <Img src={mediaSrc(media.screen(appearance, item.shot.image))} style={{width: '100%', height: '100%'}} />
                     ) : (
                       <OffthreadVideo
-                        src={staticFile(media.recording(appearance))}
+                        src={mediaSrc(media.recording(appearance))}
                         muted
                         trimBefore={seconds(item.shot.from!)}
                         style={{width: '100%', height: '100%'}}

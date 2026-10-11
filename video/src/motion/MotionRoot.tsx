@@ -1,6 +1,8 @@
 import {Composition, Folder} from 'remotion';
 import type {ComponentType} from 'react';
 import {ChordKeys} from './ChordKeys';
+import {CustomVideo, customDuration} from './custom/CustomVideo';
+import {customPropsSchema, emptyDefinition, motionFormats, type CustomProps} from './custom/schema';
 import {EndCard} from './EndCard';
 import {FeatureReel, featureReelSeconds} from './FeatureReel';
 import {HandsFree} from './HandsFree';
@@ -62,5 +64,21 @@ export const MotionCompositions: React.FC = () => (
         />
       )),
     )}
+    {/* Definitions from content/motion, written by the /motion wizard. The props here are only the
+        Studio default; `pnpm build:motion` passes each definition in. */}
+    {motionFormats.map((format) => (
+      <Composition
+        key={`custom-${format}`}
+        id={`Motion-Custom-${format}`}
+        component={CustomVideo}
+        durationInFrames={customDuration(emptyDefinition)}
+        fps={FPS}
+        width={formats[format].width}
+        height={formats[format].height}
+        schema={customPropsSchema}
+        defaultProps={{slug: 'example', definition: emptyDefinition} satisfies CustomProps}
+        calculateMetadata={({props}) => ({durationInFrames: customDuration(props.definition)})}
+      />
+    ))}
   </Folder>
 );

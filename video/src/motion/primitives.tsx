@@ -1,6 +1,7 @@
 import {ChordlistIcon} from '../../../components/chordlist-icon';
 import type {CSSProperties, ReactNode} from 'react';
-import {AbsoluteFill, Img, OffthreadVideo, interpolate, staticFile, useCurrentFrame} from 'remotion';
+import {AbsoluteFill, Img, OffthreadVideo, interpolate, useCurrentFrame} from 'remotion';
+import {mediaSrc} from './custom/media';
 import {PaperBackground} from '../ChordlistDemo';
 import {brand, easeOut, mono, sans, shadows, type Campaign, type Palette} from './theme';
 
@@ -212,10 +213,10 @@ export function Phone({palette, height, image, video, trimBefore, playbackRate, 
           backgroundColor: palette.isDark ? '#000000' : '#FFFFFF',
         }}
       >
-        {image ? <Img src={staticFile(image)} style={{width: '100%', height: '100%', objectFit: 'cover'}} /> : null}
+        {image ? <Img src={mediaSrc(image)} style={{width: '100%', height: '100%', objectFit: 'cover'}} /> : null}
         {video ? (
           <OffthreadVideo
-            src={staticFile(video)}
+            src={mediaSrc(video)}
             muted
             trimBefore={trimBefore}
             playbackRate={playbackRate}

@@ -69,6 +69,54 @@ Rendered files live in `public/video/motion/<piece>-<format>.mp4`, each with a p
 - **Fonts are vendored.** Geist and Geist Mono are in `video/public/fonts/`, so a render never fetches
   from the network (the demo editor loads them the same way).
 
+## The editor: your own videos
+
+`/motion` (local only, behind the admin login, listed on `/admin`) is a five-step wizard for making
+new videos in the same frame without writing code:
+
+1. **Start** — name the video, then pick a template, start from any `content/social/` still (its
+   words, template and screenshot or photograph come with it), or reopen a saved video.
+2. **Words** — the lowercase label, the headline line by line, an optional second line, the
+   footnote, the caption, and the template's own fields (chords and numerals, or a file excerpt).
+3. **Media** — for `screen`: an app screenshot, a clip of the press recording chosen by chapter and
+   start point, the colour scroll, or a file you upload; for `photo`: a photography master or an
+   upload.
+4. **Look** — theme, light or dark captures, formats, length, and whether to end on the end card.
+5. **Render** — save, then render on this machine with a progress bar and the finished files.
+
+The preview beside every step is Remotion's Player running the real composition, so what it shows
+is what renders.
+
+| Template | Is | Media |
+| --- | --- | --- |
+| `statement` | One claim, set large, with an optional second line | — |
+| `screen` | The `screenshot` still: copy beside a phone that runs off the edge | screenshot, recording clip, colour scroll, upload |
+| `progression` | A chord row over its numerals, the headline a step below | — |
+| `file` | A song as it sits on disk, typed out with its spacing kept | — |
+| `photo` | A photograph full bleed, drifting slowly under the photo scrim | photography master, upload |
+
+What it writes, and where:
+
+- **The definition**, `content/motion/<slug>.md` — YAML frontmatter that builds the video, a body
+  that is its caption, in the shape of a `content/social/` definition. It is validated by the zod
+  schema in `video/src/motion/custom/schema.ts`, which the wizard, its API, the composition and the
+  render script all share.
+- **Uploads**, `assets/motion/<slug>/` — images resized and re-encoded as WebP, videos kept as they
+  arrived up to 80 MB. They are committed with the definition, so a render is reproducible from the
+  repository alone; `sync:motion` copies them into Remotion's public folder.
+- **The renders**, `public/motion/<slug>/<format>.mp4` with a final-frame poster beside each, and
+  `public/motion/manifest.json` listing every definition. Served at `/motion/<slug>/<format>.mp4`.
+
+`pnpm build:motion` renders every definition (`--only <slug>` for one); the wizard's Render button
+runs the same script for the video in front of it. A definition deleted from `content/motion` has its
+renders pruned on the next build, as `build:social` does for stills. The script runs under `tsx`
+rather than as plain `.mjs` because it shares the schema with everything else.
+
+The same rules as the rest of the suite hold, and the editor enforces the ones it can: the press
+recording's chapters with third-party lyrics are not offered, a clip stops at the end of its
+chapter rather than running into the next shot, and the paywall screenshot is left out because it
+prints a price.
+
 ## Render
 
 ```bash

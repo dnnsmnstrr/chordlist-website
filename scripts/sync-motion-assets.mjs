@@ -45,6 +45,19 @@ await copy(
   path.join(target, 'press', 'smooth-color-scroll-light-only.mp4'),
 );
 
+// Photography masters for the `photo` template, and each definition's own uploads from
+// assets/motion/<slug>/, where the /motion wizard saves them.
+const photoSource = path.join(websiteRoot, 'assets', 'visual-references', 'analog-photography');
+for (const file of await readdir(photoSource)) {
+  if (file.endsWith('.png')) await copy(path.join(photoSource, file), path.join(target, 'photos', file));
+}
+const uploadSource = path.join(websiteRoot, 'assets', 'motion');
+for (const slug of await readdir(uploadSource).catch(() => [])) {
+  for (const file of await readdir(path.join(uploadSource, slug)).catch(() => [])) {
+    await copy(path.join(uploadSource, slug, file), path.join(target, 'uploads', slug, file));
+  }
+}
+
 if (appRoot) {
   const videoRoot = path.join(appRoot, 'press-kit', 'video');
   for (const appearance of ['light', 'dark']) {

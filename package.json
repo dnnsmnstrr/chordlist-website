@@ -13,6 +13,7 @@
     "build:emails": "node scripts/build-emails.mjs",
     "brevo:campaign": "node scripts/brevo-campaign.mjs",
     "build:social": "node scripts/build-social.mjs",
+    "build:motion": "pnpm sync:motion && tsx scripts/build-motion.ts",
     "video:studio": "pnpm sync:video && pnpm sync:motion && remotion studio video/src/chordlist-entry.ts --public-dir=video/public",
     "video:render:short": "pnpm sync:video && remotion render video/src/chordlist-entry.ts ChordlistPromoShort public/video/chordlist-promo-short-light.mp4 --props=video/render-props/light.json --public-dir=video/public",
     "video:render:light": "pnpm sync:video && remotion render video/src/chordlist-entry.ts ChordlistDemo public/video/chordlist-demo-remotion-light.mp4 --props=video/render-props/light.json --public-dir=video/public",
@@ -40,6 +41,7 @@
   },
   "dependencies": {
     "@base-ui/react": "^1.5.0",
+    "@remotion/player": "4.0.509",
     "@stripe/react-stripe-js": "^6.8.2",
     "@stripe/stripe-js": "^9.15.0",
     "@supabase/ssr": "^0.12.5",
@@ -61,9 +63,11 @@
     "yaml": "^2.9.0"
   },
   "devDependencies": {
+    "@remotion/bundler": "4.0.509",
     "@remotion/cli": "4.0.509",
     "@remotion/effects": "4.0.509",
     "@remotion/google-fonts": "4.0.509",
+    "@remotion/renderer": "4.0.509",
     "@remotion/transitions": "4.0.509",
     "@tailwindcss/postcss": "^4.2.0",
     "@types/node": "^24",

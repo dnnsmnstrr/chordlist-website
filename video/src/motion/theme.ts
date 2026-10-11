@@ -1,11 +1,12 @@
 import designTokens from '../../../design/tokens.json';
-import {Easing, continueRender, delayRender, staticFile} from 'remotion';
+import {Easing, continueRender, delayRender} from 'remotion';
 import {z} from 'zod';
+import {campaignSchema, type Campaign} from './campaigns';
+import {mediaSrc} from './custom/media';
 
 // Every motion piece is set in a named campaign theme from DESIGN.md, declared as a prop so the
 // same composition can be re-rendered in another theme without touching its layout.
-export const campaignSchema = z.enum(['ink', 'paper', 'blueprint', 'warm-stage']);
-export type Campaign = z.infer<typeof campaignSchema>;
+export {campaignSchema, type Campaign};
 
 export const accentSchema = z.enum(['neutral', 'blue', 'green', 'orange', 'pink', 'purple', 'teal']);
 export type AccentName = z.infer<typeof accentSchema>;
@@ -63,7 +64,7 @@ if (typeof window !== 'undefined' && 'FontFace' in window) {
       [sans, 'fonts/Geist-Variable-latin.woff2'],
       [mono, 'fonts/GeistMono-Variable-latin.woff2'],
     ].map(async ([family, file]) => {
-      const face = new FontFace(family!, `url(${staticFile(file!)}) format('woff2')`, {weight: '100 900'});
+      const face = new FontFace(family!, `url(${mediaSrc(file!)}) format('woff2')`, {weight: '100 900'});
       document.fonts.add(await face.load());
     }),
   ).then(() => continueRender(handle), (error) => {

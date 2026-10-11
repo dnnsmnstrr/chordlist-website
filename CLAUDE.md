@@ -29,6 +29,7 @@ yarn lockfiles).
 | `pnpm build:icons` | Regenerate every favicon asset in `public/` |
 | `pnpm build:og` | Regenerate `public/og.png`, one card per static page in `public/og/`, **and** one per blog post in `public/blog/og/` |
 | `pnpm build:social` | Regenerate every social asset in `public/social/` from `content/social/` |
+| `pnpm build:motion` | Render every motion definition in `content/motion/` into `public/motion/` (`--only <slug>` for one) |
 | `pnpm build:emails` | Regenerate every email in `public/emails/` from `content/emails/` |
 | `pnpm build:creative` | Regenerate the App Store header, search results, universal, and In-App Event images in `public/app-store-creative/` |
 
@@ -58,6 +59,7 @@ content/blog/        Blog posts as Markdown + frontmatter — the filename is th
 content/blog-schedule.json  The blog's release cadence — see Blog
 content/blog-archive/  Old machine-drafted versions of reset posts — reference only, read by nothing
 content/social/      Social asset definitions — frontmatter builds the image, body is the caption
+content/motion/      Motion video definitions, written by /motion — frontmatter builds the video, body is the caption
 lib/site-config.ts   Single source of truth for facts about the product
 lib/blog.ts          Reads content/blog: validation, visibility, tags, related posts
 lib/blog-approval.ts The approval digest — what "approved" means for a post
@@ -263,6 +265,12 @@ These categories of files in `public/` are **outputs — edit the generator, not
   piece with a twin in `content/social/` reads its headline, eyebrow and footnote from that definition
   through `video/src/motion/generated/social-copy.json`, which `pnpm sync:motion` regenerates. Edit
   the definition, not the JSON. `docs/motion-suite.md` is the catalogue and the rules.
+- **Motion videos** (`public/motion/<slug>/<format>.{mp4,jpg}` plus `manifest.json`) — `pnpm build:motion`,
+  which renders every definition in `content/motion/` through the `Motion-Custom-<format>`
+  composition. Definitions are written by the `/motion` wizard; uploads they use live in
+  `assets/motion/<slug>/` and are committed with them. The zod schema in
+  `video/src/motion/custom/schema.ts` is shared by the wizard, its API, the composition and the
+  script, so one set of rules validates a definition wherever it is read.
 - **App Store screenshot sets** (`public/app-store-screenshots/`, plus `manifest.json` and the ZIPs
   in `downloads/`) — `pnpm build:screens`. Art direction lives in the script's `CONFIG` block; the
   words live in `scripts/lib/app-store-copy.mjs`, keyed by language and then slide, and read shared
@@ -389,7 +397,7 @@ first revalidation.
 ## Internal tools and sign-in
 
 `/emails`, `/screens`, `/copy`, `/gallery`, `/social/posts`, `/social/editor`, `/translations`,
-`/editorial`, `/api/translations/*`, and `/api/editorial` are behind a Supabase Auth login at `/login` (`/logout` signs out).
+`/editorial`, `/motion`, `/api/translations/*`, `/api/editorial`, and `/api/motion` are behind a Supabase Auth login at `/login` (`/logout` signs out).
 `/admin` is the dashboard that links every one of them and the admin backend at `siteConfig.adminBackendUrl`
 (admin.chordlist.app); signing in lands there. A new tool gets a card in its `sections` list as well.
 `lib/admin-routes.ts` is the single list of protected prefixes and the `ADMIN_EMAILS` allowlist.
