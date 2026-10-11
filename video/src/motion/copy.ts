@@ -50,7 +50,7 @@ export const motionCopy = {
   },
   themes: {
     eyebrow: 'Feature',
-    headline: ['Seven colours.', 'One songbook.'],
+    headline: ['Many colours.', 'One songbook.'],
     footnote: 'chordlist.app',
   },
   reel: {
