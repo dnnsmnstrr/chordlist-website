@@ -77,8 +77,12 @@ export function DocsSearch() {
     event.preventDefault()
 
     if (target instanceof HTMLDetailsElement) target.open = true
-    revealElement(target, "start")
     window.history.replaceState(null, "", `#${entry.targetId}`)
+
+    // Dismiss the on-screen keyboard first, and scroll once the panel has closed and the opened
+    // answer has laid out: on iOS the keyboard closing mid-scroll otherwise cuts the scroll short.
+    inputRef.current?.blur()
+    window.requestAnimationFrame(() => window.requestAnimationFrame(() => revealElement(target, "start")))
   }
 
   return (
@@ -98,7 +102,10 @@ export function DocsSearch() {
         }
       }}
       onBlur={(event) => {
-        if (!(event.relatedTarget instanceof Node) || !event.currentTarget.contains(event.relatedTarget)) {
+        // Only when focus demonstrably moves elsewhere, by Tab. Safari never focuses a tapped link, so
+        // tapping a result blurs the field with no relatedTarget at all; closing then would hide the
+        // result before its click lands. Taps outside are closeOnOutsidePointer's job.
+        if (event.relatedTarget instanceof Node && !event.currentTarget.contains(event.relatedTarget)) {
           setIsOpen(false)
         }
       }}
