@@ -212,148 +212,524 @@ export const homeCopy = {
 export const docsCopy = {
   metadata: {
     title: "Documentation",
-    description: `Learn how to use ${siteConfig.name}, organize its Markdown files, work with Obsidian, and keep an iCloud song folder available offline.`,
+    description: `Learn how to use ${siteConfig.name}: set up a songs folder, play and transpose songs, write chords in Markdown, and keep your library in sync with Obsidian, iCloud, and other apps.`,
   },
   title: "Documentation",
-  introduction: `${siteConfig.name} is a songbook built on ordinary Markdown files. This guide covers the main features and the ways you can organize, edit, sync, and back up those files outside the app.`,
+  introduction: `${siteConfig.name} is a songbook built on ordinary Markdown files. Start with the quick start to get your first song on screen, then come back to the rest of this guide whenever you want to write chords, organize files, or sync your library.`,
   onThisPage: "On this page",
+  annotatedFigureHint: "Numbers on the screenshot match the list. Tap one to jump between them.",
+  search: {
+    label: "Search the documentation",
+    placeholder: "Search the docs",
+    clear: "Clear the search",
+    resultCount: (count: number) => (count === 1 ? "1 result" : `${count} results`),
+    showingFirst: (shown: number, count: number) => `Showing the first ${shown} of ${count} results. Add a word to narrow them down.`,
+    empty: "Nothing in the documentation matches that search. Try fewer words, or ask in the FAQ.",
+    shortcutHint: "Press / to search",
+  },
+  markers: {
+    toCallout: (number: number, title: string) => `${number}: ${title}. Show its explanation`,
+    toMarker: (number: number) => `Show ${number} on the screenshot`,
+  },
   tableOfContents: [
-    { href: "#getting-started", label: "Getting started" },
-    { href: "#library", label: "Organize and find songs" },
-    { href: "#playing", label: "Play from your songbook" },
-    { href: "#adding-songs", label: "Add and import songs" },
-    { href: "#file-format", label: "File and folder format" },
-    { href: "#other-apps", label: "Manage files with other apps" },
-    { href: "#obsidian", label: "Use chordlist with Obsidian" },
-    { href: "#offline", label: "Keep an iCloud folder offline" },
+    {
+      label: "Songs, lyrics & chords",
+      items: [
+        { href: "#getting-started", label: "Quick start" },
+        { href: "#library", label: "Find songs" },
+        { href: "#playing", label: "Play a song" },
+        { href: "#adding-songs", label: "Add and import songs" },
+        { href: "#chords", label: "Write chords" },
+      ],
+    },
+    {
+      label: "File management",
+      items: [
+        { href: "#file-format", label: "Files and folders" },
+        { href: "#other-apps", label: "Manage files with other apps" },
+        { href: "#obsidian", label: "Use chordlist with Obsidian" },
+        { href: "#offline", label: "Keep an iCloud folder offline" },
+      ],
+    },
+    {
+      label: "Other",
+      items: [
+        { href: "#unlimited", label: `${siteConfig.name} unlimited` },
+        { href: "#troubleshooting", label: "Troubleshooting" },
+      ],
+    },
   ],
   sections: {
     gettingStarted: {
-      title: "Getting started",
-      paragraphs: [
-        `The first time you open ${siteConfig.name}, choose the folder that will contain your song library. You can use a folder under On My iPhone or On My iPad for device-only storage, or choose iCloud Drive when you want Apple's file service to sync the library between your devices.`,
-        `You can change the selected folder later under Settings → Songs Folder. ${siteConfig.name} remembers permission to that folder and scans it again when the app returns to the foreground. Pull down on the song list to refresh immediately after making changes elsewhere.`,
+      title: "Quick start",
+      keywords: searchAliases("setup", "set up", "first steps", "begin", "install", "folder", "choose folder", "onboarding"),
+      introduction: "Three steps take you from a fresh install to a song on your music stand.",
+      steps: [
+        {
+          title: "Choose a songs folder",
+          body: `The first time you open ${siteConfig.name}, pick where your library lives. <code>Use chordlist Folder</code> keeps your songs on this device. <code>Select Songs Folder</code> lets you choose any folder instead, such as one in iCloud Drive to sync between your iPhone and iPad.`,
+          alt: `The ${siteConfig.name} song list, grouped by artist, with tags across the top and a search field at the bottom.`,
+        },
+        {
+          title: "Add a song",
+          body: "Tap <code>+</code> on the song list, enter a title, artist, and lyrics, and add chords if you have them. Tap <code>Save</code> and the song is written to a Markdown file in its artist's folder.",
+          alt: "The New Song editor with fields for title and artist, a chord progression, and lyrics, above the chord keyboard.",
+        },
+        {
+          title: "Open it and play",
+          body: "Tap the song to open it. Press play to start hands-free scrolling, and tap the chord progression to change key.",
+          alt: "A song open in chordlist, showing section headings with their chords, lyrics with chords above them, and playback controls.",
+        },
+      ],
+      notes: [
+        `You can switch folders at any time — choose <code>Select Songs Folder</code> from the <code>⋯</code> menu on the song list, or open <code>⋯ → Settings → Songs Folder</code>. ${siteConfig.name} remembers its permission to the folder and checks it for changes whenever you return to the app.`,
+        "Changed something in another app? Pull down on the song list to refresh straight away.",
       ],
     },
     library: {
-      title: "Organize and find songs",
+      title: "Find songs",
+      keywords: searchAliases("filter", "sort", "order", "random", "find", "look up", "apple music", "tags"),
+      introduction:
+        "The song list shows every song in your folder, grouped by artist. None of these tools move or rename your files — they only change what you see.",
       features: [
         {
-          title: "Search and filter",
-          body: "Search song titles, artists, and tags together. Tag filters can narrow the library further, and you can hide or reorder tags from the app's settings.",
+          title: "Search",
+          body: "Type in the search field at the bottom of the list to match titles, artists, and tags at the same time.",
         },
         {
-          title: "Sort the library",
-          body: "Group songs by artist or title, or sort them using when they were last played and how many times they have been played.",
+          title: "Filter by tag",
+          body: "Tap a tag above the list to show only songs with that tag. Select several to see songs with any of them, and tap a tag again to clear it.",
+        },
+        {
+          title: "Sort",
+          body: "Open the <code>⋯</code> menu to sort by <code>Artist</code>, <code>Title</code>, <code>Last Played</code>, or <code>Play Count</code>.",
         },
         {
           title: "Shuffle",
-          body: "Open a random song from the currently filtered library when you want a prompt for practice or a set.",
+          body: "Tap the shuffle button in the top-left corner to open a random song from the songs currently shown — handy for practice or building a set.",
         },
         {
           title: "Now Playing",
-          body: "If you connect Apple Music, chordlist can match the currently playing title and artist to a song already in your library.",
+          body: `Connect Apple Music in Settings and ${siteConfig.name} matches the track that is playing to a song already in your library.`,
+        },
+        {
+          title: "Tidy up your tags",
+          body: "Scroll to the end of the tag row and tap the pencil to hide tags you rarely use or put the important ones first.",
+        },
+      ],
+      figures: [
+        {
+          caption: "Searching for a song by its title.",
+          alt: "The song list filtered by the search “Never gonna give”, showing one matching song.",
+        },
+        {
+          caption: "Showing only songs tagged “piano”.",
+          alt: "The song list with the piano tag selected, showing two songs.",
         },
       ],
     },
     playing: {
-      title: "Play from your songbook",
-      features: [
-        {
-          title: "Autoscroll",
-          body: "Start and pause automatic lyric scrolling from the song view. A speed control adjusts the pace, and the global multiplier in Settings lets you tune every speed to your preference.",
-        },
-        {
-          title: "Transpose chords",
-          body: "Tap the chord progression to move it up or down by semitones while you play. Transposition changes the current view and resets when you leave the song; it does not rewrite the source file.",
-        },
-        {
-          title: "Keep the session moving",
-          body: "Move back through songs opened during the current session or skip to another random song without returning to the library.",
-        },
-        {
-          title: "Matching progressions",
-          body: "Songs with the same normalized chord progression appear together, making it easier to find transitions, medleys, and mashups.",
-        },
+      title: "Play a song",
+      keywords: searchAliases("key", "capo", "change key", "scroll", "speed", "hands-free", "statistics", "play count", "medley"),
+      introduction:
+        "Open any song to see its lyrics and chords. Everything you need while playing sits on this one screen.",
+      callouts: [
         {
           title: "Play history",
-          body: "Mark a song as played to update its play count and last-played date. These values are stored in the song file and can be used to sort the library.",
+          body: "How many times you have played the song, and when you last did. The share button next to it sends the song file to another app or person.",
+        },
+        {
+          title: "Chords for each section",
+          body: "Chords written after a section heading appear beside it, so the progression for every part is visible at a glance.",
+        },
+        {
+          title: "Transpose",
+          body: "Tap the chord progression to move every chord on the sheet up or down by semitones. This only changes what you see: it resets when you leave the song and never rewrites the file.",
+        },
+        {
+          title: "Autoscroll",
+          body: "Start and pause hands-free scrolling. While it runs, a speed button appears; for a different pace across all songs, change <code>Autoscroll</code> under <code>Settings → Behavior</code> (0.5× to 1.25×).",
+        },
+        {
+          title: "Next song",
+          body: "Jump to another random song without going back to the library. Once you have moved on, a back button retraces the songs from this session.",
+        },
+        {
+          title: "Mark as played",
+          body: "At the end of the song, tap <code>Mark as played</code> to add one to its play count and record today’s date. Both are saved in the song file, so they travel with it.",
+        },
+        {
+          title: "Matching songs",
+          body: "Songs with the same chord progression are listed below — useful for finding medleys, mashups, and smooth transitions between songs.",
         },
       ],
+      figures: [
+        {
+          alt: "A song open in chordlist, numbered: 1 the play history at the top, 2 a section heading with its chords, 3 the chord progression at the bottom, 4 the play button, 5 the next-song button.",
+        },
+        {
+          alt: "The end of a song in chordlist, numbered: 6 the Mark as played button, 7 the list of matching songs.",
+        },
+      ],
+      tip: "To make lyrics easier to read on a music stand, change <code>Song Text Size</code> under <code>⋯ → Settings → Appearance</code>.",
     },
     addingSongs: {
       title: "Add and import songs",
-      paragraphs: [
-        "Create a song by entering its title, artist, lyrics, and optional chord progression and tags. The app creates the artist folder and Markdown file for you.",
-        "You can also paste a lyrics or tab URL, share a supported webpage to chordlist, or start from the track currently playing in Apple Music. Always review imported material before saving and make sure you have the right to use it.",
+      keywords: searchAliases("new song", "create", "paste", "url", "link", "website", "ultimate guitar", "share sheet", "edit", "minor"),
+      introduction:
+        "Tap <code>+</code> on the song list to open the editor. Only the title, artist, and lyrics are required — everything else can be added later with the edit button on the song.",
+      callouts: [
+        {
+          title: "Import",
+          body: "Paste a link to a lyrics or tab page and chordlist fills in the song from it. Always review what comes in before saving.",
+        },
+        {
+          title: "Title and artist",
+          body: "These become the file name and the artist folder. The search button looks the song up on the web so you can copy its lyrics.",
+        },
+        {
+          title: "Chords",
+          body: "Type a progression, then use the <code>Section</code> picker to assign it to a part such as Verse or Chorus — it is placed beside that heading in the lyrics. Tap <code>Add chords</code> for another part.",
+        },
+        {
+          title: "Chord keyboard",
+          body: "Tap a key to type that chord. Touch and hold a key for its minor version.",
+        },
+        {
+          title: "Lyrics",
+          body: "Paste or type the lyrics. Headings like <code>[Verse]</code> and <code>[Chorus]</code> divide the song into parts; see Write chords below.",
+        },
       ],
+      figure: {
+        alt: "The New Song editor, numbered: 1 the Import button, 2 the title and artist fields, 3 a chord progression with its section picker, 4 the chord keyboard, 5 the lyrics field.",
+      },
+      otherWaysTitle: "Other ways to add songs",
+      otherWays: [
+        {
+          title: "Share from Safari",
+          body: `On a lyrics or tab page, tap the share button and choose ${siteConfig.name}. Check the title, artist, and lyrics, then tap <code>Import to ${siteConfig.name}</code>. If anything still needs filling in, the app finishes the import when you next open it.`,
+        },
+        {
+          title: "From Apple Music",
+          body: "With Apple Music connected, start a new song from the track that is currently playing.",
+        },
+        {
+          title: "Add a file directly",
+          body: "Copy a Markdown file into an artist folder with Files, Finder, or another app — see Files and folders below.",
+        },
+      ],
+      note: "Make sure you have the right to use any lyrics or chords you import.",
+    },
+    chords: {
+      title: "Write chords",
+      keywords: searchAliases("chord sheet", "chordpro", "notation", "syntax", "brackets", "verse", "chorus", "bridge", "progression", "align"),
+      introduction:
+        "Lyrics are plain text, so chords are too. chordlist understands three ways of writing them, and you can mix them in the same song.",
+      examples: [
+        {
+          title: "Above the lyrics",
+          body: "Put chords on their own line, directly above the words. Use spaces to line each chord up with the syllable where it changes. A line only counts as chords when every word on it is a chord, so lyrics are never transposed by accident.",
+          label: "Chord line",
+          code: "C                G\nHold the morning light\nD            Em\nSlow it down awhile",
+        },
+        {
+          title: "After a section heading",
+          body: "Write a progression after a heading to show the chords for that whole part. Separate several progressions with a comma.",
+          label: "Section chords",
+          code: "[Verse] G D Em C\n\n[Chorus] C G D Em, C G D",
+        },
+        {
+          title: "Inside a line",
+          body: "Put a chord in brackets exactly where it falls in the lyrics. Brackets that hold anything other than chords stay as lyrics.",
+          label: "Inline chords",
+          code: "Hold the (C) morning light (G)\nSlow it down awhile (D) (oh)",
+        },
+      ],
+      headingsTitle: "Section headings",
+      headingsIntroduction:
+        "A heading is a section name in square brackets on its own line. Capitals don’t matter, and you can number them — <code>[Verse 2]</code>, <code>[Part II]</code> — or write <code>[Final Chorus]</code>. These names are recognized:",
+      headings: [
+        "Intro",
+        "Verse",
+        "Pre-Chorus",
+        "Pre-Hook",
+        "Chorus",
+        "Hook",
+        "Refrain",
+        "Part",
+        "Bridge",
+        "Solo",
+        "Instrumental",
+        "Interlude",
+        "Breakdown",
+        "Outro",
+      ],
+      headingsNote: "Use a different name? Add your own under <code>⋯ → Settings → Behavior → Section Markers</code>.",
+      progressionNote:
+        "The <code>chords</code> field at the top of the file holds the song’s main progression. It is what the song list shows under each title, what you tap to transpose, and what Matching songs compares.",
     },
     fileFormat: {
-      title: "File and folder format",
-      introduction: `${siteConfig.name} reads Markdown files one level below the selected songs folder. The artist comes from the folder name and the song title comes from the filename.`,
+      title: "Files and folders",
+      keywords: searchAliases("markdown", "yaml", "frontmatter", "metadata", "structure", "rename", "subfolder", "nested", "md file"),
+      introduction:
+        "Your library is just a folder. Inside it, each artist has a folder, and each song is a Markdown file in its artist’s folder. The names on disk are what you see in the app.",
+      diagram: {
+        label: "How a file path becomes a song",
+        parts: [
+          { value: "Songs/", meaning: "Your songs folder" },
+          { value: "The Beatles/", meaning: "Artist" },
+          { value: "Let It Be", meaning: "Song title" },
+          { value: ".md", meaning: "Markdown file" },
+        ],
+      },
       fileTreeLabel: "Example folder structure",
       fileTree: "Songs/\n├── The Beatles/\n│   └── Let It Be.md\n└── Tracy Chapman/\n    └── Fast Car.md",
-      markdownLabel: "Example song file",
-      markdown:
-        "---\nchords: C G Am F\ntags:\n  - ballad\n  - piano\n---\n\n[Verse]\nC              G\nLyrics go here…",
+      songFile: {
+        label: "Example song file",
+        fileName: "chordlist/Morning Light.md",
+        parts: [
+          {
+            title: "Frontmatter",
+            body: "The block between the two <code>---</code> lines holds details about the song. It is optional — a file with only lyrics works too.",
+            code: "---\nchords: G D Em C\ntags:\n  - practice\n  - piano\nplayCount: 3\nlastPlay: 2026-10-03T19:30:00Z\n---",
+          },
+          {
+            title: "Body",
+            body: "Everything after the frontmatter: section headings, chords, and lyrics, written however you like.",
+            code: "[Verse] G D Em C\nG                           D\nCoffee on the counter going cold",
+          },
+        ],
+      },
+      fieldsTitle: "Frontmatter fields",
+      fieldsColumns: { field: "Field", purpose: "What it does", example: "Example" },
+      fields: [
+        {
+          field: "chords",
+          purpose: "The song’s main chord progression, shown in the song list. Separate several progressions with a comma.",
+          example: "G D Em C",
+        },
+        {
+          field: "tags",
+          purpose: "Labels you can filter by, written as a list.",
+          example: "- practice",
+        },
+        {
+          field: "playCount",
+          purpose: "How many times you have marked the song as played. Updated by the app.",
+          example: "3",
+        },
+        {
+          field: "lastPlay",
+          purpose: "When you last marked it as played. Updated by the app.",
+          example: "2026-10-03T19:30:00Z",
+        },
+        {
+          field: "title, artist",
+          purpose:
+            "Written by the app when it creates a song, so a name with a character a file name can’t hold, such as / or :, keeps its original spelling. Otherwise the file and folder names win.",
+          example: "Morning Light",
+        },
+        {
+          field: "chordlistSongId",
+          purpose: "An identifier the app adds to new songs. Leave it as it is.",
+          example: "—",
+        },
+      ],
       notes: [
-        "Only .md files inside an artist folder are treated as songs.",
-        "The Markdown body contains the lyrics and any inline chord notation you want to display.",
-        "chords and tags are optional YAML frontmatter fields used by the app.",
-        "playCount and lastPlay are maintained by chordlist when you mark a song as played.",
-        "Other YAML frontmatter is preserved when chordlist edits the file, so metadata added by another tool can live alongside the app's fields.",
+        "Only <code>.md</code> files are read, and only one level deep: <code>Songs/Artist/Song.md</code>. Files in deeper subfolders are ignored.",
+        "A file placed directly in the songs folder, outside an artist folder, appears only if its frontmatter has an <code>artist</code> field.",
+        "Renaming a file renames the song. Moving it to another artist folder changes its artist.",
+        "Files and folders whose names start with a dot are hidden, and skipped.",
+        "Any other frontmatter is kept when chordlist saves a song, so details added by another tool live safely alongside the app’s fields.",
       ],
     },
     otherApps: {
       title: "Manage files with other apps",
+      keywords: searchAliases("finder", "files app", "mac", "computer", "git", "backup", "text editor", "sync"),
       introduction:
-        "Because the library is made of folders and text files, chordlist is not the only way to work with it. Close or leave the song editor before changing the same file elsewhere, then refresh the library when you return.",
+        "Because the library is made of folders and text files, chordlist is not the only way to work with it. Close the song editor before changing the same file elsewhere, then pull down on the song list when you return.",
       options: [
         {
           title: "Files and Finder",
-          body: "Rename, move, duplicate, share, or back up songs with Apple's Files app or Finder. Remember that moving a file changes its title or artist when its filename or parent folder changes.",
+          body: "Rename, move, duplicate, share, or back up songs with Apple’s Files app or Finder. Remember that renaming a file or moving it to another folder changes its title or artist.",
         },
         {
           title: "Markdown editors",
-          body: "Open a song in any editor that can write plain Markdown. Keep the Artist/Song.md structure intact and use UTF-8 text for the most predictable results.",
+          body: "Open a song in any editor that saves plain Markdown. Keep the <code>Artist/Song.md</code> structure, and save as UTF-8 for the most predictable results.",
         },
         {
           title: "Backups and version control",
-          body: "Copy the complete songs folder to another drive or backup service. On a computer, you can also use Git to keep a version history of every text change.",
+          body: "Copy the whole songs folder to another drive or backup service. On a computer, you can also use Git to keep a history of every change.",
         },
       ],
     },
     obsidian: {
       title: `Use ${siteConfig.name} with Obsidian`,
+      keywords: searchAliases("vault", "notes", "icloud", "mac"),
       introduction:
-        "An Obsidian vault is also a folder of Markdown files, so the same folder can serve as both an Obsidian vault and a chordlist library.",
+        "An Obsidian vault is also a folder of Markdown files, so the same folder can be both an Obsidian vault and a chordlist library.",
       steps: [
-        "On iPhone or iPad, create an Obsidian vault with Store in iCloud enabled. Obsidian's mobile documentation requires iCloud vaults to live under iCloud Drive/Obsidian/[Vault Name].",
-        `In ${siteConfig.name}, open Settings → Songs Folder and select that vault folder.`,
-        "Inside the vault, create one folder per artist and keep each song as Artist/Song Title.md. Obsidian's hidden .obsidian settings folder is ignored by chordlist.",
-        "Edit lyrics and frontmatter in either app. Return to chordlist and pull down on the library if an external edit has not appeared yet.",
+        "On iPhone or iPad, create an Obsidian vault with <code>Store in iCloud</code> turned on. Obsidian keeps iCloud vaults in <code>iCloud Drive/Obsidian/[Vault Name]</code>.",
+        `In ${siteConfig.name}, open <code>⋯ → Settings → Songs Folder</code> and select that vault folder.`,
+        "Inside the vault, create one folder per artist and keep each song as <code>Artist/Song Title.md</code>. Obsidian’s hidden <code>.obsidian</code> settings folder is ignored by chordlist.",
+        "Edit lyrics and frontmatter in either app. Back in chordlist, pull down on the song list if an edit hasn’t appeared yet.",
       ],
-      note: "On macOS, Obsidian can open an existing chordlist folder directly as a vault. On iPhone and iPad, the vault must be inside Obsidian's designated iCloud Drive folder, so it is usually easiest to create or move the vault there first and then select it in chordlist.",
-      helpLink: "Read Obsidian's iCloud setup guide",
+      exampleLabel: "Example vault",
+      example:
+        "iCloud Drive/\n└── Obsidian/\n    └── Songbook/          ← select this folder in chordlist\n        ├── .obsidian/     ← ignored\n        ├── Adele/\n        │   └── Someone Like You.md\n        └── Bob Marley/\n            └── No Woman No Cry.md",
+      note: "On a Mac, Obsidian can open an existing chordlist folder directly as a vault. On iPhone and iPad, the vault has to be inside Obsidian’s own iCloud Drive folder, so it is usually easiest to create or move the vault there first and then select it in chordlist.",
+      helpLink: "Read Obsidian’s iCloud setup guide",
     },
     offline: {
       title: "Keep an iCloud folder available offline",
+      keywords: searchAliases("no internet", "airplane mode", "download", "gig", "rehearsal", "cloud", "sync"),
       introduction:
-        "An iCloud Drive folder can be visible in Files while some of its contents are stored only in the cloud. Mark the songs folder as downloaded before a rehearsal, trip, or performance where you may not have a connection.",
+        "A folder in iCloud Drive can appear in Files while some of its songs are stored only in the cloud. Before a rehearsal, trip, or gig without a reliable connection, tell your device to keep the whole songs folder downloaded.",
       steps: [
-        "Open the Files app on the iPhone or iPad you will use.",
-        "Choose Browse, then open iCloud Drive.",
-        "Find the songs folder—or the Obsidian vault folder if you use Obsidian—and touch and hold it.",
-        "Choose Keep Downloaded. Files downloads the folder's contents and keeps them available on that device.",
-        "Wait for any cloud download indicators to disappear before going offline, then open chordlist once to confirm the library is available.",
+        "Open the Files app on the iPhone or iPad you will play from.",
+        "Tap <code>Browse</code>, then open <code>iCloud Drive</code>.",
+        "Find your songs folder — or the Obsidian vault folder, if you use Obsidian — and touch and hold it.",
+        "Choose <code>Keep Downloaded</code>. Files downloads everything in the folder and keeps it on that device.",
+        "Wait until the cloud download icons are gone, then open chordlist once to check every song is there.",
       ],
       notes: [
-        "Repeat this on every iPhone or iPad that needs offline access; the setting is device-specific.",
-        "If Keep Downloaded is not shown, the item may already be stored on the device.",
-        "Changes made offline sync back to iCloud after the device reconnects. Avoid editing the same song on two offline devices at once, because the file provider may create a conflict.",
-        "Keep Downloaded improves availability but is not a backup. Keep a separate copy of important libraries.",
+        "Repeat this on every iPhone or iPad that needs offline access; the setting applies to one device only.",
+        "If <code>Keep Downloaded</code> isn’t offered, the folder may already be stored on the device.",
+        "Changes made offline sync back to iCloud once the device reconnects. Avoid editing the same song on two offline devices at once, or iCloud may keep both versions as a conflict.",
+        "Keep Downloaded makes songs available, but it is not a backup. Keep a separate copy of a library you care about.",
       ],
-      appleLink: "Read Apple's Keep Downloaded instructions",
+      appleLink: "Read Apple’s Keep Downloaded instructions",
+    },
+    unlimited: {
+      title: `${siteConfig.name} unlimited`,
+      keywords: searchAliases("price", "pricing", "cost", "buy", "purchase", "in-app purchase", "iap", "pay", "paid", "free", "limit", "subscription", "upgrade", "pro", "premium", "restore", "refund", "money back", "receipt", "offer code", "promo code", "redeem", "ads", "advert", "family", "apple account", "screen time"),
+      introduction: `${siteConfig.name} is free for your first ${siteConfig.freeSongLimit} songs. <strong>${siteConfig.name} unlimited</strong> is a one-time in-app purchase that removes that limit for good and supports the app’s development.`,
+      includesTitle: "What it includes",
+      includes: [
+        {
+          title: "Unlimited songs",
+          body: "Add as many songs as you like, forever.",
+        },
+        {
+          title: "No ads",
+          body: "The small advert for another independent app, shown at the end of the song list and of each song, goes away. Those adverts come from Kickstart Exchange, where independent apps promote one another.",
+          link: { href: "https://exchange.kickstart.tools/", label: "About Kickstart Exchange" },
+        },
+        {
+          title: "Pay once",
+          body: "It is a single purchase, not a subscription. Nothing renews and nothing is charged again.",
+        },
+        {
+          title: "All your devices",
+          body: `The unlock belongs to your Apple Account, so it works on every iPhone and iPad signed in with it. There is no ${siteConfig.name} account to create.`,
+        },
+        {
+          title: "Family Sharing",
+          body: "If you use Family Sharing, the members of your family group can use the unlock too.",
+        },
+      ],
+      freeTitle: "How the free version works",
+      free: [
+        `Once your library has ${siteConfig.unlockPromptSongCount} songs, adding another first shows the unlock screen. Tap <code>Continue Free</code> to carry on.`,
+        `At ${siteConfig.freeSongLimit} songs, adding a song in the app needs the unlock.`,
+        "Reaching the limit never locks the songs you already have: you can still open, play, edit, and share every one of them.",
+      ],
+      figure: {
+        alt: "The Support chordlist screen, numbered: 1 what the unlock includes, 2 the button that buys it, with its one-time price, 3 Continue Free, 4 Restore Purchases.",
+      },
+      callouts: [
+        {
+          title: "What you get",
+          body: "Unlimited songs and no ads.",
+        },
+        {
+          title: "Unlock",
+          body: "Shows the price in your own currency. Confirming opens Apple’s payment sheet.",
+        },
+        {
+          title: "Continue Free",
+          body: `Closes the screen and keeps going. It is offered until you reach ${siteConfig.freeSongLimit} songs.`,
+        },
+        {
+          title: "Restore Purchases",
+          body: "Brings back an unlock you already bought — on a new device, or after reinstalling.",
+        },
+      ],
+      buyTitle: "How to buy it",
+      buySteps: [
+        `Open <code>⋯ → Settings</code> and tap <code>Unlock Unlimited Songs</code> under <code>${siteConfig.name} unlimited</code>. The same screen also appears on its own when you add a song past the free limit.`,
+        "Tap the unlock button and confirm the purchase with Face ID, Touch ID, or your Apple Account password.",
+        `That’s it. The lock beside <code>${siteConfig.name} unlimited</code> in Settings opens, and you can add songs straight away.`,
+      ],
+      offerCode: `Have an offer code — for example, one that came with a chordlink? Tap <code>Redeem it here</code> on the unlock screen and enter the code in the sheet that opens. Redeemed codes unlock exactly the same purchase.`,
+      problemsTitle: "If something goes wrong",
+      problems: [
+        {
+          question: "I paid, but it’s still locked",
+          answer: `Open <code>⋯ → Settings → ${siteConfig.name} unlimited → Unlock Unlimited Songs</code> and tap <code>Restore Purchases</code>. If that doesn’t help, check that the device is signed in to the App Store with the Apple Account that made the purchase, under <code>Settings → [your name] → Media & Purchases</code>. Still locked? Email ${siteConfig.contact.support} with the receipt Apple sent you, and we’ll sort it out.`,
+        },
+        {
+          question: "I got a new iPhone or reinstalled the app",
+          answer:
+            "You don’t need to buy it again. Sign in with the same Apple Account, open the unlock screen, and tap <code>Restore Purchases</code>.",
+        },
+        {
+          question: "“The purchase completed, but Unlimited Songs wasn’t unlocked”",
+          answer: `Apple took the payment, but the app couldn’t confirm it yet. Tap <code>Restore Purchases</code>, ideally on a stable connection. If the message keeps appearing, email ${siteConfig.contact.support}.`,
+        },
+        {
+          question: "The unlock button doesn’t work, or no price is shown",
+          answer:
+            "The App Store couldn’t be reached. Check your internet connection and try again later. If in-app purchases are turned off in Screen Time, under <code>Settings → Screen Time → Content & Privacy Restrictions</code>, the purchase can’t go through until they are allowed.",
+        },
+        {
+          question: "I want a refund, or was charged twice",
+          answer: `Purchases are made through the App Store, so only Apple can refund them: request one at reportaproblem.apple.com with the Apple Account that paid. If something isn’t working, email ${siteConfig.contact.support} first — a fix usually arrives sooner than a refund does.`,
+        },
+      ],
+      refundLink: "Request a refund from Apple",
+      privacy: `Apple processes the payment, and ${siteConfig.name} never sees your card or bank details. How purchases are verified is described in the`,
+      privacyLink: "privacy policy",
+    },
+    troubleshooting: {
+      title: "Troubleshooting",
+      keywords: searchAliases("help", "problem", "bug", "broken", "missing", "not showing", "not working", "error", "support"),
+      introduction: "Most problems come down to where a file is or what it is called. Start here.",
+      items: [
+        {
+          question: "A song doesn’t appear in the library",
+          answer:
+            "Check that it is a <code>.md</code> file directly inside an artist folder — not in a deeper subfolder — and that its name doesn’t start with a dot. Then pull down on the song list to refresh. If the folder is in iCloud Drive, the song may not have downloaded to this device yet; see Keep an iCloud folder available offline.",
+        },
+        {
+          question: "A song has the wrong title or artist",
+          answer:
+            "The file name is the title and the folder is the artist. Rename the file, or move it to the right artist folder, in Files or Finder, then refresh.",
+        },
+        {
+          question: "An edit from another app hasn’t shown up",
+          answer:
+            "Pull down on the song list. If the song was open in chordlist’s editor while you changed it elsewhere, tap <code>Cancel</code> and open the song again.",
+        },
+        {
+          question: "“No Songs Found” or “No Folder Selected”",
+          answer:
+            "chordlist can’t find song files in the folder, or no longer has permission to open it. Choose <code>Select Songs Folder</code> from the <code>⋯</code> menu and pick the folder again.",
+        },
+        {
+          question: "My transposition didn’t stick",
+          answer:
+            "That’s by design: transposing only changes what you see, and resets when you leave the song. To change the key for good, edit the chords in the song itself.",
+        },
+        {
+          question: "Chords in my lyrics aren’t treated as chords",
+          answer:
+            "A chord line has to contain nothing but chords — one word of lyrics turns it back into text. For a section heading, make sure the name is one chordlist recognizes, or add it under Section Markers.",
+        },
+      ],
+      moreHelp: "Still stuck?",
+      faqLink: "Read the FAQ",
+      supportLink: "Contact support",
     },
   },
 } as const

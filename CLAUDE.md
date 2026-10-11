@@ -205,7 +205,8 @@ change the site-wide CTA, edit those config values — not the component.
 ### Components
 
 - Server components by default. Add `"use client"` only for real interactivity — currently
-  `screenshot-gallery.tsx`, `piano-keyboard.tsx`, and `docs-sidebar.tsx`. Prefer a CSS-only
+  `screenshot-gallery.tsx`, `piano-keyboard.tsx`, and the /docs widgets `docs-sidebar.tsx`, `docs-search.tsx`,
+  and `docs-marker-link.tsx`. Prefer a CSS-only
   solution first: `collapsible-section.tsx` is a plain `<details>` element for exactly this reason.
 - Named exports, `function` declarations, `PascalCase` components in `kebab-case.tsx` files.
 - Props are declared as a local `type XProps = { … }` above the component.

@@ -30,6 +30,8 @@ export const siteConfig = {
   launchDate: "2026-10-10",
   minimumOSVersion: 26,
   freeSongLimit: 10,
+  /** Library size at which adding a song first offers the unlock — mirrors `paymentPromptSongCount` in the app. */
+  unlockPromptSongCount: 5,
   contact: {
     support: "support@chordlist.app",
     feedback: "feedback@chordlist.app",
