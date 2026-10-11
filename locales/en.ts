@@ -1358,6 +1358,10 @@ export const motionEditorCopy = {
       description: "The tag printed in 3D, layer by layer: the pocket, the NFC tag dropping in, the lid, and the logo in graphite.",
     },
     "chordlink-model": { title: "chordlink model", description: "The finished tag, the site's 3D model, turning once beside your words." },
+    "chordlink-tap": {
+      title: "chordlink tap",
+      description: "A locked phone touched to the tag, unlocked, and opening straight onto Morning Light.",
+    },
   },
   words: {
     eyebrow: "Label",

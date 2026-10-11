@@ -88,6 +88,18 @@ export const motionCopy = {
       // What the FAQ says a tap does: the action chosen at the first scan.
       subline: 'One tap opens your library, shuffles, or adds a song.',
     },
+    tap: {
+      headline: ['Tap the tag.', 'Land in a song.'],
+      // iOS runs an NFC automation once the phone is unlocked, so the piece shows that step
+      // rather than pretending the song opens over the lock screen.
+      steps: {
+        locked: 'Phone locked',
+        tap: 'Tap · chordlink',
+        unlock: 'Unlocked',
+        open: 'Shuffle · Morning Light',
+      },
+      time: '9:41',
+    },
   },
   endCard: {
     // The promo's end line, so a phone edit ending on this card matches the launch cut.

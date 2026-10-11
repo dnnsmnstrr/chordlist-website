@@ -3,6 +3,7 @@ import type {ComponentType} from 'react';
 import {ChordKeys} from './ChordKeys';
 import {ChordlinkPrint, chordlinkPrintSeconds} from './ChordlinkPrint';
 import {ChordlinkSpin} from './ChordlinkSpin';
+import {ChordlinkTap} from './ChordlinkTap';
 import {CustomVideo, customDuration} from './custom/CustomVideo';
 import {customPropsSchema, emptyDefinition, motionFormats, type CustomProps} from './custom/schema';
 import {EndCard} from './EndCard';
@@ -51,6 +52,7 @@ export const motionPieces: Piece[] = [
   {id: 'LaunchCard', component: LaunchCard, durationInSeconds: 6, formats: all, defaults: ink},
   {id: 'ChordlinkPrint', component: ChordlinkPrint, durationInSeconds: chordlinkPrintSeconds, formats: all, defaults: ink},
   {id: 'ChordlinkSpin', component: ChordlinkSpin, durationInSeconds: 8, formats: all, defaults: ink},
+  {id: 'ChordlinkTap', component: ChordlinkTap, durationInSeconds: 9, formats: all, defaults: ink},
   {id: 'EndCard', component: EndCard, durationInSeconds: 3, formats: all, defaults: {campaign: 'warm-stage', appearance: 'light'}},
 ];
 

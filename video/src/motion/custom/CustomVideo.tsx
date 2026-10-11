@@ -2,6 +2,7 @@ import type {ReactNode} from 'react';
 import {AbsoluteFill, Freeze, Img, OffthreadVideo, Sequence, interpolate, useCurrentFrame, useVideoConfig} from 'remotion';
 import {PrintStatus} from '../ChordlinkPrint';
 import {PrintScene, printTimeline} from '../chordlink/PrintScene';
+import {TapLayout, tapTimeline} from '../ChordlinkTap';
 import {SpinScene} from '../chordlink/SpinScene';
 import {EndCardScene} from '../EndCard';
 import {headlineHeight, phoneBeside, useLayout, type Layout} from '../layout';
@@ -236,6 +237,12 @@ function ChordlinkModelTemplate({definition, layout, palette}: TemplateProps) {
   );
 }
 
+/** `chordlink-tap`: a locked phone, the tag, and the app opening onto a song, paced to the duration. */
+function ChordlinkTapTemplate({definition, layout, palette}: TemplateProps) {
+  const pace = (definition.duration * FPS) / tapTimeline(FPS).end;
+  return <TapLayout layout={layout} palette={palette} appearance={definition.appearance} lines={lines(definition)} pace={pace} />;
+}
+
 const templates: Record<MotionDefinition['template'], (props: TemplateProps) => ReactNode> = {
   statement: Statement,
   screen: Screen,
@@ -244,6 +251,7 @@ const templates: Record<MotionDefinition['template'], (props: TemplateProps) => 
   photo: Photo,
   'chordlink-print': ChordlinkPrintTemplate,
   'chordlink-model': ChordlinkModelTemplate,
+  'chordlink-tap': ChordlinkTapTemplate,
 };
 
 /**

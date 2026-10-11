@@ -51,6 +51,7 @@ Rendered files live in `public/video/motion/<piece>-<format>.mp4`, each with a p
 | `launch-card` | "Out now on iPhone and iPad", the free-limit line, three screens rising | `out-now` | `ink` | Launch-day posts; pinned post |
 | `end-card` | The promo's end card on its own | — | `warm-stage` | The last seconds of every phone edit |
 | `chordlink-print` | The chordlink tag 3D-printed layer by layer: the round pocket opens, the print pauses while the NFC tag drops in, the lid seals it, and the filament changes to graphite for the logo | — | `ink` | chordlink launch, how-it's-made post |
+| `chordlink-tap` | A locked phone touched to the tag: the NFC ripple, the unlock, and the app opening straight onto Morning Light's real song screen | — | `ink` | chordlink launch, explainer, ads |
 | `chordlink-spin` | The finished chordlink model (`public/models/chordlink.glb`) on a slow turntable, with what one tap does | — | `ink` | chordlink page, product posts |
 
 ### chordlink in 3D
@@ -66,6 +67,11 @@ so every frame is deterministic and renders headless like the rest of the suite.
   first edition's defaults: a 32 mm squircle, a 1.2 mm plate, a 28 mm pocket from 0.4 to 0.8 mm
   for the 27 mm tag, and the logo's keys raised 0.4 mm in graphite. Change the tag there and in
   `model.html` together.
+- `chordlink-tap` is 2D on purpose: the phone and its screen are the real screenshot, and the tag
+  is the mark in the print's bone and graphite. The lock screen is a plain time and padlock rather
+  than a copy of Apple's. iOS runs an NFC automation only once the phone is unlocked, so the piece
+  shows that step instead of opening the song over the lock screen; the action is *Shuffle*, one
+  of the three a chordlink can be set to.
 - Layers are drawn 0.1 mm thick and the whole print is stretched ×2.5 in height (`EXAGGERATION`
   in `PrintScene.tsx`), because a 1.6 mm object is otherwise a sheet of paper on camera. The
   proportions in plan are true.
@@ -117,6 +123,7 @@ is what renders.
 | `photo` | A photograph full bleed, drifting slowly under the photo scrim | photography master, upload |
 | `chordlink-print` | The `chordlink-print` scene, paced to the chosen duration (10 s or more reads best), with the headline above | — |
 | `chordlink-model` | The finished chordlink on a turntable, with the headline and an optional subline | — |
+| `chordlink-tap` | The `chordlink-tap` scene, paced to the chosen duration and shown in the chosen appearance, with the headline | — |
 
 ### Snippets
 

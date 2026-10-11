@@ -12,7 +12,7 @@ import {resolveField, snippetRefSchema, type SnippetCatalog} from './snippets';
 
 export const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
-export const motionTemplates = ['statement', 'screen', 'progression', 'file', 'photo', 'chordlink-print', 'chordlink-model'] as const;
+export const motionTemplates = ['statement', 'screen', 'progression', 'file', 'photo', 'chordlink-print', 'chordlink-model', 'chordlink-tap'] as const;
 export const motionFormats = ['story', 'post', 'wide', 'square'] as const;
 
 // Chapters of the press recording a definition may cut from. Three are left out on purpose:
