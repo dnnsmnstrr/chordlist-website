@@ -7,6 +7,7 @@ import { ChevronRight, Search } from "lucide-react"
 
 import { SiteSearchResults, useSiteSearch } from "@/components/site-search-results"
 import { matchesSearchTokens, searchTokens } from "@/lib/text-search"
+import { cn } from "@/lib/utils"
 import { adminCopy } from "@/locales/en"
 
 export type AdminToolAvailability = "internal" | "local" | "public"
@@ -28,7 +29,8 @@ export type AdminToolSection = {
 type AdminToolsProps = {
   /** The eyebrow, title, and introduction, rendered on the server. */
   heading: ReactNode
-  /** The admin backend card, between the header and the tools. */
+  /** The admin backend card, between the header and the tools. Hidden while searching, so the results sit
+   * right under the field. */
   backend: ReactNode
   sections: readonly AdminToolSection[]
 }
@@ -99,9 +101,9 @@ export function AdminTools({ heading, backend, sections }: AdminToolsProps) {
         </div>
       </header>
 
-      {backend}
+      {tokens.length === 0 ? backend : null}
 
-      <div className="mt-12 flex flex-col gap-12">
+      <div className={cn("flex flex-col gap-12", tokens.length === 0 ? "mt-12" : "mt-8")}>
         {visible.map((section) => (
           <section key={section.id}>
             <h2 className="font-mono text-xs uppercase tracking-widest text-muted-foreground">{section.title}</h2>
