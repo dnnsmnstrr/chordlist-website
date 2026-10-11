@@ -1250,6 +1250,111 @@ export const pianoCopy = {
   chordModeActive: "Chord mode · Shift for minor · Esc to exit",
 } as const
 
+/** /motion/library: every rendered motion piece, ready to share or download from a phone. */
+export const motionLibraryCopy = {
+  metadata: {
+    title: "Motion library",
+    description: `Every rendered ${siteConfig.name} motion video, ready to share or download.`,
+  },
+  eyebrow: "Internal",
+  title: "Motion library",
+  introduction:
+    "Every motion video, ready to post. Pick a format, then <strong>Share</strong> opens your phone's share sheet with the video itself — choose Instagram to post it as a Reel, Story, or feed post. <strong>Download</strong> saves the file.",
+  sections: {
+    suite: "The motion suite",
+    custom: "Made in the editor",
+  },
+  formats: {
+    story: { label: "Story", ratio: "9:16", use: "Reels, Stories, TikTok, Shorts" },
+    post: { label: "Post", ratio: "4:5", use: "Feed posts" },
+    wide: { label: "Wide", ratio: "16:9", use: "YouTube, the website, X" },
+    square: { label: "Square", ratio: "1:1", use: "Mastodon, Bluesky, Threads" },
+  },
+  formatPicker: "Format",
+  seconds: (seconds: number) => `${seconds} s`,
+  megabytes: (megabytes: string) => `${megabytes} MB`,
+  share: "Share",
+  preparing: "Preparing…",
+  shareReady: "Tap again to share",
+  shareUnsupported: "This browser can't share files, so the video was downloaded instead.",
+  shareFailed: "Sharing failed. Try Download instead.",
+  download: "Download",
+  copyCaption: "Copy caption",
+  captionCopied: "Caption copied",
+  captionFrom: (slug: string) => `Caption from the ${slug} still`,
+  play: (title: string) => `Play ${title}`,
+  pieces: {
+    "logo-sting": {
+      title: "Logo sting",
+      description: "The mark assembles itself: the keys drop onto the tile, the strings draw down, the wordmark types out, then the tagline.",
+    },
+    "logo-reveal": {
+      title: "Logo reveal",
+      description: "The logo assembles itself larger and centered, and the name fades in beneath it.",
+    },
+    "logo-reveal-badge": {
+      title: "Logo reveal with badge",
+      description: "The same reveal with Apple's official App Store badge fading in below the name.",
+    },
+    "plain-text": {
+      title: "A song is just a file",
+      description: "morning-light.md types itself out, then the app's view of the same song slides in from the edge.",
+    },
+    transpose: {
+      title: "New key, same song",
+      description: "Morning Light shifts +2, then +5, then home. Each chord rolls in place and the words never move.",
+    },
+    "same-chords": {
+      title: "Songs with the same progression",
+      description: "Seven songs in seven keys fold into one I – V – vi – IV, then flip to C – G – Am – F: the key the app compares them in.",
+    },
+    "chord-keys": {
+      title: "A keyboard that speaks in chords",
+      description: "Morning Light played on a keyboard drawn like the mark, the chord name landing on each change.",
+    },
+    "hands-free": {
+      title: "Keep your hands on the instrument",
+      description: "The hands-free autoscroll, with a running clock beside a touch count that stays at zero.",
+    },
+    "theme-spectrum": {
+      title: "Many colors",
+      description: "The app scrolling through its accent colors, with the swatches beneath it.",
+    },
+    "feature-reel": {
+      title: "Feature reel",
+      description: "A 30-second tour in six scenes cut from the real recording, ending on the end card.",
+    },
+    "screen-wall": {
+      title: "Screen wall",
+      description: "Every screen drifting past in alternating columns, with the tagline on a solid panel.",
+    },
+    manifesto: {
+      title: "Manifesto",
+      description: "Your lyrics. Your chords. Your files. Your songbook. On the beat, closing on the logo and the address.",
+    },
+    "launch-card": {
+      title: "Out now",
+      description: "The release line, the free-limit line, and three screens rising into frame.",
+    },
+    "chordlink-print": {
+      title: "chordlink, printed",
+      description: "The tag 3D-printed layer by layer: the pocket, a pause for the NFC tag, the lid, and the logo in graphite.",
+    },
+    "chordlink-spin": {
+      title: "chordlink on a turntable",
+      description: "The finished chordlink model turning slowly beneath what one tap does.",
+    },
+    "chordlink-tap": {
+      title: "Tap the tag, land in a song",
+      description: "The chordlink touched to a locked phone: the NFC read, the unlock, and a shuffle straight into a song.",
+    },
+    "end-card": {
+      title: "End card",
+      description: "The promo's end card on its own: the clip every phone edit ends on.",
+    },
+  },
+} as const
+
 export const adminCopy = {
   metadata: {
     title: "Admin",
@@ -1301,6 +1406,10 @@ export const adminCopy = {
     motion: {
       title: "Motion editor",
       description: "Write, preview, and render short videos in the social frame.",
+    },
+    motionLibrary: {
+      title: "Motion library",
+      description: "Every rendered video, ready to share to Instagram or download from your phone.",
     },
     emails: {
       title: "Email templates",

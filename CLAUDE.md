@@ -274,6 +274,12 @@ These categories of files in `public/` are **outputs — edit the generator, not
   piece with a twin in `content/social/` reads its headline, eyebrow and footnote from that definition
   through `video/src/motion/generated/social-copy.json`, which `pnpm sync:motion` regenerates. Edit
   the definition, not the JSON. `docs/motion-suite.md` is the catalogue and the rules.
+  The same script writes `public/video/motion/manifest.json` from the files actually rendered
+  (`--manifest` rewrites it without rendering), and `/motion/library` lists it — with the editor's
+  videos from `public/motion/manifest.json` — to share or download from a phone. Unlike the editor,
+  the library only reads committed files, so it works on the deployed site behind the login; each
+  piece's title and description are `motionLibraryCopy.pieces` in `locales/en.ts`, and
+  `tests/motion-library.test.ts` fails when a rendered piece has none.
 - **Motion videos** (`public/motion/<slug>/<format>.{mp4,jpg}` plus `manifest.json`) — `pnpm build:motion`,
   which renders every definition in `content/motion/` through the `Motion-Custom-<format>`
   composition. Definitions are written by the `/motion` wizard; uploads they use live in

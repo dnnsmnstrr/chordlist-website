@@ -177,6 +177,18 @@ recording's chapters with third-party lyrics are not offered, a clip stops at th
 chapter rather than running into the next shot, and the paywall screenshot is left out because it
 prints a price.
 
+## Library: share to Instagram from your phone
+
+`/motion/library` (behind the admin login, and on the deployed site too) lists every rendered
+piece and every video made in the editor. Pick a format — story for Reels and Stories, post for the
+feed — and **Share** hands the video file itself to the phone's share sheet, where Instagram takes
+it as a Reel, Story or post. **Download** saves the file. A piece with a social twin offers that
+still's caption to copy, since a shared file carries no text.
+
+On iPhone, Safari only opens the share sheet straight after a tap. When the video takes a moment
+to download, the button turns into *Tap again to share* with the file already in hand. A browser
+that cannot share files at all, like most desktop ones, downloads the video instead and says so.
+
 ## Render
 
 ```bash
