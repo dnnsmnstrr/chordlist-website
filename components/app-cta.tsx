@@ -88,6 +88,38 @@ export function AppStoreBadge({ language = defaultLanguage }: AppStoreBadgeProps
   )
 }
 
+function productHuntBadgeSource(theme: "neutral" | "dark") {
+  return `https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1274072&theme=${theme}`
+}
+
+/**
+ * Product Hunt's featured badge, served from their embed endpoint as the snippet they hand out. It
+ * mirrors the App Store badge beside it: dark artwork on the light page, light artwork in dark mode.
+ */
+export function ProductHuntBadge({ language = defaultLanguage }: { language?: Language }) {
+  const { productHuntBadge } = dictionary(language).common.appCta
+
+  return (
+    <a
+      href={siteConfig.links.productHunt}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="inline-block rounded-[10px] transition-opacity hover:opacity-80"
+    >
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcSet={productHuntBadgeSource("neutral")} />
+        <img
+          src={productHuntBadgeSource("dark")}
+          alt={productHuntBadge.alt}
+          className="h-14 w-auto"
+          width={250}
+          height={54}
+        />
+      </picture>
+    </a>
+  )
+}
+
 type AppCTANoteProps = {
   className?: string
   language?: Language

@@ -59,6 +59,8 @@ export const siteConfig = {
     // URL as the pre-order above, so setting it on launch day is what flips every
     // CTA from "Pre-order" to "Download".
     appStore: "https://apps.apple.com/us/app/chordlist-personal-songbook/id6798344297" as string | null,
+    productHunt:
+      "https://www.producthunt.com/products/chordlist?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-chordlist",
     pressKitArchive: "/press/chordlist-press-kit.zip" as string | null,
     terms: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/",
   },
