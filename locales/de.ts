@@ -79,6 +79,9 @@ export const commonCopy: Localized<typeof en> = {
       locale: "de-de",
       alt: "Laden im App Store",
     },
+    productHuntBadge: {
+      alt: "chordlist auf Product Hunt",
+    },
     note: {
       testFlight: `Kostenlose öffentliche Beta für iPhone und iPad. Benötigt Apples TestFlight-App und iOS ${siteConfig.minimumOSVersion} oder neuer.`,
       download: `Kostenloser Download für iPhone und iPad. Benötigt iOS ${siteConfig.minimumOSVersion} oder neuer.`,

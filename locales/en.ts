@@ -50,6 +50,11 @@ export const commonCopy = {
       locale: "en-us",
       alt: "Download on the App Store",
     },
+    // Product Hunt's featured badge, beside the store badge in the hero. The alt text is the one
+    // Product Hunt's embed snippet ships with.
+    productHuntBadge: {
+      alt: "chordlist - Your lyrics and chords, as files in your pocket! | Product Hunt",
+    },
     // One note per CTA state, so the line under the button always describes the
     // link that is actually configured. See components/app-cta.tsx.
     note: {

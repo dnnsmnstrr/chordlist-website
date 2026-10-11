@@ -30,6 +30,16 @@ Let the file and the progressions make the case.
 | Sun 11 Oct | Reddit: the post below in r/apple, which allows self-promotion on Sundays, and in r/iOSapps. Stay in both threads. |
 | From 12 Oct | Video: start with *These four songs are the same song* and *I learned one song and got three* from [Video scripts and storyboards](video-scripts.md), then *Your songbook is a folder*. Post each with the matching still from `content/social/`. |
 
+## Live posts
+
+Where each post went up, so a thread can be found again to answer comments, and so a post is never
+made twice in the same place. Add a row in the same sitting as posting.
+
+| Date | Where | Link |
+| --- | --- | --- |
+| Sat 10 Oct | Product Hunt | https://www.producthunt.com/products/chordlist |
+| Sun 11 Oct | Reddit, r/apple | https://www.reddit.com/r/apple/comments/1x37aa2/i_built_chordlist_a_songbook_for_iphone_and_ipad/ |
+
 ## Facts
 
 Every claim in a post has to match these. Check `lib/site-config.ts` and the app before changing one.
