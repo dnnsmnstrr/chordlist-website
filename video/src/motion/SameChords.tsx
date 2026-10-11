@@ -3,13 +3,16 @@ import {motionCopy} from './copy';
 import {useLayout} from './layout';
 import {Backdrop, progressAt} from './primitives';
 import {Headline, SocialFrame, fitHeadline} from './scaffold';
-import {matchingSongs, romanNumerals} from './song';
+import {matchingSongs, normalizeProgression, romanNumerals} from './song';
 import {mono, sans, paletteFor, type MotionProps, type Palette} from './theme';
 
 const copy = motionCopy.sameChords;
 const FOLD_AT = 105;
-// When the seven identical rows give way to the one progression they share.
+// When the seven identical rows give way to the one progression they share, and when that
+// progression flips to the chords the app actually compares: every key moved to C.
 const MERGE_AT = FOLD_AT + 75;
+const FLIP_AT = MERGE_AT + 50;
+const normalized = normalizeProgression(matchingSongs[0]!.chords);
 
 /** One library row: title first, artist second, the progression in fixed columns on the right. */
 function SongRow({
@@ -83,7 +86,8 @@ function SongRow({
 /**
  * Seven songs from the app's own library, each in its own key. Their chords fold into Roman
  * numerals, every row turns out to read the same, and the seven rows merge into the one
- * progression they share, centred.
+ * progression they share, centred, which then flips to C G Am F: the key the app moves every
+ * progression to before comparing them.
  */
 export function SameChords({campaign}: MotionProps) {
   const frame = useCurrentFrame();
@@ -135,41 +139,57 @@ export function SameChords({campaign}: MotionProps) {
             transform: `scale(${1 - merge * 0.08})`,
           }}
         >
-          {/* The band that ties the folded columns together once every row reads the same. */}
+          <div style={{display: 'flex', flexDirection: 'column', gap}}>
+            {matchingSongs.map((song, index) => (
+              <SongRow key={song.title} song={song} index={index} palette={palette} width={listWidth} height={row} font={font} />
+            ))}
+          </div>
+          {/* Drawn over the rows, not under them, so it frames the columns rather than hiding behind them. */}
           <div
             style={{
               position: 'absolute',
               right: font * 0.6,
               top: -gap,
               width: columnWidth + font * 0.6,
-              height: (listHeight + gap * 2) * bandIn,
+              height: listHeight + gap * 2,
               borderRadius: 14,
-              border: `2px solid ${palette.muted}`,
+              border: `2px solid ${palette.text}`,
               opacity: bandIn,
+              transform: `scale(${1.04 - bandIn * 0.04})`,
+              pointerEvents: 'none',
             }}
           />
-          <div style={{display: 'flex', flexDirection: 'column', gap}}>
-            {matchingSongs.map((song, index) => (
-              <SongRow key={song.title} song={song} index={index} palette={palette} width={listWidth} height={row} font={font} />
-            ))}
-          </div>
         </div>
         <div
           style={{
             position: 'absolute',
             left: target.x,
             top: target.y,
-            fontFamily: mono,
-            fontWeight: 600,
-            fontSize: bigFont,
-            lineHeight: 1,
-            whiteSpace: 'nowrap',
-            color: palette.text,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
             opacity: merge,
             transform: `translate(-50%, -50%) translateX(${(bandCentre - target.x) * (1 - merge)}px) scale(${startScale + (1 - startScale) * merge})`,
           }}
         >
-          {copy.roman}
+          <div style={{display: 'flex', fontFamily: mono, fontWeight: 600, fontSize: bigFont, lineHeight: 1.2, whiteSpace: 'pre', color: palette.text}}>
+            {romanNumerals.map((numeral, index) => {
+              const chord = normalized[index] ?? '';
+              const flip = progressAt(frame, FLIP_AT + index * 4, 12);
+              return (
+                <span key={index} style={{display: 'flex'}}>
+                  {index > 0 ? <span style={{color: palette.muted}}>{' – '}</span> : null}
+                  <span style={{position: 'relative', width: `${numeral.length + (chord.length - numeral.length) * flip}ch`, height: '1.2em', overflow: 'hidden', textAlign: 'center'}}>
+                    <span style={{position: 'absolute', inset: 0, transform: `translateY(${-flip * 100}%)`}}>{numeral}</span>
+                    <span style={{position: 'absolute', inset: 0, transform: `translateY(${(1 - flip) * 100}%)`}}>{chord}</span>
+                  </span>
+                </span>
+              );
+            })}
+          </div>
+          <div style={{marginTop: bigFont * 0.35, fontFamily: mono, fontSize: Math.round(bigFont * 0.4), color: palette.muted, opacity: progressAt(frame, FLIP_AT + 14, 16)}}>
+            {copy.normalised}
+          </div>
         </div>
         <SocialFrame layout={layout} palette={palette} eyebrow={copy.eyebrow} footnote={copy.footnote} />
       </AbsoluteFill>

@@ -39,7 +39,7 @@ export const motionPieces: Piece[] = [
   {id: 'LogoRevealBadge', component: LogoRevealBadge, durationInSeconds: 4, formats: all, defaults: ink},
   {id: 'PlainText', component: PlainText, durationInSeconds: 8, formats: all, defaults: {campaign: 'paper', appearance: 'light'}},
   {id: 'Transpose', component: Transpose, durationInSeconds: 9, formats: all, defaults: ink},
-  {id: 'SameChords', component: SameChords, durationInSeconds: 9, formats: all, defaults: {campaign: 'blueprint', appearance: 'dark'}},
+  {id: 'SameChords', component: SameChords, durationInSeconds: 10, formats: all, defaults: {campaign: 'blueprint', appearance: 'dark'}},
   {id: 'ChordKeys', component: ChordKeys, durationInSeconds: 8, formats: all, defaults: ink},
   {id: 'HandsFree', component: HandsFree, durationInSeconds: 8, formats: all, defaults: {campaign: 'warm-stage', appearance: 'light'}},
   {id: 'ThemeSpectrum', component: ThemeSpectrum, durationInSeconds: 8, formats: all, defaults: {campaign: 'ink', appearance: 'light'}},

@@ -84,3 +84,17 @@ export const matchingSongs = [
   {title: 'With or Without You', artist: 'U2', chords: ['D', 'A', 'Bm', 'G']},
 ];
 export const romanNumerals = ['I', 'V', 'vi', 'IV'];
+
+/**
+ * The app's matching key (ChordTransposer.normalizeChords): the whole progression moved so its first
+ * chord is C, or A when that chord is minor. Every song above starts on a major chord, so all
+ * seven come out as C G Am F, which is how the app knows they match.
+ */
+export function normalizeProgression(chords: string[]) {
+  const [first = 'C'] = chords;
+  const match = /^([A-G][#b]?)(.*)$/.exec(first);
+  const isMinor = /^m(?!aj)/.test(match?.[2] ?? '');
+  const from = sharps.indexOf(flats[match?.[1] ?? 'C'] ?? match?.[1] ?? 'C');
+  const to = sharps.indexOf(isMinor ? 'A' : 'C');
+  return chords.map((chord) => transposeChord(chord, to - from));
+}

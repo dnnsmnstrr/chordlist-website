@@ -39,6 +39,7 @@ export const motionCopy = {
     ...social('matching-progressions'),
     headline: ['Songs with the', 'same progression.'],
     roman: 'I – V – vi – IV',
+    normalised: 'Every key, moved to C',
   },
   keyboard: social('chord-keyboard'),
   handsFree: {
