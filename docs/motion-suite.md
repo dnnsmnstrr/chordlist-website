@@ -51,7 +51,7 @@ Rendered files live in `public/video/motion/<piece>-<format>.mp4`, each with a p
 | `launch-card` | "Out now on iPhone and iPad", the free-limit line, three screens rising | `out-now` | `ink` | Launch-day posts; pinned post |
 | `end-card` | The promo's end card on its own | — | `warm-stage` | The last seconds of every phone edit |
 | `chordlink-print` | The chordlink tag 3D-printed layer by layer: the round pocket opens, the print pauses while the NFC tag drops in, the lid seals it, and the filament changes to graphite for the logo | — | `ink` | chordlink launch, how-it's-made post |
-| `chordlink-tap` | A locked phone touched to the tag: the NFC ripple, the unlock, and the app opening straight onto Morning Light's real song screen | — | `ink` | chordlink launch, explainer, ads |
+| `chordlink-tap` | A locked phone touched to the tag: the NFC ripple, the unlock, and the app shuffling straight into a song (the real song screen) | — | `ink` | chordlink launch, explainer, ads |
 | `chordlink-spin` | The finished chordlink model (`public/models/chordlink.glb`) on a slow turntable, with what one tap does | — | `ink` | chordlink page, product posts |
 
 ### chordlink in 3D

@@ -96,7 +96,7 @@ export const motionCopy = {
         locked: 'Phone locked',
         tap: 'Tap · chordlink',
         unlock: 'Unlocked',
-        open: 'Shuffle · Morning Light',
+        open: 'Shuffle to a random song',
       },
       time: '9:41',
     },

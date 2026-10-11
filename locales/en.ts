@@ -1360,7 +1360,7 @@ export const motionEditorCopy = {
     "chordlink-model": { title: "chordlink model", description: "The finished tag, the site's 3D model, turning once beside your words." },
     "chordlink-tap": {
       title: "chordlink tap",
-      description: "A locked phone touched to the tag, unlocked, and opening straight onto Morning Light.",
+      description: "A locked phone touched to the tag, unlocked, and shuffling straight into a random song.",
     },
   },
   words: {
