@@ -214,16 +214,32 @@ export const docsCopy = {
   onThisPage: "On this page",
   annotatedFigureHint: "Numbers on the screenshot match the list.",
   tableOfContents: [
-    { href: "#getting-started", label: "Quick start" },
-    { href: "#library", label: "Find songs" },
-    { href: "#playing", label: "Play a song" },
-    { href: "#adding-songs", label: "Add and import songs" },
-    { href: "#chords", label: "Write chords" },
-    { href: "#file-format", label: "Files and folders" },
-    { href: "#other-apps", label: "Manage files with other apps" },
-    { href: "#obsidian", label: "Use chordlist with Obsidian" },
-    { href: "#offline", label: "Keep an iCloud folder offline" },
-    { href: "#troubleshooting", label: "Troubleshooting" },
+    {
+      label: "Songs, lyrics & chords",
+      items: [
+        { href: "#getting-started", label: "Quick start" },
+        { href: "#library", label: "Find songs" },
+        { href: "#playing", label: "Play a song" },
+        { href: "#adding-songs", label: "Add and import songs" },
+        { href: "#chords", label: "Write chords" },
+      ],
+    },
+    {
+      label: "File management",
+      items: [
+        { href: "#file-format", label: "Files and folders" },
+        { href: "#other-apps", label: "Manage files with other apps" },
+        { href: "#obsidian", label: "Use chordlist with Obsidian" },
+        { href: "#offline", label: "Keep an iCloud folder offline" },
+      ],
+    },
+    {
+      label: "Other",
+      items: [
+        { href: "#unlimited", label: `${siteConfig.name} unlimited` },
+        { href: "#troubleshooting", label: "Troubleshooting" },
+      ],
+    },
   ],
   sections: {
     gettingStarted: {
@@ -556,6 +572,95 @@ export const docsCopy = {
         "Keep Downloaded makes songs available, but it is not a backup. Keep a separate copy of a library you care about.",
       ],
       appleLink: "Read Apple’s Keep Downloaded instructions",
+    },
+    unlimited: {
+      title: `${siteConfig.name} unlimited`,
+      introduction: `${siteConfig.name} is free for your first ${siteConfig.freeSongLimit} songs. <strong>${siteConfig.name} unlimited</strong> is a one-time in-app purchase that removes that limit for good and supports the app’s development.`,
+      includesTitle: "What it includes",
+      includes: [
+        {
+          title: "Unlimited songs",
+          body: "Add as many songs as you like, forever.",
+        },
+        {
+          title: "No ads",
+          body: "The small advert for another independent app, shown at the end of the song list and of each song, goes away.",
+        },
+        {
+          title: "Pay once",
+          body: "It is a single purchase, not a subscription. Nothing renews and nothing is charged again.",
+        },
+        {
+          title: "All your devices",
+          body: `The unlock belongs to your Apple Account, so it works on every iPhone and iPad signed in with it. There is no ${siteConfig.name} account to create.`,
+        },
+        {
+          title: "Family Sharing",
+          body: "If you use Family Sharing, the members of your family group can use the unlock too.",
+        },
+      ],
+      freeTitle: "How the free version works",
+      free: [
+        `Once your library has ${siteConfig.unlockPromptSongCount} songs, adding another first shows the unlock screen. Tap <code>Continue Free</code> to carry on.`,
+        `At ${siteConfig.freeSongLimit} songs, adding a song in the app needs the unlock.`,
+        "Reaching the limit never locks the songs you already have: you can still open, play, edit, and share every one of them.",
+      ],
+      figure: {
+        alt: "The Support chordlist screen, numbered: 1 what the unlock includes, 2 the button that buys it, with its one-time price, 3 Continue Free, 4 Restore Purchases.",
+      },
+      callouts: [
+        {
+          title: "What you get",
+          body: "Unlimited songs and no ads.",
+        },
+        {
+          title: "Unlock",
+          body: "Shows the price in your own currency. Confirming opens Apple’s payment sheet.",
+        },
+        {
+          title: "Continue Free",
+          body: `Closes the screen and keeps going. It is offered until you reach ${siteConfig.freeSongLimit} songs.`,
+        },
+        {
+          title: "Restore Purchases",
+          body: "Brings back an unlock you already bought — on a new device, or after reinstalling.",
+        },
+      ],
+      buyTitle: "How to buy it",
+      buySteps: [
+        `Open <code>⋯ → Settings</code> and tap <code>Unlock Unlimited Songs</code> under <code>${siteConfig.name} unlimited</code>. The same screen also appears on its own when you add a song past the free limit.`,
+        "Tap the unlock button and confirm the purchase with Face ID, Touch ID, or your Apple Account password.",
+        `That’s it. The lock beside <code>${siteConfig.name} unlimited</code> in Settings opens, and you can add songs straight away.`,
+      ],
+      offerCode: `Have an offer code — for example, one that came with a chordlink? Tap <code>Redeem it here</code> on the unlock screen and enter the code in the sheet that opens. Redeemed codes unlock exactly the same purchase.`,
+      problemsTitle: "If something goes wrong",
+      problems: [
+        {
+          question: "I paid, but it’s still locked",
+          answer: `Open <code>⋯ → Settings → ${siteConfig.name} unlimited → Unlock Unlimited Songs</code> and tap <code>Restore Purchases</code>. If that doesn’t help, check that the device is signed in to the App Store with the Apple Account that made the purchase, under <code>Settings → [your name] → Media & Purchases</code>. Still locked? Email ${siteConfig.contact.support} with the receipt Apple sent you, and we’ll sort it out.`,
+        },
+        {
+          question: "I got a new iPhone or reinstalled the app",
+          answer:
+            "You don’t need to buy it again. Sign in with the same Apple Account, open the unlock screen, and tap <code>Restore Purchases</code>.",
+        },
+        {
+          question: "“The purchase completed, but Unlimited Songs wasn’t unlocked”",
+          answer: `Apple took the payment, but the app couldn’t confirm it yet. Tap <code>Restore Purchases</code>, ideally on a stable connection. If the message keeps appearing, email ${siteConfig.contact.support}.`,
+        },
+        {
+          question: "The unlock button doesn’t work, or no price is shown",
+          answer:
+            "The App Store couldn’t be reached. Check your internet connection and try again later. If in-app purchases are turned off in Screen Time, under <code>Settings → Screen Time → Content & Privacy Restrictions</code>, the purchase can’t go through until they are allowed.",
+        },
+        {
+          question: "I want a refund, or was charged twice",
+          answer: `Purchases are made through the App Store, so only Apple can refund them: request one at reportaproblem.apple.com with the Apple Account that paid. If something isn’t working, email ${siteConfig.contact.support} first — a fix usually arrives sooner than a refund does.`,
+        },
+      ],
+      refundLink: "Request a refund from Apple",
+      privacy: `Apple processes the payment, and ${siteConfig.name} never sees your card or bank details. How purchases are verified is described in the`,
+      privacyLink: "privacy policy",
     },
     troubleshooting: {
       title: "Troubleshooting",

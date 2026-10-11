@@ -16,6 +16,7 @@ export type DocsScreenshotName =
   | "05-Tag-Filter"
   | "06-Settings"
   | "07-Song-Suggestions"
+  | "08-Paywall"
 
 /** A point on a screenshot, in percent of its width and height, that a numbered marker sits on. */
 export type ScreenshotMarker = { x: number; y: number }

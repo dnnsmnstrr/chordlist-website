@@ -21,6 +21,7 @@ const externalLinks = {
   appleKeepDownloaded:
     "https://support.apple.com/guide/iphone/transfer-files-iphone-a-storage-device-server-iphe9aff429a/ios",
   obsidianICloud: "https://obsidian.md/help/Getting%20started/Sync%20your%20notes%20across%20devices#iCloud",
+  appleRefund: "https://reportaproblem.apple.com",
 } as const
 
 /** Paired by position with `sections.gettingStarted.steps`. */
@@ -48,6 +49,12 @@ const markers = {
       { x: 44, y: 36.3 },
     ],
   ],
+  unlimited: [
+    { x: 27, y: 56.8 },
+    { x: 94, y: 77.5 },
+    { x: 94, y: 84.5 },
+    { x: 23, y: 97.6 },
+  ],
   addingSongs: [
     { x: 70, y: 13.4 },
     { x: 88, y: 31.6 },
@@ -55,10 +62,15 @@ const markers = {
     { x: 64, y: 80.6 },
     { x: 88, y: 71 },
   ],
-} as const satisfies { playing: readonly (readonly ScreenshotMarker[])[]; addingSongs: readonly ScreenshotMarker[] }
+} as const satisfies {
+  playing: readonly (readonly ScreenshotMarker[])[]
+  unlimited: readonly ScreenshotMarker[]
+  addingSongs: readonly ScreenshotMarker[]
+}
 
 export default function DocsPage() {
   const sections = docsCopy.sections
+  const [songsGroup, filesGroup, otherGroup] = docsCopy.tableOfContents
   const playingOnSong = markers.playing[0].length
 
   return (
@@ -75,9 +87,10 @@ export default function DocsPage() {
         </header>
 
         <div className="mt-10 grid items-start gap-12 lg:grid-cols-[13rem_minmax(0,1fr)]">
-          <DocsSidebar title={docsCopy.onThisPage} items={docsCopy.tableOfContents} />
+          <DocsSidebar title={docsCopy.onThisPage} groups={docsCopy.tableOfContents} />
 
           <div className="min-w-0 flex flex-col gap-16">
+            <GroupLabel>{songsGroup.label}</GroupLabel>
             <DocsSection id="getting-started" title={sections.gettingStarted.title}>
               <p>{sections.gettingStarted.introduction}</p>
               <ol className="grid gap-8 sm:grid-cols-3 sm:gap-5">
@@ -206,6 +219,7 @@ export default function DocsPage() {
               </Callout>
             </DocsSection>
 
+            <GroupLabel>{filesGroup.label}</GroupLabel>
             <DocsSection id="file-format" title={sections.fileFormat.title}>
               <p>{sections.fileFormat.introduction}</p>
               <PathDiagram label={sections.fileFormat.diagram.label} parts={sections.fileFormat.diagram.parts} />
@@ -237,6 +251,61 @@ export default function DocsPage() {
               <NumberedList items={sections.offline.steps} />
               <BulletList items={sections.offline.notes} />
               <ExternalLink href={externalLinks.appleKeepDownloaded}>{sections.offline.appleLink}</ExternalLink>
+            </DocsSection>
+
+            <GroupLabel>{otherGroup.label}</GroupLabel>
+            <DocsSection id="unlimited" title={sections.unlimited.title}>
+              <p>
+                <InlineMarkup text={sections.unlimited.introduction} />
+              </p>
+              <h3 className="text-lg font-semibold tracking-tight text-foreground">
+                {sections.unlimited.includesTitle}
+              </h3>
+              <FeatureList features={sections.unlimited.includes} columns={3} />
+
+              <h3 className="mt-4 text-lg font-semibold tracking-tight text-foreground">
+                {sections.unlimited.freeTitle}
+              </h3>
+              <BulletList items={sections.unlimited.free} />
+
+              <h3 className="mt-4 text-lg font-semibold tracking-tight text-foreground">
+                {sections.unlimited.buyTitle}
+              </h3>
+              <NumberedList items={sections.unlimited.buySteps} />
+              <AnnotatedFigure
+                screenshots={
+                  <DocsScreenshot
+                    name="08-Paywall"
+                    alt={sections.unlimited.figure.alt}
+                    markers={markers.unlimited}
+                  />
+                }
+                callouts={sections.unlimited.callouts}
+              />
+              <Callout>
+                <InlineMarkup text={sections.unlimited.offerCode} />
+              </Callout>
+
+              <h3 className="mt-4 text-lg font-semibold tracking-tight text-foreground">
+                {sections.unlimited.problemsTitle}
+              </h3>
+              <div className="border-t border-border">
+                {sections.unlimited.problems.map((item) => (
+                  <CollapsibleSection key={item.question} title={item.question}>
+                    <p className="text-pretty leading-relaxed">
+                      <InlineMarkup text={item.answer} />
+                    </p>
+                  </CollapsibleSection>
+                ))}
+              </div>
+              <ExternalLink href={externalLinks.appleRefund}>{sections.unlimited.refundLink}</ExternalLink>
+              <p className="text-sm">
+                {sections.unlimited.privacy}{" "}
+                <Link href="/privacy" className={linkClassName}>
+                  {sections.unlimited.privacyLink}
+                </Link>
+                .
+              </p>
             </DocsSection>
 
             <DocsSection id="troubleshooting" title={sections.troubleshooting.title}>
@@ -271,6 +340,15 @@ export default function DocsPage() {
 
 const linkClassName =
   "w-fit font-medium text-foreground underline underline-offset-4 transition-colors hover:text-muted-foreground"
+
+/** Opens a group of sections, matching the group headings in the sidebar. */
+function GroupLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <p className="-mb-8 border-b border-border pb-3 font-mono text-xs uppercase tracking-widest text-muted-foreground first:mt-0 [&:not(:first-child)]:mt-4">
+      {children}
+    </p>
+  )
+}
 
 function DocsSection({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
   return (
