@@ -1,0 +1,10 @@
+---
+description: Write hooks, angles and short-form video scripts for chordlist, and record how posted videos performed.
+alwaysApply: false
+---
+
+# Video content
+
+Read and follow `.agents/skills/video-content/SKILL.md` completely before writing hooks or scripts.
+That shared skill is the operational source of truth for Claude, Codex, and Cursor. Its content
+lives in `docs/video-hooks.md` and `docs/video-scripts.md`.
