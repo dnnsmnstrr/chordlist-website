@@ -76,6 +76,8 @@ export const config = {
     "/api/editorial/:path*",
     "/api/translations",
     "/api/translations/:path*",
+    "/banner",
+    "/banner/:path*",
     "/copy",
     "/copy/:path*",
     "/editorial",
