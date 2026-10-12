@@ -1,0 +1,24 @@
+[
+  {
+    "slug": "learn-one-shape",
+    "template": "progression",
+    "headline": [
+      "Learn one shape,",
+      "hear it everywhere."
+    ],
+    "caption": "One shape, in a different key in every song. chordlist shows which songs in your library share it.",
+    "seconds": 9,
+    "outputs": [
+      {
+        "format": "story",
+        "video": "/motion/learn-one-shape/story.mp4",
+        "poster": "/motion/learn-one-shape/story.jpg"
+      },
+      {
+        "format": "post",
+        "video": "/motion/learn-one-shape/post.mp4",
+        "poster": "/motion/learn-one-shape/post.jpg"
+      }
+    ]
+  }
+]

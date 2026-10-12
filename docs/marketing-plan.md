@@ -93,7 +93,7 @@ a public TestFlight build, and `marketing@chordlist.app`. The only missing step 
 already moved from 28 August to today; it does not survive another slip.
 
 Pitch in three sentences — what it is, the one unusual thing, a TestFlight link so they can hold it
-before they write. **Attach nothing**; link the kit. Personalise the first sentence per outlet or do
+before they write. **Attach nothing**; link the kit. Personalize the first sentence per outlet or do
 not send it.
 
 Draft, English:

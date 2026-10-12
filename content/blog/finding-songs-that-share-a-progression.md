@@ -8,7 +8,7 @@ tags:
   - workflow
 outline:
   - Shared chord movement means your hands already know part of the next song
-  - "How chordlist normalises a progression: transpose to a common reference, order and quality still matter"
+  - "How chordlist normalizes a progression: transpose to a common reference, order and quality still matter"
   - It is an exact match after transposition — not 'sounds similar'
   - Multiple comma-separated sections must all line up
   - Where the suggestions appear on the song view

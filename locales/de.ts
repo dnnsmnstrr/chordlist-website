@@ -59,6 +59,7 @@ export const commonCopy: Localized<typeof en> = {
     footerLabel: "Fußzeile",
     docs: "Doku",
     blog: "Blog",
+    admin: "Admin",
     faq: "FAQ",
     support: "Support",
     press: "Presse",
@@ -79,6 +80,9 @@ export const commonCopy: Localized<typeof en> = {
       locale: "de-de",
       alt: "Laden im App Store",
     },
+    productHuntBadge: {
+      alt: "chordlist auf Product Hunt",
+    },
     note: {
       testFlight: `Kostenlose öffentliche Beta für iPhone und iPad. Benötigt Apples TestFlight-App und iOS ${siteConfig.minimumOSVersion} oder neuer.`,
       download: `Kostenloser Download für iPhone und iPad. Benötigt iOS ${siteConfig.minimumOSVersion} oder neuer.`,
@@ -97,6 +101,10 @@ export const commonCopy: Localized<typeof en> = {
     clear: "Suche zurücksetzen",
     resultCount: (count: number) => (count === 1 ? "1 Frage" : `${count} Fragen`),
     empty: "Keine Frage passt zu dieser Suche.",
+  },
+  siteSearch: {
+    title: `Mehr auf ${siteConfig.name}`,
+    inEnglish: "Auf Englisch",
   },
   skipToContent: "Zum Inhalt springen",
   notFound: {

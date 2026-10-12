@@ -29,6 +29,7 @@ yarn lockfiles).
 | `pnpm build:icons` | Regenerate every favicon asset in `public/` |
 | `pnpm build:og` | Regenerate `public/og.png`, one card per static page in `public/og/`, **and** one per blog post in `public/blog/og/` |
 | `pnpm build:social` | Regenerate every social asset in `public/social/` from `content/social/` |
+| `pnpm build:motion` | Render every motion definition in `content/motion/` into `public/motion/` (`--only <slug>` for one) |
 | `pnpm build:emails` | Regenerate every email in `public/emails/` from `content/emails/` |
 | `pnpm build:creative` | Regenerate the App Store header, search results, universal, and In-App Event images in `public/app-store-creative/` |
 
@@ -58,6 +59,8 @@ content/blog/        Blog posts as Markdown + frontmatter — the filename is th
 content/blog-schedule.json  The blog's release cadence — see Blog
 content/blog-archive/  Old machine-drafted versions of reset posts — reference only, read by nothing
 content/social/      Social asset definitions — frontmatter builds the image, body is the caption
+content/motion/      Motion video definitions, written by /motion — frontmatter builds the video, body is the caption;
+                     snippets.yml holds the reusable wording their fields can link to
 lib/site-config.ts   Single source of truth for facts about the product
 lib/blog.ts          Reads content/blog: validation, visibility, tags, related posts
 lib/blog-approval.ts The approval digest — what "approved" means for a post
@@ -85,7 +88,7 @@ These are strongly held in this codebase — follow them rather than generic Nex
 
 Every visible string — headings, body text, button labels, `aria-label`s, alt text, metadata
 titles and descriptions — is exported from `locales/en.ts` as a `const` object and imported into
-the component. Components contain layout and behaviour only. When adding a section, add its copy
+the component. Components contain layout and behavior only. When adding a section, add its copy
 object (`homeCopy`, `docsCopy`, `faqCopy`, `pressCopy`, `privacyCopy`, `commonCopy`,
 `metadataCopy`, plus small per-component objects like `pianoCopy` and `screenshotGalleryCopy`)
 and read from it.
@@ -97,6 +100,14 @@ is a contract.
 Components on a translated route read `dictionary(language)` from `@/locales` instead of importing
 `@/locales/en` directly — see Localization. Everything else still imports `@/locales/en`, which is
 correct for a page that only exists in English.
+
+#### American English
+
+Every English word a reader sees — site copy, metadata, blog posts, social and motion assets, emails,
+App Store images, video — uses American spelling: *color*, *center*, *normalize*, *gray*,
+*fulfill*, *practice* as a verb. `DESIGN.md` makes this a rule for the app as well, and the blog
+guides (`docs/blog-voice.md`, `docs/blog-editorial-guidelines.md`) already ask for it. Quoted user
+content and song files keep their own spelling.
 
 #### Inline markup in copy
 
@@ -139,6 +150,20 @@ the key English terms — "refund", "unlock", "shipping" — because a German re
 English wording should not have to translate their own question first. `searchAliases()` in
 `locales/en.ts` widens each list to `string[]`, because a tuple would force every translation to
 invent exactly as many synonyms as English has.
+
+#### The site-wide search
+
+Every search field — `/docs`, `/faq`, `/support`, `/blog`, and `/admin` — filters its own page first,
+then lists up to five matches from the other pages under **Elsewhere on chordlist**
+(`components/site-search-results.tsx`). The index is built on the server by `lib/site-search-index.ts`
+and served per language from `app/api/search/[language]`, which the field fetches once, on focus, so it
+is never in a page's bundle. Ranking and matching are `searchSite()` in `lib/site-search.ts`. Docs and
+blog entries are English on every language's index and say so. Results link to an answer by its
+anchor — `faqQuestionId()` for a question, the docs' own ids for a passage — and `useRevealHashTarget()`
+opens the `<details>` the anchor names on arrival, which a browser will not do by itself.
+
+Search fields set their text to `text-base pointer-fine:text-sm`: iOS Safari zooms into any focused
+field below 16px, and keying it to the pointer rather than the width also covers a phone in landscape.
 
 #### Copy variants
 
@@ -194,7 +219,8 @@ change the site-wide CTA, edit those config values — not the component.
 ### Components
 
 - Server components by default. Add `"use client"` only for real interactivity — currently
-  `screenshot-gallery.tsx`, `piano-keyboard.tsx`, and `docs-sidebar.tsx`. Prefer a CSS-only
+  `screenshot-gallery.tsx`, `piano-keyboard.tsx`, and the /docs widgets `docs-sidebar.tsx`, `docs-search.tsx`,
+  and `docs-marker-link.tsx`. Prefer a CSS-only
   solution first: `collapsible-section.tsx` is a plain `<details>` element for exactly this reason.
 - Named exports, `function` declarations, `PascalCase` components in `kebab-case.tsx` files.
 - Props are declared as a local `type XProps = { … }` above the component.
@@ -235,7 +261,7 @@ These categories of files in `public/` are **outputs — edit the generator, not
   drift apart. Each script has a `CONFIG` block at the top for copy, colors, and sizing.
 - **Social assets** (`public/social/<slug>/<format>.png` plus `manifest.json`) — `pnpm build:social`,
   which renders every definition in `content/social/` into the `card`, `post`, and `story` formats it
-  declares. Layouts live in `scripts/lib/social-templates.mjs`; copy, colours, and the format matrix
+  declares. Layouts live in `scripts/lib/social-templates.mjs`; copy, colors, and the format matrix
   live in the script's `CONFIG` block. It is deliberately separate from `build:og`: that build owns
   `public/og.png` and the page and post cards, which must not change when a campaign does. Deleting a
   definition prunes its images on the next run. `docs/social-media-system.md` is the design source of
@@ -257,6 +283,27 @@ These categories of files in `public/` are **outputs — edit the generator, not
   screenshot means adding its filename to `screenshotNames` in `scripts/sync-app-assets.mjs` **and**
   to the `screenshots` arrays in `components/app-showcase.tsx` / `app/press/page.tsx`, plus its copy
   in `locales/en.ts`.
+- **Motion graphics** (`public/video/motion/<piece>-<format>.{mp4,jpg}`) — `pnpm video:render:motion`,
+  which renders every composition in the Remotion **Motion** folder (`video/src/motion/`). They are
+  the social stills in motion: the same frame, formats and type scale as `pnpm build:social`, and a
+  piece with a twin in `content/social/` reads its headline, eyebrow and footnote from that definition
+  through `video/src/motion/generated/social-copy.json`, which `pnpm sync:motion` regenerates. Edit
+  the definition, not the JSON. `docs/motion-suite.md` is the catalogue and the rules.
+  The same script writes `public/video/motion/manifest.json` from the files actually rendered
+  (`--manifest` rewrites it without rendering), and `/motion/library` lists it — with the editor's
+  videos from `public/motion/manifest.json` — to share or download from a phone. Unlike the editor,
+  the library only reads committed files, so it works on the deployed site behind the login; each
+  piece's title and description are `motionLibraryCopy.pieces` in `locales/en.ts`, and
+  `tests/motion-library.test.ts` fails when a rendered piece has none.
+- **Motion videos** (`public/motion/<slug>/<format>.{mp4,jpg}` plus `manifest.json`) — `pnpm build:motion`,
+  which renders every definition in `content/motion/` through the `Motion-Custom-<format>`
+  composition. Definitions are written by the `/motion` wizard; uploads they use live in
+  `assets/motion/<slug>/` and are committed with them. The zod schema in
+  `video/src/motion/custom/schema.ts` is shared by the wizard, its API, the composition and the
+  script, so one set of rules validates a definition wherever it is read. A field may link to a
+  snippet instead of holding words — from `content/motion/snippets.yml`, `locales/vocabulary.json`,
+  or a `content/social/` still — and is resolved at preview and render time, so editing a snippet
+  changes every video that links it on its next render.
 - **App Store screenshot sets** (`public/app-store-screenshots/`, plus `manifest.json` and the ZIPs
   in `downloads/`) — `pnpm build:screens`. Art direction lives in the script's `CONFIG` block; the
   words live in `scripts/lib/app-store-copy.mjs`, keyed by language and then slide, and read shared
@@ -340,10 +387,11 @@ the rewrite; nothing in the site reads that folder. The `blog-refine` skill poli
 
 **Scheduling.** In production, a post that is unapproved, whose `published` date is in the future — or
 that carries `draft: true` — is hidden from the index, the sitemap, the RSS feed, and its own URL (which 404s).
-`/blog`, `/blog/[slug]`, `app/sitemap.ts`, and `app/blog/rss.xml` all export `revalidate = 3600`, so a
-scheduled post goes live within about an hour of its date with no redeploy. `generateStaticParams`
+`/blog`, `/blog/[slug]`, `app/sitemap.ts`, `app/blog/rss.xml`, and the site-search index at
+`app/api/search/[language]` all export `revalidate = 3600`, so a scheduled post goes live within about
+an hour of its date with no redeploy. `generateStaticParams`
 prerenders only visible slugs; a future URL renders on demand, hits `notFound()`, and starts resolving
-once the date passes. Keep the four `revalidate` values in step.
+once the date passes. Keep the five `revalidate` values in step.
 
 **Previews show unreleased posts.** `showsUnreleasedPosts()` in `lib/blog.ts` reads `VERCEL_ENV`, so
 branch previews and the dev server list drafts and future-dated posts while production hides them.
@@ -377,13 +425,13 @@ lazy `<img>` and bypass `next/image`. Only a `cover` goes through `next/image`: 
 the **key visual** and sets it from any image in the post's folder, and the post page and index card
 crop it to 1200 × 630. `readdir` on
 `content/blog` is invisible to the bundle tracer, which is why `next.config.mjs` carries
-`outputFileTracingIncludes` for the four blog-aware routes — remove it and production breaks on the
+`outputFileTracingIncludes` for the five blog-aware routes — remove it and production breaks on the
 first revalidation.
 
 ## Internal tools and sign-in
 
-`/emails`, `/screens`, `/copy`, `/gallery`, `/social/posts`, `/social/editor`, `/banner`, `/translations`,
-`/editorial`, `/api/translations/*`, and `/api/editorial` are behind a Supabase Auth login at `/login` (`/logout` signs out).
+`/emails`, `/copy`, `/social/posts`, `/social/editor`, `/banner`, `/translations`,
+`/editorial`, `/motion`, `/api/translations/*`, `/api/editorial`, and `/api/motion` are behind a Supabase Auth login at `/login` (`/logout` signs out).
 `/admin` is the dashboard that links every one of them and the admin backend at `siteConfig.adminBackendUrl`
 (admin.chordlist.app); signing in lands there. A new tool gets a card in its `sections` list as well.
 `lib/admin-routes.ts` is the single list of protected prefixes and the `ADMIN_EMAILS` allowlist.
@@ -409,7 +457,7 @@ ordering comment in `lib/supabase/server.ts` before touching it.
 
 `app/privacy/page.tsx`, `app/press/page.tsx`, and `faqCopy` and `supportCopy` in every
 language describe real product
-behaviour: local file storage, TelemetryDeck analytics, optional chord-data contribution, StoreKit
+behavior: local file storage, TelemetryDeck analytics, optional chord-data contribution, StoreKit
 and RevenueCat purchases, Vercel hosting and Web Analytics. Do not invent, soften, or embellish
 claims about data handling, pricing, or availability — those strings are legal and press copy.
 When the privacy policy changes materially, update `privacyCopy.lastUpdated`.
@@ -417,8 +465,8 @@ When the privacy policy changes materially, update `privacyCopy.lastUpdated`.
 ## Third-party services
 
 Repo skills live in `.agents/skills/<name>/SKILL.md` and are mirrored into `.cursor/rules/<name>.mdc`
-with Cursor's frontmatter dialect, and symlinked into `.claude/skills/`. There are four:
-`stripe-projects-cli`, `blog-post`, `blog-refine`, and `social-asset`.
+with Cursor's frontmatter dialect, and symlinked into `.claude/skills/`. There are five:
+`stripe-projects-cli`, `blog-post`, `blog-refine`, `social-asset`, and `video-content`.
 
 `.projects/state.json` tracks resources provisioned via the Stripe Projects CLI (currently
 RevenueCat). See `AGENTS.md` and `.agents/skills/stripe-projects-cli/` for that workflow.
@@ -522,7 +570,7 @@ which is what re-extracts the keys.
 
 Provisioning deliberately stops short of the steps that need judgement or that risk a file worth
 protecting: `knownRegions` in the Xcode project, a `case` in the capture script, a fixture set of
-songs a speaker would recognise, and `locales/<code>.ts` here. The UI lists them when it finishes.
+songs a speaker would recognize, and `locales/<code>.ts` here. The UI lists them when it finishes.
 A provisioned language starts empty rather than machine-translated — an untranslated string is
 visible and fails the build, a plausible wrong one is not.
 

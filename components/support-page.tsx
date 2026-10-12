@@ -49,6 +49,7 @@ export function SupportPage({ language }: SupportPageProps) {
         <FaqSearch
           items={copy.questions}
           language={language}
+          page="support"
           title={copy.questionsTitle}
           emptyHint={copy.searchEmptyHint}
         />

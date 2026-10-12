@@ -88,7 +88,7 @@ needing a new idea each time.
 **Pre-order run-up.** Over. It ended on 10 October without most of its posts going out, and does
 not come back; its two time-bound assets were deleted.
 
-**Progression of the week.** The cheapest asset in the system to author and the most recognisably
+**Progression of the week.** The cheapest asset in the system to author and the most recognizably
 chordlist — a chord row, its numerals, one line. Four exist. Unwritten:
 
 - [ ] vi–IV–I–V, the same four chords rotated — pairs with `four-chords` as a follow-up
@@ -100,14 +100,14 @@ chordlist — a chord row, its numerals, one line. Four exist. Unwritten:
 exist (`no-account-no-upload`, `nothing-to-export`) and `ten-songs-free` belongs to the family.
 Unwritten:
 
-- [ ] no sync conflicts to resolve — check the current behaviour before claiming it
+- [ ] no sync conflicts to resolve — check the current behavior before claiming it
 - [ ] nothing to migrate when you leave
 
 **One screen at a time.** Seven screenshots sit in [`public/app-screenshots/dark/`](../public/app-screenshots/dark)
 and four now have assets. Unwritten:
 
 - [ ] `05-Tag-Filter.png` — narrowing by tag
-- [ ] `06-Settings.png` — accent colour and appearance, a light-hearted one
+- [ ] `06-Settings.png` — accent color and appearance, a light-hearted one
 - [ ] autoscroll and transposition, neither of which has a screenshot yet — they need one from the
   iOS repository's screenshot tests first
 

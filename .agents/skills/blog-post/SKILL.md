@@ -46,7 +46,7 @@ before expanding the implementation scope.
    change.
 5. Draft or edit the frontmatter, and the body only as described under **Authorship and
    approval**. Keep product explanation proportional to the article's reader value.
-6. Fact-check broad music claims, external facts, and current product behaviour. Prefer primary
+6. Fact-check broad music claims, external facts, and current product behavior. Prefer primary
    sources.
 7. Add relevant internal links and images where they improve the article.
 8. Run `pnpm build:og` after adding a post or changing its title, description, or cover. Commit the
@@ -110,17 +110,17 @@ content plan justifies it.
 
 ## Accuracy
 
-Treat repository sources as authoritative for current chordlist behaviour:
+Treat repository sources as authoritative for current chordlist behavior:
 
 - `lib/site-config.ts` for URLs, launch status, platform version, and numeric configuration;
 - `locales/en.ts` for current product, FAQ, press, and blog-chrome wording;
 - `app/privacy/page.tsx` and its copy in `locales/en.ts` for privacy and data-handling claims;
-- the sibling chordlist iOS repository for detailed app behaviour that the website does not specify;
+- the sibling chordlist iOS repository for detailed app behavior that the website does not specify;
   and
 - current official documentation for third-party products such as Apple or Obsidian.
 
 Do not copy a possibly stale fact from an older post. Do not invent or embellish pricing,
-availability, usage counts, performance, competitors' behaviour, or security properties. Preserve
+availability, usage counts, performance, competitors' behavior, or security properties. Preserve
 tentative wording such as `planned` when the source remains tentative. If the sources do not support
 a claim, qualify it, research it from a primary source, or omit it.
 
@@ -175,7 +175,7 @@ Do not make them identical.
   `<img>` elements rather than through `next/image`.
 - The cover is the post's key visual. The author picks it in writing mode from the images in
   `public/blog/<slug>/`; it serves the index card, the article hero, and the social preview, and the
-  first two crop it to 1200×630 from the centre. An image composed at 1200×630 crops cleanly.
+  first two crop it to 1200×630 from the center. An image composed at 1200×630 crops cleanly.
 - Without a cover, `pnpm build:og` generates `public/blog/og/<slug>.png`.
 - Remember that raw HTML is trusted and unsanitised. Never paste fetched or user-submitted HTML into
   a post.

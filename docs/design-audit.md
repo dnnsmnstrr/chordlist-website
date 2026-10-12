@@ -7,7 +7,7 @@ do not copy an audited inconsistency into new UI. The repository links in the so
 
 ## Scope and sources
 
-Make chordlist recognisable across the native app, website, backend administration, App Store artwork, social posts, video, email and press materials. Preserve the app’s native usability and the marketing’s musical character while removing accidental differences in typography, palette, marks and wording.
+Make chordlist recognizable across the native app, website, backend administration, App Store artwork, social posts, video, email and press materials. Preserve the app’s native usability and the marketing’s musical character while removing accidental differences in typography, palette, marks and wording.
 
 The shared identity is **a calm, personal songbook with a tactile musical atmosphere**. Songs and readable files are the subject. The interface makes collecting, finding and playing them straightforward.
 
@@ -48,14 +48,14 @@ Some repository documentation calls the app checkout `chordlist-app` or `progres
 | Logo treatment differs | Header has a fixed light tile/dark glyph; video insets its glyph into a 44px tile; social `paper` reverses the tile | Standard identity lockup uses the fixed app-like tile. Campaign reversals must be named variants, not inferred from page theme |
 | Mark geometry is copied | Same rectangles appear in TSX, admin HTML, video and a generator helper | Centralise the vector master and generate/import adapters |
 | Video has its own warm palette | `#161411`, `#25221D`, `#FAFAF8`, `#A6A29A` plus paper effects | Register as an intentional `warm-stage` campaign theme; do not propagate into default UI |
-| Colour choices are open-ended in video | `accentColor` accepts any nonempty string | Expose named campaign accents; validate any deliberate custom colour and its contrast |
-| Accent text contrast needs review | `AppPrimaryColor.foregroundColor` returns white for every non-neutral colour | Measure all six colours in both appearances; choose a tested foreground per colour rather than assuming white works |
+| Color choices are open-ended in video | `accentColor` accepts any nonempty string | Expose named campaign accents; validate any deliberate custom color and its contrast |
+| Accent text contrast needs review | `AppPrimaryColor.foregroundColor` returns white for every non-neutral color | Measure all six colors in both appearances; choose a tested foreground per color rather than assuming white works |
 | Website theme values are duplicated | `.dark` and system-dark media blocks repeat the palette; dark sidebar primary remains blue | Generate both theme paths from one map; audit whether the blue sidebar token is used before changing its consumers |
 | Press wording is stale | August snapshot says “Your lyrics and chords, as files!”; current vocabulary says “Your lyrics and chords, as files in your pocket.” | Reconcile the live press record and regenerate its snapshot/PDF before publication |
 | Documentation contradicts current vocabulary | `AGENTS.md`/website guidance still mention German “Interpret”; current vocabulary specifies “Artist” | Treat the vocabulary table as authoritative and update the examples |
 | Social guide counts five templates but lists six | `statement`, `progression`, `quote`, `screenshot`, `file`, `photo` | Generate the documented list from the registered templates |
 
-The presence of multiple campaign treatments is intentional in existing documentation. Coloured-gradient and analog App Store sets, plus social `ink`, `paper` and `blueprint`, are existing variants—not evidence that every output should become identical.
+The presence of multiple campaign treatments is intentional in existing documentation. Colored-gradient and analog App Store sets, plus social `ink`, `paper` and `blueprint`, are existing variants—not evidence that every output should become identical.
 
 
 ## Marketing production
@@ -71,7 +71,7 @@ The presence of multiple campaign treatments is intentional in existing document
 
 These dimensions describe current generators, not a fresh verification of platform upload requirements. Recheck platform specifications when publishing. Do not perpetuate the social guide’s crop-ratio arithmetic as a universal platform rule; preview each actual destination crop.
 
-Use the existing six social templates. Prefer `progression` and `file` when they make the subject concrete, `screenshot` to demonstrate behaviour, and `photo` for musical atmosphere.
+Use the existing six social templates. Prefer `progression` and `file` when they make the subject concrete, `screenshot` to demonstrate behavior, and `photo` for musical atmosphere.
 
 Use locale-matched screenshots. Preserve the app’s reproducible fixture pipeline and 9:41 capture convention. Generated assets must record source capture, language, appearance, treatment and build provenance. Change a source definition and regenerate; never patch a generated PNG to fix wording.
 
@@ -84,7 +84,7 @@ Before publishing: inspect every changed format at intended display size; check 
 
 Place the canonical `design.md` in the **app repository**, beside the existing `VOCABULARY.md` and canonical icon source. The delivered file is ready for that placement; no repository commit is made by this audit.
 
-Add a small, dependency-free `design/tokens.json` there for common semantic roles, geometry and theme definitions. Keep native semantic mappings explicit rather than pretending SwiftUI system colours are fixed hex values. Export the canonical vector geometry from `chordlist.icon` into a versioned master; reconcile it with the currently repeated SVG before choosing the exact exported representation.
+Add a small, dependency-free `design/tokens.json` there for common semantic roles, geometry and theme definitions. Keep native semantic mappings explicit rather than pretending SwiftUI system colors are fixed hex values. Export the canonical vector geometry from `chordlist.icon` into a versioned master; reconcile it with the currently repeated SVG before choosing the exact exported representation.
 
 The website owns composition templates and campaign content. Its existing `docs/visual-language.md`, `docs/social-media-system.md` and `docs/app-store-screenshot-system.md` remain specialised guides and reference this shared specification. The backend consumes a small CSS/token export and mark, with no dependency on Swift or the website runtime.
 
@@ -92,11 +92,11 @@ The website owns composition templates and campaign content. Its existing `docs/
 
 | Check | Failure it prevents | Location |
 | --- | --- | --- |
-| Token schema validation | Missing roles, invalid colours and unknown themes | Shared export generation |
+| Token schema validation | Missing roles, invalid colors and unknown themes | Shared export generation |
 | Generated-output comparison | Hand edits and stale token/mark derivatives | All three repositories |
 | Source version/hash manifest | Consumers silently drifting to different design versions | Website/admin vendored exports |
 | Vocabulary/phrase validation | Incorrect brand casing and competing product wording | Extend existing app and marketing checks |
-| Scoped literal-colour rule | New unregistered UI palettes | UI/template code only; allowlisted native mappings and campaign definitions |
+| Scoped literal-color rule | New unregistered UI palettes | UI/template code only; allowlisted native mappings and campaign definitions |
 | Contrast checks | Unsafe foreground/background combinations | Resolved token pairs and app appearance fixtures |
 | Deterministic visual fixtures | Layout, crop and rendering regressions | Web/admin screenshots; native capture suite; marketing sample renders |
 
@@ -150,7 +150,7 @@ All links below refer to repository files read for this audit; branch links may 
 ## Implementation record — design 1.0.0
 
 The linked app, website and backend PRs introduce the nine-section agent guide, a versioned shared token/mark
-bundle, offline generation and drift checking. Native colour labels resolve contrast against the chosen accent.
+bundle, offline generation and drift checking. Native color labels resolve contrast against the chosen accent.
 Web/admin/email share the neutral palette; web and marketing share the mono wordmark and app-derived mark.
 Campaign backdrops remain distinct. Remaining runtime and visual checks are recorded in each PR.
 

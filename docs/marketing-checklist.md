@@ -29,7 +29,7 @@ date does not survive another slip.
 - [ ] **P0 — Write the press pitch**, English and German. Three sentences, TestFlight link, no
   attachment. Drafts are in [Marketing plan](marketing-plan.md#1-press-and-app-store-featuring).
 - [ ] **P0 — Send it**, English and German in one sitting: MacStories, The Sweet Setup, Six Colors,
-  9to5Mac, iFun, Macerkopf, AppGefahren. Personalise the first sentence per outlet. Use each outlet's
+  9to5Mac, iFun, Macerkopf, AppGefahren. Personalize the first sentence per outlet. Use each outlet's
   own published tips address.
 - [ ] **P0 — Submit the Apple featuring nomination.** *Local-first, no account, plain files, one-time
   purchase.*

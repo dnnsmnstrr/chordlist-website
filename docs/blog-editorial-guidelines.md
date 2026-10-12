@@ -8,7 +8,7 @@ The chordlist blog helps musicians:
 2. Build a durable, portable songbook.
 3. Use chordlist and compatible tools effectively.
 
-Every post should solve a recognisable reader problem. Product promotion should follow naturally
+Every post should solve a recognizable reader problem. Product promotion should follow naturally
 from that solution.
 
 ## Audience
@@ -82,8 +82,8 @@ practical example.
 - Teach the reader's subject before introducing chordlist.
 - Give each post one principal product connection. Link to the documentation for operational detail
   instead of repeating the same feature explanation across articles.
-- Describe current behaviour, not planned behaviour, as present fact.
-- Verify app behaviour against the current implementation or documentation. In particular, do not
+- Describe current behavior, not planned behavior, as present fact.
+- Verify app behavior against the current implementation or documentation. In particular, do not
   describe progression matching as approximate or intelligent similarity unless that is what the
   current implementation does.
 - Check product facts, availability, pricing, privacy, analytics, and platform support against the
@@ -131,7 +131,7 @@ Before scheduling a post, confirm that:
 - the opening states a concrete reader problem or result;
 - the article delivers one clear promise;
 - broad music-theory claims are qualified or supported by a primary source;
-- current chordlist behaviour and product facts have been verified;
+- current chordlist behavior and product facts have been verified;
 - repeated product copy has been removed;
 - the post includes a useful example, procedure, or exercise;
 - internal and external links are relevant and accurate;

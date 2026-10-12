@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from 
 import { Eye, EyeOff, Search, X } from "lucide-react"
 
 import { PostCard } from "@/components/post-card"
+import { SiteSearchResults, useSiteSearch } from "@/components/site-search-results"
 // Values come from lib/blog-tags; lib/blog imports node:fs and is server-only.
 import { isBlogTag, type BlogTag } from "@/lib/blog-tags"
 import type { PostMeta, TagCount } from "@/lib/blog"
@@ -165,6 +166,7 @@ export function BlogPostList({ posts, tags }: BlogPostListProps) {
   }, [posts, query, selectedTags, liveOnly])
 
   const hasFilters = query.trim() !== "" || selectedTags.length > 0
+  const site = useSiteSearch("en", query, "blog")
 
   return (
     <div className="flex flex-col gap-8">
@@ -182,9 +184,11 @@ export function BlogPostList({ posts, tags }: BlogPostListProps) {
             type="search"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
+            onFocus={site.prefetch}
             placeholder={blogCopy.search.placeholder}
             aria-describedby="blog-result-count"
-            className="w-full rounded-xl border border-border bg-background py-2.5 pl-10 pr-4 text-sm transition-colors placeholder:text-muted-foreground focus-visible:border-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            // 16px on touch screens, because iOS Safari zooms the page into any focused field set smaller.
+            className="w-full rounded-xl border border-border bg-background py-2.5 pl-10 pr-4 text-base transition-colors pointer-fine:text-sm placeholder:text-muted-foreground focus-visible:border-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           />
         </div>
 
@@ -252,6 +256,8 @@ export function BlogPostList({ posts, tags }: BlogPostListProps) {
           ))}
         </div>
       )}
+
+      <SiteSearchResults language="en" query={query} matches={site.matches} />
     </div>
   )
 }

@@ -1,4 +1,4 @@
-import { AppCTANote, AppStoreBadge } from "@/components/app-cta"
+import { AppCTANote, AppStoreBadge, ProductHuntBadge } from "@/components/app-cta"
 import { defaultLanguage, dictionary, type Language } from "@/locales"
 
 export function Hero({ language = defaultLanguage }: { language?: Language }) {
@@ -21,8 +21,9 @@ export function Hero({ language = defaultLanguage }: { language?: Language }) {
       <p className="mx-auto mt-4 max-w-xl text-pretty leading-relaxed text-muted-foreground whitespace-normal sm:whitespace-pre-line">
         {homeCopy.hero.description}
       </p>
-      <div className="mt-8 flex justify-center">
+      <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
         <AppStoreBadge language={language} />
+        <ProductHuntBadge language={language} />
       </div>
       <AppCTANote className="mx-auto mt-4 max-w-sm" language={language} />
     </section>

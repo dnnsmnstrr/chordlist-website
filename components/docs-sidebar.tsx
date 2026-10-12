@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { ChevronDown } from "lucide-react"
 
 type DocsSidebarItem = {
@@ -8,17 +8,25 @@ type DocsSidebarItem = {
   label: string
 }
 
-type DocsSidebarProps = {
-  title: string
+type DocsSidebarGroup = {
+  label: string
   items: readonly DocsSidebarItem[]
 }
 
-export function DocsSidebar({ title, items }: DocsSidebarProps) {
+type DocsSidebarProps = {
+  title: string
+  groups: readonly DocsSidebarGroup[]
+}
+
+export function DocsSidebar({ title, groups }: DocsSidebarProps) {
+  // Scroll tracking works on the sections in page order; the groups only shape the list.
+  const items = useMemo(() => groups.flatMap((group) => group.items), [groups])
   const [activeHref, setActiveHref] = useState(items[0]?.href ?? "")
   const [isMobileOpen, setIsMobileOpen] = useState(true)
   const sidebarRef = useRef<HTMLElement>(null)
   const hasAutoCollapsed = useRef(false)
   const activeItem = items.find((item) => item.href === activeHref) ?? items[0]
+  const activeGroup = groups.find((group) => group.items.some((item) => item.href === activeItem?.href))
 
   useEffect(() => {
     const sections = items
@@ -95,8 +103,8 @@ export function DocsSidebar({ title, items }: DocsSidebarProps) {
           className="flex w-full cursor-pointer items-center justify-between gap-4 px-4 py-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
         >
           <span className="min-w-0">
-            <span className="block font-mono text-[0.65rem] uppercase tracking-widest text-muted-foreground">
-              {title}
+            <span className="block truncate font-mono text-[0.65rem] uppercase tracking-widest text-muted-foreground">
+              {activeGroup ? `${title} · ${activeGroup.label}` : title}
             </span>
             <span className="mt-0.5 block truncate text-sm font-medium text-foreground">{activeItem?.label}</span>
           </span>
@@ -122,8 +130,8 @@ export function DocsSidebar({ title, items }: DocsSidebarProps) {
                 isMobileOpen ? "opacity-100" : "opacity-0"
               }`}
             >
-              <DocsSidebarLinks
-                items={items}
+              <DocsSidebarGroups
+                groups={groups}
                 activeHref={activeHref}
                 onSelect={(href) => selectItem(href, true)}
               />
@@ -139,23 +147,40 @@ export function DocsSidebar({ title, items }: DocsSidebarProps) {
         <h2 id="docs-contents-title" className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
           {title}
         </h2>
-        <DocsSidebarLinks items={items} activeHref={activeHref} onSelect={selectItem} className="mt-4" />
+        <DocsSidebarGroups groups={groups} activeHref={activeHref} onSelect={selectItem} className="mt-4" />
       </nav>
     </aside>
   )
 }
 
-function DocsSidebarLinks({
-  items,
-  activeHref,
-  onSelect,
-  className = "",
-}: {
+type DocsSidebarGroupsProps = {
+  groups: readonly DocsSidebarGroup[]
+  activeHref: string
+  onSelect: (href: string) => void
+  className?: string
+}
+
+function DocsSidebarGroups({ groups, activeHref, onSelect, className = "" }: DocsSidebarGroupsProps) {
+  return (
+    <div className={`${className} grid gap-5`}>
+      {groups.map((group) => (
+        <div key={group.label}>
+          <p className="px-2 text-xs font-medium text-foreground">{group.label}</p>
+          <DocsSidebarLinks items={group.items} activeHref={activeHref} onSelect={onSelect} className="mt-1.5" />
+        </div>
+      ))}
+    </div>
+  )
+}
+
+type DocsSidebarLinksProps = {
   items: readonly DocsSidebarItem[]
   activeHref: string
   onSelect: (href: string) => void
   className?: string
-}) {
+}
+
+function DocsSidebarLinks({ items, activeHref, onSelect, className = "" }: DocsSidebarLinksProps) {
   return (
     <ol className={`${className} grid gap-1 text-sm`}>
       {items.map((item) => {

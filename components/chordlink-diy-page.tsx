@@ -26,7 +26,7 @@ const copy = {
     stepsTitle: "From model to first scan",
     steps: [
       ["Configure", "Open the generator. Enter the measured tag diameter and thickness. For the simplest assembly, enable “open at bottom” so the NFC tag can be fitted after printing."],
-      ["Print", "Export one STL or the aligned two-colour parts. A sealed pocket requires a correctly timed slicer pause and a tag rated for the temperatures involved; use the open recess unless you have tested that workflow."],
+      ["Print", "Export one STL or the aligned two-color parts. A sealed pocket requires a correctly timed slicer pause and a tag rated for the temperatures involved; use the open recess unless you have tested that workflow."],
       ["Choose a link", "Generate a six-digit personal link below. Use a different link for each chordlink if you want different actions on the same device."],
       ["Program and test", "Write the complete HTTPS link to the NFC tag. Test it before locking the tag, covering the recess, or attaching chordlink to anything."],
       ["Set up chordlist", "Scan the finished tag on your iPhone and tap the iOS notification. chordlist asks whether it should open the library, shuffle, or add a song; later scans repeat that choice."],

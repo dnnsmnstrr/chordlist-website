@@ -48,12 +48,12 @@ elsewhere, set `CHORDLIST_APP_REPO` to its absolute path.
 ### Make a website change
 
 1. Put UI copy in `locales/en.ts`, product facts and links in `lib/site-config.ts`, and layout or
-   behaviour in `app/` or `components/`.
+   behavior in `app/` or `components/`.
 2. Run `pnpm dev` and review the affected routes in light and dark mode.
 3. Run `pnpm check` before committing.
 
 The site uses Tailwind CSS v4 tokens defined in `app/globals.css`. Components should use semantic
-tokens such as `bg-background` and `text-muted-foreground` instead of raw colours.
+tokens such as `bg-background` and `text-muted-foreground` instead of raw colors.
 
 ### Sync app screenshots and the press kit
 
@@ -139,7 +139,7 @@ pnpm build:screens
 ```
 
 This syncs the raw app captures first, validates them, and writes the generated upload sets and
-manifest to `public/app-store-screenshots/`. Screenshot selection, colours, and layout geometry are
+manifest to `public/app-store-screenshots/`. Screenshot selection, colors, and layout geometry are
 configured in `scripts/build-app-store-screenshots.mjs`; the words are in
 `scripts/lib/app-store-copy.mjs`, one block per language, built on the shared `VOCABULARY.md`
 wording. Every language there gets its own sets, rendered from that language's captures. The
@@ -618,7 +618,7 @@ which is what re-extracts the keys.
 
 Provisioning deliberately stops short of the steps that need judgement or that risk a file worth
 protecting: `knownRegions` in the Xcode project, a `case` in the capture script, a fixture set of
-songs a speaker would recognise, and `locales/<code>.ts` here. The UI lists them when it finishes.
+songs a speaker would recognize, and `locales/<code>.ts` here. The UI lists them when it finishes.
 A provisioned language starts empty rather than machine-translated — an untranslated string is
 visible and fails the build, a plausible wrong one is not.
 

@@ -1,0 +1,52 @@
+{
+  "chord-keyboard": {
+    "eyebrow": "Feature",
+    "headline": [
+      "A keyboard that",
+      "speaks in chords."
+    ],
+    "footnote": "chordlist.app/docs#adding-songs"
+  },
+  "local-first-songbook": {
+    "eyebrow": "Launch",
+    "headline": [
+      "Your lyrics and chords,",
+      "as files in your pocket."
+    ],
+    "footnote": "chordlist.app"
+  },
+  "matching-progressions": {
+    "eyebrow": "Feature",
+    "headline": [
+      "Songs that share",
+      "a progression,",
+      "side by side."
+    ],
+    "footnote": "chordlist.app/docs#playing"
+  },
+  "out-now": {
+    "eyebrow": "Release",
+    "headline": [
+      "Out now on",
+      "iPhone and iPad."
+    ],
+    "footnote": "chordlist.app"
+  },
+  "search-across-everything": {
+    "eyebrow": "Feature",
+    "headline": [
+      "Titles, artists",
+      "and tags,",
+      "in one search."
+    ],
+    "footnote": "chordlist.app/docs#library"
+  },
+  "song-library": {
+    "eyebrow": "Feature",
+    "headline": [
+      "The chords are",
+      "in the list."
+    ],
+    "footnote": "chordlist.app/docs#library"
+  }
+}

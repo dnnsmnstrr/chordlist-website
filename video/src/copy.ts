@@ -91,7 +91,7 @@ export const copyVariants: Record<CopyVariant, CopyPack> = {
       'hands-free': {
         eyebrow: 'Stay playing',
         headline: 'Keep your hands on the instrument',
-        explanation: 'A continuous, colour-changing chart demonstrates the full hands-free experience.',
+        explanation: 'A continuous, color-changing chart demonstrates the full hands-free experience.',
       },
       files: {
         eyebrow: 'Still yours',
@@ -140,8 +140,8 @@ export const copyVariants: Record<CopyVariant, CopyPack> = {
   },
   customization: {
     openingHook: 'Your songbook should feel\nlike yours.',
-    openingFooter: 'Your colour. Your pace. Your way.',
-    endLine: 'Your colour.\nYour pace.\nYour songbook.',
+    openingFooter: 'Your color. Your pace. Your way.',
+    endLine: 'Your color.\nYour pace.\nYour songbook.',
     releaseLine: 'chordlist — out on October 10',
     scenes: {
       collect: {
@@ -169,10 +169,10 @@ export const copyVariants: Record<CopyVariant, CopyPack> = {
           'Transpose the progression in one tap without changing the song you saved.',
       },
       'hands-free': {
-        eyebrow: 'Your colour',
+        eyebrow: 'Your color',
         headline: 'Choose your accent',
         explanation:
-          'Pick one of seven app accents, then carry that colour into a hands-free play-through.',
+          'Pick one of seven app accents, then carry that color into a hands-free play-through.',
       },
       files: {
         eyebrow: 'Your folder',

@@ -4,14 +4,18 @@ import { useId, useMemo, useState } from "react"
 import { Search, X } from "lucide-react"
 
 import { FaqList } from "@/components/faq-list"
+import { SiteSearchResults, useSiteSearch } from "@/components/site-search-results"
 import { matchingFaqEntries, type FaqEntry } from "@/lib/faq"
 import { searchTokens } from "@/lib/text-search"
+import { useRevealHashTarget } from "@/lib/use-reveal-hash-target"
 import { cn } from "@/lib/utils"
 import { dictionary, type Language } from "@/locales"
 
 type FaqSearchProps = {
   items: readonly FaqEntry[]
   language: Language
+  /** Which page this is, so the site-wide results leave out what the list already shows. */
+  page: "faq" | "support"
   /** Rendered beside the field. Omitted on a page whose whole heading is already the questions. */
   title?: string
   /** A sentence under the empty state, where a page has somewhere better to send a reader. */
@@ -35,7 +39,7 @@ type FaqSearchProps = {
  * `commonCopy` because this is chrome — the same widget and the same words on /faq and /support —
  * while the per-page sentences that differ arrive as plain string props.
  */
-export function FaqSearch({ items, language, title, emptyHint }: FaqSearchProps) {
+export function FaqSearch({ items, language, page, title, emptyHint }: FaqSearchProps) {
   const copy = dictionary(language).common.faqSearch
   const inputId = useId()
   const countId = useId()
@@ -45,6 +49,10 @@ export function FaqSearch({ items, language, title, emptyHint }: FaqSearchProps)
   const tokens = useMemo(() => searchTokens(query), [query])
 
   const isSearching = tokens.length > 0
+  const site = useSiteSearch(language, query, page)
+
+  // A site-wide result elsewhere links to one answer here by its anchor.
+  useRevealHashTarget()
 
   return (
     <div className="mt-12 flex flex-col gap-4">
@@ -66,10 +74,12 @@ export function FaqSearch({ items, language, title, emptyHint }: FaqSearchProps)
             type="search"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
+            onFocus={site.prefetch}
             placeholder={copy.placeholder}
             aria-describedby={countId}
-            // appearance-none drops Safari's own clear button, which would sit under ours.
-            className="w-full appearance-none rounded-xl border border-border bg-background py-2.5 pl-10 pr-10 text-sm transition-colors placeholder:text-muted-foreground focus-visible:border-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [&::-webkit-search-cancel-button]:hidden"
+            // appearance-none drops Safari's own clear button, which would sit under ours. 16px text on
+            // touch screens, because iOS Safari zooms the page into any focused field set smaller.
+            className="w-full appearance-none rounded-xl border border-border bg-background py-2.5 pl-10 pr-10 text-base transition-colors pointer-fine:text-sm placeholder:text-muted-foreground focus-visible:border-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [&::-webkit-search-cancel-button]:hidden"
           />
           {isSearching ? (
             <button
@@ -105,6 +115,8 @@ export function FaqSearch({ items, language, title, emptyHint }: FaqSearchProps)
         // opens, because the words that matched are usually in the answer rather than the question.
         <FaqList key={query} items={matches} allOpen={isSearching} highlight={tokens} />
       )}
+
+      <SiteSearchResults language={language} query={query} matches={site.matches} />
     </div>
   )
 }

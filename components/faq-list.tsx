@@ -3,7 +3,7 @@ import Link from "next/link"
 
 import { CollapsibleSection } from "@/components/collapsible-section"
 import { InlineMarkup } from "@/components/inline-markup"
-import type { FaqEntry } from "@/lib/faq"
+import { faqQuestionId, type FaqEntry } from "@/lib/faq"
 
 /**
  * A question-and-answer list, one collapsible section per entry, first one open.
@@ -28,6 +28,7 @@ export function FaqList({
       {items.map((item, index) => (
         <CollapsibleSection
           key={item.question}
+          id={faqQuestionId(item.question)}
           title={<InlineMarkup text={item.question} highlight={highlight} />}
           defaultOpen={allOpen || index === 0}
         >
