@@ -14,7 +14,7 @@ import {
 } from "../lib/admin-routes"
 
 test("the internal tools are behind the login and the marketing site is not", () => {
-  for (const path of ["/admin", "/emails", "/emails/", "/translations", "/social/editor", "/api/translations/languages", "/copy", "/editorial", "/editorial/a-post", "/api/editorial", "/marketing-copy", "/motion", "/motion/library", "/api/motion/render"]) {
+  for (const path of ["/admin", "/emails", "/emails/", "/translations", "/social/editor", "/api/translations/languages", "/copy", "/editorial", "/editorial/a-post", "/api/editorial", "/marketing-copy", "/motion", "/motion/library", "/api/motion/render", "/banner"]) {
     assert.equal(isProtectedRoute(path), true, path)
   }
   for (const path of ["/", "/de", "/chordlink", "/blog/a-post", "/privacy", "/press", "/chordlink/notified"]) {
@@ -110,6 +110,7 @@ test("every protected page actually calls the guard", () => {
   // one a failing build rather than a quiet hole.
   const guarded = {
     "app/(en)/admin/page.tsx": "requireAdmin",
+    "app/(en)/banner/page.tsx": "requireAdmin",
     "app/(en)/copy/page.tsx": "requireAdmin",
     "app/(en)/editorial/page.tsx": "requireAdmin",
     "app/(en)/editorial/[slug]/page.tsx": "requireAdmin",

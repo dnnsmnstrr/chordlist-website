@@ -430,7 +430,7 @@ first revalidation.
 
 ## Internal tools and sign-in
 
-`/emails`, `/copy`, `/social/posts`, `/social/editor`, `/translations`,
+`/emails`, `/copy`, `/social/posts`, `/social/editor`, `/banner`, `/translations`,
 `/editorial`, `/motion`, `/api/translations/*`, `/api/editorial`, and `/api/motion` are behind a Supabase Auth login at `/login` (`/logout` signs out).
 `/admin` is the dashboard that links every one of them and the admin backend at `siteConfig.adminBackendUrl`
 (admin.chordlist.app); signing in lands there. A new tool gets a card in its `sections` list as well.

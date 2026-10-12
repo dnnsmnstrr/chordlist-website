@@ -16,6 +16,7 @@ export const adminRoutePrefixes = [
   "/api/editorial",
   "/api/motion",
   "/api/translations",
+  "/banner",
   "/copy",
   "/editorial",
   "/emails",

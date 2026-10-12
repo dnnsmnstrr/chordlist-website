@@ -53,6 +53,7 @@ const sections: readonly { id: keyof typeof adminCopy.sections; tools: readonly 
       { id: "motion", href: "/motion", availability: "local" },
       { id: "motionLibrary", href: "/motion/library" },
       { id: "marketingCopy", href: "/marketing-copy" },
+      { id: "banner", href: "/banner" },
       { id: "emails", href: "/emails" },
       { id: "gallery", href: "/gallery", availability: "public" },
     ],
