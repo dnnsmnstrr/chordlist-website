@@ -27,6 +27,16 @@ export const siteConfig = {
   /// The admin backend — chordlink orders, settings, and everything else that lives in a database
   /// rather than in this checkout. `/admin` links to it beside the site's own internal tools.
   adminBackendUrl: "https://admin.chordlist.app",
+  /// The third-party dashboards `/admin` links to in its quick link bar, in the order they appear.
+  adminDashboards: {
+    appStoreConnect: "https://appstoreconnect.apple.com/apps/6798344297/distribution",
+    revenueCat: "https://app.revenuecat.com/projects/8419087d/overview",
+    telemetryDeck:
+      "https://dashboard.telemetrydeck.com/o/B3D17FED-8ED0-4167-9885-2794D7DAC98B/apps/E49AF895-88A0-4D48-BEEB-B76C1256894D",
+    kickstart: "https://dashboard.kickstart.tools/dashboard/apps/6798344297/overview",
+    supabase: "https://supabase.com/dashboard/project/yajuszqvdglypabhzdrt",
+    brevo: "https://app.brevo.com/campaigns/listing",
+  },
   launchDate: "2026-10-10",
   minimumOSVersion: 26,
   freeSongLimit: 10,

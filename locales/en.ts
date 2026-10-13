@@ -1758,6 +1758,20 @@ export const adminCopy = {
     host: siteConfig.adminBackendUrl.replace(/^https?:\/\//, ""),
     label: "Open the admin backend",
   },
+  // The quick link bar of third-party dashboards. Each one is only an icon, so its name is the
+  // link's label and tooltip.
+  dashboards: {
+    label: "External dashboards",
+    opensInNewTab: (name: string) => `${name} (opens in a new tab)`,
+    names: {
+      appStoreConnect: "App Store Connect",
+      revenueCat: "RevenueCat",
+      telemetryDeck: "TelemetryDeck",
+      kickstart: "Kickstart Exchange",
+      supabase: "Supabase",
+      brevo: "Brevo",
+    },
+  },
   sections: {
     content: "Content",
     marketing: "Marketing assets",

@@ -1,6 +1,7 @@
 import type { Metadata, Route } from "next"
 import { ArrowUpRight } from "lucide-react"
 
+import { AdminDashboardLinks } from "@/components/admin-dashboard-links"
 import { AdminTools, type AdminToolSection } from "@/components/admin-tools"
 import { SiteFooter } from "@/components/site-footer"
 import { SiteHeader } from "@/components/site-header"
@@ -90,25 +91,28 @@ export default async function AdminPage() {
             </div>
           }
           backend={
-            <section className="mt-10 flex flex-col justify-between gap-6 rounded-xl border border-border bg-muted/40 p-6 sm:flex-row sm:items-center">
-              <div>
-                <h2 className="text-xl font-semibold tracking-tight">{adminCopy.backend.title}</h2>
-                <p className="mt-1 text-pretty text-sm leading-relaxed text-muted-foreground">
-                  {adminCopy.backend.description}
-                </p>
-                <p className="mt-2 font-mono text-xs text-muted-foreground">{adminCopy.backend.host}</p>
-              </div>
-              <Button
-                size="lg"
-                nativeButton={false}
-                render={
-                  <a href={siteConfig.adminBackendUrl} target="_blank" rel="noopener noreferrer">
-                    {adminCopy.backend.label}
-                    <ArrowUpRight aria-hidden="true" />
-                  </a>
-                }
-              />
-            </section>
+            <>
+              <section className="mt-10 flex flex-col justify-between gap-6 rounded-xl border border-border bg-muted/40 p-6 sm:flex-row sm:items-center">
+                <div>
+                  <h2 className="text-xl font-semibold tracking-tight">{adminCopy.backend.title}</h2>
+                  <p className="mt-1 text-pretty text-sm leading-relaxed text-muted-foreground">
+                    {adminCopy.backend.description}
+                  </p>
+                  <p className="mt-2 font-mono text-xs text-muted-foreground">{adminCopy.backend.host}</p>
+                </div>
+                <Button
+                  size="lg"
+                  nativeButton={false}
+                  render={
+                    <a href={siteConfig.adminBackendUrl} target="_blank" rel="noopener noreferrer">
+                      {adminCopy.backend.label}
+                      <ArrowUpRight aria-hidden="true" />
+                    </a>
+                  }
+                />
+              </section>
+              <AdminDashboardLinks />
+            </>
           }
         />
       </article>
