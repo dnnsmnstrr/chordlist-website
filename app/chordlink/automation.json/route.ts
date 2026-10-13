@@ -8,6 +8,6 @@ export async function GET(request: Request) {
 
   return NextResponse.json(
     { url },
-    { headers: { "x-robots-tag": "noindex, nofollow", "cache-control": "public, max-age=300" } },
+    { headers: { "x-robots-tag": "noindex, nofollow", "cache-control": "public, max-age=60" } },
   )
 }

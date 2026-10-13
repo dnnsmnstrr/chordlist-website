@@ -245,7 +245,8 @@ must immediately confirm receipt by email. Before enabling sales:
    redirects to the shared iCloud Shortcut and `/chordlink/automation.json` returns it for the app,
    both taking an optional `publicId` for a unit's override. The install button in the NFC aside on
    the chordlink setup and DIY pages links to that route rather than to iCloud, so the Shortcut is
-   resolved when someone taps it and changing it in the chordlink admin needs no deploy. The route
+   resolved when someone taps it and changing it in the chordlink admin needs no deploy. The backend
+   lookup and both routes cache for a minute, so a change reaches new installs within about that. The route
    always answers: a unit's override first, then the backend's shared default, then
    `siteConfig.chordlink.automationShortcut`.
 8. Confirm `BREVO_API_KEY` can send from `support@chordlist.app`. Submit a test through

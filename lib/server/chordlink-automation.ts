@@ -17,7 +17,7 @@ async function fetchAutomationUrl(endpoint: string, publicId: string | null): Pr
   if (publicId) url.searchParams.set("publicId", publicId)
   try {
     const response = await fetch(url, {
-      next: { revalidate: 300 },
+      next: { revalidate: 60 },
       signal: AbortSignal.timeout(requestTimeoutMilliseconds),
     })
     if (!response.ok) return null
