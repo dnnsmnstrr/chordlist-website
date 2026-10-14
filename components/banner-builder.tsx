@@ -14,6 +14,8 @@ import {
   bannerPhotos,
   bannerPresets,
   bannerScreenshots,
+  bannerTemplates,
+  bannerWeights,
   defaultBannerSpec,
   deviceWidth,
   newDevice,
@@ -79,6 +81,7 @@ async function loadAssets(spec: BannerSpec): Promise<Assets> {
   // explicitly rather than hoping the page has already rendered text in each of them.
   await Promise.all([
     document.fonts.load(`400 32px ${mono}`),
+    document.fonts.load(`300 32px ${sans}`),
     document.fonts.load(`400 32px ${sans}`),
     document.fonts.load(`700 32px ${sans}`),
   ]).catch(() => undefined)
@@ -138,23 +141,41 @@ function drawBackground(context: CanvasRenderingContext2D, spec: BannerSpec, ass
   context.fillRect(0, 0, width, height)
   if (background.kind !== "photo" || !assets.photo) return
 
+  // The area the photograph covers: the whole canvas, or its right side, leaving the left to the words.
+  const area =
+    spec.photoArea === "right"
+      ? { x: width * 0.38, y: 0, width: width * 0.62, height }
+      : { x: 0, y: 0, width, height }
   const image = assets.photo
-  const factor = Math.max(width / image.naturalWidth, height / image.naturalHeight)
+  const factor = Math.max(area.width / image.naturalWidth, area.height / image.naturalHeight)
   const drawWidth = image.naturalWidth * factor
   const drawHeight = image.naturalHeight * factor
   context.save()
+  context.beginPath()
+  context.rect(area.x, area.y, area.width, area.height)
+  context.clip()
   // The analog treatment's photograph: faint over near-black, so the words and devices stay legible.
-  context.globalAlpha = 0.44
+  context.globalAlpha = spec.photoOpacity / 100
   context.drawImage(
     image,
-    (width - drawWidth) * (spec.focusX / 100),
-    (height - drawHeight) * (spec.focusY / 100),
+    area.x + (area.width - drawWidth) * (spec.focusX / 100),
+    area.y + (area.height - drawHeight) * (spec.focusY / 100),
     drawWidth,
     drawHeight,
   )
   context.restore()
 
-  if (spec.title.visible || spec.tagline.visible) {
+  if (spec.photoArea === "right") {
+    // The photograph's left edge dissolves into the ground, so there is no seam where it starts.
+    const fade = context.createLinearGradient(area.x, 0, area.x + area.width * 0.55, 0)
+    fade.addColorStop(0, background.color)
+    fade.addColorStop(1, "rgba(5,5,5,0)")
+    context.fillStyle = fade
+    context.fillRect(area.x, 0, area.width * 0.55, height)
+    return
+  }
+
+  if (spec.title.visible || spec.tagline.visible || spec.badge.visible) {
     const scrim = context.createLinearGradient(0, 0, width, 0)
     scrim.addColorStop(0, "rgba(2,2,2,0.72)")
     scrim.addColorStop(0.46, "rgba(2,2,2,0.48)")
@@ -283,6 +304,53 @@ function drawText(
   return { x: options.x, y: options.y, width, height: row * rows.length }
 }
 
+/// The badge: a hairline pill of short segments split by `|`, each divided from the next by a rule.
+function drawBadge(
+  context: CanvasRenderingContext2D,
+  text: string,
+  options: { x: number; y: number; size: number; family: string; color: string },
+): Box {
+  const segments = text
+    .split("|")
+    .map((segment) => segment.trim())
+    .filter(Boolean)
+  const { x, y, size } = options
+  const padding = size * 0.95
+  const height = size * 2.3
+  const line = Math.max(1, size * 0.07)
+
+  context.save()
+  context.font = `400 ${size}px ${options.family}`
+  context.letterSpacing = `${(0.08 * size).toFixed(2)}px`
+  const widths = segments.map((segment) => context.measureText(segment).width)
+  const width = widths.reduce((total, segmentWidth) => total + segmentWidth + padding * 2, 0)
+
+  context.strokeStyle = options.color
+  context.lineWidth = line
+  context.globalAlpha = 0.5
+  context.beginPath()
+  context.roundRect(x + line / 2, y + line / 2, width - line, height - line, (height - line) / 2)
+  context.stroke()
+
+  let left = x
+  segments.forEach((segment, index) => {
+    if (index > 0) {
+      context.globalAlpha = 0.5
+      context.beginPath()
+      context.moveTo(left, y)
+      context.lineTo(left, y + height)
+      context.stroke()
+    }
+    context.globalAlpha = 1
+    context.fillStyle = options.color
+    context.textBaseline = "middle"
+    context.fillText(segment, left + padding, y + height / 2)
+    left += (widths[index] ?? 0) + padding * 2
+  })
+  context.restore()
+  return { x, y, width, height }
+}
+
 /** Draws the whole banner in canvas pixels — the caller scales the context for a sharper export. */
 function drawBanner(context: CanvasRenderingContext2D, spec: BannerSpec, assets: Assets, pixelScale: number): Layout {
   const layout: Layout = {}
@@ -312,6 +380,10 @@ function drawBanner(context: CanvasRenderingContext2D, spec: BannerSpec, assets:
     })
   }
 
+  if (spec.badge.visible && spec.badge.text.trim()) {
+    layout.badge = drawBadge(context, spec.badge.text, { ...spec.badge, family: assets.mono, color: background.text })
+  }
+
   if (spec.tagline.visible && spec.tagline.text.trim()) {
     layout.tagline = drawText(context, spec.tagline.text, {
       ...spec.tagline,
@@ -334,7 +406,7 @@ function renderToCanvas(canvas: HTMLCanvasElement, spec: BannerSpec, assets: Ass
 }
 
 function isElement(id: string): id is BannerElementId {
-  return id === "logo" || id === "title" || id === "tagline"
+  return id === "logo" || id === "title" || id === "badge" || id === "tagline"
 }
 
 function readStoredSpec(): BannerSpec | null {
@@ -526,11 +598,16 @@ function BannerEditor() {
     setSelected(null)
   }
 
+  function applyTemplate(template: BannerSpec) {
+    setSpec(template)
+    setSelected(null)
+  }
+
   // In drawing order, back to front: a later handle stacks above an earlier one, so a click lands on
   // whatever is drawn on top, and Tab walks the layers the way they are painted.
   const handles = [
     ...spec.devices.map((device) => device.id),
-    ...(["logo", "title", "tagline"] as const).filter((id) => spec[id].visible),
+    ...(["logo", "title", "badge", "tagline"] as const).filter((id) => spec[id].visible),
   ]
 
   return (
@@ -621,6 +698,17 @@ function BannerEditor() {
       </section>
 
       <div className="mx-auto grid w-full max-w-5xl gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <Panel title={bannerCopy.templates.title}>
+          <div className="flex flex-wrap gap-2" role="group" aria-label={bannerCopy.templates.title}>
+            {bannerTemplates.map((template) => (
+              <Button key={template.id} variant="outline" size="sm" onClick={() => applyTemplate(template.spec)}>
+                {bannerCopy.templates.options[template.id]}
+              </Button>
+            ))}
+          </div>
+          <p className="text-xs text-muted-foreground">{bannerCopy.templates.hint}</p>
+        </Panel>
+
         <Panel title={bannerCopy.canvas.title}>
           <div className="flex flex-wrap gap-2" role="group" aria-label={bannerCopy.canvas.presets}>
             {bannerPresets.map((preset) => {
@@ -677,6 +765,21 @@ function BannerEditor() {
                 options={bannerPhotos.map((photo) => [photo.file, bannerCopy.background.photos[photo.file]] as const)}
                 onChange={(photo) => update((previous) => ({ ...previous, photo }))}
               />
+              <div className="grid grid-cols-2 gap-3">
+                <Select
+                  label={bannerCopy.background.area}
+                  value={spec.photoArea}
+                  options={entries(bannerCopy.background.areas)}
+                  onChange={(photoArea) => update((previous) => ({ ...previous, photoArea }))}
+                />
+                <NumberField
+                  label={bannerCopy.background.opacity}
+                  value={spec.photoOpacity}
+                  min={0}
+                  max={100}
+                  onChange={(photoOpacity) => update((previous) => ({ ...previous, photoOpacity }))}
+                />
+              </div>
               <div className="grid grid-cols-2 gap-3">
                 <NumberField
                   label={bannerCopy.background.focusX}
@@ -742,6 +845,35 @@ function BannerEditor() {
           />
         </Panel>
 
+        <Panel title={bannerCopy.elements.badge} selected={selected === "badge"} onSelect={() => setSelected("badge")}>
+          <Checkbox
+            label={bannerCopy.fields.show}
+            checked={spec.badge.visible}
+            onChange={(visible) => update((previous) => ({ ...previous, badge: { ...previous.badge, visible } }))}
+          />
+          <label className="flex flex-col gap-1.5 text-xs text-muted-foreground">
+            {bannerCopy.fields.text}
+            <input
+              className={inputClass}
+              value={spec.badge.text}
+              onChange={(event) => {
+                const text = event.target.value
+                update((previous) => ({ ...previous, badge: { ...previous.badge, text } }))
+              }}
+            />
+            <span>{bannerCopy.fields.badgeHint}</span>
+          </label>
+          <PlacementFields
+            id="badge"
+            x={spec.badge.x}
+            y={spec.badge.y}
+            onMove={move}
+            onCenter={center}
+            size={{ label: bannerCopy.fields.fontSize, value: spec.badge.size }}
+            onSize={(size) => update((previous) => ({ ...previous, badge: { ...previous.badge, size } }))}
+          />
+        </Panel>
+
         <Panel
           title={bannerCopy.elements.tagline}
           selected={selected === "tagline"}
@@ -774,13 +906,15 @@ function BannerEditor() {
             size={{ label: bannerCopy.fields.fontSize, value: spec.tagline.size }}
             onSize={(size) => update((previous) => ({ ...previous, tagline: { ...previous.tagline, size } }))}
           />
-          <div className="flex flex-wrap gap-x-5 gap-y-2">
-            <Checkbox
-              label={bannerCopy.fields.bold}
-              checked={spec.tagline.weight === 700}
-              onChange={(bold) =>
-                update((previous) => ({ ...previous, tagline: { ...previous.tagline, weight: bold ? 700 : 400 } }))
-              }
+          <div className="grid grid-cols-2 items-end gap-3">
+            <Select
+              label={bannerCopy.fields.weight}
+              value={String(spec.tagline.weight)}
+              options={bannerWeights.map((weight) => [String(weight), bannerCopy.fields.weights[weight]] as const)}
+              onChange={(value) => {
+                const weight = bannerWeights.find((candidate) => String(candidate) === value)
+                if (weight) update((previous) => ({ ...previous, tagline: { ...previous.tagline, weight } }))
+              }}
             />
             <Checkbox
               label={bannerCopy.fields.muted}

@@ -1,5 +1,6 @@
 import designTokens from "@/design/tokens.json"
 import { siteConfig } from "@/lib/site-config"
+import { bannerCopy } from "@/locales/en"
 import { phrase } from "@/locales/vocabulary"
 
 /**
@@ -12,11 +13,19 @@ import { phrase } from "@/locales/vocabulary"
 export type BannerBackgroundId = "violet" | "green" | "graphite" | "ink" | "paper" | "blueprint" | "photo"
 export type BannerDeviceKind = "iphone" | "ipad"
 export type BannerAppearance = "light" | "dark"
-export type BannerElementId = "logo" | "title" | "tagline"
+export type BannerElementId = "logo" | "title" | "badge" | "tagline"
+/// `full` fills the canvas behind a scrim; `right` sets the photograph on the right and fades it into
+/// the ground towards the words, the release-notes look.
+export type BannerPhotoArea = "full" | "right"
 
 export type BannerLogo = { visible: boolean; x: number; y: number; size: number }
 export type BannerText = { visible: boolean; text: string; x: number; y: number; size: number }
-export type BannerTagline = BannerText & { weight: 400 | 700; muted: boolean }
+export type BannerTagline = BannerText & { weight: BannerWeight; muted: boolean }
+/// A pill of short segments — the platforms and the version on a release card. `|` separates them.
+export type BannerBadge = BannerText
+
+export const bannerWeights = [300, 400, 700] as const
+export type BannerWeight = (typeof bannerWeights)[number]
 
 export type BannerDevice = {
   id: string
@@ -40,8 +49,11 @@ export type BannerSpec = {
   photo: string
   focusX: number
   focusY: number
+  photoOpacity: number
+  photoArea: BannerPhotoArea
   logo: BannerLogo
   title: BannerText
+  badge: BannerBadge
   tagline: BannerTagline
   /// Back to front: the last device is drawn on top.
   devices: BannerDevice[]
@@ -55,6 +67,9 @@ export const bannerPresets = [
   { id: "linkedin", width: 1584, height: 396 },
   { id: "github", width: 1280, height: 640 },
   { id: "link-card", width: 1200, height: 630 },
+  { id: "release-card", width: 1080, height: 540 },
+  { id: "square", width: 1080, height: 1080 },
+  { id: "portrait", width: 1080, height: 1350 },
 ] as const
 
 export type BannerPresetId = (typeof bannerPresets)[number]["id"]
@@ -143,8 +158,11 @@ export const defaultBannerSpec: BannerSpec = {
   photo: "guitarist-in-motion.png",
   focusX: 60,
   focusY: 50,
+  photoOpacity: 44,
+  photoArea: "full",
   logo: { visible: true, x: 32, y: 34, size: 60 },
   title: { visible: true, text: siteConfig.name, x: 110, y: 44, size: 40 },
+  badge: { visible: false, text: bannerCopy.templates.releaseNotes.badge, x: 372, y: 44, size: 14 },
   tagline: { visible: true, text: defaultTagline, x: 372, y: 36, size: 24, weight: 700, muted: false },
   devices: [
     {
@@ -173,6 +191,31 @@ export const defaultBannerSpec: BannerSpec = {
     },
   ],
 }
+
+/// A card to post with an update, after Raycast's: the photograph on the right, a badge naming the
+/// platforms and version, and the headline set large and light beneath it.
+export const releaseNotesSpec: BannerSpec = {
+  width: 1080,
+  height: 540,
+  background: "photo",
+  photo: "studio-microphone-in-motion.png",
+  focusX: 50,
+  focusY: 40,
+  photoOpacity: 75,
+  photoArea: "right",
+  logo: { visible: true, x: 64, y: 60, size: 44 },
+  title: { visible: true, text: siteConfig.name, x: 122, y: 66, size: 28 },
+  badge: { visible: true, text: bannerCopy.templates.releaseNotes.badge, x: 64, y: 246, size: 20 },
+  tagline: { visible: true, text: bannerCopy.templates.releaseNotes.headline, x: 60, y: 312, size: 84, weight: 300, muted: false },
+  devices: [],
+}
+
+export const bannerTemplates = [
+  { id: "header", spec: defaultBannerSpec },
+  { id: "releaseNotes", spec: releaseNotesSpec },
+] as const
+
+export type BannerTemplateId = (typeof bannerTemplates)[number]["id"]
 
 export function newDevice(kind: BannerDeviceKind, spec: BannerSpec): BannerDevice {
   const height = Math.round(spec.height * 0.9)
@@ -218,6 +261,7 @@ export function resizeBanner(spec: BannerSpec, width: number, height: number, sc
     ...next,
     logo: { ...place(spec.logo), size: size(spec.logo.size) },
     title: { ...place(spec.title), size: size(spec.title.size) },
+    badge: { ...place(spec.badge), size: size(spec.badge.size) },
     tagline: { ...place(spec.tagline), size: size(spec.tagline.size) },
     devices: spec.devices.map((device) => ({ ...place(device), height: size(device.height) })),
   }
@@ -253,6 +297,7 @@ export function restoreBannerSpec(value: unknown): BannerSpec {
 
   const logo = isRecord(value.logo) ? value.logo : {}
   const title = isRecord(value.title) ? value.title : {}
+  const badge = isRecord(value.badge) ? value.badge : {}
   const tagline = isRecord(value.tagline) ? value.tagline : {}
   const devices = Array.isArray(value.devices) ? value.devices.filter(isRecord) : fallback.devices
 
@@ -263,6 +308,8 @@ export function restoreBannerSpec(value: unknown): BannerSpec {
     photo: oneOf(value.photo, bannerPhotos.map((photo) => photo.file), fallback.photo),
     focusX: numberOr(value.focusX, fallback.focusX),
     focusY: numberOr(value.focusY, fallback.focusY),
+    photoOpacity: Math.min(100, Math.max(0, numberOr(value.photoOpacity, fallback.photoOpacity))),
+    photoArea: oneOf(value.photoArea, ["full", "right"] as const, fallback.photoArea),
     logo: {
       visible: booleanOr(logo.visible, fallback.logo.visible),
       x: numberOr(logo.x, fallback.logo.x),
@@ -276,13 +323,20 @@ export function restoreBannerSpec(value: unknown): BannerSpec {
       y: numberOr(title.y, fallback.title.y),
       size: numberOr(title.size, fallback.title.size),
     },
+    badge: {
+      visible: booleanOr(badge.visible, fallback.badge.visible),
+      text: stringOr(badge.text, fallback.badge.text),
+      x: numberOr(badge.x, fallback.badge.x),
+      y: numberOr(badge.y, fallback.badge.y),
+      size: numberOr(badge.size, fallback.badge.size),
+    },
     tagline: {
       visible: booleanOr(tagline.visible, fallback.tagline.visible),
       text: stringOr(tagline.text, fallback.tagline.text),
       x: numberOr(tagline.x, fallback.tagline.x),
       y: numberOr(tagline.y, fallback.tagline.y),
       size: numberOr(tagline.size, fallback.tagline.size),
-      weight: oneOf(tagline.weight, [400, 700] as const, fallback.tagline.weight),
+      weight: oneOf(tagline.weight, bannerWeights, fallback.tagline.weight),
       muted: booleanOr(tagline.muted, fallback.tagline.muted),
     },
     devices: devices.map((device) => ({
