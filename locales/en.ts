@@ -1196,15 +1196,15 @@ export const screensCopy = {
 export const privacyCopy = {
   metadata: {
     title: "Privacy Policy",
-    description: `How ${siteConfig.name} handles song files, optional analytics, adverts, imports, purchases, chordlink orders, and website visits.`,
+    description: `How ${siteConfig.name} handles song files, optional analytics, adverts, imports, feature requests, purchases, chordlink orders, and website visits.`,
   },
   title: "Privacy Policy",
-  lastUpdated: "Last updated: 5 October 2026",
+  lastUpdated: "Last updated: 14 October 2026",
   sections: {
     shortVersion: {
       title: "The short version",
       paragraphs: [
-        `Your song library is made of files in a folder you choose. ${siteConfig.name} does not upload that library to a developer-operated account, server, or sync service. Optional analytics and chord contributions, adverts shown to free users, explicit website imports, purchases, chordlink orders and notifications, support emails, and visits to this website are handled as described below, together with the legal basis for each and how long the data is kept.`,
+        `Your song library is made of files in a folder you choose. ${siteConfig.name} does not upload that library to a developer-operated account, server, or sync service. Optional analytics and chord contributions, adverts shown to free users, explicit website imports, feature requests, purchases, chordlink orders and notifications, support emails, and visits to this website are handled as described below, together with the legal basis for each and how long the data is kept.`,
       ],
     },
     operator: {
@@ -1306,6 +1306,17 @@ export const privacyCopy = {
         "Answering your message is based on our legitimate interest in providing support (Art. 6(1)(f) GDPR), or is necessary for the contract when it concerns a purchase or chordlink order (Art. 6(1)(b) GDPR).",
       ],
     },
+    featureRequests: {
+      title: "Feature requests",
+      paragraphs: [
+        `“Feature Requests” in the app's Settings opens a board where you can suggest features, vote for suggestions, and comment on them. The board is provided by Kickstart Signal, operated by Hudson Heavy Industries Ltd in the United Kingdom. Opening and reading the board is anonymous; nothing about you is sent beyond what is needed to load it.`,
+        `When you vote, suggest a feature, or comment, Kickstart Signal receives what you write, your vote, and a random installation identifier that the app creates on your device the first time you do so. The identifier is not derived from you, your Apple account, or your device; it only lets your vote be counted once and undone later. To confirm the request comes from a genuine copy of ${siteConfig.name}, the app may send Apple's signed record of the app installation, which Kickstart Signal checks and then discards. ${siteConfig.name} does not tell Kickstart Signal whether you have bought the unlimited-song unlock. According to Kickstart Signal, it uses IP addresses only temporarily to prevent abuse and does not store them, does not use feedback for advertising or tracking, and does not build profiles of app users. Its network provider, Cloudflare, carries the connection.`,
+        `Suggestions and comments stay private until ${siteConfig.operator} reviews them. Approved ones are shown to everyone who opens the board in the app, and may be edited for clarity or merged with similar requests, so please do not include personal information. They are kept for as long as the board exists. Because Kickstart Signal cannot tell who wrote a submission, ask us at ${siteConfig.contact.support} if you want one of yours changed or removed.`,
+        `The board is based on our legitimate interest in learning which features people want (Art. 6(1)(f) GDPR). Storing the installation identifier on your device is necessary to provide the vote or submission you asked for (§ 25(2) no. 2 TDDDG). The European Commission has recognized the United Kingdom as providing an adequate level of data protection.`,
+      ],
+      linkPrefix: "Kickstart Signal describes its handling of this data in its",
+      linkLabel: "privacy notice",
+    },
     website: {
       title: "This website",
       paragraphs: [
@@ -1329,6 +1340,7 @@ export const privacyCopy = {
         "Leave optional chord-data contribution disabled or turn it off at any time.",
         "Choose, move, edit, export, or delete your song files using compatible file-management tools.",
         "Unsubscribe from chordlink notifications through the link in any message.",
+        "Ask us to change or remove a feature request or comment you submitted.",
         "Withdraw any consent at any time, with effect for the future.",
         "Object to processing based on our legitimate interest, including adverts, for reasons arising from your particular situation (Art. 21 GDPR).",
         "Ask for access to, correction, deletion, restriction, or a portable copy of personal data we hold about you (Art. 15–20 GDPR).",

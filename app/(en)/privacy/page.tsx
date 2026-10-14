@@ -124,6 +124,14 @@ export default function PrivacyPage() {
             <PolicyParagraphs paragraphs={sections.support.paragraphs} />
           </PolicySection>
 
+          <PolicySection title={sections.featureRequests.title}>
+            <PolicyParagraphs paragraphs={sections.featureRequests.paragraphs} />
+            <p>
+              {sections.featureRequests.linkPrefix}{" "}
+              <PolicyLink href="https://signal.kickstart.tools/privacy">{sections.featureRequests.linkLabel}</PolicyLink>.
+            </p>
+          </PolicySection>
+
           <PolicySection title={sections.website.title}>
             <PolicyParagraphs paragraphs={sections.website.paragraphs} />
             <p>
