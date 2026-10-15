@@ -1,6 +1,13 @@
 import designTokens from "@/design/tokens.json"
 import { siteConfig } from "@/lib/site-config"
-import { bannerCopy } from "@/locales/en"
+import {
+  appScreenshots,
+  badgeSegments,
+  photographs,
+  type AppScreenshot,
+  type PhotographFile,
+} from "@/lib/visual-assets"
+import { releaseCardCopy } from "@/locales/en"
 import { phrase } from "@/locales/vocabulary"
 
 /**
@@ -33,7 +40,7 @@ export type BannerDevice = {
   /// `false` draws the bare screen with rounded corners and no bezel.
   frame: boolean
   shadow: boolean
-  screenshot: string
+  screenshot: AppScreenshot
   appearance: BannerAppearance
   x: number
   y: number
@@ -46,7 +53,7 @@ export type BannerSpec = {
   width: number
   height: number
   background: BannerBackgroundId
-  photo: string
+  photo: PhotographFile
   focusX: number
   focusY: number
   photoOpacity: number
@@ -95,30 +102,6 @@ export const bannerBackgrounds: Record<BannerBackgroundId, Gradient | Solid | Ph
   photo: { kind: "photo", color: "#050505", text: "#FFFFFF", muted: "#D4D4D8" },
 }
 
-/// The photographs `/gallery` and the social editor already serve at web sizes.
-export const bannerPhotos = [
-  { file: "guitarist-in-motion.png", src: "/gallery/guitarist-in-motion.png" },
-  { file: "phone-on-sheet-music.png", src: "/gallery/phone-on-sheet-music.png" },
-  { file: "piano-keys-in-motion.png", src: "/gallery/piano-keys-in-motion.png" },
-  { file: "piano-with-sheet-music.png", src: "/gallery/piano-with-sheet-music.png" },
-  { file: "studio-microphone-in-motion.png", src: "/textures/studio-microphone.webp" },
-  { file: "stage-microphone-in-motion.png", src: "/textures/stage-microphone.webp" },
-  { file: "sampler-and-keyboard-in-motion.png", src: "/textures/sampler-and-keyboard.webp" },
-  { file: "sampler-pads-in-motion.png", src: "/textures/sampler-pads.webp" },
-] as const
-
-/// Captured for both devices and both appearances by the app's screenshot tests.
-export const bannerScreenshots = [
-  "01-Song-List.png",
-  "02-Song-Detail.png",
-  "03-Creation-Flow.png",
-  "04-Search.png",
-  "05-Tag-Filter.png",
-  "06-Settings.png",
-  "07-Song-Suggestions.png",
-  "08-Paywall.png",
-] as const
-
 /**
  * The App Store creative's frame geometry (`deviceGeometry` in
  * `scripts/lib/app-store-creative-template.mjs`), in the 6.5-inch iPhone and 13-inch iPad canvases'
@@ -162,7 +145,7 @@ export const defaultBannerSpec: BannerSpec = {
   photoArea: "full",
   logo: { visible: true, x: 32, y: 34, size: 60 },
   title: { visible: true, text: siteConfig.name, x: 110, y: 44, size: 40 },
-  badge: { visible: false, text: bannerCopy.templates.releaseNotes.badge, x: 372, y: 44, size: 14 },
+  badge: { visible: false, text: releaseCardCopy.badge, x: 372, y: 44, size: 14 },
   tagline: { visible: true, text: defaultTagline, x: 372, y: 36, size: 24, weight: 700, muted: false },
   devices: [
     {
@@ -205,8 +188,8 @@ export const releaseNotesSpec: BannerSpec = {
   photoArea: "right",
   logo: { visible: true, x: 64, y: 60, size: 44 },
   title: { visible: true, text: siteConfig.name, x: 122, y: 66, size: 28 },
-  badge: { visible: true, text: bannerCopy.templates.releaseNotes.badge, x: 64, y: 246, size: 20 },
-  tagline: { visible: true, text: bannerCopy.templates.releaseNotes.headline, x: 60, y: 312, size: 84, weight: 300, muted: false },
+  badge: { visible: true, text: releaseCardCopy.badge, x: 64, y: 246, size: 20 },
+  tagline: { visible: true, text: releaseCardCopy.headline, x: 60, y: 312, size: 84, weight: 300, muted: false },
   devices: [],
 }
 
@@ -267,6 +250,44 @@ export function resizeBanner(spec: BannerSpec, width: number, height: number, sc
   }
 }
 
+/**
+ * The banner's words as a `release` social definition, the Markdown the social editor opens and
+ * `content/social/` holds: its headline, badge, and photograph, in every format. A banner is laid
+ * out by hand at one size; the definition is laid out by the template at three, so only the words
+ * and the picture travel — never the positions.
+ */
+export function releaseDefinition(spec: BannerSpec, created: string): string {
+  const quote = (value: string) => JSON.stringify(value)
+  const list = (values: string[]) => values.map((value) => `  - ${quote(value)}`)
+  const headline = spec.tagline.text
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+  const badge = spec.badge.visible ? badgeSegments(spec.badge.text) : []
+  const fromPhoto = spec.background === "photo"
+  const photo = fromPhoto ? spec.photo : releaseNotesSpec.photo
+  const focus = fromPhoto ? spec : releaseNotesSpec
+
+  return [
+    "---",
+    "template: release",
+    `eyebrow: ${quote(releaseCardCopy.eyebrow)}`,
+    "formats:",
+    "  - card",
+    "  - post",
+    "  - story",
+    `photo: ${quote(photo)}`,
+    `focus: ${focus.focusX}% ${focus.focusY}%`,
+    ...(badge.length ? ["badge:", ...list(badge)] : []),
+    ...(headline.length ? ["headline:", ...list(headline)] : []),
+    `footnote: ${quote(new URL(siteConfig.url).host)}`,
+    `alt: ${quote(releaseCardCopy.alt(headline.join(" ")))}`,
+    `created: ${created}`,
+    "---",
+    "",
+  ].join("\n")
+}
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value)
 }
@@ -305,7 +326,7 @@ export function restoreBannerSpec(value: unknown): BannerSpec {
     width: clampCanvasSize(numberOr(value.width, fallback.width)),
     height: clampCanvasSize(numberOr(value.height, fallback.height)),
     background: oneOf(value.background, Object.keys(bannerBackgrounds) as BannerBackgroundId[], fallback.background),
-    photo: oneOf(value.photo, bannerPhotos.map((photo) => photo.file), fallback.photo),
+    photo: oneOf(value.photo, photographs.map((photo) => photo.file), fallback.photo),
     focusX: numberOr(value.focusX, fallback.focusX),
     focusY: numberOr(value.focusY, fallback.focusY),
     photoOpacity: Math.min(100, Math.max(0, numberOr(value.photoOpacity, fallback.photoOpacity))),
@@ -344,7 +365,7 @@ export function restoreBannerSpec(value: unknown): BannerSpec {
       kind: oneOf(device.kind, ["iphone", "ipad"] as const, "iphone"),
       frame: booleanOr(device.frame, true),
       shadow: booleanOr(device.shadow, true),
-      screenshot: oneOf(device.screenshot, bannerScreenshots, "01-Song-List.png"),
+      screenshot: oneOf(device.screenshot, appScreenshots, "01-Song-List.png"),
       appearance: oneOf(device.appearance, ["light", "dark"] as const, "light"),
       x: numberOr(device.x, 0),
       y: numberOr(device.y, 0),

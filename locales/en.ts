@@ -1,5 +1,6 @@
 import type { BlogTag } from "@/lib/blog-tags"
 import { siteConfig } from "@/lib/site-config"
+import type { AppScreenshot, PhotographFile } from "@/lib/visual-assets"
 
 export const locale = {
   htmlLang: "en",
@@ -1852,6 +1853,40 @@ export const adminCopy = {
   signOut: "Sign out",
 } as const
 
+/// The words a new release card starts with, in the banner builder and the social editor alike.
+export const releaseCardCopy = {
+  eyebrow: "Update",
+  badge: `iPhone & iPad | v1.1`,
+  headline: `What’s new\nin ${siteConfig.name}`,
+  /** A feature list's placeholder rows, one per line: a name, then `|` and a line on what it does. */
+  features: "A new feature | What it does, in one line\nAn improvement | Why it matters\nA fix | What works now",
+  alt: (headline: string) => `A ${siteConfig.name} release card reading “${headline}”, beside a black-and-white photograph.`,
+} as const
+
+/// The names of the pictures in `lib/visual-assets.ts`, shared by the banner builder and the social editor.
+export const visualAssetCopy = {
+  photographs: {
+    "guitarist-in-motion.png": "Guitarist",
+    "phone-on-sheet-music.png": "Phone on sheet music",
+    "piano-keys-in-motion.png": "Piano keys",
+    "piano-with-sheet-music.png": "Piano with sheet music",
+    "studio-microphone-in-motion.png": "Studio microphone",
+    "stage-microphone-in-motion.png": "Stage microphone",
+    "sampler-and-keyboard-in-motion.png": "Sampler and keyboard",
+    "sampler-pads-in-motion.png": "Sampler pads",
+  } satisfies Record<PhotographFile, string>,
+  screenshots: {
+    "01-Song-List.png": "Song list",
+    "02-Song-Detail.png": "Song",
+    "03-Creation-Flow.png": "New song",
+    "04-Search.png": "Search",
+    "05-Tag-Filter.png": "Tag filter",
+    "06-Settings.png": "Settings",
+    "07-Song-Suggestions.png": "Song suggestions",
+    "08-Paywall.png": "Unlock",
+  } satisfies Record<AppScreenshot, string>,
+} as const
+
 export const bannerCopy = {
   metadata: {
     title: "Banner builder",
@@ -1870,10 +1905,6 @@ export const bannerCopy = {
     options: {
       header: "Header banner",
       releaseNotes: "Release notes",
-    },
-    releaseNotes: {
-      badge: `iPhone & iPad | v1.1`,
-      headline: `What’s new\nin ${siteConfig.name}`,
     },
   },
   canvas: {
@@ -1905,16 +1936,6 @@ export const bannerCopy = {
       photo: "Photograph",
     },
     photo: "Photograph",
-    photos: {
-      "guitarist-in-motion.png": "Guitarist",
-      "phone-on-sheet-music.png": "Phone on sheet music",
-      "piano-keys-in-motion.png": "Piano keys",
-      "piano-with-sheet-music.png": "Piano with sheet music",
-      "studio-microphone-in-motion.png": "Studio microphone",
-      "stage-microphone-in-motion.png": "Stage microphone",
-      "sampler-and-keyboard-in-motion.png": "Sampler and keyboard",
-      "sampler-pads-in-motion.png": "Sampler pads",
-    },
     focusX: "Focus, horizontal (%)",
     focusY: "Focus, vertical (%)",
     opacity: "Opacity (%)",
@@ -1955,16 +1976,6 @@ export const bannerCopy = {
     frameOptions: { framed: "With bezel", bare: "Bare screen" },
     shadow: "Shadow",
     screenshot: "Screen",
-    screenshots: {
-      "01-Song-List.png": "Song list",
-      "02-Song-Detail.png": "Song",
-      "03-Creation-Flow.png": "New song",
-      "04-Search.png": "Search",
-      "05-Tag-Filter.png": "Tag filter",
-      "06-Settings.png": "Settings",
-      "07-Song-Suggestions.png": "Song suggestions",
-      "08-Paywall.png": "Unlock",
-    },
     appearance: "Appearance",
     appearances: { light: "Light", dark: "Dark" },
     forward: "Bring forward",
@@ -1976,6 +1987,8 @@ export const bannerCopy = {
     scaleOption: (scale: number) => `@${scale}x`,
     download: "Download PNG",
     reset: "Reset layout",
+    openInSocialEditor: "Open in social editor",
+    openInSocialEditorHint: "Starts a release post in the social editor with this headline, badge, and photograph.",
     filename: (width: number, height: number, scale: number) =>
       `${siteConfig.name}-banner-${width}x${height}${scale > 1 ? `@${scale}x` : ""}.png`,
   },

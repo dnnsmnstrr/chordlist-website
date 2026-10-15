@@ -123,6 +123,20 @@ as a file. Requires `lines`. See [Setting a file](#setting-a-file) below.
 `photo`, naming a master in `assets/visual-references/analog-photography/`. See
 [Using the photography](#using-the-photography) below, which has rules the other templates do not.
 
+**`release`** — a version and what is new in it, after Raycast's release cards. The photograph takes
+the right of a `card` and the top of a `post` or `story`, fading into the ground towards the words;
+a hairline `badge` of short segments (platforms, version) sits over a large, light headline at the
+bottom. Requires `photo` and `headline`; `badge` is optional. The banner builder's **Open in social
+editor** button starts one from a banner's headline, badge, and photograph.
+
+**`features`** — what is new in an update, item by item: the slide that follows a `release` card in
+a carousel. An optional `badge` and `headline`, then one row per entry in `items` — a mono number, the
+feature's `title`, and an optional `detail` line — each under a hairline rule. On a `card` the badge
+and headline take a left column and the list the right; on a `post` or `story` they stack. A longer
+list is set smaller to fit, down to 60%, and more than six items warns: split it across two slides.
+Takes any `theme` or background, like `statement`; keep `ink` beside a `release` card. Requires
+`items`. Every item is a product claim, so check it against the app like any other.
+
 ## Composing a card
 
 The `card` is the only landscape format, and the only one wide enough to hold two things side by
@@ -231,7 +245,7 @@ whoever posts it is not rewriting copy that was already reviewed.
 
 | Field | Required | Rules |
 | --- | --- | --- |
-| `template` | yes | One of the six above. An unknown name fails the build. |
+| `template` | yes | One of the eight above. An unknown name fails the build. |
 | `alt` | yes | Describes the visible asset. Never empty — these are published images. |
 | `hashtags` | no | Up to five tags, one per entry, **without** the `#` (YAML reads `#` as a comment). Pick from `lib/social-hashtags.ts`; the gallery appends them to the caption when copying. More than five warns, since Instagram accepts five. |
 | `headline` | per template | One list entry per rendered line. Line breaks are an editorial decision. |
@@ -249,11 +263,13 @@ whoever posts it is not rewriting copy that was already reviewed.
 | `screenshotScale` | no | Resizes the screenshot from `50%` to `150%`, in either layout. Defaults to `100%`. |
 | `screenshotFocus` | no | Moves the screenshot by a share of the canvas, `x% y%`, each from `-20%` to `20%`; positive is right and down. Defaults to `0% 0%`. Both match the editor's Scale and Position sliders. |
 | `deviceFrame` | no | `true` adds a dark hardware shell and camera island around a screenshot. Defaults to `false`. |
-| `photo` | `photo` | A master filename in `assets/visual-references/analog-photography/`. |
+| `items` | `features` | One entry per feature: `title`, and optionally `detail`, one line on what it does. A plain string is a title alone. |
+| `badge` | no | A `release` or `features` slide's pill, one short segment per entry: `["iPhone & iPad", "v1.1"]`. |
+| `photo` | `photo`, `release` | A master filename in `assets/visual-references/analog-photography/`. |
 | `focus` | no | Steers the crop for `photo` and `backgroundImage`, e.g. `60% 40%`. Defaults to center. |
 | `backgroundScale` | no | Zooms `photo` or `backgroundImage` from `100%` to `200%` before applying focus. Defaults to `100%`. |
 | `theme` | no | Color system: `ink` (default), `paper`, or `blueprint`. Photo assets normally keep `ink` for white overlay type. |
-| `texture` | no | A subtle website-derived background: `studio`, `stage`, `sampler`, `guitar`, `piano-keys`, or `piano-score`. Available on every template except `photo`. |
+| `texture` | no | A subtle website-derived background: `studio`, `stage`, `sampler`, `guitar`, `piano-keys`, or `piano-score`. Available on every template except `photo` and `release`. |
 | `backgroundImage` | no | A full-bleed master filename for any non-`photo` template. Uses `focus` and the standard photo scrim. |
 | `created` | no | The date the definition was written. |
 | `scheduled` | no | Planning only. The build does not act on it. |

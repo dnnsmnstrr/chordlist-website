@@ -10,7 +10,7 @@ Work on social media assets in `content/social/` and their generated images in
 written and reviewed once.
 
 Do not draw a one-off image or add a bespoke script for a single post. If a request genuinely needs
-a layout none of the five templates provides, identify that as a change to the system and agree it
+a layout none of the eight templates provides, identify that as a change to the system and agree it
 separately before adding a template.
 
 `docs/social-media-plan.md` is the running calendar: which assets exist, when each is meant to go
@@ -24,7 +24,9 @@ its post is published.
    missing choice would change the copy.
 3. Choose the template from what the asset says, not from what is convenient: `statement` for a
    claim, `progression` for chords, `quote` for a line from an article, `screenshot` for evidence of
-   app behavior, `file` for the shape of a song on disk.
+   app behavior, `file` for the shape of a song on disk, `release` for an update's announcement card,
+   and `features` for the list of what changed in it — usually the slide after a `release` card.
+   Only list features the app actually ships; check them against the app before writing one.
 4. Choose formats. Default to `card` and `post`. Add `story` when the asset is worth a full-screen
    vertical, which is usually a launch or a single strong statement rather than a detailed one. A
    pixel size such as `1270x760` also works; for a one-off size nobody needs committed, run
@@ -48,6 +50,8 @@ its post is published.
 | `screenshot` | `screenshot` | A device screenshot from `public/app-screenshots/dark/`. |
 | `file` | `lines` | A song file or folder tree in mono. Optional `filename`, `frontmatter`, `headline`. |
 | `photo` | `photo` | Editorial photography as a backdrop, typography over it. Optional `focus`. |
+| `release` | `photo`, `headline` | A release card: photo beside the words, optional `badge` list (platforms, version). |
+| `features` | `items` | What's new, item by item: `title` and optional `detail` per entry, optional `badge` and `headline`. |
 
 Every definition also requires `alt`. `eyebrow`, `footnote`, `formats`, `created`, `scheduled`, and
 `draft` are optional and documented in the system guide.

@@ -997,11 +997,392 @@ function photo({ definition, tokens, scale, inner, format, assets }) {
 }
 
 /**
+ * The release template's measures, at scale 1. Mirrored by `release` in
+ * components/social-post-editor.tsx, whose canvas preview has to land where
+ * this puts things.
+ */
+const RELEASE = {
+  headline: 100,
+  lineHeight: 1.04,
+  tracking: -0.035,
+  badge: 22,
+  gap: 30,
+  bottom: 36,
+  // The share of a card's width the headline may take before it shrinks, so it
+  // stays clear of the photograph's brightest part.
+  cardMeasure: 0.72,
+  cardPhotoStart: 0.38,
+  portraitPhotoEnd: 0.62,
+}
+
+/** The badge's proportions for a font size. Mirrors `badgeGeometry` in lib/visual-assets.ts. */
+export function badgeGeometry(size) {
+  return { padding: size * 0.95, height: size * 2.3, line: Math.max(1, size * 0.07), tracking: 0.08, ruleOpacity: 0.5 }
+}
+
+/**
+ * Where the release template's photograph sits: the right of a card, the top of
+ * a portrait format. The runner measures crop loss against this rather than the
+ * whole canvas, since that is the frame the master is actually cropped to.
+ */
+export function releasePhotoArea(format) {
+  if (format.name === "card") {
+    const left = Math.round(format.width * RELEASE.cardPhotoStart)
+    return { left, top: 0, width: format.width - left, height: format.height }
+  }
+  return { left: 0, top: 0, width: format.width, height: Math.round(format.height * RELEASE.portraitPhotoEnd) }
+}
+
+/** `#RRGGBB` at an opacity, for the rules and fades that sit on a theme color. */
+function withAlpha(hex, alpha) {
+  const value = Number.parseInt(hex.replace("#", ""), 16)
+  return `rgba(${(value >> 16) & 255},${(value >> 8) & 255},${value & 255},${alpha})`
+}
+
+/** The hairline pill of short segments that heads a release card and a feature list. */
+function badge({ segments, size, gap, tokens }) {
+  const geometry = badgeGeometry(size)
+  const rule = `${geometry.line}px solid ${withAlpha(tokens.colors.text, geometry.ruleOpacity)}`
+  return h(
+    "div",
+    {
+      key: "badge",
+      style: {
+        display: "flex",
+        alignSelf: "flex-start",
+        height: Math.round(geometry.height),
+        marginBottom: gap,
+        border: rule,
+        borderRadius: Math.round(geometry.height / 2),
+      },
+    },
+    ...segments.map((segment, index) =>
+      h(
+        "div",
+        {
+          key: index,
+          style: {
+            display: "flex",
+            alignItems: "center",
+            paddingLeft: Math.round(geometry.padding),
+            paddingRight: Math.round(geometry.padding),
+            borderLeft: index > 0 ? rule : "none",
+            fontFamily: "Geist Mono",
+            fontSize: size,
+            letterSpacing: `${geometry.tracking}em`,
+            color: tokens.colors.text,
+          },
+        },
+        segment,
+      ),
+    ),
+  )
+}
+
+/**
+ * release — a version and what is new in it, after the release cards Raycast
+ * posts with each update.
+ *
+ * The photograph takes its own area rather than the whole frame — the right of
+ * a card, the top of a post or a story — and dissolves into the ground towards
+ * the words, so the copy sits on the plain ground and needs no scrim. The words
+ * are a hairline badge of short segments, the platforms and the version, over a
+ * headline set large and light, both on the bottom of the body box.
+ */
+function release({ definition, tokens, scale, inner, format, assets }) {
+  const source = assets.photos.get(definition.photo)
+  if (!source) {
+    throw new Error(
+      `unknown photo "${definition.photo}" — expected a file in the photography directory ` +
+        `(available: ${assets.photos.names().join(", ") || "none"})`,
+    )
+  }
+
+  const area = releasePhotoArea(format)
+  const box = coverBox(source, area, definition.focus, definition.backgroundScale)
+  const clear = withAlpha(tokens.colors.background, 0)
+  const fade =
+    format.name === "card"
+      ? `linear-gradient(90deg, ${tokens.colors.background} 0%, ${clear} 55%)`
+      : // Dark behind the lockup at the top, clear through the middle, and the ground again by the words.
+        `linear-gradient(180deg, ${withAlpha(tokens.colors.background, 0.8)} 0%, ` +
+        `${withAlpha(tokens.colors.background, 0.5)} 24%, ${clear} 40%, ${clear} 48%, ${tokens.colors.background} 100%)`
+
+  const backdrop = [
+    h(
+      "div",
+      {
+        key: "release-photo",
+        style: {
+          position: "absolute",
+          left: area.left,
+          top: area.top,
+          width: area.width,
+          height: area.height,
+          display: "flex",
+          overflow: "hidden",
+        },
+      },
+      h("img", {
+        src: source.uri,
+        width: box.width,
+        height: box.height,
+        style: { position: "absolute", left: box.left, top: box.top },
+      }),
+      h("div", {
+        style: { position: "absolute", left: 0, top: 0, width: area.width, height: area.height, background: fade },
+      }),
+    ),
+  ]
+
+  const maxWidth = format.name === "card" ? inner.width * RELEASE.cardMeasure : inner.width
+  const size = fitSize(RELEASE.headline * scale, definition.headline, { maxWidth })
+  const children = []
+
+  const segments = (definition.badge ?? []).map(String)
+  if (segments.length > 0) {
+    children.push(badge({ segments, size: Math.round(RELEASE.badge * scale), gap: Math.round(RELEASE.gap * scale), tokens }))
+  }
+
+  children.push(
+    textBlock(definition.headline, {
+      fontFamily: "Geist",
+      fontWeight: 400,
+      fontSize: size,
+      letterSpacing: `${RELEASE.tracking}em`,
+      lineHeight: RELEASE.lineHeight,
+      color: tokens.colors.text,
+    }),
+  )
+
+  const body = h(
+    "div",
+    {
+      style: {
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "flex-end",
+        flex: 1,
+        paddingBottom: Math.round(RELEASE.bottom * scale),
+      },
+    },
+    ...children,
+  )
+
+  return { body, footer: definition.footnote, backdrop }
+}
+
+/**
+ * The feature list's measures, at scale 1. Mirrored by `features` in
+ * components/social-post-editor.tsx.
+ */
+const FEATURES = {
+  badge: 22,
+  gap: 30,
+  headline: 64,
+  headlineLineHeight: 1.08,
+  headlineGap: 40,
+  title: 34,
+  titleLineHeight: 1.2,
+  detail: 24,
+  detailLineHeight: 1.35,
+  detailGap: 6,
+  rowPadding: 18,
+  index: 22,
+  indexColumn: 64,
+  // On a card the badge and heading take a left column of this share, and the
+  // list the rest: stacked, a card is too short to hold more than two rows.
+  cardHeading: 0.36,
+  cardGutter: 56,
+  // A list longer than the box would otherwise hold is set smaller rather than
+  // cropped, down to this share of its size; past it the list wants an editor.
+  floor: 0.6,
+}
+
+/**
+ * The feature list's sizes for a definition and a box: every measure scaled by
+ * one factor, so that the whole group fits the box's height. Satori cannot
+ * measure, so the height is estimated from line counts — the editor's preview
+ * runs the same arithmetic, which keeps the two in step.
+ */
+export function featuresLayout({ badgeCount, headlineLines, items, scale, inner, columns }) {
+  const rows = items.reduce(
+    (total, item) =>
+      total +
+      FEATURES.rowPadding * 2 +
+      FEATURES.title * FEATURES.titleLineHeight +
+      (item.detail ? FEATURES.detailGap + FEATURES.detail * FEATURES.detailLineHeight : 0),
+    0,
+  )
+  const heading =
+    (badgeCount > 0 ? badgeGeometry(FEATURES.badge).height + FEATURES.gap : 0) +
+    (headlineLines > 0 ? headlineLines * FEATURES.headline * FEATURES.headlineLineHeight + FEATURES.headlineGap : 0)
+  const height = columns ? Math.max(heading, rows) : heading + rows
+  const factor = Math.max(FEATURES.floor, Math.min(1, inner.height / Math.max(1, height * scale)))
+  const unit = scale * factor
+  const size = (value) => Math.round(value * unit)
+  return {
+    badge: size(FEATURES.badge),
+    gap: size(FEATURES.gap),
+    headline: size(FEATURES.headline),
+    headlineGap: size(FEATURES.headlineGap),
+    title: size(FEATURES.title),
+    detail: size(FEATURES.detail),
+    detailGap: size(FEATURES.detailGap),
+    rowPadding: size(FEATURES.rowPadding),
+    index: size(FEATURES.index),
+    indexColumn: size(FEATURES.indexColumn),
+    line: Math.max(1, Math.round(scale)),
+    headingWidth: columns ? Math.round(inner.width * FEATURES.cardHeading) : inner.width,
+    gutter: columns ? Math.round(FEATURES.cardGutter * scale) : 0,
+  }
+}
+
+/**
+ * features — what is new, item by item: the slide after a release card.
+ *
+ * An optional badge and heading, then one row per item — a mono number, the
+ * item's name, and an optional line on what it does, each row under a hairline
+ * rule. Sits on any theme or background, like `statement`, so it can follow a
+ * `release` card in a carousel on the same ink ground. Requires `items`.
+ */
+function features({ definition, tokens, scale, inner, format }) {
+  const items = definition.items
+  const headline = definition.headline ?? []
+  const segments = (definition.badge ?? []).map(String)
+  const columns = format.name === "card" && (headline.length > 0 || segments.length > 0)
+  const layout = featuresLayout({
+    badgeCount: segments.length,
+    headlineLines: headline.length,
+    items,
+    scale,
+    inner,
+    columns,
+  })
+  const listWidth = columns ? inner.width - layout.headingWidth - layout.gutter : inner.width
+  const textWidth = listWidth - layout.indexColumn
+  const titleSize = fitSize(layout.title, items.map((item) => item.title), { maxWidth: textWidth })
+  const details = items.map((item) => item.detail).filter(Boolean)
+  const detailSize = details.length ? fitSize(layout.detail, details, { maxWidth: textWidth }) : layout.detail
+
+  const heading = []
+  if (segments.length > 0) heading.push(badge({ segments, size: layout.badge, gap: layout.gap, tokens }))
+  if (headline.length > 0) {
+    heading.push(
+      textBlock(headline, {
+        fontFamily: "Geist",
+        fontWeight: 400,
+        fontSize: fitSize(layout.headline, headline, { maxWidth: layout.headingWidth }),
+        letterSpacing: "-0.03em",
+        lineHeight: FEATURES.headlineLineHeight,
+        color: tokens.colors.text,
+        marginBottom: columns ? 0 : layout.headlineGap,
+      }),
+    )
+  }
+
+  const list = h(
+      "div",
+      { key: "items", style: { display: "flex", flexDirection: "column", width: listWidth } },
+      ...items.map((item, index) =>
+        h(
+          "div",
+          {
+            key: index,
+            style: {
+              display: "flex",
+              paddingTop: layout.rowPadding,
+              paddingBottom: layout.rowPadding,
+              borderTop: `${layout.line}px solid ${tokens.colors.rule}`,
+            },
+          },
+          h(
+            "div",
+            {
+              style: {
+                display: "flex",
+                width: layout.indexColumn,
+                flexShrink: 0,
+                paddingTop: Math.round((titleSize - layout.index) * 0.6),
+                fontFamily: "Geist Mono",
+                fontSize: layout.index,
+                color: tokens.colors.muted,
+              },
+            },
+            String(index + 1).padStart(2, "0"),
+          ),
+          h(
+            "div",
+            { style: { display: "flex", flexDirection: "column", width: textWidth } },
+            h(
+              "div",
+              {
+                style: {
+                  display: "flex",
+                  fontFamily: "Geist",
+                  fontWeight: 700,
+                  fontSize: titleSize,
+                  lineHeight: FEATURES.titleLineHeight,
+                  letterSpacing: "-0.02em",
+                  color: tokens.colors.text,
+                },
+              },
+              item.title,
+            ),
+            ...(item.detail
+              ? [
+                  h(
+                    "div",
+                    {
+                      style: {
+                        display: "flex",
+                        marginTop: layout.detailGap,
+                        fontFamily: "Geist",
+                        fontWeight: 400,
+                        fontSize: detailSize,
+                        lineHeight: FEATURES.detailLineHeight,
+                        color: tokens.colors.muted,
+                      },
+                    },
+                    item.detail,
+                  ),
+                ]
+              : []),
+          ),
+        ),
+      ),
+    )
+
+  const body = columns
+    ? h(
+        "div",
+        { style: { display: "flex", alignItems: "center" } },
+        h(
+          "div",
+          {
+            style: {
+              display: "flex",
+              flexDirection: "column",
+              width: layout.headingWidth,
+              marginRight: layout.gutter,
+              flexShrink: 0,
+            },
+          },
+          ...heading,
+        ),
+        list,
+      )
+    : h("div", { style: { display: "flex", flexDirection: "column" } }, ...heading, list)
+
+  return { body, footer: definition.footnote }
+}
+
+/**
  * The registry the runner validates `template:` against. Adding a template means
  * adding it here, listing its required fields below, and documenting it in
  * docs/social-media-system.md.
  */
-export const TEMPLATES = { statement, progression, quote, screenshot, file, photo }
+export const TEMPLATES = { statement, progression, quote, screenshot, file, photo, release, features }
 
 /** Fields each template requires beyond the common ones, checked before rendering. */
 export const TEMPLATE_FIELDS = {
@@ -1011,4 +1392,6 @@ export const TEMPLATE_FIELDS = {
   screenshot: ["screenshot"],
   file: ["lines"],
   photo: ["photo"],
+  release: ["photo", "headline"],
+  features: ["items"],
 }

@@ -1,24 +1,22 @@
 "use client"
 
-import designMark from "@/design/mark.json"
 import designTokens from "@/design/tokens.json"
 
 import { useEffect, useRef, useState, useSyncExternalStore, type KeyboardEvent, type PointerEvent, type ReactNode } from "react"
-import { ArrowDown, ArrowUp, Download, Plus, RotateCcw, Trash2 } from "lucide-react"
+import { ArrowDown, ArrowUp, Download, ExternalLink, Plus, RotateCcw, Trash2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
   bannerBackgrounds,
   bannerDeviceGeometry,
   bannerLimits,
-  bannerPhotos,
   bannerPresets,
-  bannerScreenshots,
   bannerTemplates,
   bannerWeights,
   defaultBannerSpec,
   deviceWidth,
   newDevice,
+  releaseDefinition,
   resizeBanner,
   restoreBannerSpec,
   screenshotSource,
@@ -28,7 +26,8 @@ import {
   type BannerSpec,
 } from "@/lib/banner"
 import { cn } from "@/lib/utils"
-import { bannerCopy } from "@/locales/en"
+import { appScreenshots, badgeSegments, drawBadge, drawMark, photographs, photographSource } from "@/lib/visual-assets"
+import { bannerCopy, visualAssetCopy } from "@/locales/en"
 
 type Box = { x: number; y: number; width: number; height: number }
 
@@ -86,7 +85,7 @@ async function loadAssets(spec: BannerSpec): Promise<Assets> {
     document.fonts.load(`700 32px ${sans}`),
   ]).catch(() => undefined)
 
-  const photoSource = bannerPhotos.find((photo) => photo.file === spec.photo)?.src
+  const photoSource = photographSource(spec.photo)
   const sources = [...new Set(spec.devices.map(screenshotSource))]
   const [photo, ...screens] = await Promise.all([
     spec.background === "photo" && photoSource ? loadImage(photoSource).catch(() => null) : null,
@@ -260,29 +259,6 @@ function drawDevice(
   return rotatedBox(device.x, device.y, width, height, device.rotation)
 }
 
-/// The mark as `social-post-editor.tsx` draws it: the glyph from `design/mark.json` on its tile.
-function drawMark(context: CanvasRenderingContext2D, x: number, y: number, size: number, tile: string, glyph: string) {
-  context.fillStyle = tile
-  context.beginPath()
-  context.roundRect(x, y, size, size, size * 0.22)
-  context.fill()
-
-  context.save()
-  context.clip()
-  const unit = size / 613
-  context.translate(x + (size - 270 * unit) / 2, y)
-  context.scale(unit, unit)
-  context.fillStyle = glyph
-  for (const shape of designMark.shapes) {
-    if (shape.tag === "path" && shape.d) {
-      context.fill(new Path2D(shape.d))
-    } else if (shape.tag === "rect") {
-      context.fillRect(Number(shape.x), Number(shape.y), Number(shape.width), Number(shape.height))
-    }
-  }
-  context.restore()
-}
-
 function drawText(
   context: CanvasRenderingContext2D,
   text: string,
@@ -302,53 +278,6 @@ function drawText(
   })
   context.restore()
   return { x: options.x, y: options.y, width, height: row * rows.length }
-}
-
-/// The badge: a hairline pill of short segments split by `|`, each divided from the next by a rule.
-function drawBadge(
-  context: CanvasRenderingContext2D,
-  text: string,
-  options: { x: number; y: number; size: number; family: string; color: string },
-): Box {
-  const segments = text
-    .split("|")
-    .map((segment) => segment.trim())
-    .filter(Boolean)
-  const { x, y, size } = options
-  const padding = size * 0.95
-  const height = size * 2.3
-  const line = Math.max(1, size * 0.07)
-
-  context.save()
-  context.font = `400 ${size}px ${options.family}`
-  context.letterSpacing = `${(0.08 * size).toFixed(2)}px`
-  const widths = segments.map((segment) => context.measureText(segment).width)
-  const width = widths.reduce((total, segmentWidth) => total + segmentWidth + padding * 2, 0)
-
-  context.strokeStyle = options.color
-  context.lineWidth = line
-  context.globalAlpha = 0.5
-  context.beginPath()
-  context.roundRect(x + line / 2, y + line / 2, width - line, height - line, (height - line) / 2)
-  context.stroke()
-
-  let left = x
-  segments.forEach((segment, index) => {
-    if (index > 0) {
-      context.globalAlpha = 0.5
-      context.beginPath()
-      context.moveTo(left, y)
-      context.lineTo(left, y + height)
-      context.stroke()
-    }
-    context.globalAlpha = 1
-    context.fillStyle = options.color
-    context.textBaseline = "middle"
-    context.fillText(segment, left + padding, y + height / 2)
-    left += (widths[index] ?? 0) + padding * 2
-  })
-  context.restore()
-  return { x, y, width, height }
 }
 
 /** Draws the whole banner in canvas pixels — the caller scales the context for a sharper export. */
@@ -381,7 +310,11 @@ function drawBanner(context: CanvasRenderingContext2D, spec: BannerSpec, assets:
   }
 
   if (spec.badge.visible && spec.badge.text.trim()) {
-    layout.badge = drawBadge(context, spec.badge.text, { ...spec.badge, family: assets.mono, color: background.text })
+    layout.badge = drawBadge(context, badgeSegments(spec.badge.text), {
+      ...spec.badge,
+      family: assets.mono,
+      color: background.text,
+    })
   }
 
   if (spec.tagline.visible && spec.tagline.text.trim()) {
@@ -593,6 +526,13 @@ function BannerEditor() {
     URL.revokeObjectURL(link.href)
   }
 
+  /// Hands the words and the photograph to the social editor, in a new tab so this layout stays open.
+  /// The editor reads a definition from `?config=` the way its own share links write one.
+  function openInSocialEditor() {
+    const markdown = releaseDefinition(spec, new Date().toISOString().slice(0, 10))
+    window.open(`/social/editor?config=${btoa(encodeURIComponent(markdown))}`, "_blank", "noopener")
+  }
+
   function reset() {
     setSpec(defaultBannerSpec)
     setSelected(null)
@@ -685,6 +625,10 @@ function BannerEditor() {
                 </button>
               ))}
             </div>
+            <Button variant="outline" title={bannerCopy.export.openInSocialEditorHint} onClick={openInSocialEditor}>
+              <ExternalLink aria-hidden="true" />
+              {bannerCopy.export.openInSocialEditor}
+            </Button>
             <Button variant="outline" onClick={reset}>
               <RotateCcw aria-hidden="true" />
               {bannerCopy.export.reset}
@@ -762,7 +706,7 @@ function BannerEditor() {
               <Select
                 label={bannerCopy.background.photo}
                 value={spec.photo}
-                options={bannerPhotos.map((photo) => [photo.file, bannerCopy.background.photos[photo.file]] as const)}
+                options={photographs.map((photo) => [photo.file, visualAssetCopy.photographs[photo.file]] as const)}
                 onChange={(photo) => update((previous) => ({ ...previous, photo }))}
               />
               <div className="grid grid-cols-2 gap-3">
@@ -1002,7 +946,7 @@ function BannerEditor() {
                     <Select
                       label={bannerCopy.devices.screenshot}
                       value={device.screenshot}
-                      options={bannerScreenshots.map((file) => [file, bannerCopy.devices.screenshots[file]] as const)}
+                      options={appScreenshots.map((file) => [file, visualAssetCopy.screenshots[file]] as const)}
                       onChange={(screenshot) => updateDevice(device.id, { screenshot })}
                     />
                     <Select

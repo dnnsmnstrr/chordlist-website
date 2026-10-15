@@ -35,7 +35,7 @@ import { ImageResponse } from "next/og.js"
 import { parse as parseYaml } from "yaml"
 
 import { markSvg, svgDataUri } from "./lib/chordlist-mark.mjs"
-import { TEMPLATES, TEMPLATE_FIELDS, backgroundBackdrop, frame } from "./lib/social-templates.mjs"
+import { TEMPLATES, TEMPLATE_FIELDS, backgroundBackdrop, frame, releasePhotoArea } from "./lib/social-templates.mjs"
 
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..")
 
@@ -241,6 +241,37 @@ function readDefinition(file, data) {
   if (data.texture !== undefined && data.backgroundImage !== undefined) {
     fail(`"texture" and "backgroundImage" cannot be used together`)
   }
+  if (template === "release" && (data.texture !== undefined || data.backgroundImage !== undefined)) {
+    fail(`template "release" sets its own photograph — remove "texture" and "backgroundImage"`)
+  }
+  // A feature is a name and, optionally, one line on what it does. A plain string
+  // is the name alone, so a quick list reads naturally in YAML.
+  let items
+  if (data.items !== undefined) {
+    if (!Array.isArray(data.items) || data.items.length === 0) {
+      fail(`"items" must be a non-empty list of features`)
+    }
+    items = data.items.map((item, index) => {
+      const entry = typeof item === "string" ? { title: item } : item
+      if (typeof entry?.title !== "string" || entry.title.trim() === "") {
+        fail(`"items" entry ${index + 1} needs a "title"`)
+      }
+      if (entry.detail !== undefined && typeof entry.detail !== "string") {
+        fail(`"items" entry ${index + 1}: "detail" must be a string`)
+      }
+      return { title: entry.title.trim(), detail: entry.detail?.trim() || undefined }
+    })
+    if (items.length > 6) {
+      console.warn(`  ${file}: ${items.length} items; past six the list is set small — consider a second slide`)
+    }
+  }
+
+  if (
+    data.badge !== undefined &&
+    (!Array.isArray(data.badge) || data.badge.some((segment) => typeof segment !== "string" || segment.trim() === ""))
+  ) {
+    fail(`"badge" must be a list of short segments, such as ["iPhone & iPad", "v1.1"]`)
+  }
 
   // The file template renders each entry as one monospaced row, so a string where
   // a list belongs would silently become a single run-on line.
@@ -303,7 +334,7 @@ function readDefinition(file, data) {
   // stay an editorial decision rather than a side effect of the type size.
   const headline = data.headline === undefined ? undefined : [data.headline].flat().map(String)
 
-  return { ...data, template, theme, formats, headline, hashtags }
+  return { ...data, template, theme, formats, headline, hashtags, items }
 }
 
 /**
@@ -491,7 +522,9 @@ async function main() {
     if (fullBleedImage) {
       const intrinsic = resolved.photos.get(fullBleedImage)
       for (const name of definition.formats) {
-        const loss = cropLoss(intrinsic, resolveFormat(name))
+        const format = resolveFormat(name)
+        // A release photograph fills only its own area, so that is the frame it is cropped to.
+        const loss = cropLoss(intrinsic, definition.template === "release" ? releasePhotoArea(format) : format)
         if (loss >= CONFIG.cropWarningThreshold) {
           console.warn(
             `  ${file}: "${fullBleedImage}" is ${intrinsic.width}×${intrinsic.height} and loses ` +
@@ -519,7 +552,8 @@ async function main() {
   for (const { slug, definition, caption } of definitions) {
     const render = TEMPLATES[definition.template]
     const outputs = []
-    const usesFullImage = definition.template === "photo" || definition.backgroundImage
+    const usesFullImage =
+      definition.template === "photo" || definition.template === "release" || definition.backgroundImage
     const colors = { ...CONFIG.colors, ...CONFIG.themes[usesFullImage ? "ink" : definition.theme] }
     const definitionTokens = { ...tokens, colors }
     const iconUri = svgDataUri(

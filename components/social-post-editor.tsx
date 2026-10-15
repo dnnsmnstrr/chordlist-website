@@ -1,7 +1,6 @@
 "use client"
 
 import designTokens from "@/design/tokens.json"
-import designMark from "@/design/mark.json"
 import photographyCatalog from "@/assets/visual-references/analog-photography/catalog.json"
 
 import { useCallback, useEffect, useMemo, useRef, useState, type ComponentType } from "react"
@@ -28,9 +27,18 @@ import { HashtagField } from "@/components/hashtag-field"
 import { Button, buttonVariants } from "@/components/ui/button"
 import { captionWithHashtags, normalizeHashtags, suggestedHashtags } from "@/lib/social-hashtags"
 import { cn } from "@/lib/utils"
+import {
+  appScreenshots,
+  badgeGeometry,
+  badgeSegments,
+  drawBadge,
+  drawMark,
+  photographs,
+} from "@/lib/visual-assets"
+import { releaseCardCopy, visualAssetCopy } from "@/locales/en"
 
 type FormatName = "card" | "post" | "story"
-type TemplateName = "statement" | "progression" | "quote" | "screenshot" | "file" | "photo"
+type TemplateName = "statement" | "progression" | "quote" | "screenshot" | "file" | "photo" | "release" | "features"
 type ThemeName = "ink" | "paper" | "blueprint"
 type BackgroundMode = "plain" | "texture" | "image"
 type TextureName = "studio" | "stage" | "sampler" | "guitar" | "piano-keys" | "piano-score"
@@ -46,6 +54,10 @@ export type EditorConfig = {
   texture: TextureName
   formats: FormatName[]
   eyebrow: string
+  /** The release template's pill, its segments separated by `|`. */
+  badge: string
+  /** The feature list's rows, one per line: a name, then optionally `|` and a line on what it does. */
+  items: string
   headline: string
   footnote: string
   chords: string
@@ -92,18 +104,122 @@ const templates: { name: TemplateName; label: string; description: string }[] = 
   { name: "screenshot", label: "Screenshot", description: "Product evidence" },
   { name: "file", label: "File", description: "A song as plain text" },
   { name: "photo", label: "Photo", description: "Editorial atmosphere" },
+  { name: "release", label: "Release", description: "A version and what's new" },
+  { name: "features", label: "Feature list", description: "What's new, item by item" },
 ]
 
-const photos = [
-  { name: "guitarist-in-motion.png", label: "Guitarist", src: "/gallery/guitarist-in-motion.png" },
-  { name: "phone-on-sheet-music.png", label: "Phone", src: "/gallery/phone-on-sheet-music.png" },
-  { name: "piano-keys-in-motion.png", label: "Piano keys", src: "/gallery/piano-keys-in-motion.png" },
-  { name: "piano-with-sheet-music.png", label: "Sheet music", src: "/gallery/piano-with-sheet-music.png" },
-  { name: "studio-microphone-in-motion.png", label: "Studio mic", src: "/textures/studio-microphone.webp" },
-  { name: "stage-microphone-in-motion.png", label: "Stage mic", src: "/textures/stage-microphone.webp" },
-  { name: "sampler-and-keyboard-in-motion.png", label: "Keyboard", src: "/textures/sampler-and-keyboard.webp" },
-  { name: "sampler-pads-in-motion.png", label: "Sampler", src: "/textures/sampler-pads.webp" },
-] as const
+/** Templates that carry the release badge. */
+function hasBadge(template: TemplateName) {
+  return template === "release" || template === "features"
+}
+
+/** The feature list's rows as name and detail, from the editor's one-row-per-line text. */
+function featureItems(value: string) {
+  return lines(value).map((line) => {
+    const [title = "", ...rest] = line.split("|")
+    const detail = rest.join("|").trim()
+    return { title: title.trim(), detail: detail || undefined }
+  }).filter((item) => item.title)
+}
+
+/**
+ * The feature list's measures, at scale 1, and its fitting. Mirrors `FEATURES` and
+ * `featuresLayout()` in scripts/lib/social-templates.mjs: the height is estimated from line
+ * counts there, because satori cannot measure, so it is estimated the same way here.
+ */
+const features = {
+  badge: 22,
+  gap: 30,
+  headline: 64,
+  headlineLineHeight: 1.08,
+  headlineGap: 40,
+  title: 34,
+  titleLineHeight: 1.2,
+  detail: 24,
+  detailLineHeight: 1.35,
+  detailGap: 6,
+  rowPadding: 18,
+  index: 22,
+  indexColumn: 64,
+  cardHeading: 0.36,
+  cardGutter: 56,
+  floor: 0.6,
+}
+
+function featuresLayout(
+  badgeCount: number,
+  headlineLines: number,
+  items: { detail?: string }[],
+  scale: number,
+  inner: { width: number; height: number },
+  columns: boolean,
+) {
+  const rows = items.reduce(
+    (total, item) =>
+      total +
+      features.rowPadding * 2 +
+      features.title * features.titleLineHeight +
+      (item.detail ? features.detailGap + features.detail * features.detailLineHeight : 0),
+    0,
+  )
+  const heading =
+    (badgeCount > 0 ? badgeGeometry(features.badge).height + features.gap : 0) +
+    (headlineLines > 0 ? headlineLines * features.headline * features.headlineLineHeight + features.headlineGap : 0)
+  const height = columns ? Math.max(heading, rows) : heading + rows
+  const factor = Math.max(features.floor, Math.min(1, inner.height / Math.max(1, height * scale)))
+  const size = (value: number) => Math.round(value * scale * factor)
+  return {
+    badge: size(features.badge),
+    gap: size(features.gap),
+    headline: size(features.headline),
+    headlineGap: size(features.headlineGap),
+    title: size(features.title),
+    detail: size(features.detail),
+    detailGap: size(features.detailGap),
+    rowPadding: size(features.rowPadding),
+    index: size(features.index),
+    indexColumn: size(features.indexColumn),
+    line: Math.max(1, Math.round(scale)),
+    headingWidth: columns ? Math.round(inner.width * features.cardHeading) : inner.width,
+    gutter: columns ? Math.round(features.cardGutter * scale) : 0,
+  }
+}
+
+/** Templates whose subject is a photograph: they always draw `photo`, on the ink theme. */
+function isPhotoTemplate(template: TemplateName) {
+  return template === "photo" || template === "release"
+}
+
+/**
+ * The release template's measures, at scale 1. Mirrors `RELEASE` in
+ * scripts/lib/social-templates.mjs, which the build lays the PNGs out with.
+ */
+const release = {
+  headline: 100,
+  lineHeight: 1.04,
+  tracking: -0.035,
+  badge: 22,
+  gap: 30,
+  bottom: 36,
+  cardMeasure: 0.72,
+  cardPhotoStart: 0.38,
+  portraitPhotoEnd: 0.62,
+}
+
+/** Where the release template's photograph sits: the right of a card, the top of a portrait format. */
+function releasePhotoArea(formatName: FormatName, width: number, height: number) {
+  if (formatName === "card") {
+    const left = Math.round(width * release.cardPhotoStart)
+    return { x: left, y: 0, width: width - left, height }
+  }
+  return { x: 0, y: 0, width, height: Math.round(height * release.portraitPhotoEnd) }
+}
+
+const photos = photographs.map((photograph) => ({
+  name: photograph.file,
+  label: visualAssetCopy.photographs[photograph.file],
+  src: photograph.src,
+}))
 
 /** `file` is the master each texture is cut from, as in `CONFIG.textures` in scripts/build-social.mjs. */
 const textureOptions: { name: TextureName; label: string; src: string; file: string }[] = [
@@ -121,7 +237,7 @@ const textureOptions: { name: TextureName; label: string; src: string; file: str
  * A texture is set faintly, so it says so. An uploaded photo has no entry and gets no sentence.
  */
 function backgroundSentence(config: EditorConfig): string | null {
-  const usesFullImage = config.template === "photo" || config.backgroundMode === "image"
+  const usesFullImage = isPhotoTemplate(config.template) || config.backgroundMode === "image"
   const file = usesFullImage
     ? config.photo
     : config.backgroundMode === "texture"
@@ -160,16 +276,6 @@ export function withBackgroundAlt(next: EditorConfig, previous: EditorConfig): E
   return alt === next.alt ? next : { ...next, alt }
 }
 
-const screenshots = [
-  "01-Song-List.png",
-  "02-Song-Detail.png",
-  "03-Creation-Flow.png",
-  "04-Search.png",
-  "05-Tag-Filter.png",
-  "06-Settings.png",
-  "07-Song-Suggestions.png",
-] as const
-
 export const initialConfig: EditorConfig = {
   slug: "files-in-your-pocket",
   template: "statement",
@@ -178,6 +284,8 @@ export const initialConfig: EditorConfig = {
   texture: "studio",
   formats: ["card", "post"],
   eyebrow: "Feature",
+  badge: releaseCardCopy.badge,
+  items: releaseCardCopy.features,
   headline: "Your lyrics and chords,\nas files in your pocket.",
   footnote: "chordlist.app",
   chords: "C G Am F",
@@ -186,14 +294,14 @@ export const initialConfig: EditorConfig = {
   filename: "Let It Be.md",
   frontmatter: "---\nchords: C G Am F\n---",
   fileLines: "[Verse]\nC        G        Am       F",
-  screenshot: screenshots[1],
+  screenshot: appScreenshots[1],
   screenshotMode: "detail",
   screenshotLayout: "beside",
   screenshotX: 0,
   screenshotY: 0,
   screenshotScale: 100,
   deviceFrame: false,
-  photo: photos[0].name,
+  photo: photographs[0].file,
   focusX: 60,
   focusY: 50,
   backgroundScale: 100,
@@ -282,35 +390,6 @@ function drawTextLines(
   context.font = `${weight} ${size}px ${family}`
   context.textBaseline = "top"
   copy.forEach((line, index) => context.fillText(line, x, y + index * size * lineHeight))
-}
-
-function drawMark(
-  context: CanvasRenderingContext2D,
-  x: number,
-  y: number,
-  size: number,
-  tile: string,
-  glyph: string,
-) {
-  context.fillStyle = tile
-  context.beginPath()
-  context.roundRect(x, y, size, size, size * 0.22)
-  context.fill()
-
-  context.save()
-  context.clip()
-  const unit = size / 613
-  context.translate(x + (size - 270 * unit) / 2, y)
-  context.scale(unit, unit)
-  context.fillStyle = glyph
-  for (const shape of designMark.shapes) {
-    if (shape.tag === 'path' && shape.d) {
-      context.fill(new Path2D(shape.d))
-    } else if (shape.tag === 'rect') {
-      context.fillRect(Number(shape.x), Number(shape.y), Number(shape.width), Number(shape.height))
-    }
-  }
-  context.restore()
 }
 
 function drawCover(
@@ -451,8 +530,39 @@ async function renderPost(
   context.fillStyle = theme.background
   context.fillRect(0, 0, format.width, format.height)
 
-  const usesFullImage = config.template === "photo" || config.backgroundMode === "image"
-  if (usesFullImage && photoSrc) {
+  const usesFullImage =
+    config.template === "photo" || (!isPhotoTemplate(config.template) && config.backgroundMode === "image")
+  if (config.template === "release" && photoSrc) {
+    // Mirrors release() in scripts/lib/social-templates.mjs: the photograph in its own area,
+    // dissolving into the ground towards the words.
+    const image = await loadImage(photoSrc)
+    const area = releasePhotoArea(formatName, format.width, format.height)
+    context.save()
+    context.beginPath()
+    context.rect(area.x, area.y, area.width, area.height)
+    context.clip()
+    context.translate(area.x, area.y)
+    drawCover(context, image, area.width, area.height, config.focusX, config.focusY, config.backgroundScale)
+    context.restore()
+
+    const clear = "rgba(10,10,10,0)"
+    const fade =
+      formatName === "card"
+        ? context.createLinearGradient(area.x, 0, area.x + area.width * 0.55, 0)
+        : context.createLinearGradient(0, area.y, 0, area.y + area.height)
+    if (formatName === "card") {
+      fade.addColorStop(0, themes.ink.background)
+      fade.addColorStop(1, clear)
+    } else {
+      fade.addColorStop(0, "rgba(10,10,10,0.8)")
+      fade.addColorStop(0.24, "rgba(10,10,10,0.5)")
+      fade.addColorStop(0.4, clear)
+      fade.addColorStop(0.48, clear)
+      fade.addColorStop(1, themes.ink.background)
+    }
+    context.fillStyle = fade
+    context.fillRect(area.x, area.y, area.width, area.height)
+  } else if (usesFullImage && photoSrc) {
     const image = await loadImage(photoSrc)
     drawCover(
       context,
@@ -484,7 +594,7 @@ async function renderPost(
     context.fillRect(0, 0, format.width, format.height)
   }
 
-  const activeTheme = usesFullImage ? themes.ink : theme
+  const activeTheme = usesFullImage || isPhotoTemplate(config.template) ? themes.ink : theme
   const markSize = Math.round(56 * scale)
   drawMark(context, padding, top, markSize, activeTheme.tile, activeTheme.glyph)
   context.fillStyle = activeTheme.text
@@ -535,6 +645,95 @@ async function renderPost(
       700,
       sans,
     )
+  }
+
+  if (config.template === "release") {
+    const maxWidth = formatName === "card" ? innerWidth * release.cardMeasure : innerWidth
+    const size = fitFont(context, headline, release.headline * scale, maxWidth, 400, sans)
+    const height = headline.length * size * release.lineHeight
+    // The build sets the group on the bottom of the body box, which ends where the footer row starts.
+    const groupBottom = bottom - Math.round(24 * scale * 1.25) - Math.round(release.bottom * scale)
+    const headlineY = groupBottom - height
+    context.save()
+    context.letterSpacing = `${(release.tracking * size).toFixed(2)}px`
+    drawTextLines(context, headline, padding, headlineY, size, release.lineHeight, activeTheme.text, 400, sans)
+    context.restore()
+
+    const segments = badgeSegments(config.badge)
+    if (segments.length) {
+      const badgeSize = Math.round(release.badge * scale)
+      drawBadge(context, segments, {
+        x: padding,
+        y: headlineY - Math.round(release.gap * scale) - badgeGeometry(badgeSize).height,
+        size: badgeSize,
+        family: mono,
+        color: activeTheme.text,
+      })
+    }
+  }
+
+  if (config.template === "features") {
+    const items = featureItems(config.items)
+    const segments = badgeSegments(config.badge)
+    const columns = formatName === "card" && (headline.length > 0 || segments.length > 0)
+    const inner = { width: innerWidth, height: innerHeight }
+    const layout = featuresLayout(segments.length, headline.length, items, scale, inner, columns)
+    const listWidth = columns ? innerWidth - layout.headingWidth - layout.gutter : innerWidth
+    const textWidth = listWidth - layout.indexColumn
+    const titleSize = items.length ? fitFont(context, items.map((item) => item.title), layout.title, textWidth, 700, sans) : 0
+    const details = items.flatMap((item) => (item.detail ? [item.detail] : []))
+    const detailSize = details.length ? fitFont(context, details, layout.detail, textWidth, 400, sans) : layout.detail
+    const headlineSize = headline.length ? fitFont(context, headline, layout.headline, layout.headingWidth, 400, sans) : 0
+
+    const badgeHeight = segments.length ? badgeGeometry(layout.badge).height + layout.gap : 0
+    const headingHeight =
+      badgeHeight +
+      (headline.length ? headline.length * headlineSize * features.headlineLineHeight + (columns ? 0 : layout.headlineGap) : 0)
+    const listHeight = items.reduce(
+      (total, item) =>
+        total +
+        layout.rowPadding * 2 +
+        titleSize * features.titleLineHeight +
+        (item.detail ? layout.detailGap + detailSize * features.detailLineHeight : 0),
+      0,
+    )
+    const groupHeight = columns ? Math.max(headingHeight, listHeight) : headingHeight + listHeight
+    const groupTop = bodyTop + (bodyHeight - groupHeight) / 2
+
+    let y = columns ? groupTop + (groupHeight - headingHeight) / 2 : groupTop
+    if (segments.length) {
+      drawBadge(context, segments, { x: padding, y, size: layout.badge, family: mono, color: activeTheme.text })
+      y += badgeHeight
+    }
+    if (headline.length) {
+      context.save()
+      context.letterSpacing = `${(-0.03 * headlineSize).toFixed(2)}px`
+      drawTextLines(context, headline, padding, y, headlineSize, features.headlineLineHeight, activeTheme.text, 400, sans)
+      context.restore()
+    }
+
+    const listX = padding + (columns ? layout.headingWidth + layout.gutter : 0)
+    y = columns ? groupTop + (groupHeight - listHeight) / 2 : groupTop + headingHeight
+    items.forEach((item, index) => {
+      context.fillStyle = activeTheme.rule
+      context.fillRect(listX, y, listWidth, layout.line)
+      y += layout.rowPadding
+      context.fillStyle = activeTheme.muted
+      context.font = `400 ${layout.index}px ${mono}`
+      context.textBaseline = "top"
+      context.fillText(String(index + 1).padStart(2, "0"), listX, y + (titleSize - layout.index) * 0.6)
+      context.save()
+      context.letterSpacing = `${(-0.02 * titleSize).toFixed(2)}px`
+      drawTextLines(context, [item.title], listX + layout.indexColumn, y, titleSize, features.titleLineHeight, activeTheme.text, 700, sans)
+      context.restore()
+      y += titleSize * features.titleLineHeight
+      if (item.detail) {
+        y += layout.detailGap
+        drawTextLines(context, [item.detail], listX + layout.indexColumn, y, detailSize, features.detailLineHeight, activeTheme.muted, 400, sans)
+        y += detailSize * features.detailLineHeight
+      }
+      y += layout.rowPadding
+    })
   }
 
   if (config.template === "quote") {
@@ -841,10 +1040,10 @@ function parseImportedConfig(source: string): EditorConfig {
     : "studio"
   const backgroundImage = importedString(data.backgroundImage)
   const templatePhoto = importedString(data.photo)
-  const photo = template === "photo"
+  const photo = isPhotoTemplate(template)
     ? templatePhoto || initialConfig.photo
     : backgroundImage || initialConfig.photo
-  const backgroundMode: BackgroundMode = template === "photo" || backgroundImage
+  const backgroundMode: BackgroundMode = isPhotoTemplate(template) || backgroundImage
     ? "image"
     : data.texture !== undefined
       ? "texture"
@@ -863,6 +1062,18 @@ function parseImportedConfig(source: string): EditorConfig {
     texture,
     formats: importedFormats.length ? importedFormats : ["card", "post"],
     eyebrow: importedString(data.eyebrow),
+    badge: Array.isArray(data.badge) ? data.badge.map(String).join(" | ") : importedString(data.badge),
+    items: Array.isArray(data.items)
+      ? data.items
+          .map((item) => {
+            if (typeof item === "string") return item
+            const entry = item as { title?: unknown; detail?: unknown } | null
+            const title = importedString(entry?.title)
+            const detail = importedString(entry?.detail)
+            return detail ? `${title} | ${detail}` : title
+          })
+          .join("\n")
+      : initialConfig.items,
     headline,
     footnote: importedString(data.footnote),
     chords: Array.isArray(data.chords) ? data.chords.map(String).join(" ") : importedString(data.chords),
@@ -897,14 +1108,14 @@ function yamlString(value: string) {
 
 function configMarkdown(config: EditorConfig) {
   const output = ["---", `template: ${config.template}`]
-  const usesFullImage = config.template === "photo" || config.backgroundMode === "image"
-  if (!usesFullImage && config.backgroundMode !== "texture" && config.theme !== "ink") {
+  const photoTemplate = isPhotoTemplate(config.template)
+  if (!photoTemplate && config.backgroundMode === "plain" && config.theme !== "ink") {
     output.push(`theme: ${config.theme}`)
   }
-  if (config.template !== "photo" && config.backgroundMode === "texture") {
+  if (!photoTemplate && config.backgroundMode === "texture") {
     output.push(`texture: ${config.texture}`)
   }
-  if (config.template !== "photo" && config.backgroundMode === "image") {
+  if (!photoTemplate && config.backgroundMode === "image") {
     output.push(`backgroundImage: ${yamlString(config.photo)}`)
     output.push(`focus: ${config.focusX}% ${config.focusY}%`)
     if (config.backgroundScale !== 100) output.push(`backgroundScale: ${config.backgroundScale}%`)
@@ -922,10 +1133,26 @@ function configMarkdown(config: EditorConfig) {
     if (config.screenshotScale !== 100) output.push(`screenshotScale: ${config.screenshotScale}%`)
     if (config.deviceFrame) output.push("deviceFrame: true")
   }
-  if (config.template === "photo") {
+  if (photoTemplate) {
     output.push(`photo: ${yamlString(config.photo)}`)
     output.push(`focus: ${config.focusX}% ${config.focusY}%`)
     if (config.backgroundScale !== 100) output.push(`backgroundScale: ${config.backgroundScale}%`)
+  }
+  if (hasBadge(config.template)) {
+    const segments = badgeSegments(config.badge)
+    if (segments.length) output.push("badge:", ...segments.map((segment) => `  - ${yamlString(segment)}`))
+  }
+  if (config.template === "features") {
+    const items = featureItems(config.items)
+    if (items.length) {
+      output.push(
+        "items:",
+        ...items.flatMap((item) => [
+          `  - title: ${yamlString(item.title)}`,
+          ...(item.detail ? [`    detail: ${yamlString(item.detail)}`] : []),
+        ]),
+      )
+    }
   }
   if (config.template === "progression") {
     output.push("chords:", ...config.chords.split(/\s+/).filter(Boolean).map((chord) => `  - ${yamlString(chord)}`))
@@ -1023,7 +1250,7 @@ export function SocialPostEditor({
 
   const photoSrc = useMemo(() => {
     if (customPhoto?.name === config.photo) return customPhoto.src
-    return photos.find((photo) => photo.name === config.photo)?.src ?? photos[0].src
+    return photos.find((photo) => photo.name === config.photo)?.src ?? photographs[0].src
   }, [config.photo, customPhoto])
 
   const textureSrc =
@@ -1310,7 +1537,7 @@ export function SocialPostEditor({
                     edit((current) => ({
                       ...current,
                       template: template.name,
-                      backgroundMode: template.name === "photo" ? "image" : current.backgroundMode,
+                      backgroundMode: isPhotoTemplate(template.name) ? "image" : current.backgroundMode,
                     }))
                   }}
                   className={`rounded-xl border p-3 text-left transition ${
@@ -1332,6 +1559,12 @@ export function SocialPostEditor({
             <Field label="Eyebrow" hint="Optional">
               <input className={inputClass} value={config.eyebrow} onChange={(event) => update("eyebrow", event.target.value)} />
             </Field>
+
+            {hasBadge(config.template) ? (
+              <Field label="Badge" hint="Segments separated by |">
+                <input className={`${inputClass} font-mono`} value={config.badge} onChange={(event) => update("badge", event.target.value)} />
+              </Field>
+            ) : null}
 
             {config.template === "progression" ? (
               <>
@@ -1375,7 +1608,7 @@ export function SocialPostEditor({
               hint={
                 isCenteredScreenshot(config)
                   ? "Not shown in the centered layout"
-                  : config.template === "file"
+                  : config.template === "file" || config.template === "features"
                     ? "Optional"
                     : "One rendered line per row"
               }
@@ -1387,6 +1620,16 @@ export function SocialPostEditor({
                 onChange={(event) => update("headline", event.target.value)}
               />
             </Field>
+
+            {config.template === "features" ? (
+              <Field label="Features" hint="One per line · Name | what it does">
+                <textarea
+                  className={`${inputClass} min-h-32 resize-y leading-relaxed`}
+                  value={config.items}
+                  onChange={(event) => update("items", event.target.value)}
+                />
+              </Field>
+            ) : null}
 
             {config.template === "quote" ? (
               <Field label="Attribution" hint="Optional">
@@ -1400,7 +1643,7 @@ export function SocialPostEditor({
           </Section>
 
           <Section title="Background">
-            {config.template !== "photo" ? (
+            {!isPhotoTemplate(config.template) ? (
               <div className="grid grid-cols-3 rounded-xl bg-muted p-1">
                 {(["plain", "texture", "image"] as BackgroundMode[]).map((mode) => (
                   <button
@@ -1423,11 +1666,13 @@ export function SocialPostEditor({
               </div>
             ) : (
               <p className="text-xs leading-relaxed text-muted-foreground">
-                The photo layout always uses a full-bleed image. Choose the crop below.
+                {config.template === "release"
+                  ? "The release layout sets the photo beside the words, fading into the ground. Choose the crop below."
+                  : "The photo layout always uses a full-bleed image. Choose the crop below."}
               </p>
             )}
 
-            {config.template !== "photo" && config.backgroundMode === "plain" ? (
+            {!isPhotoTemplate(config.template) && config.backgroundMode === "plain" ? (
               <div className="grid grid-cols-3 gap-2">
                 {(Object.keys(themes) as ThemeName[]).map((name) => {
                   const theme = themes[name]
@@ -1447,7 +1692,7 @@ export function SocialPostEditor({
               </div>
             ) : null}
 
-            {config.template !== "photo" && config.backgroundMode === "texture" ? (
+            {!isPhotoTemplate(config.template) && config.backgroundMode === "texture" ? (
               <div className="grid grid-cols-3 gap-2">
                 {textureOptions.map((texture) => (
                   <button
@@ -1467,7 +1712,7 @@ export function SocialPostEditor({
               </div>
             ) : null}
 
-            {config.template === "photo" || config.backgroundMode === "image" ? (
+            {isPhotoTemplate(config.template) || config.backgroundMode === "image" ? (
               <>
               <div className="grid grid-cols-4 gap-2">
                 {photos.map((photo) => (
@@ -1601,12 +1846,12 @@ export function SocialPostEditor({
                 <input className="mt-3 w-full accent-foreground" type="range" min="50" max="150" step="1" value={config.screenshotScale} onChange={(event) => update("screenshotScale", Number(event.target.value))} onDoubleClick={() => update("screenshotScale", 100)} />
               </Field>
               <div className="-mx-5 flex gap-2 overflow-x-auto px-5 sm:-mx-6 sm:px-6">
-                {screenshots.map((screenshot, index) => (
+                {appScreenshots.map((screenshot) => (
                   <button
                     key={screenshot}
                     type="button"
                     onClick={() => update("screenshot", screenshot)}
-                    aria-label={`App screenshot ${index + 1}`}
+                    aria-label={visualAssetCopy.screenshots[screenshot]}
                     aria-pressed={config.screenshot === screenshot}
                     className={`h-44 shrink-0 overflow-hidden rounded-lg border bg-[#0a0a0a] p-1 transition sm:h-52 ${config.screenshot === screenshot ? "border-foreground ring-2 ring-ring/30" : "border-border"}`}
                   >
