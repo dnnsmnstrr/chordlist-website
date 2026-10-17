@@ -1,0 +1,1 @@
+This is a song. So is this. chordlist keeps every song as a plain Markdown file in a folder you choose, then lets you transpose with one tap, scroll hands-free, and find what else you can already play. Free on the App Store for iPhone and iPad: chordlist.app

@@ -1,0 +1,5 @@
+# Intermediates: silent renders, soundtracks, posters, stills and contact sheets. Every one is
+# re-created from work/src and work/audio.mjs — see brag-plan.md.
+work/*
+!work/src/
+!work/audio.mjs
