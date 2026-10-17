@@ -1992,6 +1992,15 @@ export const bannerCopy = {
     filename: (width: number, height: number, scale: number) =>
       `${siteConfig.name}-banner-${width}x${height}${scale > 1 ? `@${scale}x` : ""}.png`,
   },
+  /// A `release` definition opened from a `?config=` link — the release log's — or pasted onto the page.
+  importNotice: {
+    opened: "Opened the release card from the link. Your previous layout was replaced.",
+    pasted: "Applied the pasted release config to the release-notes card.",
+  },
+  importErrors: {
+    frontmatter: "Paste a complete config with opening and closing --- lines.",
+    template: (template: string) => `The banner builder opens release configs, not “${template || "missing"}”.`,
+  },
 } as const
 
 export const motionEditorCopy = {

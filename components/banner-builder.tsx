@@ -15,11 +15,13 @@ import {
   bannerWeights,
   defaultBannerSpec,
   deviceWidth,
+  looksLikeReleaseDefinition,
   newDevice,
   releaseDefinition,
   resizeBanner,
   restoreBannerSpec,
   screenshotSource,
+  specFromReleaseDefinition,
   type BannerDevice,
   type BannerDeviceKind,
   type BannerElementId,
@@ -351,6 +353,21 @@ function readStoredSpec(): BannerSpec | null {
   }
 }
 
+/**
+ * A `release` definition handed over in `?config=`, encoded the way the social editor's share links
+ * are: base64 of the URI-encoded Markdown. The release log in the admin console links here this way.
+ */
+function readLinkedSpec(): { spec: BannerSpec } | { error: string } | null {
+  const encoded = new URLSearchParams(window.location.search).get("config")
+  if (!encoded) return null
+  try {
+    // A "+" left unescaped in the link arrives as a space; base64 never contains one.
+    return { spec: specFromReleaseDefinition(decodeURIComponent(atob(encoded.replaceAll(" ", "+")))) }
+  } catch (error) {
+    return { error: error instanceof Error ? error.message : bannerCopy.importErrors.frontmatter }
+  }
+}
+
 function writeStoredSpec(spec: BannerSpec) {
   try {
     window.localStorage.setItem(storageKey, JSON.stringify(spec))
@@ -384,7 +401,13 @@ export function BannerBuilder() {
 }
 
 function BannerEditor() {
-  const [spec, setSpec] = useState<BannerSpec>(() => readStoredSpec() ?? defaultBannerSpec)
+  const [linked] = useState(readLinkedSpec)
+  const [spec, setSpec] = useState<BannerSpec>(
+    () => (linked && "spec" in linked ? linked.spec : null) ?? readStoredSpec() ?? defaultBannerSpec,
+  )
+  const [notice, setNotice] = useState<{ tone: "info" | "error"; text: string } | null>(() =>
+    linked ? ("spec" in linked ? { tone: "info", text: bannerCopy.importNotice.opened } : { tone: "error", text: linked.error }) : null,
+  )
   const [layout, setLayout] = useState<Layout>({})
   const [selected, setSelected] = useState<string | null>(null)
   const [scaleLayout, setScaleLayout] = useState(true)
@@ -394,6 +417,34 @@ function BannerEditor() {
   const dragRef = useRef<Drag | null>(null)
 
   useEffect(() => writeStoredSpec(spec), [spec])
+
+  // The link has done its job once the layout is open; a reload should keep the edits, not reapply it.
+  useEffect(() => {
+    if (!linked) return
+    const url = new URL(window.location.href)
+    url.searchParams.delete("config")
+    window.history.replaceState(window.history.state, "", url)
+  }, [linked])
+
+  // Paste a release config anywhere outside a field to lay it onto the release-notes card.
+  useEffect(() => {
+    function handlePaste(event: ClipboardEvent) {
+      const target = event.target
+      if (target instanceof HTMLElement && (target.matches("input, textarea, select") || target.isContentEditable)) return
+      const source = event.clipboardData?.getData("text/plain") ?? ""
+      if (!looksLikeReleaseDefinition(source)) return
+      event.preventDefault()
+      try {
+        setSpec(specFromReleaseDefinition(source))
+        setSelected(null)
+        setNotice({ tone: "info", text: bannerCopy.importNotice.pasted })
+      } catch (error) {
+        setNotice({ tone: "error", text: error instanceof Error ? error.message : bannerCopy.importErrors.frontmatter })
+      }
+    }
+    window.addEventListener("paste", handlePaste)
+    return () => window.removeEventListener("paste", handlePaste)
+  }, [])
 
   useEffect(() => {
     let current = true
@@ -651,6 +702,11 @@ function BannerEditor() {
             ))}
           </div>
           <p className="text-xs text-muted-foreground">{bannerCopy.templates.hint}</p>
+          {notice ? (
+            <p role="status" className={cn("text-xs", notice.tone === "error" ? "text-destructive" : "text-muted-foreground")}>
+              {notice.text}
+            </p>
+          ) : null}
         </Panel>
 
         <Panel title={bannerCopy.canvas.title}>
