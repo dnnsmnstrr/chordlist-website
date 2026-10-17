@@ -295,6 +295,10 @@ These categories of files in `public/` are **outputs — edit the generator, not
   the library only reads committed files, so it works on the deployed site behind the login; each
   piece's title and description are `motionLibraryCopy.pieces` in `locales/en.ts`, and
   `tests/motion-library.test.ts` fails when a rendered piece has none.
+- **Launch videos** (`public/video/launch/<slug>-<format>.mp4`, the posters, and `manifest.json`) —
+  `node brag-output/work/publish.mjs`. It muxes the Remotion renders of `brag-output/work/src/` with
+  the soundtracks from `brag-output/work/audio.mjs`, and `/motion/library` lists the result under
+  **Launch videos**. `brag-output/brag-plan.md` has the storyboard and the full rebuild.
 - **Motion videos** (`public/motion/<slug>/<format>.{mp4,jpg}` plus `manifest.json`) — `pnpm build:motion`,
   which renders every definition in `content/motion/` through the `Motion-Custom-<format>`
   composition. Definitions are written by the `/motion` wizard; uploads they use live in

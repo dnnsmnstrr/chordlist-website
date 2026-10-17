@@ -1662,8 +1662,16 @@ export const motionLibraryCopy = {
   introduction:
     "Every motion video, ready to post. Pick a format, then <strong>Share</strong> opens your phone's share sheet with the video itself — choose Instagram to post it as a Reel, Story, or feed post. <strong>Download</strong> saves the file.",
   sections: {
+    launch: "Launch videos",
     suite: "The motion suite",
     custom: "Made in the editor",
+  },
+  search: {
+    label: "Search the motion library",
+    placeholder: "Search videos…",
+    clear: "Clear the search",
+    resultCount: (count: number) => (count === 1 ? "1 video" : `${count} videos`),
+    empty: (query: string) => `No video matches “${query}”.`,
   },
   formats: {
     story: { label: "Story", ratio: "9:16", use: "Reels, Stories, TikTok, Shorts" },
@@ -1683,7 +1691,19 @@ export const motionLibraryCopy = {
   copyCaption: "Copy caption",
   captionCopied: "Caption copied",
   captionFrom: (slug: string) => `Caption from the ${slug} still`,
+  launchCaption: "Caption from the launch share copy",
   play: (title: string) => `Play ${title}`,
+  launch: {
+    "launch-video": {
+      title: "Launch video",
+      description:
+        "“This is a song. So is this.” The Markdown file, then the app: transpose, hands-free autoscroll, and matching songs, on guitar. The music goes up a key when the chart does.",
+    },
+    "launch-video-piano": {
+      title: "Launch video, piano",
+      description: "The same cut scored on piano, where the autoscroll line reads “Hands stay on the keys.”",
+    },
+  },
   pieces: {
     "logo-sting": {
       title: "Logo sting",

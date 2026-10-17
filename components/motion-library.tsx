@@ -1,10 +1,12 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
-import { Check, Copy, Download, LoaderCircle, Share } from "lucide-react"
+import { useEffect, useId, useMemo, useRef, useState } from "react"
+import { Check, Copy, Download, LoaderCircle, Search, Share, X } from "lucide-react"
 
+import { SiteSearchResults, useSiteSearch } from "@/components/site-search-results"
 import { Button } from "@/components/ui/button"
 import type { LibraryFormat, LibraryItem, LibraryOutput } from "@/lib/motion/library"
+import { matchesSearchTokens, searchTokens } from "@/lib/text-search"
 import { cn } from "@/lib/utils"
 import { motionLibraryCopy as copy } from "@/locales/en"
 
@@ -15,20 +17,107 @@ const preference: LibraryFormat[] = ["story", "post", "square", "wide"]
 
 const fileName = (slug: string, format: LibraryFormat) => `chordlist-${slug}-${format}.mp4`
 
-type MotionLibraryProps = { title: string; items: LibraryItem[] }
+export type MotionLibrarySection = { id: string; title: string; items: LibraryItem[] }
 
-/** A section of the library: one card per video. */
-export function MotionLibrary({ title, items }: MotionLibraryProps) {
-  if (items.length === 0) return null
+type MotionLibraryProps = { sections: MotionLibrarySection[] }
+
+/**
+ * The words a video is found by: what its card shows — title, description, caption, section — plus
+ * each format's name, ratio, and where it is posted, so "reels" or "16:9" finds the videos that
+ * have that cut.
+ */
+function searchText(section: MotionLibrarySection, item: LibraryItem) {
+  const formats = item.outputs.map(({ format }) => {
+    const { label, ratio, use } = copy.formats[format]
+    return `${format} ${label} ${ratio} ${use}`
+  })
+  return [section.title, item.title, item.description, item.slug, item.caption?.text ?? "", ...formats].join(" ")
+}
+
+/** Every section of the library, one card per video, narrowed by the search above them. */
+export function MotionLibrary({ sections }: MotionLibraryProps) {
+  const inputId = useId()
+  const countId = useId()
+  const [query, setQuery] = useState("")
+  const tokens = useMemo(() => searchTokens(query), [query])
+  const isSearching = tokens.length > 0
+  const site = useSiteSearch("en", query)
+
+  const visible = sections
+    .map((section) => ({
+      ...section,
+      items: section.items.filter((item) => matchesSearchTokens(searchText(section, item), tokens)),
+    }))
+    .filter((section) => section.items.length > 0)
+  const count = visible.reduce((sum, section) => sum + section.items.length, 0)
+
   return (
-    <section className="mt-12">
-      <h2 className="text-balance text-2xl font-semibold tracking-tight">{title}</h2>
-      <div className="mt-6 grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
-        {items.map((item) => (
-          <MotionCard key={item.slug} item={item} />
-        ))}
+    <>
+      <div className="relative mt-10 w-full sm:max-w-sm">
+        <label htmlFor={inputId} className="sr-only">
+          {copy.search.label}
+        </label>
+        <Search
+          aria-hidden="true"
+          className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+        />
+        <input
+          id={inputId}
+          type="search"
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+          onFocus={site.prefetch}
+          placeholder={copy.search.placeholder}
+          aria-describedby={countId}
+          autoComplete="off"
+          // appearance-none drops Safari's own clear button, which would sit under ours. 16px text on
+          // touch screens, because iOS Safari zooms the page into any focused field set smaller.
+          className="w-full appearance-none rounded-xl border border-border bg-background py-2.5 pl-10 pr-10 text-base transition-colors pointer-fine:text-sm placeholder:text-muted-foreground focus-visible:border-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [&::-webkit-search-cancel-button]:hidden"
+        />
+        {isSearching ? (
+          <button
+            type="button"
+            onClick={() => setQuery("")}
+            aria-label={copy.search.clear}
+            className="absolute right-3 top-1/2 -translate-y-1/2 rounded-md text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            <X aria-hidden="true" className="size-4" />
+          </button>
+        ) : null}
       </div>
-    </section>
+
+      {/* Always rendered, so a screen reader hears the count change rather than the live region
+          appear; hidden rather than removed while there is no search, so it takes no space. */}
+      <p
+        id={countId}
+        role="status"
+        aria-live="polite"
+        className={cn("mt-3 font-mono text-xs text-muted-foreground", !isSearching && "sr-only")}
+      >
+        {isSearching ? copy.search.resultCount(count) : ""}
+      </p>
+
+      {visible.map((section) => (
+        <section key={section.id} className="mt-12">
+          <h2 className="text-balance text-2xl font-semibold tracking-tight">{section.title}</h2>
+          <div className="mt-6 grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
+            {section.items.map((item) => (
+              <MotionCard key={item.slug} item={item} />
+            ))}
+          </div>
+        </section>
+      ))}
+
+      {isSearching && count === 0 ? (
+        <p className="mt-8 rounded-xl border border-border bg-muted/40 p-8 text-center text-sm text-muted-foreground">
+          {copy.search.empty(query.trim())}
+        </p>
+      ) : null}
+
+      <div className="mt-12">
+        <SiteSearchResults language="en" query={query} matches={site.matches} />
+      </div>
+    </>
   )
 }
 

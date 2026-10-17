@@ -3,3 +3,4 @@
 work/*
 !work/src/
 !work/audio.mjs
+!work/publish.mjs

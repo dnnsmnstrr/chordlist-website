@@ -44,7 +44,7 @@ Total: 672 frames = 22.4s.
 
 ## Alternate soundtrack: piano
 
-`brag-piano.mp4` is the same picture, rendered with `--props={"soundtrack":"piano"}` so the autoscroll line reads "Hands stay on the keys.", with a felt-piano score (`node work/audio.mjs piano`). It follows the same
+`launch-video-piano-wide.mp4` is the same picture, rendered with `--props={"soundtrack":"piano"}` so the autoscroll line reads "Hands stay on the keys.", with a felt-piano score (`node work/audio.mjs piano`). It follows the same
 grid and the same key change at 8.4 s:
 - the hook is soft rolled chords
 - from the reveal on, the left hand plays root octaves and fifths under a rolling right-hand figure (root, fifth, octave, third)
@@ -54,11 +54,29 @@ grid and the same key change at 8.4 s:
 
 ## Vertical cut (9:16)
 
-`brag-vertical.mp4` (guitar) and `brag-vertical-piano.mp4` are the `BragVertical` composition at 1080 × 1920. It has
+`launch-video-story.mp4` (guitar) and `launch-video-piano-story.mp4` are the `BragVertical` composition at 1080 × 1920. It has
 the same timeline, copy and soundtracks as the wide cut; only the `story` layout in `work/src/brag.tsx` differs:
 - the headline is anchored at the top, under the lockup, and the phone sits beneath it
 - the file, the transpose pills and the matching rows take the column to the phone's left
 - in the autoscroll scene the phone glides to center
 - the phone waits for the hook's file to shrink before it slides in
 - everything stays inside the story safe areas (top 190, bottom 240), as `formats.story` in `video/src/motion/theme.ts` defines them
-- the poster (`brag-vertical.jpg`) is frame 160, "So is this." with the file beside the app
+- the poster (`launch-video-story.jpg`) is frame 160, "So is this." with the file beside the app
+
+## Where the videos live, and how to rebuild them
+
+The finished videos are in `public/video/launch/`, where `/motion/library` lists them under **Launch videos**.
+There are four: `launch-video-{story,wide}.mp4` with the guitar score and `launch-video-piano-{story,wide}.mp4`
+with the piano score. Each has its format's poster, `launch-video-{story,wide}.jpg`, baked in as frame 0. Titles and
+descriptions are `motionLibraryCopy.launch` in `locales/en.ts`.
+
+To rebuild, from the repository root:
+
+1. `npx remotion bundle brag-output/work/src/index.ts --public-dir=video/public --out-dir=out/brag-bundle`
+2. Render the silent cuts into `brag-output/work/`: `video-silent.mp4` (`Brag`), `vertical-silent.mp4`
+   (`BragVertical`), and the same two with `--props='{"soundtrack":"piano"}'` as `video-silent-piano.mp4` and
+   `vertical-silent-piano.mp4`. For example:
+   `npx remotion render out/brag-bundle Brag brag-output/work/video-silent.mp4 --crf=16`
+3. Take the posters from frame 160 of each silent render, as `work/poster.png` and `work/poster-vertical.png`
+4. `node brag-output/work/audio.mjs` and `node brag-output/work/audio.mjs piano`
+5. `node brag-output/work/publish.mjs` muxes everything and writes the videos, posters and `manifest.json`

@@ -5,7 +5,7 @@ import { MotionLibrary } from "@/components/motion-library"
 import { SiteFooter } from "@/components/site-footer"
 import { SiteHeader } from "@/components/site-header"
 import { plainInlineText } from "@/lib/inline-markup"
-import { customItems, suiteItems } from "@/lib/motion/library"
+import { customItems, launchItems, suiteItems } from "@/lib/motion/library"
 import { pageMetadata } from "@/lib/page-metadata"
 import { requireAdmin } from "@/lib/server/admin-auth"
 import { motionLibraryCopy } from "@/locales/en"
@@ -39,8 +39,13 @@ export default async function MotionLibraryPage() {
           </p>
         </header>
 
-        <MotionLibrary title={motionLibraryCopy.sections.suite} items={suiteItems()} />
-        <MotionLibrary title={motionLibraryCopy.sections.custom} items={customItems()} />
+        <MotionLibrary
+          sections={[
+            { id: "launch", title: motionLibraryCopy.sections.launch, items: launchItems() },
+            { id: "suite", title: motionLibraryCopy.sections.suite, items: suiteItems() },
+            { id: "custom", title: motionLibraryCopy.sections.custom, items: customItems() },
+          ]}
+        />
       </article>
 
       <SiteFooter />

@@ -1,0 +1,48 @@
+[
+  {
+    "slug": "launch-video",
+    "seconds": 22.4,
+    "caption": "This is a song. So is this. chordlist keeps every song as a plain Markdown file in a folder you choose, then lets you transpose with one tap, scroll hands-free, and find what else you can already play. Free on the App Store for iPhone and iPad: chordlist.app",
+    "formats": [
+      {
+        "format": "story",
+        "width": 1080,
+        "height": 1920,
+        "bytes": 4438278,
+        "video": "/video/launch/launch-video-story.mp4",
+        "poster": "/video/launch/launch-video-story.jpg"
+      },
+      {
+        "format": "wide",
+        "width": 1920,
+        "height": 1080,
+        "bytes": 4709121,
+        "video": "/video/launch/launch-video-wide.mp4",
+        "poster": "/video/launch/launch-video-wide.jpg"
+      }
+    ]
+  },
+  {
+    "slug": "launch-video-piano",
+    "seconds": 22.4,
+    "caption": "This is a song. So is this. chordlist keeps every song as a plain Markdown file in a folder you choose, then lets you transpose with one tap, scroll hands-free, and find what else you can already play. Free on the App Store for iPhone and iPad: chordlist.app",
+    "formats": [
+      {
+        "format": "story",
+        "width": 1080,
+        "height": 1920,
+        "bytes": 4425282,
+        "video": "/video/launch/launch-video-piano-story.mp4",
+        "poster": "/video/launch/launch-video-story.jpg"
+      },
+      {
+        "format": "wide",
+        "width": 1920,
+        "height": 1080,
+        "bytes": 4689630,
+        "video": "/video/launch/launch-video-piano-wide.mp4",
+        "poster": "/video/launch/launch-video-wide.jpg"
+      }
+    ]
+  }
+]
