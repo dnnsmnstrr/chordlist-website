@@ -1,3 +1,5 @@
+import { parse as parseYaml } from "yaml"
+
 import designTokens from "@/design/tokens.json"
 import { siteConfig } from "@/lib/site-config"
 import {
@@ -7,7 +9,7 @@ import {
   type AppScreenshot,
   type PhotographFile,
 } from "@/lib/visual-assets"
-import { releaseCardCopy } from "@/locales/en"
+import { bannerCopy, releaseCardCopy } from "@/locales/en"
 import { phrase } from "@/locales/vocabulary"
 
 /**
@@ -286,6 +288,44 @@ export function releaseDefinition(spec: BannerSpec, created: string): string {
     "---",
     "",
   ].join("\n")
+}
+
+/**
+ * The reverse of `releaseDefinition`: a `release` social definition — the one the social editor
+ * exports, or the one the backend's release log copies — laid onto the release-notes card. Only the
+ * words, the photograph, and its focus are read; the positions are the template's.
+ */
+export function specFromReleaseDefinition(source: string, base: BannerSpec = releaseNotesSpec): BannerSpec {
+  const split = source.trim().match(/^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/)
+  if (!split) throw new Error(bannerCopy.importErrors.frontmatter)
+  const data: unknown = parseYaml(split[1] ?? "")
+  if (!isRecord(data)) throw new Error(bannerCopy.importErrors.frontmatter)
+  if (data.template !== "release") throw new Error(bannerCopy.importErrors.template(String(data.template ?? "")))
+
+  const strings = (value: unknown) =>
+    (Array.isArray(value) ? value : typeof value === "string" ? [value] : [])
+      .map((entry) => String(entry).trim())
+      .filter(Boolean)
+  const headline = strings(data.headline)
+  const badge = strings(data.badge)
+  const [focusX, focusY] = typeof data.focus === "string"
+    ? data.focus.split(/\s+/).map((part) => Number.parseFloat(part))
+    : []
+
+  return {
+    ...base,
+    background: "photo",
+    photo: oneOf(data.photo, photographs.map((photo) => photo.file), base.photo),
+    focusX: Number.isFinite(focusX) ? Math.min(100, Math.max(0, focusX ?? 0)) : base.focusX,
+    focusY: Number.isFinite(focusY) ? Math.min(100, Math.max(0, focusY ?? 0)) : base.focusY,
+    badge: { ...base.badge, visible: badge.length > 0, text: badge.length ? badge.join(" | ") : base.badge.text },
+    tagline: { ...base.tagline, text: headline.length ? headline.join("\n") : base.tagline.text },
+  }
+}
+
+/// A pasted or linked text that is worth trying as a definition, before parsing it.
+export function looksLikeReleaseDefinition(source: string): boolean {
+  return /^---\r?\n[\s\S]*?^template:\s*release\s*$/m.test(source.trim())
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {

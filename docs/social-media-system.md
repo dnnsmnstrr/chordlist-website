@@ -127,7 +127,10 @@ as a file. Requires `lines`. See [Setting a file](#setting-a-file) below.
 the right of a `card` and the top of a `post` or `story`, fading into the ground towards the words;
 a hairline `badge` of short segments (platforms, version) sits over a large, light headline at the
 bottom. Requires `photo` and `headline`; `badge` is optional. The banner builder's **Open in social
-editor** button starts one from a banner's headline, badge, and photograph.
+editor** button starts one from a banner's headline, badge, and photograph, and the reverse works too:
+`/banner?config=…` — or a definition pasted anywhere on the page outside a field — lays a `release`
+definition's words, photograph, and focus onto the release-notes card. The admin console's release
+log (`/releases` in chordlist-backend) keeps each version's changes and links both editors this way.
 
 **`features`** — what is new in an update, item by item: the slide that follows a `release` card in
 a carousel. An optional `badge` and `headline`, then one row per entry in `items` — a mono number, the
