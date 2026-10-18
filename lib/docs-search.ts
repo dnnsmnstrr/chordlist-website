@@ -14,6 +14,7 @@ export const docsSectionIds = {
   playing: "playing",
   addingSongs: "adding-songs",
   chords: "chords",
+  chordPro: "chordpro",
   fileFormat: "file-format",
   otherApps: "other-apps",
   obsidian: "obsidian",

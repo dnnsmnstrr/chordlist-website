@@ -319,10 +319,25 @@ These categories of files in `public/` are **outputs — edit the generator, not
   template sizes. Formats, safe areas, and art direction live in the script's `CONFIG` block; the words are
   `creativeCopy` in `scripts/lib/app-store-copy.mjs`. Documented in `docs/app-store-screenshot-system.md`.
 
+**`lib/vendor/chordpro.ts`** is code, but it follows the same rule: it is copied byte for byte from
+`src/ingestion/chordpro/chordpro.ts` in chordlist-backend by `pnpm sync:chordpro` (part of
+`sync:assets`), so the website's ChordPro converter and the backend's ChordPro importer read files
+identically. Change it in the backend, run its tests, then sync. Like `sync:app`, the script uses the
+sibling checkout or `$CHORDLIST_BACKEND_REPO`, and exits cleanly without one so a Vercel build uses
+the committed copy; `tests/chordpro-vendor.test.ts` fails while the two copies differ.
+
 `public/songs/morning-light.md` is a real sample song file: it is both rendered by
 `components/lyric-preview.tsx` (read at build time with `fs.readFile`) and offered as a download,
 so it must stay valid chordlist Markdown — YAML frontmatter with `chords`, then lyrics with chord
 lines above the words.
+
+## Tools
+
+`/tools/chordpro` converts a ChordPro song into a chordlist song file, entirely in the browser
+(`components/chordpro-converter.tsx` over `lib/vendor/chordpro.ts`). It is linked from the ChordPro
+section of `/docs` rather than from the navigation, and its copy is `chordProCopy` in
+`locales/en.ts`. Its example is `public/songs/morning-light.pro`, the sample song written in
+ChordPro, so the page never shows anybody else's lyrics.
 
 ## Adding a page
 

@@ -249,6 +249,7 @@ export const docsCopy = {
         { href: "#playing", label: "Play a song" },
         { href: "#adding-songs", label: "Add and import songs" },
         { href: "#chords", label: "Write chords" },
+        { href: "#chordpro", label: "ChordPro files" },
       ],
     },
     {
@@ -476,6 +477,36 @@ export const docsCopy = {
       headingsNote: "Use a different name? Add your own under <code>⋯ → Settings → Behavior → Section Markers</code>.",
       progressionNote:
         "The <code>chords</code> field at the top of the file holds the song’s main progression. It is what the song list shows under each title, what you tap to transpose, and what Matching songs compares.",
+    },
+    chordPro: {
+      title: "ChordPro files",
+      keywords: searchAliases("chordpro", "cho", "chopro", "crd", "tabdown", "convert", "converter", "ozbcoz", "chord sheet", "directive"),
+      introduction:
+        "ChordPro is the format most chord-sheet collections and songbook apps use: chords in square brackets inside the lyrics, and directives in curly braces. chordlist reads it as written. A ChordPro song shows its sections, puts its chords above the words, and transposes like any other song, and the file itself is never rewritten.",
+      items: [
+        {
+          title: "Open a ChordPro file",
+          body: "Open a <code>.cho</code>, <code>.chopro</code>, <code>.chordpro</code>, <code>.crd</code>, or <code>.pro</code> file in chordlist, or import a link that points straight at a ChordPro text file. The title and artist come from <code>{title:}</code> and <code>{artist:}</code>.",
+        },
+        {
+          title: "Sections and comments",
+          body: "<code>{start_of_chorus}</code> … <code>{end_of_chorus}</code> and the other section directives, long or short, become section headings. <code>{chorus}</code> marks where the chorus repeats, and <code>{comment:}</code> shows its text.",
+        },
+        {
+          title: "Song details",
+          body: "<code>{key:}</code>, <code>{capo:}</code>, <code>{tempo:}</code>, and the other metadata directives appear in the song’s details instead of in the lyrics.",
+        },
+        {
+          title: "Mixed with chordlist’s own notation",
+          body: "ChordPro lines work inside any song file, next to headings like <code>[Verse]</code> and ordinary chord lines. Tabdown sheets — <code>%capo: 2</code> metadata and <code># Verse</code> headings — are read the same way.",
+        },
+      ],
+      exampleLabel: "ChordPro",
+      example: "{title: Morning Light}\n{key: G}\n\n{start_of_verse}\n[G]Coffee on the counter [D]going cold\n[Em]Radio is humming [C]something old\n{end_of_verse}",
+      converterTitle: "Convert a ChordPro song for good",
+      converterBody:
+        "To turn a ChordPro song into a plain chordlist file, so that Obsidian and other Markdown editors show chord lines too, paste it into the ChordPro converter. It runs in your browser, and nothing is uploaded.",
+      converterLink: "Open the ChordPro converter",
     },
     fileFormat: {
       title: "Files and folders",
@@ -740,6 +771,53 @@ export const docsCopy = {
       faqLink: "Read the FAQ",
       supportLink: "Contact support",
     },
+  },
+} as const
+
+/** /tools/chordpro: English only, and linked from the docs rather than the navigation. */
+export const chordProCopy = {
+  metadata: {
+    title: "ChordPro to chordlist Converter",
+    description: `Turn a ChordPro chord sheet into a ${siteConfig.name} song file: Markdown with section headings, chords above the lyrics, and the main progression up front. Runs in your browser.`,
+  },
+  eyebrow: "Tools",
+  title: "Convert ChordPro to chordlist",
+  introduction: `Paste a ChordPro song or open a file, and get the same song as a ${siteConfig.name} Markdown file: section headings, chords above the words, and the song’s main progression in the frontmatter.`,
+  privacy: "Everything happens in your browser. Nothing you paste or open is uploaded.",
+  docsLink: "How chordlist reads ChordPro",
+  input: {
+    label: "ChordPro",
+    placeholder: "{title: Song Title}\n{artist: Artist}\n\n[G]Words with [D]chords in them",
+    openFile: "Open file",
+    sample: "Try an example",
+    clear: "Clear",
+    dropHint: "Drop a .cho, .pro, or .txt file anywhere on this box.",
+    tooLarge: "That file is larger than 1 MB, which is more than a song needs.",
+    unreadable: "That file could not be read as text.",
+  },
+  mode: {
+    label: "Output",
+    song: "Full song",
+    songHint: "Chords above the lyrics",
+    progressions: "Progressions only",
+    progressionsHint: "One line per section",
+  },
+  output: {
+    label: "chordlist Markdown",
+    empty: "The converted song appears here.",
+    copy: "Copy",
+    copied: "Copied",
+    copyFailed: "Select the text to copy it",
+    download: "Download",
+    saveAs: (path: string) => `Save it as <code>${path}</code> in your songs folder.`,
+  },
+  summary: {
+    sections: (count: number) => (count === 1 ? "1 section" : `${count} sections`),
+    progressions: (count: number) => (count === 1 ? "1 distinct progression" : `${count} distinct progressions`),
+    annotations: (count: number) =>
+      count === 1 ? "1 bracketed note kept as text" : `${count} bracketed notes kept as text`,
+    noChords: "No chords found yet. ChordPro writes chords in square brackets, like <code>[Am]</code>.",
+    noArtist: "No artist found. Add <code>{artist: …}</code>, or save the song in its artist’s folder.",
   },
 } as const
 
