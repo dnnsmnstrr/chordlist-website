@@ -1,3 +1,4 @@
+import { Coffee } from "lucide-react"
 import Link from "next/link"
 import { LanguageSwitcher } from "@/components/language-switcher"
 
@@ -74,6 +75,16 @@ export function SiteFooter({
           className="flex size-8 items-center justify-center rounded-md transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
           <InstagramIcon className="size-4" />
+        </a>
+        <a
+          href={siteConfig.links.tipJar}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={common.navigation.tipJar}
+          title={common.navigation.tipJar}
+          className="flex size-8 items-center justify-center rounded-md transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          <Coffee aria-hidden="true" className="size-4" />
         </a>
       </nav>
     </footer>

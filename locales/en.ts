@@ -39,6 +39,7 @@ export const commonCopy = {
     imprint: "Imprint",
     x: "X",
     instagram: "Instagram",
+    tipJar: "Tip Jar",
   },
   appCta: {
     download: "Download",
