@@ -65,6 +65,11 @@ const CONFIG = {
       description: "Adding songs, a purchase that did not unlock, refunds, and how to reach a person.",
     },
     {
+      slug: "beta",
+      title: "Beta",
+      description: "Try the next version of chordlist early through TestFlight, and help shape what ships.",
+    },
+    {
       slug: "press",
       title: "Press Kit",
       description: "Product details, screenshots, and press contacts.",

@@ -42,6 +42,11 @@ export function SiteFooter({
         <Link href={faqHref[language]} className="transition-colors hover:text-foreground">
           {common.navigation.faq}
         </Link>
+        {siteConfig.links.testFlight ? (
+          <Link href="/beta" className="transition-colors hover:text-foreground">
+            {common.navigation.beta}
+          </Link>
+        ) : null}
         <Link href="/press" className="transition-colors hover:text-foreground">
           {common.navigation.press}
         </Link>
