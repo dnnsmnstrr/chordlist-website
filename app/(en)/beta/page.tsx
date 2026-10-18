@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { Apple } from "lucide-react"
 
+import { DocsScreenshot } from "@/components/docs-screenshot"
 import { InlineMarkup } from "@/components/inline-markup"
 import { SiteFooter } from "@/components/site-footer"
 import { SiteHeader } from "@/components/site-header"
@@ -23,47 +24,59 @@ export default function BetaPage() {
       <SiteHeader />
 
       <article id="main-content" tabIndex={-1} className="mx-auto w-full max-w-3xl px-6 py-16">
-        <header className="border-b border-border pb-8">
-          <p className="font-mono text-sm text-muted-foreground">{betaCopy.eyebrow}</p>
-          <h1 className="mt-3 text-balance text-4xl font-semibold tracking-tight sm:text-5xl">{betaCopy.title}</h1>
-          <p className="mt-4 max-w-xl text-pretty leading-relaxed text-muted-foreground">{betaCopy.introduction}</p>
+        <header className="grid items-center gap-10 border-b border-border pb-8 sm:grid-cols-[1fr_auto]">
+          <div>
+            <p className="font-mono text-sm text-muted-foreground">{betaCopy.eyebrow}</p>
+            <h1 className="mt-3 text-balance text-4xl font-semibold tracking-tight sm:text-5xl">{betaCopy.title}</h1>
+            <p className="mt-4 max-w-xl text-pretty leading-relaxed text-muted-foreground">{betaCopy.introduction}</p>
 
-          <div className="mt-8 flex flex-col items-start gap-3">
-            {testFlight ? (
-              <Button
-                size="lg"
-                className="gap-2"
-                nativeButton={false}
-                render={
-                  <a href={testFlight}>
-                    <Apple aria-hidden="true" />
-                    {betaCopy.join}
-                  </a>
-                }
-              />
-            ) : (
-              <Button size="lg" className="gap-2" disabled>
-                <Apple aria-hidden="true" />
-                {betaCopy.closed}
-              </Button>
-            )}
-            <p className="text-pretty text-xs leading-relaxed text-muted-foreground">
-              {betaCopy.requirements}
-              {storeListingLink ? (
-                <>
-                  {" "}
-                  {betaCopy.storeAside.prefix}{" "}
-                  <a
-                    href={storeListingLink}
-                    className="underline underline-offset-2 transition-colors hover:text-foreground"
-                  >
-                    {betaCopy.storeAside.link}
-                  </a>
-                  {betaCopy.storeAside.suffix}
-                </>
-              ) : null}
-            </p>
+            <div className="mt-8 flex flex-col items-start gap-3">
+              {testFlight ? (
+                <Button
+                  size="lg"
+                  className="gap-2"
+                  nativeButton={false}
+                  render={
+                    <a href={testFlight}>
+                      <Apple aria-hidden="true" />
+                      {betaCopy.join}
+                    </a>
+                  }
+                />
+              ) : (
+                <Button size="lg" className="gap-2" disabled>
+                  <Apple aria-hidden="true" />
+                  {betaCopy.closed}
+                </Button>
+              )}
+              <p className="text-pretty text-xs leading-relaxed text-muted-foreground">
+                {betaCopy.requirements}
+                {storeListingLink ? (
+                  <>
+                    {" "}
+                    {betaCopy.storeAside.prefix}{" "}
+                    <a
+                      href={storeListingLink}
+                      className="underline underline-offset-2 transition-colors hover:text-foreground"
+                    >
+                      {betaCopy.storeAside.link}
+                    </a>
+                    {betaCopy.storeAside.suffix}
+                  </>
+                ) : null}
+              </p>
+            </div>
           </div>
+
+          <figure className="relative mx-auto w-44 sm:w-48 sm:-rotate-2">
+            <DocsScreenshot name="02-Song-Detail" alt={betaCopy.visual.alt} loading="eager" className="shadow-lg" />
+            <span
+              aria-hidden="true"
+              className="absolute -top-3 -right-3 rotate-6 rounded-full border border-border bg-background px-3 py-1 font-mono text-xs font-medium shadow-sm"
+            >
+              {betaCopy.visual.badge}
+            </span>
+          </figure>
         </header>
 
         <div className="mt-10 flex flex-col gap-10">

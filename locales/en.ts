@@ -1211,6 +1211,11 @@ export const betaCopy = {
   join: "Join the beta on TestFlight",
   closed: "The beta is closed right now",
   requirements: `Free, for iPhone and iPad on iOS ${siteConfig.minimumOSVersion} or later. Needs Apple's TestFlight app.`,
+  // The phone beside the heading. The badge is decoration; the alt text says what the capture shows.
+  visual: {
+    alt: `A song open in ${siteConfig.name}, showing section headings with their chords, lyrics with chords above them, and playback controls.`,
+    badge: "Beta",
+  },
   storeAside: {
     prefix: "Prefer the release version?",
     link: "Get it on the App Store",
