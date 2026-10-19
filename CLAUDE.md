@@ -42,7 +42,7 @@ app/                 App Router pages (all server components unless noted)
   (en)/              English route group — everything except the German home
     layout.tsx       English root layout: rootMetadata("en") around <RootShell>
     page.tsx         Home page — three lines around <HomePage language="en" />
-    docs/  faq/  support/  press/  privacy/    One page.tsx each
+    docs/  faq/  support/  beta/  press/  privacy/    One page.tsx each
     blog/            Index, [slug] post page, and rss.xml route handler
   (de)/              German route group
     layout.tsx       German root layout: rootMetadata("de") around <RootShell>

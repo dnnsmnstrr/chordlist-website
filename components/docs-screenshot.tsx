@@ -35,6 +35,8 @@ type DocsScreenshotProps = {
    * explanation. `titles` are the callout titles, indexed from marker 1, for the links' labels.
    */
   annotations?: { figureId: string; titles: readonly string[] }
+  /** `"eager"` for a capture above the fold, which would otherwise wait for the lazy-load observer. */
+  loading?: "eager" | "lazy"
   className?: string
 }
 
@@ -58,6 +60,7 @@ export function DocsScreenshot({
   markers = [],
   firstMarker = 1,
   annotations,
+  loading,
   className,
 }: DocsScreenshotProps) {
   const lightSrc = `/app-screenshots/light/${name}.png`
@@ -84,6 +87,7 @@ export function DocsScreenshot({
           width={SCREENSHOT_WIDTH}
           height={SCREENSHOT_HEIGHT}
           sizes={SIZES}
+          loading={loading}
           className="block h-auto w-full"
         />
       </picture>

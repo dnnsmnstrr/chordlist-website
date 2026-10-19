@@ -32,6 +32,7 @@ export const commonCopy = {
     admin: "Admin",
     faq: "FAQ",
     support: "Support",
+    beta: "Beta",
     press: "Press",
     screens: "Screens",
     socialPosts: "Social posts",
@@ -1270,6 +1271,62 @@ export const screensCopy = {
     download: "Download PNG",
     alt: (label: string, language: string, variant: string) =>
       `${label} App Store creative asset, ${language}, ${variant.toLowerCase()} treatment.`,
+  },
+} as const
+
+/**
+ * /beta — the public TestFlight beta. Everything here about TestFlight is Apple's behavior, not
+ * ours: the 90-day build expiry, test-environment purchases, and the feedback and stop-testing
+ * controls all live in the TestFlight app.
+ */
+export const betaCopy = {
+  metadata: {
+    title: "Beta",
+    description: `Try the next version of ${siteConfig.name} early through TestFlight, and help shape what ships.`,
+  },
+  eyebrow: "TestFlight",
+  title: "Test the next version first",
+  introduction: `${siteConfig.name} is on the App Store, and the next version is already in TestFlight. Join the public beta to try new features before they ship, and tell us what works and what does not.`,
+  join: "Join the beta on TestFlight",
+  closed: "The beta is closed right now",
+  requirements: `Free, for iPhone and iPad on iOS ${siteConfig.minimumOSVersion} or later. Needs Apple's TestFlight app.`,
+  // The phone beside the heading. The badge is decoration; the alt text says what the capture shows.
+  visual: {
+    alt: `A song open in ${siteConfig.name}, showing section headings with their chords, lyrics with chords above them, and playback controls.`,
+    badge: "Beta",
+  },
+  storeAside: {
+    prefix: "Prefer the release version?",
+    link: "Get it on the App Store",
+    suffix: ".",
+  },
+  steps: {
+    title: "How to join",
+    items: [
+      "Install Apple's <strong>TestFlight</strong> app from the App Store on the iPhone or iPad you want to test on.",
+      "Open the beta link on that device, then tap <code>Accept</code> and <code>Install</code> in TestFlight.",
+      "The beta replaces the App Store version on that device. Your songs stay where they are: they are files in your songs folder, not inside the app.",
+    ],
+  },
+  expectations: {
+    title: "What to expect",
+    items: [
+      "Beta builds are unfinished, so expect rough edges. If you rely on your library, keep a copy of the songs folder — that is the whole backup.",
+      "TestFlight tells you when a new build is ready. Each build stops working 90 days after it was uploaded, so keep updating.",
+      "In-app purchases in a beta build use Apple's test environment: you are not charged, and nothing unlocked there carries over to the App Store version.",
+    ],
+  },
+  feedback: {
+    title: "Sending feedback",
+    paragraphs: [
+      "Take a screenshot while using the beta and TestFlight offers to send it with a note and your device details. If the app crashes, TestFlight asks whether to share the crash report — please say yes.",
+      `For anything longer, <code>Settings → Send Feedback</code> in ${siteConfig.name} opens an email to ${siteConfig.contact.feedback} with your app and iOS versions already filled in.`,
+    ],
+    email: "Email feedback",
+  },
+  leaving: {
+    title: "Leaving the beta",
+    body: `Open the TestFlight app, choose ${siteConfig.name}, and tap <code>Stop Testing</code>. Then install ${siteConfig.name} from the App Store to go back to the release version.`,
   },
 } as const
 

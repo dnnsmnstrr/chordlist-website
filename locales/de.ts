@@ -62,6 +62,7 @@ export const commonCopy: Localized<typeof en> = {
     admin: "Admin",
     faq: "FAQ",
     support: "Support",
+    beta: "Beta",
     press: "Presse",
     screens: "Screens",
     socialPosts: "Social Posts",
