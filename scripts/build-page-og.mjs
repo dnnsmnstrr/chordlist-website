@@ -75,6 +75,11 @@ const CONFIG = {
       description: "Product details, screenshots, and press contacts.",
     },
     {
+      slug: "tools/chordpro",
+      title: "ChordPro Converter",
+      description: "Turn a ChordPro chord sheet into a chordlist song file, right in your browser.",
+    },
+    {
       slug: "privacy",
       title: "Privacy Policy",
       description: "How chordlist handles song files, optional analytics, imports, and purchases.",
@@ -219,7 +224,10 @@ async function main() {
   for (const page of pages) {
     const response = new ImageResponse(buildElement({ ...page, iconUri }), { width, height, fonts })
     const buffer = Buffer.from(await response.arrayBuffer())
-    await writeFile(path.join(destinationDirectory, `${page.slug}.png`), buffer)
+    const destination = path.join(destinationDirectory, `${page.slug}.png`)
+    // A nested route, such as tools/chordpro, gets its card in a matching folder.
+    await mkdir(path.dirname(destination), { recursive: true })
+    await writeFile(destination, buffer)
   }
 
   console.log(`Wrote ${pages.length} page card${pages.length === 1 ? "" : "s"} to ${outputDirectory}/.`)

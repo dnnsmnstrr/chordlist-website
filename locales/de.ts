@@ -70,6 +70,7 @@ export const commonCopy: Localized<typeof en> = {
     imprint: "Impressum",
     x: "X",
     instagram: "Instagram",
+    tipJar: "Kaffeekasse",
   },
   appCta: {
     download: "Laden",

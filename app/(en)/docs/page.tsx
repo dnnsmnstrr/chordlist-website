@@ -231,6 +231,32 @@ export default function DocsPage() {
               </Callout>
             </DocsSection>
 
+            <DocsSection id={docsSectionIds.chordPro} title={sections.chordPro.title}>
+              <p>{sections.chordPro.introduction}</p>
+              <div className="grid gap-6 md:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)]">
+                <ul className="flex flex-col gap-5">
+                  {sections.chordPro.items.map((item) => (
+                    <li key={item.title}>
+                      <h3 className="font-medium text-foreground">{item.title}</h3>
+                      <p className="mt-1 text-sm leading-relaxed">
+                        <InlineMarkup text={item.body} />
+                      </p>
+                    </li>
+                  ))}
+                </ul>
+                <CodeExample label={sections.chordPro.exampleLabel} code={sections.chordPro.example} />
+              </div>
+              <Callout>
+                <p className="font-medium text-foreground">{sections.chordPro.converterTitle}</p>
+                <p className="mt-1">{sections.chordPro.converterBody}</p>
+                <p className="mt-3">
+                  <Link href="/tools/chordpro" className={linkClassName}>
+                    {sections.chordPro.converterLink}
+                  </Link>
+                </p>
+              </Callout>
+            </DocsSection>
+
             <GroupLabel>{filesGroup.label}</GroupLabel>
             <DocsSection id={docsSectionIds.fileFormat} title={sections.fileFormat.title}>
               <p>{sections.fileFormat.introduction}</p>

@@ -75,6 +75,7 @@ export const siteConfig = {
       "https://www.producthunt.com/products/chordlist?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-chordlist",
     pressKitArchive: "/press/chordlist-press-kit.zip" as string | null,
     terms: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/",
+    tipJar: "https://buymeacoffee.com/dnnsmnstrr",
   },
   chordlink: {
     price: { amount: 999, currency: "EUR", display: "€9.99" },
