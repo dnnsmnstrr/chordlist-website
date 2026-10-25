@@ -87,7 +87,7 @@ async function loadAssets(spec: BannerSpec): Promise<Assets> {
     document.fonts.load(`700 32px ${sans}`),
   ]).catch(() => undefined)
 
-  const photoSource = photographSource(spec.photo)
+  const photoSource = spec.customPhoto || photographSource(spec.photo)
   const sources = [...new Set(spec.devices.map(screenshotSource))]
   const [photo, ...screens] = await Promise.all([
     spec.background === "photo" && photoSource ? loadImage(photoSource).catch(() => null) : null,
@@ -761,10 +761,41 @@ function BannerEditor() {
             <>
               <Select
                 label={bannerCopy.background.photo}
-                value={spec.photo}
-                options={photographs.map((photo) => [photo.file, visualAssetCopy.photographs[photo.file]] as const)}
-                onChange={(photo) => update((previous) => ({ ...previous, photo }))}
+                value={spec.customPhoto ? "custom" : spec.photo}
+                options={[
+                  ...(spec.customPhoto ? [["custom", bannerCopy.background.custom] as const] : []),
+                  ...photographs.map((photo) => [photo.file, visualAssetCopy.photographs[photo.file]] as const),
+                ]}
+                onChange={(photo) => update((previous) => photo === "custom"
+                  ? previous
+                  : { ...previous, photo, customPhoto: undefined })}
               />
+              <label className="flex flex-col gap-1.5 text-xs text-muted-foreground">
+                {bannerCopy.background.upload}
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="block w-full text-sm text-foreground file:mr-3 file:rounded-lg file:border file:border-border file:bg-background file:px-3 file:py-2 file:text-sm file:font-medium"
+                  onChange={(event) => {
+                    const file = event.target.files?.[0]
+                    if (!file) return
+                    if (!file.type.startsWith("image/")) {
+                      setNotice({ tone: "error", text: bannerCopy.background.invalidImage })
+                      event.target.value = ""
+                      return
+                    }
+                    const reader = new FileReader()
+                    reader.onload = () => {
+                      if (typeof reader.result !== "string") return
+                      update((previous) => ({ ...previous, customPhoto: reader.result as string }))
+                      setNotice({ tone: "info", text: bannerCopy.background.uploaded })
+                    }
+                    reader.onerror = () => setNotice({ tone: "error", text: bannerCopy.background.invalidImage })
+                    reader.readAsDataURL(file)
+                  }}
+                />
+                <span>{bannerCopy.background.uploadHint}</span>
+              </label>
               <div className="grid grid-cols-2 gap-3">
                 <Select
                   label={bannerCopy.background.area}

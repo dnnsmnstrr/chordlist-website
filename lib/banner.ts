@@ -56,6 +56,7 @@ export type BannerSpec = {
   height: number
   background: BannerBackgroundId
   photo: PhotographFile
+  customPhoto?: string
   focusX: number
   focusY: number
   photoOpacity: number
@@ -367,6 +368,7 @@ export function restoreBannerSpec(value: unknown): BannerSpec {
     height: clampCanvasSize(numberOr(value.height, fallback.height)),
     background: oneOf(value.background, Object.keys(bannerBackgrounds) as BannerBackgroundId[], fallback.background),
     photo: oneOf(value.photo, photographs.map((photo) => photo.file), fallback.photo),
+    customPhoto: typeof value.customPhoto === "string" && value.customPhoto.startsWith("data:image/") ? value.customPhoto : undefined,
     focusX: numberOr(value.focusX, fallback.focusX),
     focusY: numberOr(value.focusY, fallback.focusY),
     photoOpacity: Math.min(100, Math.max(0, numberOr(value.photoOpacity, fallback.photoOpacity))),
