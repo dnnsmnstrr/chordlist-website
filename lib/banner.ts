@@ -59,8 +59,10 @@ export type BannerSpec = {
   customPhoto?: string
   focusX: number
   focusY: number
+  photoScale: number
   photoOpacity: number
   photoArea: BannerPhotoArea
+  photoSplit: number
   logo: BannerLogo
   title: BannerText
   badge: BannerBadge
@@ -144,8 +146,10 @@ export const defaultBannerSpec: BannerSpec = {
   photo: "guitarist-in-motion.png",
   focusX: 60,
   focusY: 50,
+  photoScale: 100,
   photoOpacity: 44,
   photoArea: "full",
+  photoSplit: 38,
   logo: { visible: true, x: 32, y: 34, size: 60 },
   title: { visible: true, text: siteConfig.name, x: 110, y: 44, size: 40 },
   badge: { visible: false, text: releaseCardCopy.badge, x: 372, y: 44, size: 14 },
@@ -187,8 +191,10 @@ export const releaseNotesSpec: BannerSpec = {
   photo: "studio-microphone-in-motion.png",
   focusX: 50,
   focusY: 40,
+  photoScale: 100,
   photoOpacity: 75,
   photoArea: "right",
+  photoSplit: 38,
   logo: { visible: true, x: 64, y: 60, size: 44 },
   title: { visible: true, text: siteConfig.name, x: 122, y: 66, size: 28 },
   badge: { visible: true, text: releaseCardCopy.badge, x: 64, y: 246, size: 20 },
@@ -371,8 +377,10 @@ export function restoreBannerSpec(value: unknown): BannerSpec {
     customPhoto: typeof value.customPhoto === "string" && value.customPhoto.startsWith("data:image/") ? value.customPhoto : undefined,
     focusX: numberOr(value.focusX, fallback.focusX),
     focusY: numberOr(value.focusY, fallback.focusY),
+    photoScale: Math.min(400, Math.max(50, numberOr(value.photoScale, fallback.photoScale))),
     photoOpacity: Math.min(100, Math.max(0, numberOr(value.photoOpacity, fallback.photoOpacity))),
     photoArea: oneOf(value.photoArea, ["full", "right"] as const, fallback.photoArea),
+    photoSplit: Math.min(75, Math.max(20, numberOr(value.photoSplit, fallback.photoSplit))),
     logo: {
       visible: booleanOr(logo.visible, fallback.logo.visible),
       x: numberOr(logo.x, fallback.logo.x),

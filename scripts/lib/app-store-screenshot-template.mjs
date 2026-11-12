@@ -182,7 +182,10 @@ export function analogBackground({ background, device, seed, scrims = { top: fal
 }
 
 export function deviceFrame({ device, screenshot }) {
-  const isPhone = device.name === "iphone"
+  // Drawn only for a device that declares one. The iPhone capture holds a top status bar with a gap
+  // where the Dynamic Island sits, so the frame has to supply it; the iPad and both Duo displays
+  // capture their whole screen, status area included, and get nothing drawn over them.
+  const hasDynamicIsland = Boolean(device.dynamicIsland)
   const screenUri = roundedScreenUri({ device, screenshot })
 
   return h(
@@ -220,7 +223,7 @@ export function deviceFrame({ device, screenshot }) {
         height: device.screen.height,
         style: { position: "absolute", left: 0, top: 0 },
       }),
-      ...(isPhone
+      ...(hasDynamicIsland
         ? [
             h("div", {
               key: "dynamic-island",
@@ -243,9 +246,29 @@ export function deviceFrame({ device, screenshot }) {
   )
 }
 
+/// The stacked layout lists eyebrow, headline, and supporting line as siblings; the split layout
+/// groups the first two into a column so the supporting line can sit beside them.
+function copyBlocks(isSplit, device, eyebrow, headline, supporting) {
+  if (!isSplit) return [eyebrow, headline, supporting]
+
+  return [
+    h(
+      "div",
+      { key: "lead", style: { display: "flex", flexDirection: "column", alignItems: "flex-start", gap: device.copy.gap } },
+      eyebrow,
+      headline,
+    ),
+    supporting,
+  ]
+}
+
 export function appStoreScreenshot({ slide, device, screenshot, variant = "classic", background, seed = 1 }) {
   const copyWidth = device.width - device.copy.left * 2
   const isAnalog = variant === "analog"
+  // "split" sets the supporting line beside the headline instead of under it, and the headline on
+  // one line — for a landscape canvas, where every stacked line costs the device its height.
+  const isSplit = device.copy.layout === "split"
+  const supportingWidth = isSplit ? device.copy.supportingWidth : copyWidth
   const backdrop = isAnalog
     ? analogBackground({ background, device, seed })
     : classicBackground({ slide, device })
@@ -272,12 +295,16 @@ export function appStoreScreenshot({ slide, device, screenshot, variant = "class
           top: device.copy.top,
           width: copyWidth,
           display: "flex",
-          flexDirection: "column",
-          alignItems: "flex-start",
+          flexDirection: isSplit ? "row" : "column",
+          alignItems: isSplit ? "flex-end" : "flex-start",
+          justifyContent: isSplit ? "space-between" : "flex-start",
           gap: device.copy.gap,
         },
       },
-      h(
+      ...copyBlocks(
+        isSplit,
+        device,
+        h(
         "div",
         {
           style: {
@@ -298,8 +325,8 @@ export function appStoreScreenshot({ slide, device, screenshot, variant = "class
         },
         slide.eyebrow,
       ),
-      textBlock(slide.headline, {
-        width: copyWidth,
+      textBlock(isSplit ? [slide.headline.join(" ")] : slide.headline, {
+        width: copyWidth - (isSplit ? supportingWidth + device.copy.gap : 0),
         fontFamily: "Geist",
         fontWeight: 700,
         fontSize: device.copy.headlineSize,
@@ -311,8 +338,14 @@ export function appStoreScreenshot({ slide, device, screenshot, variant = "class
         "div",
         {
           style: {
-            width: copyWidth,
+            width: supportingWidth,
             display: "flex",
+            justifyContent: isSplit ? "flex-end" : "flex-start",
+            textAlign: isSplit ? "right" : "left",
+            // Beside the headline the line is short enough to end on a single orphaned word.
+            textWrap: isSplit ? "balance" : "wrap",
+            // Rests on the headline's baseline rather than its line box.
+            marginBottom: isSplit ? Math.round(device.copy.headlineSize * 0.1) : 0,
             fontFamily: "Geist",
             fontWeight: 400,
             fontSize: device.copy.supportingSize,
@@ -321,6 +354,7 @@ export function appStoreScreenshot({ slide, device, screenshot, variant = "class
           },
         },
         slide.supporting,
+      ),
       ),
     ),
     deviceFrame({ device, screenshot }),

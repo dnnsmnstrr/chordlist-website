@@ -1235,7 +1235,7 @@ export const screensCopy = {
   eyebrow: "App Store assets",
   title: "App Store screenshot sets",
   introduction:
-    "Review every current iPhone and iPad image at a glance, in each language the listing ships in. Download an individual full-resolution PNG or take a complete, upload-ready set as a ZIP archive.",
+    "Review the current iPhone, iPad, and iPhone Duo images, folded and unfolded, in each language the listing ships in. Download an individual full-resolution PNG or take a complete, upload-ready set as a ZIP archive.",
   variants: {
     classic: {
       title: "Classic",
@@ -2099,6 +2099,8 @@ export const bannerCopy = {
     photo: "Photograph",
     focusX: "Focus, horizontal (%)",
     focusY: "Focus, vertical (%)",
+    scale: "Image scale (%)",
+    split: "Split position (%)",
     opacity: "Opacity (%)",
     area: "Placement",
     areas: { full: "Full bleed", right: "Right side, faded" },

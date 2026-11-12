@@ -7,7 +7,7 @@ in `public/app-store-screenshots/` should be edited by hand.
 
 ```text
 chordlist-app/press-kit/raw-screenshots/   Current simulator captures, per language
-scripts/sync-app-assets.mjs                Copies iPhone and iPad inputs into the website
+scripts/sync-app-assets.mjs                Copies iPhone, iPad, and both iPhone Duo displays into the website
 scripts/build-app-store-screenshots.mjs    Validates, renders, and writes the upload set
 scripts/lib/app-store-copy.mjs             The words on the images, per language
 scripts/lib/vocabulary.mjs                 The shared VOCABULARY.md wording, for build scripts
@@ -27,15 +27,33 @@ The command first runs `pnpm sync:assets`, so it uses the latest app captures wh
 
 The build produces two treatments with identical copy and product screenshots:
 
-- `public/app-store-screenshots/iphone/` and `ipad/` retain the colored-gradient treatment.
-- `public/app-store-screenshots/analog/iphone/` and `analog/ipad/` use black-and-white photography.
+- `public/app-store-screenshots/iphone/`, `ipad/`, `duo-outer/`, and `duo/` retain the colored-gradient treatment.
+- `public/app-store-screenshots/analog/iphone/`, `analog/ipad/`, `analog/duo-outer/`, and `analog/duo/` use
+  black-and-white photography.
 
-Each treatment contains five 1242×2688 PNGs for the 6.5-inch iPhone slot and five 2048×2732 PNGs for the 13-inch
-iPad slot. Both are App Store Connect-supported portrait sizes. The iPhone frame adds the Dynamic Island because the
-raw simulator capture contains only the status bar; iPad images deliberately do not.
+The iPhone treatment contains five 1242×2688 PNGs for the 6.5-inch slot, and iPad contains five 2048×2732 PNGs for
+the 13-inch slot. App Store Connect lists the iPhone Duo as two sizes, and each has its own set:
+
+| Set | Folder | Size | Slides |
+| --- | --- | --- | --- |
+| iPhone Duo (folded), the outer display | `duo-outer/` | 1398×2034 portrait | The same five as the iPhone |
+| iPhone Duo (unfolded), the inner display | `duo/` | 2853×2007 landscape | The same five as the iPhone |
+
+These are App Store Connect-supported sizes. The iPhone frame adds the Dynamic Island because the raw simulator
+capture contains only the status bar; the iPad and both Duo frames deliberately draw nothing over the capture.
+
+The outer display puts its clock and Wi-Fi in a column down the right edge, with the toolbar buttons under them, and
+search is a round button at the bottom right until it is tapped. The capture contains all of that, so the frame shows
+it whole, at the capture's own aspect, with a corner radius that stays clear of the column. Unlike the iPhone, the
+device does not bleed off the bottom of the canvas: that would cut the search button, the one thing that tells this
+display apart at a glance.
+
+The app repository captures seven screens for the outer display and no `06-Settings.png`, on purpose — a simulator
+keyboard covers the menu there. No slide on any device uses the Settings screen, and none may be added to the outer
+set. `05-Tag-Filter.png` and `08-Paywall.png` are synced but unused, as they are for the iPhone.
 
 The build also writes one ZIP archive per treatment and device to
-`public/app-store-screenshots/downloads/`. The public `/screens` page reads the manifest to display the four sets and
+`public/app-store-screenshots/downloads/`. The public `/screens` page reads the manifest to display up to eight device-and-treatment sets and
 offers both complete ZIP downloads and the original individual PNGs.
 
 The analog template follows `docs/visual-language.md`: sharp interface screenshots sit over atmospheric rehearsal
@@ -43,8 +61,15 @@ photography with crushed blacks, blooming highlights, deterministic grain, dust,
 own photograph and its own grain seed, so no two frames share a background. The template's scrims and vignette are
 opt-in and off for the screenshots: stacked over the photograph they crush every slide to the same black. The creative
 assets switch on only the left-column scrim, behind their words.
-Photography is selected and focused separately for iPhone and iPad so the crop remains intentional. Type and device
-screenshots are never baked into or filtered with the photograph.
+Photography is selected and focused separately for each device so the crop remains intentional. Type and device
+screenshots are never baked into or filtered with the photograph. The unfolded Duo canvas is landscape and uses the
+full capture in a horizontal device frame. Its words sit in one row rather than a stack (`copy.layout: "split"`):
+eyebrow and a one-line headline flush with the display's left edge, the supporting line against its right edge, resting
+on the headline. The row lines up with the display itself, inside the bezel, not with the device frame. Joining the headline's two lines is what leaves the height for a larger device. No unfolded capture
+may show the empty "No Song Selected" detail column: the library slide has a song open beside the list, and the
+stage slide shows the song sheet full-width. The folded Duo canvas is portrait but much shorter than the iPhone's,
+so it uses the iPhone's stack — words above, device below — with a tighter copy block, and reads the iPhone's copy
+unchanged because it shows the same screens.
 
 Colors, source screenshots, and the format-specific geometry are data in the `CONFIG` block of
 `scripts/build-app-store-screenshots.mjs`. The layout itself stays in the template module so every slide uses the same
@@ -69,7 +94,16 @@ an English interface is a listing that lies. Capture them in the app repository:
 ./scripts/capture-screenshots.sh --language de --device iphone --dark
 ./scripts/capture-screenshots.sh --language de --device ipad --light
 ./scripts/capture-screenshots.sh --language de --device ipad --dark
+./scripts/capture-screenshots.sh --language de --device duo-outer --light
+./scripts/capture-screenshots.sh --language de --device duo-outer --dark
+./scripts/capture-screenshots.sh --language de --device duo --light
+./scripts/capture-screenshots.sh --language de --device duo --dark
 ```
+
+For English, omit `--language de`. Fold the Duo in DeviceHub for `--device duo-outer` and unfold it for
+`--device duo`; the script waits and asks when the fold is wrong. Then run `pnpm build:screens` to sync the raw
+images and regenerate both treatments. The Duo is captured in English only so far, so the German sets skip both Duo
+displays — a language without captures for a device is omitted for that device, like the existing iPhone and iPad sets.
 
 `pnpm sync:app` then copies whatever exists. English keeps the original paths on both sides of the copy, and every other
 language nests under its code: captures at `public/app-screenshots/de/light/`, output at

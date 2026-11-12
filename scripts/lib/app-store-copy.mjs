@@ -9,6 +9,11 @@
  * Every language listed here must be a language in `VOCABULARY.md`, and product wording is read
  * from it rather than retyped, so the images cannot drift from the app, the site, and the listing.
  * The builder checks that each language covers every slide.
+ *
+ * A slide's words belong to its message, not to a device. The folded iPhone Duo's outer display
+ * shows the same five screens as the iPhone, so it reads these entries unchanged, and the unfolded
+ * inner display reads two of them; a device only gets copy of its own when it shows a screen no
+ * other device does.
  */
 import { term } from "./vocabulary.mjs"
 

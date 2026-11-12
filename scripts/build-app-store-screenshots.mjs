@@ -4,8 +4,9 @@
  *   pnpm build:screens
  *
  * The pre-script refreshes public/app-screenshots from the iOS repository, then
- * this runner composes the same five messages for Apple's 6.5-inch iPhone and
- * 13-inch iPad upload slots. Rendering uses the website's existing ImageResponse
+ * this runner composes five messages for Apple's 6.5-inch iPhone and 13-inch iPad
+ * upload slots, and the same five for each of the iPhone Duo's displays, folded and unfolded.
+ * Rendering uses the website's existing ImageResponse
  * stack and local fonts, just like the social and Open Graph asset builders.
  *
  * Every language in `scripts/lib/app-store-copy.mjs` gets its own set, built from that language's
@@ -84,6 +85,69 @@ const CONFIG = {
       frame: { x: 118, y: 676, width: 1812, height: 2416, border: 28, radius: 102 },
       screen: { width: 1756, height: 2341, radius: 74 },
     },
+    duo: {
+      name: "duo",
+      label: "iPhone Duo (unfolded)",
+      width: 2853,
+      height: 2007,
+      captureSegment: "duo",
+      acceptedSourceSizes: [[2853, 2007]],
+      /// A landscape canvas has width to spare and no height, so the words sit in one row over the
+      /// device instead of a stack: eyebrow and headline flush with the display's left edge, the
+      /// supporting line set against its right edge and resting on the headline. The headline's
+      /// hand-broken lines are joined into one, which is what frees the height for a larger device.
+      /// The row lines up with the display, not the bezel around it, so `left` is the frame's `x`
+      /// plus its `border`, and the row is exactly as wide as the screen.
+      copy: {
+        layout: "split",
+        left: 264,
+        top: 64,
+        gap: 16,
+        pillPaddingX: 26,
+        pillPaddingY: 12,
+        pillSize: 24,
+        headlineSize: 84,
+        supportingSize: 36,
+        // Wide enough that the longest supporting line, on "04-flow", still sets in two lines.
+        supportingWidth: 840,
+      },
+      glow: { right: -280, top: -220, size: 920 },
+      frame: { x: 240, y: 300, width: 2372, height: 1683, border: 24, radius: 82 },
+      screen: { width: 2324, height: 1635, radius: 58 },
+    },
+    /// The folded Duo's outer display: a portrait canvas far shorter than the iPhone's (0.69 against
+    /// 0.46), so the iPhone layout is rescaled rather than reused — the same words-above-device stack,
+    /// with a tighter copy block and the whole device inside the canvas instead of bleeding off the
+    /// bottom, because the round search button that makes this display recognizable sits in the
+    /// capture's bottom right corner.
+    ///
+    /// There is no `dynamicIsland`, on purpose. This display keeps its clock and Wi-Fi in a column
+    /// down the right edge, and the capture already contains that column whole, so the frame draws
+    /// no hardware over it and the screen fills the frame edge to edge at the capture's own aspect.
+    /// The column starts 250px down and ends 95px short of the right edge of the capture, well clear
+    /// of the 92px corner radius, so the rounding never touches it.
+    "duo-outer": {
+      name: "duo-outer",
+      label: "iPhone Duo (folded)",
+      width: 1398,
+      height: 2034,
+      captureSegment: "duo-outer",
+      acceptedSourceSizes: [[1398, 2034]],
+      copy: {
+        // The frame's `x`, so the words share the device's left edge — as on the unfolded display.
+        left: 158,
+        top: 66,
+        gap: 16,
+        pillPaddingX: 22,
+        pillPaddingY: 10,
+        pillSize: 22,
+        headlineSize: 84,
+        supportingSize: 34,
+      },
+      glow: { right: -230, top: -190, size: 760 },
+      frame: { x: 158, y: 444, width: 1082, height: 1554, border: 22, radius: 114 },
+      screen: { width: 1038, height: 1510, radius: 92 },
+    },
   },
   /// Art direction only; the words for each slide come from `scripts/lib/app-store-copy.mjs`,
   /// keyed by these ids, so adding a language never touches this block.
@@ -97,6 +161,8 @@ const CONFIG = {
       backgrounds: {
         iphone: { file: "guitarist-in-motion.png", focus: [0.72, 0.48] },
         ipad: { file: "guitarist-in-motion.png", focus: [0.58, 0.5] },
+        duo: { file: "guitarist-in-motion.png", focus: [0.58, 0.5] },
+        "duo-outer": { file: "guitarist-in-motion.png", focus: [0.74, 0.5] },
       },
     },
     {
@@ -108,6 +174,8 @@ const CONFIG = {
       backgrounds: {
         iphone: { file: "piano-keys-in-motion.png", focus: [0.56, 0.48] },
         ipad: { file: "piano-keys-in-motion.png", focus: [0.54, 0.5] },
+        duo: { file: "piano-keys-in-motion.png", focus: [0.54, 0.5] },
+        "duo-outer": { file: "piano-keys-in-motion.png", focus: [0.56, 0.5] },
       },
     },
     {
@@ -119,6 +187,8 @@ const CONFIG = {
       backgrounds: {
         iphone: { file: "phone-on-sheet-music.png", focus: [0.64, 0.38] },
         ipad: { file: "piano-with-sheet-music.png", focus: [0.54, 0.44] },
+        duo: { file: "piano-with-sheet-music.png", focus: [0.54, 0.44] },
+        "duo-outer": { file: "phone-on-sheet-music.png", focus: [0.6, 0.4] },
       },
     },
     {
@@ -130,6 +200,8 @@ const CONFIG = {
       backgrounds: {
         iphone: { file: "stage-microphone-in-motion.png", focus: [0.53, 0.48] },
         ipad: { file: "stage-microphone-in-motion.png", focus: [0.52, 0.5] },
+        duo: { file: "stage-microphone-in-motion.png", focus: [0.52, 0.5] },
+        "duo-outer": { file: "stage-microphone-in-motion.png", focus: [0.3, 0.5] },
       },
     },
     {
@@ -141,6 +213,8 @@ const CONFIG = {
       backgrounds: {
         iphone: { file: "studio-microphone-in-motion.png", focus: [0.45, 0.34] },
         ipad: { file: "studio-microphone-in-motion.png", focus: [0.46, 0.44] },
+        duo: { file: "studio-microphone-in-motion.png", focus: [0.46, 0.44] },
+        "duo-outer": { file: "studio-microphone-in-motion.png", focus: [0.5, 0.2] },
       },
     },
   ],
@@ -217,9 +291,13 @@ function checkHeadlineFits(language, slide) {
   const averageGlyph = 0.58 // Geist Bold at the headline's -0.035em tracking, measured off the set.
 
   for (const device of Object.values(CONFIG.devices)) {
-    const columnWidth = device.width - device.copy.left * 2
+    // In the split layout the headline is one line and shares its row with the supporting line.
+    const isSplit = device.copy.layout === "split"
+    const columnWidth = device.width - device.copy.left * 2 - (isSplit ? device.copy.supportingWidth : 0)
+    const headline = slideCopy(language, slide).headline
+    if (device.slideIds && !device.slideIds.includes(slide.id)) continue
 
-    for (const line of slideCopy(language, slide).headline) {
+    for (const line of isSplit ? [headline.join(" ")] : headline) {
       if (line.length * device.copy.headlineSize * averageGlyph <= columnWidth) continue
       console.warn(
         `  note: the ${language} "${slide.id}" headline line "${line}" is likely too wide for the ` +
@@ -239,8 +317,11 @@ function checkHeadlineFits(language, slide) {
  */
 async function resolveCaptures({ language, device, loadPng }) {
   const resolved = []
+  const slides = device.slideIds
+    ? CONFIG.slides.filter((slide) => device.slideIds.includes(slide.id))
+    : CONFIG.slides
 
-  for (const slide of CONFIG.slides) {
+  for (const slide of slides) {
     const appearances = [slide.appearance, slide.appearance === "light" ? "dark" : "light"]
     let capture = null
 

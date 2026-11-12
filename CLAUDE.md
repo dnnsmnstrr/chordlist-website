@@ -308,12 +308,18 @@ These categories of files in `public/` are **outputs — edit the generator, not
   snippet instead of holding words — from `content/motion/snippets.yml`, `locales/vocabulary.json`,
   or a `content/social/` still — and is resolved at preview and render time, so editing a snippet
   changes every video that links it on its next render.
-- **App Store screenshot sets** (`public/app-store-screenshots/`, plus `manifest.json` and the ZIPs
+- **App Store screenshot sets** (`public/app-store-screenshots/`, for iPhone, iPad, and both iPhone Duo displays, plus `manifest.json` and the ZIPs
   in `downloads/`) — `pnpm build:screens`. Art direction lives in the script's `CONFIG` block; the
   words live in `scripts/lib/app-store-copy.mjs`, keyed by language and then slide, and read shared
   product wording from `VOCABULARY.md` through `scripts/lib/vocabulary.mjs`. Each language renders
-  from its own captures, never English ones. `docs/app-store-screenshot-system.md` is the source of
-  truth; `/screens` is the review and download page.
+  from its own captures, never English ones. The Duo has two sets: `duo-outer` is the folded outer
+  display at 1398 × 2034, `duo` the unfolded inner display at 2853 × 2007, each with the iPhone's
+  five slides. The outer display has no `06-Settings.png` capture on purpose, so no slide
+  there may use it. Capture them in the app repository with
+  `scripts/capture-screenshots.sh --device duo-outer --light|--dark` with the Duo folded in DeviceHub
+  and `--device duo` with it unfolded; the script waits and asks when the fold is wrong. Both are
+  English only so far, and a language without them is skipped. `docs/app-store-screenshot-system.md`
+  is the source of truth; `/screens` is the review and download page.
 - **App Store creative assets** (`public/app-store-creative/`, plus `manifest.json` and the ZIPs in `downloads/`) — `pnpm build:creative`:
   the product page header, search results, and universal assets for iOS 27, and In-App Event media, at Apple's
   template sizes. Formats, safe areas, and art direction live in the script's `CONFIG` block; the words are

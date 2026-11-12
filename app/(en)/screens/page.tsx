@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils"
 import { screensCopy } from "@/locales/en"
 
 type ScreenshotVariant = "classic" | "analog"
-type ScreenshotDevice = "iphone" | "ipad"
+type ScreenshotDevice = "iphone" | "ipad" | "duo-outer" | "duo"
 
 type AppStoreScreenshot = {
   language: string
@@ -64,8 +64,12 @@ type ScreenshotSet = {
 const setOrder = [
   { variant: "analog", device: "iphone" },
   { variant: "analog", device: "ipad" },
+  { variant: "analog", device: "duo-outer" },
+  { variant: "analog", device: "duo" },
   { variant: "classic", device: "iphone" },
   { variant: "classic", device: "ipad" },
+  { variant: "classic", device: "duo-outer" },
+  { variant: "classic", device: "duo" },
 ] as const
 
 /// A language name for a manifest code, falling back to the code itself so a set is never hidden

@@ -68,6 +68,15 @@ async function copyIfChanged(source, destination) {
 async function syncScreenshots(sourceDirectory, destinationDirectory) {
   if (!(await exists(sourceDirectory))) return 0
 
+  // A source folder with nothing in it yet — a capture run creates the folder before its first shot
+  // lands — must not leave an empty folder here: the App Store builder reads an appearance folder as
+  // "this set was captured" and would then fail on the first missing file.
+  const present = []
+  for (const name of screenshotNames) {
+    if (await exists(path.join(sourceDirectory, name))) present.push(name)
+  }
+  if (present.length === 0 && !(await exists(destinationDirectory))) return 0
+
   await mkdir(destinationDirectory, { recursive: true })
   let copied = 0
 
@@ -100,12 +109,12 @@ const publicScreenshots = path.join(websiteRoot, "public", "app-screenshots")
 const rawScreenshots = path.join(appRoot, "press-kit", "raw-screenshots")
 
 /// The language directories beside the English captures — anything that is not one of English's own
-/// `light`, `dark`, or `ipad` folders. Reading the tree rather than a list means a language captured
+/// `light`, `dark`, `ipad`, `duo`, or `duo-outer` folders. Reading the tree rather than a list means a language captured
 /// in the app repository reaches the website without a second place to update.
 async function captureLanguages() {
   if (!(await exists(rawScreenshots))) return []
 
-  const reserved = new Set(["light", "dark", "ipad"])
+  const reserved = new Set(["light", "dark", "ipad", "duo", "duo-outer"])
   const entries = await readdir(rawScreenshots, { withFileTypes: true })
   return entries
     .filter((entry) => entry.isDirectory() && !reserved.has(entry.name) && !entry.name.startsWith("."))
@@ -123,6 +132,10 @@ for (const language of languages) {
   for (const device of [
     { segment: "", label: "iPhone" },
     { segment: "ipad", label: "iPad" },
+    { segment: "duo", label: "iPhone Duo (unfolded)" },
+    // The folded outer display. It has no 06-Settings capture, which needs no special case: a name
+    // the source folder lacks is skipped, and a language without the folder copies nothing.
+    { segment: "duo-outer", label: "iPhone Duo (folded)" },
   ]) {
     for (const appearance of ["light", "dark"]) {
       const copied = await syncScreenshots(

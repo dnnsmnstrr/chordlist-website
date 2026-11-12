@@ -3,21 +3,27 @@
   "sourceLanguage": "en",
   "languages": [
     "en",
-    "de"
+    "de",
+    "fr",
+    "es"
   ],
   "terms": [
     {
       "term": "lyrics",
       "translations": {
-        "de": "Songtext"
+        "de": "Songtext",
+        "fr": "paroles",
+        "es": "letra"
       },
       "match": "strict",
-      "notes": "Never *Liedtext*. Plural *Songtexte*."
+      "notes": "Never *Liedtext*. Plural *Songtexte*. fr: always plural. es: *letra* for one song, *letras* for several."
     },
     {
       "term": "chord",
       "translations": {
-        "de": "Akkord"
+        "de": "Akkord",
+        "fr": "accord",
+        "es": "acorde"
       },
       "match": "strict",
       "notes": "Plural *Akkorde*."
@@ -25,15 +31,19 @@
     {
       "term": "chord progression",
       "translations": {
-        "de": "Akkordfolge"
+        "de": "Akkordfolge",
+        "fr": "grille d’accords",
+        "es": "progresión de acordes"
       },
       "match": "strict",
-      "notes": "Not *Akkordprogression*, which reads as a translation."
+      "notes": "Not *Akkordprogression*, which reads as a translation. fr: what French players call it; *progression d’accords* reads as a translation."
     },
     {
       "term": "artist",
       "translations": {
-        "de": "Artist"
+        "de": "Artist",
+        "fr": "artiste",
+        "es": "artista"
       },
       "match": "strict",
       "notes": "Never *Künstler*, which means an artist in the gallery sense."
@@ -41,15 +51,19 @@
     {
       "term": "song",
       "translations": {
-        "de": "Song"
+        "de": "Song",
+        "fr": "chanson",
+        "es": "canción"
       },
       "match": "strict",
-      "notes": "Never *Lied*. Plural *Songs*, not *Songe*."
+      "notes": "Never *Lied*. Plural *Songs*, not *Songe*. fr: never *morceau*, which is any piece of music. es: plural *canciones*."
     },
     {
       "term": "songbook",
       "translations": {
-        "de": "Songbook"
+        "de": "Songbook",
+        "fr": "songbook",
+        "es": "cancionero"
       },
       "match": "loose",
       "notes": "Kept as-is; *Liederbuch* sounds like a school hymnal."
@@ -57,7 +71,9 @@
     {
       "term": "library",
       "translations": {
-        "de": "Bibliothek"
+        "de": "Bibliothek",
+        "fr": "bibliothèque",
+        "es": "biblioteca"
       },
       "match": "loose",
       "notes": "The user's collection of songs."
@@ -65,39 +81,49 @@
     {
       "term": "tag",
       "translations": {
-        "de": "Tag"
+        "de": "Tag",
+        "fr": "tag",
+        "es": "etiqueta"
       },
       "match": "loose",
-      "notes": "Plural *Tags*. Collides with the German word for *day*; keep it in contexts where that is unambiguous."
+      "notes": "Plural *Tags*. Collides with the German word for *day*; keep it in contexts where that is unambiguous. es: *etiqueta*, the word iOS uses in Files."
     },
     {
       "term": "transpose",
       "translations": {
-        "de": "transponieren"
+        "de": "transponieren",
+        "fr": "transposer",
+        "es": "transponer"
       },
       "match": "strict",
-      "notes": "The musical term, and the one players use."
+      "notes": "The musical term, and the one players use. es: avoid the participle *transpuesto*, which the stem does not match; use *transposición* or the infinitive."
     },
     {
       "term": "autoscroll",
       "translations": {
-        "de": "Auto-Scroll"
+        "de": "Auto-Scroll",
+        "fr": "défilement auto",
+        "es": "desplazamiento automático"
       },
       "match": "strict",
-      "notes": "Hyphenated. Not *Automatischer Bildlauf*."
+      "notes": "Hyphenated. Not *Automatischer Bildlauf*. fr: *défilement automatique* also satisfies it."
     },
     {
       "term": "capo",
       "translations": {
-        "de": "Capo"
+        "de": "Capo",
+        "fr": "capo",
+        "es": "cejilla"
       },
       "match": "loose",
-      "notes": "Unchanged."
+      "notes": "Unchanged in German and French; Spanish players say *cejilla*."
     },
     {
       "term": "setlist",
       "translations": {
-        "de": "Setlist"
+        "de": "Setlist",
+        "fr": "setlist",
+        "es": "setlist"
       },
       "match": "loose",
       "notes": "Unchanged."
@@ -105,7 +131,9 @@
     {
       "term": "folder",
       "translations": {
-        "de": "Ordner"
+        "de": "Ordner",
+        "fr": "dossier",
+        "es": "carpeta"
       },
       "match": "strict",
       "notes": ""
@@ -113,7 +141,9 @@
     {
       "term": "song file",
       "translations": {
-        "de": "Song-Datei"
+        "de": "Song-Datei",
+        "fr": "fichier de chanson",
+        "es": "archivo de canción"
       },
       "match": "loose",
       "notes": "Hyphenated, because *Songdatei* is hard to read."
@@ -121,7 +151,9 @@
     {
       "term": "Markdown",
       "translations": {
-        "de": "Markdown"
+        "de": "Markdown",
+        "fr": "Markdown",
+        "es": "Markdown"
       },
       "match": "loose",
       "notes": "A format name; never translated."
@@ -129,15 +161,19 @@
     {
       "term": "unlimited songs",
       "translations": {
-        "de": "Unbegrenzte Songs"
+        "de": "Unbegrenzte Songs",
+        "fr": "Chansons illimitées",
+        "es": "Canciones ilimitadas"
       },
       "match": "loose",
-      "notes": "The purchase, capitalised as a product name. Lowercase *unlimited songs* is the generic phrase and translates freely — *unbegrenzt viele Songs*."
+      "notes": "The purchase, capitalised as a product name. Lowercase *unlimited songs* is the generic phrase and translates freely — *unbegrenzt viele Songs*. fr/es: the purchase is the plural noun phrase, capitalised as a product name, and *Débloquer*/*Desbloquear* unlocks it."
     },
     {
       "term": "Apple Music",
       "translations": {
-        "de": "Apple Music"
+        "de": "Apple Music",
+        "fr": "Apple Music",
+        "es": "Apple Music"
       },
       "match": "loose",
       "notes": "Apple's name; never translated."
@@ -145,7 +181,9 @@
     {
       "term": "share extension",
       "translations": {
-        "de": "Share-Erweiterung"
+        "de": "Share-Erweiterung",
+        "fr": "extension de partage",
+        "es": "extensión para compartir"
       },
       "match": "loose",
       "notes": ""
@@ -156,28 +194,36 @@
       "name": "tagline",
       "translations": {
         "en": "Your lyrics and chords, as files in your pocket.",
-        "de": "Deine Songtexte und Akkorde – immer mit dabei."
+        "de": "Deine Songtexte und Akkorde – immer mit dabei.",
+        "fr": "Tes paroles et tes accords, en fichiers dans ta poche.",
+        "es": "Tus letras y acordes, como archivos en tu bolsillo."
       }
     },
     {
       "name": "description",
       "translations": {
         "en": "A local-first songbook for iPhone and iPad that keeps lyrics and chords in portable Markdown files you control.",
-        "de": "Ein Songbook für iPhone und iPad, das Songtexte und Akkorde als Textdateien aufbewahrt, die dir gehören."
+        "de": "Ein Songbook für iPhone und iPad, das Songtexte und Akkorde als Textdateien aufbewahrt, die dir gehören.",
+        "fr": "Un songbook local pour iPhone et iPad qui garde paroles et accords dans des fichiers Markdown portables que tu contrôles.",
+        "es": "Un cancionero local para iPhone y iPad que guarda letras y acordes en archivos Markdown portátiles que tú controlas."
       }
     },
     {
       "name": "unlock",
       "translations": {
         "en": "Unlock Unlimited Songs",
-        "de": "Unbegrenzte Songs freischalten"
+        "de": "Unbegrenzte Songs freischalten",
+        "fr": "Débloquer les chansons illimitées",
+        "es": "Desbloquear canciones ilimitadas"
       }
     },
     {
       "name": "free limit",
       "translations": {
         "en": "Your first 10 songs are free.",
-        "de": "Deine ersten 10 Songs sind kostenlos."
+        "de": "Deine ersten 10 Songs sind kostenlos.",
+        "fr": "Tes 10 premières chansons sont gratuites.",
+        "es": "Tus primeras 10 canciones son gratis."
       }
     }
   ]

@@ -145,10 +145,10 @@ function drawBackground(context: CanvasRenderingContext2D, spec: BannerSpec, ass
   // The area the photograph covers: the whole canvas, or its right side, leaving the left to the words.
   const area =
     spec.photoArea === "right"
-      ? { x: width * 0.38, y: 0, width: width * 0.62, height }
+      ? { x: width * (spec.photoSplit / 100), y: 0, width: width * (1 - spec.photoSplit / 100), height }
       : { x: 0, y: 0, width, height }
   const image = assets.photo
-  const factor = Math.max(area.width / image.naturalWidth, area.height / image.naturalHeight)
+  const factor = Math.max(area.width / image.naturalWidth, area.height / image.naturalHeight) * (spec.photoScale / 100)
   const drawWidth = image.naturalWidth * factor
   const drawHeight = image.naturalHeight * factor
   context.save()
@@ -810,6 +810,24 @@ function BannerEditor() {
                   max={100}
                   onChange={(photoOpacity) => update((previous) => ({ ...previous, photoOpacity }))}
                 />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <NumberField
+                  label={bannerCopy.background.scale}
+                  value={spec.photoScale}
+                  min={50}
+                  max={400}
+                  onChange={(photoScale) => update((previous) => ({ ...previous, photoScale }))}
+                />
+                {spec.photoArea === "right" ? (
+                  <NumberField
+                    label={bannerCopy.background.split}
+                    value={spec.photoSplit}
+                    min={20}
+                    max={75}
+                    onChange={(photoSplit) => update((previous) => ({ ...previous, photoSplit }))}
+                  />
+                ) : null}
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <NumberField
