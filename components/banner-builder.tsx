@@ -9,6 +9,9 @@ import { Button } from "@/components/ui/button"
 import {
   bannerBackgrounds,
   bannerDeviceGeometry,
+  bannerDeviceKinds,
+  deviceScreenshot,
+  deviceScreenshots,
   bannerLimits,
   bannerPresets,
   bannerTemplates,
@@ -23,12 +26,11 @@ import {
   screenshotSource,
   specFromReleaseDefinition,
   type BannerDevice,
-  type BannerDeviceKind,
   type BannerElementId,
   type BannerSpec,
 } from "@/lib/banner"
 import { cn } from "@/lib/utils"
-import { appScreenshots, badgeSegments, drawBadge, drawMark, photographs, photographSource } from "@/lib/visual-assets"
+import { badgeSegments, drawBadge, drawMark, photographs, photographSource } from "@/lib/visual-assets"
 import { bannerCopy, visualAssetCopy } from "@/locales/en"
 
 type Box = { x: number; y: number; width: number; height: number }
@@ -209,6 +211,8 @@ function drawDevice(
   const unit = height / (geometry.screen.height + (device.frame ? geometry.border * 2 : 0))
   const border = device.frame ? geometry.border * unit : 0
   const screen = { x: border, y: border, width: width - border * 2, height: height - border * 2 }
+  // Clockwise from the top left; a flat-left device keeps its left corners square.
+  const corners = (radius: number) => (geometry.flatLeft ? [0, radius, radius, 0] : radius)
 
   context.save()
   context.translate(device.x + width / 2, device.y + height / 2)
@@ -224,13 +228,13 @@ function drawDevice(
   }
   context.fillStyle = device.frame ? "#0A0A0D" : "#000000"
   context.beginPath()
-  context.roundRect(0, 0, width, height, (device.frame ? geometry.radius : geometry.screen.radius) * unit)
+  context.roundRect(0, 0, width, height, corners((device.frame ? geometry.radius : geometry.screen.radius) * unit))
   context.fill()
   context.shadowColor = "transparent"
 
   context.save()
   context.beginPath()
-  context.roundRect(screen.x, screen.y, screen.width, screen.height, geometry.screen.radius * unit)
+  context.roundRect(screen.x, screen.y, screen.width, screen.height, corners(geometry.screen.radius * unit))
   context.clip()
   // Stretched to the screen, as the template does — the captures are taken at the frame's ratio.
   if (image) context.drawImage(image, screen.x, screen.y, screen.width, screen.height)
@@ -977,8 +981,8 @@ function BannerEditor() {
       <section className="mx-auto w-full max-w-5xl">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
           <h2 className="text-xl font-semibold tracking-tight">{bannerCopy.devices.title}</h2>
-          <div className="flex gap-2">
-            {(["iphone", "ipad"] as const satisfies readonly BannerDeviceKind[]).map((kind) => (
+          <div className="flex flex-wrap gap-2">
+            {bannerDeviceKinds.map((kind) => (
               <Button
                 key={kind}
                 variant="outline"
@@ -1040,7 +1044,9 @@ function BannerEditor() {
                       label={bannerCopy.devices.kind}
                       value={device.kind}
                       options={entries(bannerCopy.devices.kinds)}
-                      onChange={(kind) => updateDevice(device.id, { kind })}
+                      onChange={(kind) =>
+                        updateDevice(device.id, { kind, screenshot: deviceScreenshot(kind, device.screenshot) })
+                      }
                     />
                     <Select
                       label={bannerCopy.devices.frame}
@@ -1051,7 +1057,9 @@ function BannerEditor() {
                     <Select
                       label={bannerCopy.devices.screenshot}
                       value={device.screenshot}
-                      options={appScreenshots.map((file) => [file, visualAssetCopy.screenshots[file]] as const)}
+                      options={deviceScreenshots(device.kind).map(
+                        (file) => [file, visualAssetCopy.screenshots[file]] as const,
+                      )}
                       onChange={(screenshot) => updateDevice(device.id, { screenshot })}
                     />
                     <Select

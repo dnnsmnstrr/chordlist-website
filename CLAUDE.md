@@ -322,7 +322,7 @@ These categories of files in `public/` are **outputs — edit the generator, not
   is the source of truth; `/screens` is the review and download page.
 - **App Store creative assets** (`public/app-store-creative/`, plus `manifest.json` and the ZIPs in `downloads/`) — `pnpm build:creative`:
   the product page header, search results, and universal assets for iOS 27, and In-App Event media, at Apple's
-  template sizes. Formats, safe areas, and art direction live in the script's `CONFIG` block; the words are
+  template sizes, plus `duo-*` versions of the header and event media that show the iPhone Duo. Formats, safe areas, and art direction live in the script's `CONFIG` block; the words are
   `creativeCopy` in `scripts/lib/app-store-copy.mjs`. Documented in `docs/app-store-screenshot-system.md`.
 
 **`lib/vendor/chordpro.ts`** is code, but it follows the same rule: it is copied byte for byte from

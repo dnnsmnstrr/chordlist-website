@@ -129,6 +129,9 @@ const CONFIG = {
     "duo-outer": {
       name: "duo-outer",
       label: "iPhone Duo (folded)",
+      /// Folded, the device's left side is the hinge: a straight edge with square corners, on the
+      /// bezel and on the display inside it. Only the right side is rounded.
+      flatLeft: true,
       width: 1398,
       height: 2034,
       captureSegment: "duo-outer",

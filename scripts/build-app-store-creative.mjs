@@ -23,6 +23,11 @@
  * listing. Every image is an opaque PNG, which Apple requires — the creative assets cannot carry
  * transparency. Like the screenshots, each language renders from its own captures.
  *
+ * The `duo-*` assets are the same placements again with the iPhone Duo in them — unfolded and
+ * folded side by side — for a header that shows the app on that device and for an In-App Event
+ * announcing it. They need Duo captures, so a language without them skips those three and keeps
+ * the rest.
+ *
  * Like the screenshot sets, each language and treatment also gets one ZIP of its assets in
  * `downloads/`, which `/screens` offers beside each group.
  */
@@ -54,7 +59,7 @@ const CONFIG = {
     { file: "assets/fonts/GeistMono-Regular.ttf", name: "Geist Mono", weight: 400 },
   ],
   /// Where each device's captures sit under a language directory, as in the screenshot builder.
-  captureSegments: { iphone: "", ipad: "ipad" },
+  captureSegments: { iphone: "", ipad: "ipad", duo: "duo", "duo-outer": "duo-outer" },
   /// Below this, a headline is too small to read once Apple shrinks the canvas to a phone's width —
   /// about a tenth of its pixel size for the header and search assets.
   minimumHeadlineSize: 120,
@@ -163,6 +168,72 @@ const CONFIG = {
       deviceOverlap: 0,
       gap: 0,
       devices: [{ kind: "iphone", screenshot: "02-Song-Detail.png", appearance: "dark", height: 1 }],
+      art: {
+        gradient: ["#181818", "#55505E"],
+        accent: "#E9DEFF",
+        photo: { file: "studio-microphone-in-motion.png", focus: [0.46, 0.4] },
+      },
+    },
+    /// The iPhone Duo versions. The unfolded display is landscape and would take the whole safe
+    /// area at full height, so the header scales the pair down to leave the tagline its column; the
+    /// folded display stands in front, at the right, as the phone that opens into the one behind it.
+    {
+      id: "duo-header",
+      label: "Product page header, iPhone Duo",
+      placement: "An alternative header that shows the app on both iPhone Duo displays.",
+      width: 3840,
+      height: 1646,
+      safe: { width: 2300, height: 1180 },
+      text: "tagline",
+      deviceScale: 0.62,
+      deviceOverlap: 0.6,
+      gap: 120,
+      type: { wordmark: 120, eyebrow: 56, headline: 170, gap: 56 },
+      devices: [
+        { kind: "duo", screenshot: "02-Song-Detail.png", appearance: "light", height: 1 },
+        { kind: "duo-outer", screenshot: "01-Song-List.png", appearance: "light", height: 0.9 },
+      ],
+      art: {
+        gradient: ["#17142B", "#5B3FD6"],
+        accent: "#B9ABFF",
+        photo: { file: "guitarist-in-motion.png", focus: [0.6, 0.5] },
+      },
+    },
+    {
+      id: "duo-event-card",
+      label: "In-App Event card, iPhone Duo",
+      placement: "The event card for an event announcing iPhone Duo support. 16:9.",
+      width: 3840,
+      height: 2160,
+      safe: { width: 3000, height: 1600 },
+      text: null,
+      deviceScale: 1,
+      deviceOverlap: 0.6,
+      gap: 0,
+      devices: [
+        { kind: "duo", screenshot: "07-Song-Suggestions.png", appearance: "dark", height: 1 },
+        { kind: "duo-outer", screenshot: "02-Song-Detail.png", appearance: "dark", height: 0.78 },
+      ],
+      art: {
+        gradient: ["#101A22", "#197D78"],
+        accent: "#76E6D3",
+        photo: { file: "piano-keys-in-motion.png", focus: [0.54, 0.5] },
+      },
+    },
+    {
+      id: "duo-event-details",
+      label: "In-App Event details page, iPhone Duo",
+      placement: "The full-screen page for an event announcing iPhone Duo support. 9:16.",
+      width: 2160,
+      height: 3840,
+      safe: { width: 1700, height: 2800 },
+      text: null,
+      /// The folded display is wider than an iPhone, so its height is what keeps it inside the safe
+      /// area's width; the canvas is portrait, which leaves no room for the unfolded display.
+      deviceScale: 0.86,
+      deviceOverlap: 0,
+      gap: 0,
+      devices: [{ kind: "duo-outer", screenshot: "02-Song-Detail.png", appearance: "dark", height: 1 }],
       art: {
         gradient: ["#181818", "#55505E"],
         accent: "#E9DEFF",

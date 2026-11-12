@@ -1265,7 +1265,7 @@ export const screensCopy = {
   creative: {
     title: "Creative assets",
     description:
-      "The product page header, the search results asset, the universal asset that can serve as either, and In-App Event media, for iOS 27 and iPadOS 27. Each is drawn at the size of Apple's template, with its words and devices inside the centered safe area Apple crops around.",
+      "The product page header, the search results asset, the universal asset that can serve as either, and In-App Event media, for iOS 27 and iPadOS 27, plus a header and event media that show the app on iPhone Duo. Each is drawn at the size of Apple's template, with its words and devices inside the centered safe area Apple crops around.",
     setTitle: (language: string, variant: string) => `${language} · ${variant}`,
     meta: (width: number, height: number) => `${width} × ${height} PNG`,
     download: "Download PNG",
@@ -2132,7 +2132,12 @@ export const bannerCopy = {
     title: "Device frames",
     empty: "No devices yet.",
     add: (kind: string) => `Add ${kind}`,
-    kinds: { iphone: "iPhone", ipad: "iPad" },
+    kinds: {
+      iphone: "iPhone",
+      ipad: "iPad",
+      "duo-outer": "iPhone Duo (folded)",
+      duo: "iPhone Duo (unfolded)",
+    },
     label: (kind: string, index: number) => `${kind} ${index}`,
     kind: "Device",
     frame: "Frame",

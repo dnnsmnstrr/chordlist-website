@@ -17,6 +17,12 @@ import { analogBackground, classicBackground, deviceFrame } from "./app-store-sc
 const deviceGeometry = {
   iphone: { screen: { width: 990, height: 2142, radius: 126 }, border: 24, radius: 150, island: [274, 78, 25] },
   ipad: { screen: { width: 1756, height: 2341, radius: 74 }, border: 28, radius: 102 },
+  // The iPhone Duo's two displays, from the same devices in `scripts/build-app-store-screenshots.mjs`:
+  // unfolded and landscape, and folded and portrait. Neither draws a Dynamic Island, because both
+  // captures already hold the whole screen, status column included.
+  duo: { screen: { width: 2324, height: 1635, radius: 58 }, border: 24, radius: 82 },
+  // `flatLeft`: folded, the left side is the hinge — straight, with square corners.
+  "duo-outer": { screen: { width: 1038, height: 1510, radius: 92 }, border: 22, radius: 114, flatLeft: true },
 }
 
 function scaledDevice({ kind, height, x, y }) {
@@ -31,6 +37,7 @@ function scaledDevice({ kind, height, x, y }) {
 
   return {
     name: kind,
+    flatLeft: Boolean(base.flatLeft),
     frame: {
       x,
       y,

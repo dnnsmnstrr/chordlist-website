@@ -10,13 +10,23 @@ function textBlock(lines, style) {
   )
 }
 
+/// The four corner radii of a device part, clockwise from the top left. A `flatLeft` device — the
+/// folded iPhone Duo, whose left side is the hinge — has a straight left edge with square corners.
+function cornerRadii(device, radius) {
+  return device.flatLeft ? [0, radius, radius, 0] : [radius, radius, radius, radius]
+}
+
 function roundedScreenUri({ device, screenshot }) {
   const { width, height, radius } = device.screen
+  const shape = device.flatLeft
+    ? `<path d="M0,0 H${width - radius} A${radius},${radius} 0 0 1 ${width},${radius} V${height - radius} ` +
+      `A${radius},${radius} 0 0 1 ${width - radius},${height} H0 Z"/>`
+    : `<rect width="${width}" height="${height}" rx="${radius}" ry="${radius}"/>`
 
   return svgDataUri(
     [
       `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">`,
-      `<defs><clipPath id="screen"><rect width="${width}" height="${height}" rx="${radius}" ry="${radius}"/></clipPath></defs>`,
+      `<defs><clipPath id="screen">${shape}</clipPath></defs>`,
       `<image href="${screenshot}" width="${width}" height="${height}" preserveAspectRatio="none" clip-path="url(#screen)"/>`,
       `</svg>`,
     ].join(""),
@@ -199,7 +209,7 @@ export function deviceFrame({ device, screenshot }) {
         height: device.frame.height,
         display: "flex",
         padding: device.frame.border,
-        borderRadius: device.frame.radius,
+        borderRadius: cornerRadii(device, device.frame.radius).map((radius) => `${radius}px`).join(" "),
         background: "#0A0A0D",
         boxShadow: "0 42px 100px rgba(0,0,0,0.38)",
       },
@@ -213,7 +223,7 @@ export function deviceFrame({ device, screenshot }) {
           height: device.screen.height,
           display: "flex",
           overflow: "hidden",
-          borderRadius: device.screen.radius,
+          borderRadius: cornerRadii(device, device.screen.radius).map((radius) => `${radius}px`).join(" "),
           background: "#000000",
         },
       },

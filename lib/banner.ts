@@ -20,7 +20,10 @@ import { phrase } from "@/locales/vocabulary"
  */
 
 export type BannerBackgroundId = "violet" | "green" | "graphite" | "ink" | "paper" | "blueprint" | "photo"
-export type BannerDeviceKind = "iphone" | "ipad"
+/// `duo-outer` is the iPhone Duo folded, showing its outer display; `duo` is the same device
+/// unfolded, showing the inner one. The names are the capture folders'.
+export const bannerDeviceKinds = ["iphone", "ipad", "duo-outer", "duo"] as const
+export type BannerDeviceKind = (typeof bannerDeviceKinds)[number]
 export type BannerAppearance = "light" | "dark"
 export type BannerElementId = "logo" | "title" | "badge" | "tagline"
 /// `full` fills the canvas behind a scrim; `right` sets the photograph on the right and fades it into
@@ -110,16 +113,38 @@ export const bannerBackgrounds: Record<BannerBackgroundId, Gradient | Solid | Ph
 /**
  * The App Store creative's frame geometry (`deviceGeometry` in
  * `scripts/lib/app-store-creative-template.mjs`), in the 6.5-inch iPhone and 13-inch iPad canvases'
- * pixels. Everything here is scaled from it, so a banner's devices match the listing's.
+ * pixels. Everything here is scaled from it, so a banner's devices match the listing's. Only the
+ * iPhone gets a Dynamic Island drawn: the iPad and both iPhone Duo captures hold their whole screen.
+ * `flatLeft` is the folded iPhone Duo's hinge side: a straight left edge with square corners.
  */
 export const bannerDeviceGeometry = {
-  iphone: { screen: { width: 990, height: 2142, radius: 126 }, border: 24, radius: 150, island: { width: 274, height: 78, top: 25 } },
-  ipad: { screen: { width: 1756, height: 2341, radius: 74 }, border: 28, radius: 102, island: null },
+  iphone: { screen: { width: 990, height: 2142, radius: 126 }, border: 24, radius: 150, island: { width: 274, height: 78, top: 25 }, flatLeft: false },
+  ipad: { screen: { width: 1756, height: 2341, radius: 74 }, border: 28, radius: 102, island: null, flatLeft: false },
+  "duo-outer": { screen: { width: 1038, height: 1510, radius: 92 }, border: 22, radius: 114, island: null, flatLeft: true },
+  duo: { screen: { width: 2324, height: 1635, radius: 58 }, border: 24, radius: 82, island: null, flatLeft: false },
 } as const
 
+/// Where each kind's captures sit under `public/app-screenshots/`.
+const captureSegments: Record<BannerDeviceKind, string> = {
+  iphone: "",
+  ipad: "ipad/",
+  "duo-outer": "duo-outer/",
+  duo: "duo/",
+}
+
 export function screenshotSource(device: Pick<BannerDevice, "kind" | "appearance" | "screenshot">): string {
-  const segment = device.kind === "ipad" ? "ipad/" : ""
-  return `/app-screenshots/${segment}${device.appearance}/${device.screenshot}`
+  return `/app-screenshots/${captureSegments[device.kind]}${device.appearance}/${device.screenshot}`
+}
+
+/// The screens a kind has captures of. The folded iPhone Duo has no Settings capture, on purpose —
+/// see `docs/app-store-screenshot-system.md`.
+export function deviceScreenshots(kind: BannerDeviceKind): readonly AppScreenshot[] {
+  return kind === "duo-outer" ? appScreenshots.filter((file) => file !== "06-Settings.png") : appScreenshots
+}
+
+/// The screen to show on a kind: the one asked for, or the first it does have.
+export function deviceScreenshot(kind: BannerDeviceKind, screenshot: AppScreenshot): AppScreenshot {
+  return deviceScreenshots(kind).includes(screenshot) ? screenshot : "01-Song-List.png"
 }
 
 /// The device's unrotated width for its height.
@@ -210,13 +235,16 @@ export const bannerTemplates = [
 export type BannerTemplateId = (typeof bannerTemplates)[number]["id"]
 
 export function newDevice(kind: BannerDeviceKind, spec: BannerSpec): BannerDevice {
-  const height = Math.round(spec.height * 0.9)
+  // Nine tenths of the canvas height, or less where that would be wider than the canvas — the
+  // unfolded iPhone Duo is landscape.
+  const widthAtFullHeight = deviceWidth({ kind, frame: true, height: spec.height })
+  const height = Math.round(spec.height * 0.9 * Math.min(1, spec.width / widthAtFullHeight))
   return {
     id: newDeviceId(),
     kind,
     frame: true,
     shadow: true,
-    screenshot: kind === "ipad" ? "02-Song-Detail.png" : "01-Song-List.png",
+    screenshot: kind === "ipad" || kind === "duo" ? "02-Song-Detail.png" : "01-Song-List.png",
     appearance: "light",
     x: Math.round((spec.width - deviceWidth({ kind, frame: true, height })) / 2),
     y: Math.round((spec.height - height) / 2),
@@ -412,10 +440,13 @@ export function restoreBannerSpec(value: unknown): BannerSpec {
     },
     devices: devices.map((device) => ({
       id: stringOr(device.id, newDeviceId()),
-      kind: oneOf(device.kind, ["iphone", "ipad"] as const, "iphone"),
+      kind: oneOf(device.kind, bannerDeviceKinds, "iphone"),
       frame: booleanOr(device.frame, true),
       shadow: booleanOr(device.shadow, true),
-      screenshot: oneOf(device.screenshot, appScreenshots, "01-Song-List.png"),
+      screenshot: deviceScreenshot(
+        oneOf(device.kind, bannerDeviceKinds, "iphone"),
+        oneOf(device.screenshot, appScreenshots, "01-Song-List.png"),
+      ),
       appearance: oneOf(device.appearance, ["light", "dark"] as const, "light"),
       x: numberOr(device.x, 0),
       y: numberOr(device.y, 0),

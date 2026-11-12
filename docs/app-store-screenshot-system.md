@@ -128,6 +128,14 @@ them from the same captures, copy, and treatments:
 | `universal.png` | 5244×2950 (16:9) | One master Apple crops into either of the above |
 | `event-card.png` | 3840×2160 (16:9) | In-App Event card |
 | `event-details.png` | 2160×3840 (9:16) | In-App Event details page |
+| `duo-header.png` | 3840×1646 | An alternative header showing both iPhone Duo displays |
+| `duo-event-card.png` | 3840×2160 (16:9) | Event card for an event announcing iPhone Duo support |
+| `duo-event-details.png` | 2160×3840 (9:16) | Event details page for the same event |
+
+The three `duo-*` assets are the same placements with the iPhone Duo in them: the unfolded display behind, the folded
+one in front of it, and on the portrait details page the folded display alone. They are alternatives, not additions
+Apple asks for — upload the Duo header in place of the regular one, or use the event pair for an In-App Event about
+Duo support. They need Duo captures, so a language without them builds the other five and skips these.
 
 ```text
 scripts/build-app-store-creative.mjs         Formats, safe areas, and art direction (CONFIG)
@@ -152,7 +160,7 @@ name, badge, and description over it, and Apple applies its own crops and gradie
 Apple's content rules for every asset apply here too: no prices, discounts, URLs, copyright symbols, awards, other
 platforms' logos, or Apple recognitions.
 
-The images are opaque PNGs, as Apple requires. Each language and treatment also gets a ZIP of its five assets in
+The images are opaque PNGs, as Apple requires. Each language and treatment also gets a ZIP of its assets in
 `public/app-store-creative/downloads/`, and `/screens` lists every file under the screenshot sets with that ZIP beside
 each group.
 
