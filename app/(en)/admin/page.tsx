@@ -57,6 +57,7 @@ const sections: readonly { id: keyof typeof adminCopy.sections; tools: readonly 
       { id: "banner", href: "/banner" },
       { id: "emails", href: "/emails" },
       { id: "gallery", href: "/gallery", availability: "public" },
+      { id: "present", href: "/present", availability: "public" },
     ],
   },
 ]

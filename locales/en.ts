@@ -2015,6 +2015,10 @@ export const adminCopy = {
       title: "Gallery",
       description: "Imagery and video made for the brand.",
     },
+    present: {
+      title: "Present",
+      description: "A full-screen card for a second display: the logo flips to a QR code, with a note above it.",
+    },
     marketingCopy: {
       title: "Marketing copy",
       description: "Listings, launch posts, and hashtags, ready to copy.",
