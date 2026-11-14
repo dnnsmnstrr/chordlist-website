@@ -84,7 +84,9 @@ document.addEventListener('DOMContentLoaded', async function() {
     const modelOptions = Object.freeze({
       numbering: publicParams.get('numbering') === '1',
       nfc: publicParams.get('nfc') === '1',
-      preview: publicParams.get('preview') === '1'
+      preview: publicParams.get('preview') === '1',
+      // /model.html?mini=1 opens on the 20 mm tile: wider key gaps, no wordmark.
+      mini: publicParams.get('mini') === '1'
     });
     function replaceModelSource(source, before, after) {
       if (!source.includes(before)) throw new Error('Model bundle customization is out of date');
@@ -138,6 +140,53 @@ document.addEventListener('DOMContentLoaded', async function() {
       [
         '// --- STORE-only ZIP writer, so a numbered range lands as one download ---',
         "// The stage's toolbar exports OBJ and GLB, which are no use to someone printing\n// this tile, so the STL downloads take their place and inherit its button rules.\n// This has to run after both listeners are attached: the buttons leave the\n// document when they move into the shadow root, so getElementById stops\n// finding them.\nconst stageToolbar = stage.shadowRoot && stage.shadowRoot.querySelector('.toolbar');\nif (stageToolbar) {\n  stageToolbar.style.flexWrap = 'wrap';\n  stageToolbar.style.justifyContent = 'flex-end';\n  stageToolbar.style.maxWidth = 'max(200px, calc(100% - 260px))';\n  stageToolbar.replaceChildren(document.getElementById('stl'), document.getElementById('stl-parts'));\n}\n\n// --- STORE-only ZIP writer, so a numbered range lands as one download ---"
+      ],
+      // --- The 20 mm tile: a lower size limit, wider key gaps, and a wordmark that can be left
+      // off, since at that size its thinnest strokes fall below one extrusion width. These run
+      // after the entries above, so they match the source as those have already rewritten it.
+      [
+        "<input id=\"size\" type=\"range\" min=\"28\" max=\"60\" step=\"0.1\" value=\"32\">",
+        "<input id=\"size\" type=\"range\" min=\"20\" max=\"60\" step=\"0.1\" value=\"32\">"
+      ],
+      [
+        "<input id=\"stem\" type=\"range\" min=\"0.5\" max=\"4\" step=\"0.1\" value=\"1.5\">",
+        "<input id=\"stem\" type=\"range\" min=\"0.5\" max=\"6\" step=\"0.1\" value=\"1.5\">"
+      ],
+      [
+        "  <label class=\"tweak toggle\" for=\"inlay\">",
+        "  <label class=\"tweak toggle\" for=\"mark\">\n    <span>wordmark<b id=\"mark-val\">on</b></span>\n    <input id=\"mark\" type=\"checkbox\" checked>\n  </label>\n  <label class=\"tweak toggle\" for=\"inlay\">"
+      ],
+      [
+        "  inlayGap: document.getElementById('gap')\n};",
+        "  inlayGap: document.getElementById('gap'),\n  mark: document.getElementById('mark')\n};"
+      ],
+      [
+        "                 num, numH, markH, depth, inlay, inlayGap, numberTop, numbering }) {",
+        "                 num, numH, markH, depth, inlay, inlayGap, numberTop, numbering, mark }) {"
+      ],
+      [
+        "  const engrave = !(canCarve && openBottom) && effectiveDepth > 0;",
+        "  const engrave = !(canCarve && openBottom) && effectiveDepth > 0 && (mark || numbering);"
+      ],
+      [
+        "  const wordmark = engrave\n    ? textContours('chordlist'",
+        "  const wordmark = engrave && mark\n    ? textContours('chordlist'"
+      ],
+      [
+        "[...(numbering ? [{ name: 'number', ...number }] : []), { name: 'wordmark', ...wordmark }]",
+        "[...(numbering ? [{ name: 'number', ...number }] : []), ...(mark ? [{ name: 'wordmark', ...wordmark }] : [])]"
+      ],
+      [
+        "    numbering: window.CHORDLINK_NUMBERING_ENABLED === true\n  };",
+        "    numbering: window.CHORDLINK_NUMBERING_ENABLED === true,\n    mark: ui.mark.checked\n  };"
+      ],
+      [
+        "  document.getElementById('inlay-val').textContent = v.inlay ? 'on' : 'off';",
+        "  document.getElementById('inlay-val').textContent = v.inlay ? 'on' : 'off';\n  document.getElementById('mark-val').textContent = v.mark ? 'on' : 'off';\n  ui.markH.disabled = !v.mark;\n  ui.markH.parentElement.style.opacity = v.mark ? '1' : '0.45';"
+      ],
+      [
+        "if (window.CHORDLINK_NFC_ENABLED === true) ui.nfc.checked = true;\napply(true);",
+        "if (window.CHORDLINK_NFC_ENABLED === true) ui.nfc.checked = true;\nif (window.CHORDLINK_MINI === true) {\n  ui.size.value = '20';\n  ui.stem.value = '5';\n  ui.mark.checked = false;\n}\napply(true);"
       ]
     ];
     for (const [before, after] of modelReplacements) {
@@ -370,6 +419,7 @@ document.addEventListener('DOMContentLoaded', async function() {
       ';window.CHORDLINK_NUMBERING_ENABLED=' + JSON.stringify(modelOptions.numbering) +
       ';window.CHORDLINK_NFC_ENABLED=' + JSON.stringify(modelOptions.nfc) +
       ';window.CHORDLINK_PREVIEW_ONLY=' + JSON.stringify(modelOptions.preview) +
+      ';window.CHORDLINK_MINI=' + JSON.stringify(modelOptions.mini) +
       ';</' + 'script>';
     // Inject after <head> so the DOCTYPE stays first; prepending the script
     // would push the parser into quirks mode. DOMParser always emits a <head>

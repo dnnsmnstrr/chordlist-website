@@ -1,0 +1,180 @@
+"use client"
+
+import { useCallback, useEffect, useRef, useState } from "react"
+import { ArrowLeft, Maximize, Minimize, Smartphone } from "lucide-react"
+
+import { AMBIENT_SHUFFLE_EVENT } from "@/components/ambient-background"
+import { ChordlistIcon } from "@/components/chordlist-icon"
+import { ScreenshotGallery, type Screenshot } from "@/components/screenshot-gallery"
+import { siteConfig } from "@/lib/site-config"
+import { commonCopy, presentCopy } from "@/locales/en"
+
+type PresentStageProps = {
+  /** The QR code as a single path on a `size` × `size` grid of modules. */
+  code: { size: number; path: string }
+  screenshots: readonly Screenshot[]
+}
+
+/** Blank modules around the code. Scanners need four; the spec calls it the quiet zone. */
+const QUIET_ZONE = 4
+
+/** Where the note above the logo is kept, so a reload or a fullscreen toggle does not lose it. */
+const NOTE_STORAGE_KEY = "present.note"
+
+/** How long one background composition stays up before the next is dealt. */
+const BACKGROUND_SHUFFLE_MILLISECONDS = 30_000
+
+const controlClassName =
+  "flex items-center gap-2 rounded-md px-3 py-2 font-mono text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+
+export function PresentStage({ code, screenshots }: PresentStageProps) {
+  const [isFlipped, setIsFlipped] = useState(false)
+  const [showsScreens, setShowsScreens] = useState(false)
+  const [isFullscreen, setIsFullscreen] = useState(false)
+
+  useEffect(() => {
+    function onFullscreenChange() {
+      setIsFullscreen(document.fullscreenElement !== null)
+    }
+
+    document.addEventListener("fullscreenchange", onFullscreenChange)
+    return () => document.removeEventListener("fullscreenchange", onFullscreenChange)
+  }, [])
+
+  useEffect(() => {
+    // Someone who asked for less motion gets the one composition the page loaded with.
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
+
+    const interval = window.setInterval(
+      () => window.dispatchEvent(new Event(AMBIENT_SHUFFLE_EVENT)),
+      BACKGROUND_SHUFFLE_MILLISECONDS,
+    )
+    return () => window.clearInterval(interval)
+  }, [])
+
+  /*
+    Uncontrolled, and filled in after mount: the note lives in this browser only, so the server has
+    nothing to render for it, and writing the field directly avoids a state update inside an effect.
+    Storage can throw in a private window; the note then simply lasts as long as the page does.
+  */
+  const noteRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    try {
+      const stored = window.localStorage.getItem(NOTE_STORAGE_KEY)
+      if (stored && noteRef.current) noteRef.current.value = stored
+    } catch {}
+  }, [showsScreens])
+
+  const saveNote = useCallback((value: string) => {
+    try {
+      if (value) window.localStorage.setItem(NOTE_STORAGE_KEY, value)
+      else window.localStorage.removeItem(NOTE_STORAGE_KEY)
+    } catch {}
+  }, [])
+
+  const toggleFullscreen = useCallback(() => {
+    // iPhone Safari has no Fullscreen API for a page, so the call is absent there rather than
+    // failing — the button then does nothing, and Add to Home Screen is the way to lose the chrome.
+    if (document.fullscreenElement) {
+      void document.exitFullscreen()
+    } else {
+      void document.documentElement.requestFullscreen?.().catch(() => {})
+    }
+  }, [])
+
+  const url = siteConfig.url.replace(/^https?:\/\//, "")
+  const viewBoxSize = code.size + QUIET_ZONE * 2
+
+  return (
+    <div className="flex min-h-screen flex-col">
+      <div className="flex flex-1 flex-col items-center justify-center gap-10 px-6 py-10">
+        {showsScreens ? (
+          <section aria-labelledby="present-screens-title" className="w-full max-w-[110rem]">
+            <h1 id="present-screens-title" className="sr-only">
+              {presentCopy.screensTitle}
+            </h1>
+            <ScreenshotGallery screenshots={screenshots} variant="present" />
+          </section>
+        ) : (
+          <>
+            {/* Empty, it shows nothing until hovered or focused, so an unused note never reads as
+                a stray placeholder on the big screen. Never below 16px, or iOS zooms on focus. */}
+            <input
+              ref={noteRef}
+              type="text"
+              aria-label={presentCopy.noteLabel}
+              placeholder={presentCopy.notePlaceholder}
+              onChange={(event) => saveNote(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === "Escape") event.currentTarget.blur()
+              }}
+              autoComplete="off"
+              spellCheck={false}
+              className="w-full max-w-4xl rounded-md bg-transparent px-3 py-2 text-center font-mono text-[clamp(1.25rem,3vw,2.5rem)] font-medium tracking-tight text-foreground outline-none transition-colors placeholder:text-transparent hover:bg-muted/60 hover:placeholder:text-muted-foreground focus:bg-muted/60 focus:placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring"
+            />
+
+            <button
+              type="button"
+              onClick={() => setIsFlipped((flipped) => !flipped)}
+              aria-pressed={isFlipped}
+              aria-label={isFlipped ? presentCopy.flipToLogo : presentCopy.flipToCode}
+              className="group size-[min(52vw,44vh)] cursor-pointer rounded-[22%] [perspective:1600px] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-ring"
+            >
+              <span
+                className={`relative block size-full transition-transform duration-700 ease-in-out [transform-style:preserve-3d] motion-reduce:transition-none ${
+                  isFlipped ? "[transform:rotateY(180deg)]" : ""
+                }`}
+              >
+                <span className="absolute inset-0 flex items-center justify-center overflow-hidden rounded-[22%] bg-logo-tile text-logo-glyph shadow-logo [backface-visibility:hidden]">
+                  <ChordlistIcon className="size-full" />
+                </span>
+                {/* Dark on white in both themes: a scanner reads contrast, and an inverted code is
+                    the one a good share of phone cameras refuse. */}
+                <span className="absolute inset-0 flex items-center justify-center overflow-hidden rounded-[22%] bg-white text-black shadow-logo [backface-visibility:hidden] [transform:rotateY(180deg)]">
+                  <svg
+                    viewBox={`${-QUIET_ZONE} ${-QUIET_ZONE} ${viewBoxSize} ${viewBoxSize}`}
+                    role="img"
+                    aria-label={presentCopy.codeAlt(url)}
+                    shapeRendering="crispEdges"
+                    className="size-[86%]"
+                  >
+                    <path d={code.path} fill="currentColor" />
+                  </svg>
+                </span>
+              </span>
+            </button>
+
+            <div className="text-center">
+              <h1 className="font-mono text-[clamp(2.5rem,7vw,6rem)] font-semibold leading-none tracking-tight">
+                {siteConfig.name}
+              </h1>
+              <p className="mt-5 text-balance text-[clamp(1rem,2.2vw,1.75rem)] text-muted-foreground">
+                {isFlipped ? `${presentCopy.scanHint} · ${url}` : commonCopy.tagline}
+              </p>
+            </div>
+          </>
+        )}
+      </div>
+
+      <div className="flex items-center justify-center gap-2 px-6 pb-6">
+        <button type="button" onClick={() => setShowsScreens((shows) => !shows)} className={controlClassName}>
+          {showsScreens ? (
+            <ArrowLeft className="size-4" aria-hidden="true" />
+          ) : (
+            <Smartphone className="size-4" aria-hidden="true" />
+          )}
+          {showsScreens ? presentCopy.hideScreens : presentCopy.showScreens}
+        </button>
+        <button type="button" onClick={toggleFullscreen} className={controlClassName}>
+          {isFullscreen ? (
+            <Minimize className="size-4" aria-hidden="true" />
+          ) : (
+            <Maximize className="size-4" aria-hidden="true" />
+          )}
+          {isFullscreen ? presentCopy.exitFullscreen : presentCopy.enterFullscreen}
+        </button>
+      </div>
+    </div>
+  )
+}

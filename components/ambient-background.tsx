@@ -33,6 +33,19 @@ const pointerTravelX = 4
 const pointerTravelY = 3
 const scrollTravel = 56
 
+/**
+ * Dispatch this on `window` to deal the background again, as a reload would. /present does, on a
+ * timer, so a screen left standing for an evening does not show one frozen composition.
+ */
+export const AMBIENT_SHUFFLE_EVENT = "ambient:shuffle"
+
+/**
+ * How long a shuffle takes to fade out, and again to fade back in. Slower than the 1200ms the
+ * layer fades in with on page load (globals.css): that one is waiting on a page, this one is
+ * happening behind something a person is already looking at.
+ */
+const shuffleFadeMilliseconds = 2500
+
 function randomBetween(minimum: number, maximum: number) {
   return minimum + Math.random() * (maximum - minimum)
 }
@@ -44,25 +57,44 @@ export function AmbientBackground() {
     const layer = layerRef.current
     if (layer === null) return
 
-    const firstIndex = Math.floor(Math.random() * textures.length)
-    const secondIndex = (firstIndex + 1 + Math.floor(Math.random() * (textures.length - 1))) % textures.length
+    const deal = () => {
+      const firstIndex = Math.floor(Math.random() * textures.length)
+      const secondIndex = (firstIndex + 1 + Math.floor(Math.random() * (textures.length - 1))) % textures.length
 
-    layer.style.setProperty("--ambient-texture-one", `url("${textures[firstIndex]}")`)
-    layer.style.setProperty("--ambient-texture-two", `url("${textures[secondIndex]}")`)
-    layer.style.setProperty("--ambient-texture-one-x", `${randomBetween(18, 82).toFixed(1)}%`)
-    layer.style.setProperty("--ambient-texture-one-y", `${randomBetween(12, 68).toFixed(1)}%`)
-    layer.style.setProperty("--ambient-texture-two-x", `${randomBetween(18, 82).toFixed(1)}%`)
-    layer.style.setProperty("--ambient-texture-two-y", `${randomBetween(32, 88).toFixed(1)}%`)
-    layer.style.setProperty("--ambient-texture-one-scale", randomBetween(1.06, 1.2).toFixed(3))
-    layer.style.setProperty("--ambient-texture-two-scale", randomBetween(1.08, 1.24).toFixed(3))
-    layer.style.setProperty("--ambient-texture-one-rotation", `${randomBetween(-4, 4).toFixed(2)}deg`)
-    layer.style.setProperty("--ambient-texture-two-rotation", `${randomBetween(-5, 5).toFixed(2)}deg`)
-    layer.style.setProperty("--ambient-gradient-one-x", `${randomBetween(12, 88).toFixed(1)}%`)
-    layer.style.setProperty("--ambient-gradient-one-y", `${randomBetween(8, 52).toFixed(1)}%`)
-    layer.style.setProperty("--ambient-gradient-two-x", `${randomBetween(8, 92).toFixed(1)}%`)
-    layer.style.setProperty("--ambient-gradient-two-y", `${randomBetween(48, 92).toFixed(1)}%`)
-    layer.style.setProperty("--ambient-gradient-angle", `${randomBetween(118, 242).toFixed(1)}deg`)
-    layer.dataset.ready = "true"
+      layer.style.setProperty("--ambient-texture-one", `url("${textures[firstIndex]}")`)
+      layer.style.setProperty("--ambient-texture-two", `url("${textures[secondIndex]}")`)
+      layer.style.setProperty("--ambient-texture-one-x", `${randomBetween(18, 82).toFixed(1)}%`)
+      layer.style.setProperty("--ambient-texture-one-y", `${randomBetween(12, 68).toFixed(1)}%`)
+      layer.style.setProperty("--ambient-texture-two-x", `${randomBetween(18, 82).toFixed(1)}%`)
+      layer.style.setProperty("--ambient-texture-two-y", `${randomBetween(32, 88).toFixed(1)}%`)
+      layer.style.setProperty("--ambient-texture-one-scale", randomBetween(1.06, 1.2).toFixed(3))
+      layer.style.setProperty("--ambient-texture-two-scale", randomBetween(1.08, 1.24).toFixed(3))
+      layer.style.setProperty("--ambient-texture-one-rotation", `${randomBetween(-4, 4).toFixed(2)}deg`)
+      layer.style.setProperty("--ambient-texture-two-rotation", `${randomBetween(-5, 5).toFixed(2)}deg`)
+      layer.style.setProperty("--ambient-gradient-one-x", `${randomBetween(12, 88).toFixed(1)}%`)
+      layer.style.setProperty("--ambient-gradient-one-y", `${randomBetween(8, 52).toFixed(1)}%`)
+      layer.style.setProperty("--ambient-gradient-two-x", `${randomBetween(8, 92).toFixed(1)}%`)
+      layer.style.setProperty("--ambient-gradient-two-y", `${randomBetween(48, 92).toFixed(1)}%`)
+      layer.style.setProperty("--ambient-gradient-angle", `${randomBetween(118, 242).toFixed(1)}deg`)
+      layer.dataset.ready = "true"
+    }
+
+    deal()
+
+    // Fade out, deal again while nothing is showing, fade back in — a new composition swapped in
+    // at full opacity would jump, since background images do not interpolate.
+    let shuffleTimeout = 0
+    const handleShuffle = () => {
+      if (shuffleTimeout !== 0) return
+      layer.style.transitionDuration = `${shuffleFadeMilliseconds}ms`
+      layer.dataset.ready = "false"
+      shuffleTimeout = window.setTimeout(() => {
+        shuffleTimeout = 0
+        deal()
+      }, shuffleFadeMilliseconds)
+    }
+
+    window.addEventListener(AMBIENT_SHUFFLE_EVENT, handleShuffle)
 
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)")
 
@@ -177,6 +209,8 @@ export function AmbientBackground() {
       window.removeEventListener("pointermove", handlePointerMove)
       window.removeEventListener("scroll", startMovement)
       window.removeEventListener("resize", handleResize)
+      window.removeEventListener(AMBIENT_SHUFFLE_EVENT, handleShuffle)
+      if (shuffleTimeout !== 0) window.clearTimeout(shuffleTimeout)
       resizeObserver.disconnect()
       if (animationFrame !== 0) window.cancelAnimationFrame(animationFrame)
     }

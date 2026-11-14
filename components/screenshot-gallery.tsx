@@ -29,7 +29,7 @@ export type Video = MediaBase & {
 
 export type GalleryMedia = Screenshot | Video
 
-type GalleryVariant = "gallery" | "press" | "screens" | "showcase"
+type GalleryVariant = "gallery" | "present" | "press" | "screens" | "showcase"
 
 type ScreenshotGalleryProps = {
   screenshots: readonly GalleryMedia[]
@@ -289,6 +289,10 @@ function listClassName(variant: GalleryVariant) {
       return `${carouselList} sm:mx-0 sm:grid sm:grid-cols-5 sm:items-stretch sm:gap-6 sm:overflow-visible sm:px-0 sm:pb-0`
     case "screens":
       return carouselList
+    case "present":
+      // /present has no page shell to bleed out of. `w-fit` lets the row sit centered while it
+      // fits and scroll from its first screen once it does not, which `justify-center` cannot do.
+      return "mx-auto flex w-fit max-w-full snap-x snap-mandatory gap-5 overflow-x-auto pb-4"
     case "gallery":
       return "columns-1 gap-6 sm:columns-2"
     default:
@@ -310,6 +314,8 @@ function itemClassName(variant: GalleryVariant, media: GalleryMedia) {
       // 14rem keeps a five-image set inside the page shell on a wide screen, so the row
       // only scrolls once it has to.
       return "flex w-[62vw] max-w-[14rem] shrink-0 snap-center flex-col overflow-hidden rounded-xl border border-border bg-card"
+    case "present":
+      return "flex w-[56vw] max-w-[13rem] shrink-0 snap-center flex-col gap-3 text-center"
     case "gallery":
       return "mb-6 inline-flex w-full break-inside-avoid flex-col gap-3"
     default:
@@ -338,6 +344,8 @@ function previewSizes(variant: GalleryVariant, media: GalleryMedia) {
       return media.type === "video" ? "(max-width: 640px) 76vw, 380px" : "(max-width: 640px) 62vw, 300px"
     case "screens":
       return "(max-width: 640px) 62vw, 224px"
+    case "present":
+      return "(max-width: 640px) 56vw, 208px"
     case "gallery":
       return "(max-width: 640px) calc(100vw - 3rem), 480px"
     default:

@@ -555,6 +555,9 @@ and shared as one file. Its public default is deliberately unnumbered:
 - `/model.html` — unnumbered model.
 - `/model.html?nfc=1` — unnumbered model with the NFC cavity enabled.
 - `/model.html?nfc=1&numbering=1` — opt-in personal numbering controls.
+- `/model.html?mini=1` — the 20 mm tile: wider key gaps and no wordmark, which is too fine to
+  print at that size. Tile size goes down to 20 mm on every variant, and the wordmark has its own
+  toggle.
 
 The product page uses `ChordlinkModelViewer` to render the optimized static
 `/models/chordlink.glb` directly on a transparent stage. The DIY page has a single model action that

@@ -1637,6 +1637,25 @@ export const galleryCopy = {
   ],
 } as const
 
+/** `/present` — the full-screen card shown on a second display at a stand or a test station. */
+export const presentCopy = {
+  metadata: {
+    title: "Present",
+    description: `${siteConfig.name} on a big screen: the logo, a QR code, and the app's screens.`,
+  },
+  noteLabel: "Note above the logo",
+  notePlaceholder: "Add a note, like a station number",
+  flipToCode: "Show the QR code",
+  flipToLogo: "Show the logo",
+  codeAlt: (url: string) => `QR code for ${url}`,
+  scanHint: "Scan to get the app",
+  showScreens: "Screens",
+  hideScreens: "Back",
+  screensTitle: "The app",
+  enterFullscreen: "Full screen",
+  exitFullscreen: "Exit full screen",
+} as const
+
 export const editorialCopy = {
   metadata: {
     title: "Editorial",
