@@ -2027,6 +2027,10 @@ export const adminCopy = {
       title: "Present",
       description: "A full-screen card for a second display: the logo flips to a QR code, with a note above it.",
     },
+    modelGenerator: {
+      title: "Model generator",
+      description: "The chordlink 3D model in the browser: set the tag size and export STL files to print.",
+    },
     marketingCopy: {
       title: "Marketing copy",
       description: "Listings, launch posts, and hashtags, ready to copy.",

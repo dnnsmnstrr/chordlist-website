@@ -1,8 +1,8 @@
-import type { Metadata, Route } from "next"
+import type { Metadata } from "next"
 import { ArrowUpRight } from "lucide-react"
 
 import { AdminDashboardLinks } from "@/components/admin-dashboard-links"
-import { AdminTools, type AdminToolSection } from "@/components/admin-tools"
+import { AdminTools, type AdminToolHref, type AdminToolSection } from "@/components/admin-tools"
 import { SiteFooter } from "@/components/site-footer"
 import { SiteHeader } from "@/components/site-header"
 import { Button } from "@/components/ui/button"
@@ -24,7 +24,7 @@ type ToolId = keyof typeof adminCopy.tools
 
 type Tool = {
   id: ToolId
-  href: Route
+  href: AdminToolHref
   /// Tools are internal — behind the login — unless marked otherwise. `local` tools write files in
   /// the checkout and 404 on the deployed site; `public` ones are linked from the public site and
   /// need no login.
@@ -58,6 +58,7 @@ const sections: readonly { id: keyof typeof adminCopy.sections; tools: readonly 
       { id: "emails", href: "/emails" },
       { id: "gallery", href: "/gallery", availability: "public" },
       { id: "present", href: "/present", availability: "public" },
+      { id: "modelGenerator", href: "/model.html?nfc=1", availability: "public" },
     ],
   },
 ]

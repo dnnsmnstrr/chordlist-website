@@ -12,9 +12,19 @@ import { adminCopy } from "@/locales/en"
 
 export type AdminToolAvailability = "internal" | "local" | "public"
 
+/**
+ * A page of the app, checked by `typedRoutes`, or a static HTML file in `public/` — the model generator
+ * is one — which no route knows about and a `<Link>` cannot navigate to on the client.
+ */
+export type AdminToolHref = Route | `/${string}.html` | `/${string}.html?${string}`
+
+function isStaticFile(href: AdminToolHref): href is `/${string}.html` | `/${string}.html?${string}` {
+  return /\.html(\?|$)/.test(href)
+}
+
 export type AdminTool = {
   id: string
-  href: Route
+  href: AdminToolHref
   title: string
   description: string
   availability: AdminToolAvailability
@@ -142,16 +152,28 @@ function ToolCard({ tool }: { tool: AdminTool }) {
     )
   }
 
+  const className =
+    "group flex h-full items-start justify-between gap-4 rounded-xl border border-border p-5 transition-colors hover:bg-muted/60"
+  const chevron = (
+    <ChevronRight
+      aria-hidden="true"
+      className="mt-0.5 size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5"
+    />
+  )
+
+  if (isStaticFile(tool.href)) {
+    return (
+      <a href={tool.href} className={className}>
+        {body}
+        {chevron}
+      </a>
+    )
+  }
+
   return (
-    <Link
-      href={tool.href}
-      className="group flex h-full items-start justify-between gap-4 rounded-xl border border-border p-5 transition-colors hover:bg-muted/60"
-    >
+    <Link href={tool.href} className={className}>
       {body}
-      <ChevronRight
-        aria-hidden="true"
-        className="mt-0.5 size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5"
-      />
+      {chevron}
     </Link>
   )
 }
