@@ -105,4 +105,10 @@ export const primaryAppLink = siteConfig.links.appStore ?? siteConfig.links.preo
  * The App Store product page, whether it is selling or taking pre-orders. Press
  * want the listing either way, so this stays linked through the pre-order window.
  */
+/** The App Store's own page for redeeming an offer code for this app, with the code filled in. */
+export function offerCodeRedemptionLink(code: string) {
+  const query = new URLSearchParams({ ctx: "offercodes", id: siteConfig.appStoreId, code })
+  return `https://apps.apple.com/redeem?${query.toString()}`
+}
+
 export const storeListingLink = siteConfig.links.appStore ?? siteConfig.links.preorder

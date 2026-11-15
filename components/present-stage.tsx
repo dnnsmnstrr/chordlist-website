@@ -9,9 +9,13 @@ import { ScreenshotGallery, type Screenshot } from "@/components/screenshot-gall
 import { siteConfig } from "@/lib/site-config"
 import { commonCopy, presentCopy } from "@/locales/en"
 
+/** What the QR code opens, and the line under the tile that says so. */
+export type PresentTarget = { url: string; hint: string }
+
 type PresentStageProps = {
   /** The QR code as a single path on a `size` × `size` grid of modules. */
   code: { size: number; path: string }
+  target: PresentTarget
   screenshots: readonly Screenshot[]
 }
 
@@ -27,7 +31,7 @@ const BACKGROUND_SHUFFLE_MILLISECONDS = 30_000
 const controlClassName =
   "flex items-center gap-2 rounded-md px-3 py-2 font-mono text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
 
-export function PresentStage({ code, screenshots }: PresentStageProps) {
+export function PresentStage({ code, target, screenshots }: PresentStageProps) {
   const [isFlipped, setIsFlipped] = useState(false)
   const [showsScreens, setShowsScreens] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(false)
@@ -83,7 +87,6 @@ export function PresentStage({ code, screenshots }: PresentStageProps) {
     }
   }, [])
 
-  const url = siteConfig.url.replace(/^https?:\/\//, "")
   const viewBoxSize = code.size + QUIET_ZONE * 2
 
   return (
@@ -135,7 +138,7 @@ export function PresentStage({ code, screenshots }: PresentStageProps) {
                   <svg
                     viewBox={`${-QUIET_ZONE} ${-QUIET_ZONE} ${viewBoxSize} ${viewBoxSize}`}
                     role="img"
-                    aria-label={presentCopy.codeAlt(url)}
+                    aria-label={presentCopy.codeAlt(target.url)}
                     shapeRendering="crispEdges"
                     className="size-[86%]"
                   >
@@ -150,7 +153,7 @@ export function PresentStage({ code, screenshots }: PresentStageProps) {
                 {siteConfig.name}
               </h1>
               <p className="mt-5 text-balance text-[clamp(1rem,2.2vw,1.75rem)] text-muted-foreground">
-                {isFlipped ? `${presentCopy.scanHint} · ${url}` : commonCopy.tagline}
+                {isFlipped ? target.hint : commonCopy.tagline}
               </p>
             </div>
           </>

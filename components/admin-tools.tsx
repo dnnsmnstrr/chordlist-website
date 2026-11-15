@@ -18,6 +18,8 @@ export type AdminTool = {
   title: string
   description: string
   availability: AdminToolAvailability
+  /** A local only tool on a production build, where its page 404s: shown, but not linked. */
+  unavailable?: boolean
 }
 
 export type AdminToolSection = {
@@ -128,30 +130,51 @@ export function AdminTools({ heading, backend, sections }: AdminToolsProps) {
 }
 
 function ToolCard({ tool }: { tool: AdminTool }) {
+  const body = <ToolCardBody tool={tool} />
+
+  // Still listed rather than hidden, so the overview reads the same everywhere and says where to find
+  // the tool instead of leaving it out.
+  if (tool.unavailable) {
+    return (
+      <div className="flex h-full items-start justify-between gap-4 rounded-xl border border-dashed border-border p-5 opacity-50">
+        {body}
+      </div>
+    )
+  }
+
   return (
     <Link
       href={tool.href}
       className="group flex h-full items-start justify-between gap-4 rounded-xl border border-border p-5 transition-colors hover:bg-muted/60"
     >
-      <div>
-        <div className="flex flex-wrap items-center gap-2">
-          <h3 className="font-medium">{tool.title}</h3>
-          {badgesFor(tool.availability).map((badge) => (
-            <span
-              key={badge}
-              className="rounded-full border border-border px-2 py-0.5 font-mono text-[10px] uppercase tracking-widest text-muted-foreground"
-            >
-              {badge}
-            </span>
-          ))}
-        </div>
-        <p className="mt-1 text-pretty text-sm leading-relaxed text-muted-foreground">{tool.description}</p>
-        <p className="mt-2 font-mono text-xs text-muted-foreground">{tool.href}</p>
-      </div>
+      {body}
       <ChevronRight
         aria-hidden="true"
         className="mt-0.5 size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5"
       />
     </Link>
+  )
+}
+
+function ToolCardBody({ tool }: { tool: AdminTool }) {
+  return (
+    <div>
+      <div className="flex flex-wrap items-center gap-2">
+        <h3 className="font-medium">{tool.title}</h3>
+        {badgesFor(tool.availability).map((badge) => (
+          <span
+            key={badge}
+            className="rounded-full border border-border px-2 py-0.5 font-mono text-[10px] uppercase tracking-widest text-muted-foreground"
+          >
+            {badge}
+          </span>
+        ))}
+      </div>
+      <p className="mt-1 text-pretty text-sm leading-relaxed text-muted-foreground">{tool.description}</p>
+      <p className="mt-2 font-mono text-xs text-muted-foreground">
+        {tool.href}
+        {tool.unavailable ? ` · ${adminCopy.localOnlyHint}` : null}
+      </p>
+    </div>
   )
 }

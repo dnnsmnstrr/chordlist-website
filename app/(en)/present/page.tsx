@@ -1,10 +1,10 @@
 import type { Metadata } from "next"
 import QRCode from "qrcode"
 
-import { PresentStage } from "@/components/present-stage"
+import { PresentStage, type PresentTarget } from "@/components/present-stage"
 import type { Screenshot } from "@/components/screenshot-gallery"
 import { pageMetadata } from "@/lib/page-metadata"
-import { siteConfig } from "@/lib/site-config"
+import { offerCodeRedemptionLink, siteConfig } from "@/lib/site-config"
 import { presentCopy, pressCopy } from "@/locales/en"
 
 export const metadata: Metadata = pageMetadata({
@@ -51,10 +51,48 @@ function qrCode(text: string) {
   return { size: modules.size, path: segments.join("") }
 }
 
-export default function PresentPage() {
+/** Offer codes are letters and digits; anything else in the parameter is a typo, not part of a code. */
+const OFFER_CODE = /^[A-Za-z0-9]{1,64}$/
+
+type PresentPageProps = {
+  searchParams: Promise<Record<string, string | string[] | undefined>>
+}
+
+/**
+ * What the QR code opens, chosen by the URL so it can be set before the screen goes up:
+ *
+ * - `/present` — the website.
+ * - `/present?qr=testflight` — the public TestFlight beta.
+ * - `/present?qr=appstore` — the App Store listing.
+ * - `/present?code=ABC123` — Apple's redeem page with that offer code filled in. It wins over `qr`.
+ *
+ * A target whose link is not configured, or a code that is not one, falls back to the website rather
+ * than failing: this is read off a URL typed on the spot, and a working page beats an error on a big
+ * screen.
+ */
+function presentTarget(params: Record<string, string | string[] | undefined>): PresentTarget {
+  const first = (value: string | string[] | undefined) => (Array.isArray(value) ? value[0] : value)?.trim()
+  const code = first(params.code)
+  const qr = first(params.qr)?.toLowerCase()
+
+  if (code && OFFER_CODE.test(code)) {
+    return { url: offerCodeRedemptionLink(code), hint: presentCopy.scanHints.offerCode(code) }
+  }
+  if (qr === "testflight" && siteConfig.links.testFlight) {
+    return { url: siteConfig.links.testFlight, hint: presentCopy.scanHints.testFlight }
+  }
+  if (qr === "appstore" && siteConfig.links.appStore) {
+    return { url: siteConfig.links.appStore, hint: presentCopy.scanHints.appStore }
+  }
+  return { url: siteConfig.url, hint: presentCopy.scanHints.site(siteConfig.url.replace(/^https?:\/\//, "")) }
+}
+
+export default async function PresentPage({ searchParams }: PresentPageProps) {
+  const target = presentTarget(await searchParams)
+
   return (
     <main id="main-content" tabIndex={-1} className="min-h-screen bg-background text-foreground">
-      <PresentStage code={qrCode(siteConfig.url)} screenshots={screenshots} />
+      <PresentStage code={qrCode(target.url)} target={target} screenshots={screenshots} />
     </main>
   )
 }

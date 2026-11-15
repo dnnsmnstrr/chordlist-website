@@ -65,6 +65,10 @@ const sections: readonly { id: keyof typeof adminCopy.sections; tools: readonly 
 export default async function AdminPage() {
   await requireAdmin("/admin")
 
+  // Local only tools 404 on any production build — the same check their pages make — so there they
+  // are shown but not linked.
+  const isProductionBuild = process.env.NODE_ENV === "production"
+
   const toolSections: AdminToolSection[] = sections.map((section) => ({
     id: section.id,
     title: adminCopy.sections[section.id],
@@ -74,6 +78,7 @@ export default async function AdminPage() {
       title: adminCopy.tools[tool.id].title,
       description: adminCopy.tools[tool.id].description,
       availability: tool.availability ?? "internal",
+      unavailable: isProductionBuild && tool.availability === "local",
     })),
   }))
 

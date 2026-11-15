@@ -1648,7 +1648,13 @@ export const presentCopy = {
   flipToCode: "Show the QR code",
   flipToLogo: "Show the logo",
   codeAlt: (url: string) => `QR code for ${url}`,
-  scanHint: "Scan to get the app",
+  /** Under the flipped tile, one per QR target — see `?qr=` and `?code=` in app/(en)/present/page.tsx. */
+  scanHints: {
+    site: (host: string) => `Scan to get the app · ${host}`,
+    testFlight: "Scan to join the beta on TestFlight",
+    appStore: "Scan to get the app on the App Store",
+    offerCode: (code: string) => `Scan to redeem your code · ${code}`,
+  },
   showScreens: "Screens",
   hideScreens: "Back",
   screensTitle: "The app",
@@ -1969,6 +1975,8 @@ export const adminCopy = {
     localOnly: "Local only",
     public: "Public",
   },
+  /** Under a local only tool on the deployed site, where its page 404s. */
+  localOnlyHint: "Open it under pnpm dev",
   search: {
     label: "Search the tools",
     placeholder: "Search tools…",
