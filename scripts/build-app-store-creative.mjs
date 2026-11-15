@@ -38,7 +38,7 @@ import { fileURLToPath } from "node:url"
 import { ImageResponse } from "next/og.js"
 
 import { campaign } from "./lib/design-tokens.mjs"
-import { appStoreCopy, copyLanguages, creativeCopy } from "./lib/app-store-copy.mjs"
+import { appStoreCopy, borrowedCaptures, copyLanguages, creativeCopy } from "./lib/app-store-copy.mjs"
 import { appStoreCreative, deviceCluster, fittedHeadlineSize } from "./lib/app-store-creative-template.mjs"
 import { markSvg, svgDataUri } from "./lib/chordlist-mark.mjs"
 import { phrase } from "./lib/vocabulary.mjs"
@@ -388,10 +388,23 @@ async function main() {
 
   const manifest = []
   const skipped = []
+  const borrowed = []
 
   for (const language of copyLanguages) {
     for (const [index, definition] of CONFIG.assets.entries()) {
-      const captures = await Promise.all(definition.devices.map((device) => loadCapture(language, device)))
+      let captures = await Promise.all(definition.devices.map((device) => loadCapture(language, device)))
+      // As in the screenshot builder: a language's own captures win, `borrowedCaptures` fills a gap.
+      const lender = borrowedCaptures[language]
+      if (captures.some((capture) => !capture) && lender) {
+        // Device by device, so an asset pairing two devices keeps the language's own capture of one.
+        const filled = await Promise.all(
+          definition.devices.map((device, slot) => captures[slot] ?? loadCapture(lender, device)),
+        )
+        if (filled.every(Boolean)) {
+          captures = filled
+          borrowed.push({ language, lender, definition })
+        }
+      }
       if (captures.some((capture) => !capture)) {
         if (language === CONFIG.sourceLanguage) {
           throw new Error(`Missing ${language} captures for the ${definition.label}. Run pnpm sync:assets.`)
@@ -473,6 +486,12 @@ async function main() {
   await writeFile(path.join(destinationRoot, "manifest.json"), `${JSON.stringify(manifest, null, 2)}\n`)
   console.log(`Built ${manifest.length} App Store creative assets.`)
 
+  for (const { language, lender, definition } of borrowed) {
+    console.warn(
+      `  note: the ${language} ${definition.label} shows the ${lender} interface under ${language} words ` +
+        "(borrowedCaptures in scripts/lib/app-store-copy.mjs). Capture it in the app repository, then pnpm sync:app.",
+    )
+  }
   for (const { language, definition } of skipped) {
     console.warn(
       `  note: no ${language} ${definition.label} was built — that language is missing a capture it ` +

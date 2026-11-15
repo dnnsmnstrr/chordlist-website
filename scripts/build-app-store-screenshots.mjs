@@ -12,7 +12,9 @@
  * Every language in `scripts/lib/app-store-copy.mjs` gets its own set, built from that language's
  * simulator captures — never from the English ones, because a German headline over an English
  * interface is a listing that lies. English keeps the original output paths and every other
- * language nests under its code, matching how the app repository stores its captures.
+ * language nests under its code, matching how the app repository stores its captures. The one
+ * exception is `borrowedCaptures` in the same file: a stopgap for a language that has its words but
+ * not yet its captures, announced on every build.
  */
 import { access, mkdir, readFile, rm, writeFile } from "node:fs/promises"
 import path from "node:path"
@@ -20,7 +22,7 @@ import { fileURLToPath } from "node:url"
 
 import { ImageResponse } from "next/og.js"
 
-import { appStoreCopy, copyLanguages } from "./lib/app-store-copy.mjs"
+import { appStoreCopy, borrowedCaptures, copyLanguages } from "./lib/app-store-copy.mjs"
 import { appStoreScreenshot } from "./lib/app-store-screenshot-template.mjs"
 import { vocabularyLanguages } from "./lib/vocabulary.mjs"
 import { zipArchive } from "./lib/zip-archive.mjs"
@@ -387,10 +389,17 @@ async function main() {
   const manifest = []
   const uncaptured = []
   const substituted = []
+  const borrowed = []
 
   for (const language of copyLanguages) {
     for (const device of Object.values(CONFIG.devices)) {
-      const captures = await resolveCaptures({ language, device, loadPng })
+      let captures = await resolveCaptures({ language, device, loadPng })
+      // A language's own captures always win; borrowing only fills the gap until they exist.
+      const lender = borrowedCaptures[language]
+      if (!captures && lender) {
+        captures = await resolveCaptures({ language: lender, device, loadPng })
+        if (captures) borrowed.push({ language, lender, device })
+      }
       if (!captures) {
         // The source language is the set that has to exist; a translation is allowed to be waiting
         // on its captures without failing everyone else's build.
@@ -452,6 +461,9 @@ async function main() {
             headline: copy.headline.join(" "),
             supporting: copy.supporting,
             source: file,
+            borrowedFrom: borrowed.some((entry) => entry.language === language && entry.device === device)
+              ? borrowedCaptures[language]
+              : undefined,
             archive: archivePath({ language, variant, device }),
             background:
               variant === "analog"
@@ -500,6 +512,13 @@ async function main() {
         `${capture.slide.appearance} capture and used the ${capture.appearance} one. ` +
         `Capture the set with ${captureCommand({ language, device, appearance: capture.slide.appearance })} ` +
         `in the app repository, then pnpm sync:app.`,
+    )
+  }
+  for (const { language, lender, device } of borrowed) {
+    console.warn(
+      `  note: the ${language} ${device.label} set shows the ${lender} interface under ${language} words ` +
+        `(borrowedCaptures in scripts/lib/app-store-copy.mjs). Capture it with ` +
+        `${captureCommand({ language, device, appearance: "light" })} in the app repository, then pnpm sync:app.`,
     )
   }
   for (const { language, device } of uncaptured) {

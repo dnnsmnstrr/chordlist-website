@@ -30,6 +30,30 @@ const deWords = {
   appleMusic: term("Apple Music", "de"),
 }
 
+/// French: `VOCABULARY.md` carries *paroles* already plural and the singular of the rest.
+const frWords = {
+  songbook: term("songbook", "fr"),
+  lyrics: term("lyrics", "fr"),
+  chords: `${term("chord", "fr")}s`,
+  chordProgression: term("chord progression", "fr"),
+  library: term("library", "fr"),
+  tags: `${term("tag", "fr")}s`,
+  appleMusic: term("Apple Music", "fr"),
+}
+
+/// Spanish: *letras* is the plural VOCABULARY.md asks for when it means several songs.
+const esWords = {
+  songbook: term("songbook", "es"),
+  lyrics: `${term("lyrics", "es")}s`,
+  chords: `${term("chord", "es")}s`,
+  chordProgression: term("chord progression", "es"),
+  library: term("library", "es"),
+  tags: `${term("tag", "es")}s`,
+  appleMusic: term("Apple Music", "es"),
+}
+
+const capitalized = (word) => word.charAt(0).toUpperCase() + word.slice(1)
+
 export const appStoreCopy = {
   en: {
     "01-library": {
@@ -91,6 +115,76 @@ export const appStoreCopy = {
       supporting: `Gut lesbare ${deWords.lyrics} ohne Ablenkung, wenn es darauf ankommt.`,
     },
   },
+  fr: {
+    "01-library": {
+      eyebrow: `Ton ${frWords.songbook}`,
+      headline: ["Tes chansons.", "Prêtes à jouer."],
+      supporting: `${capitalized(frWords.lyrics)} et ${frWords.chords} restent ensemble, joliment rangés.`,
+    },
+    "02-find": {
+      eyebrow: "Accès instantané",
+      // "en quelques secondes" runs past the iPhone's column; "en un instant" keeps the promise.
+      headline: ["Chaque chanson", "en un instant."],
+      supporting: `Cherche dans ta ${frWords.library} et filtre selon les ${frWords.tags} qui comptent.`,
+    },
+    "03-song-sheet": {
+      eyebrow: `${capitalized(frWords.chords)} en commun`,
+      headline: ["Même grille,", "autres chansons."],
+      supporting: `Chaque chanson t’en suggère d’autres de ta ${frWords.library}, construites sur la même ${frWords.chordProgression}.`,
+    },
+    "04-flow": {
+      // "Ajouter", as the app's own button says on the screen this slide shows.
+      eyebrow: "Ajouter des chansons",
+      headline: ["Ajouter une chanson,", "c’est facile."],
+      supporting: `Utilise le clavier d’${frWords.chords} dédié, récupère les infos depuis ${frWords.appleMusic} ou importe depuis le web.`,
+    },
+    "05-stage": {
+      eyebrow: "Mode scène",
+      headline: ["Pensé pour", "la scène."],
+      supporting: `Des ${frWords.lyrics} lisibles et sans distraction, quand ça compte.`,
+    },
+  },
+  es: {
+    "01-library": {
+      eyebrow: `Tu ${esWords.songbook}`,
+      headline: ["Tus canciones.", "Listas para tocar."],
+      supporting: `${capitalized(esWords.lyrics)} y ${esWords.chords} juntos, bien organizados.`,
+    },
+    "02-find": {
+      eyebrow: "Acceso inmediato",
+      headline: ["Cualquier canción,", "en segundos."],
+      supporting: `Busca en tu ${esWords.library} y filtra por las ${esWords.tags} que importan.`,
+    },
+    "03-song-sheet": {
+      eyebrow: `${capitalized(esWords.chords)} en común`,
+      headline: ["Canciones con", "tus acordes."],
+      supporting: `Cada canción te sugiere otras de tu ${esWords.library} con la misma ${esWords.chordProgression}.`,
+    },
+    "04-flow": {
+      // "Añadir", as the app's own button says on the screen this slide shows.
+      eyebrow: "Añadir canciones",
+      headline: ["Añadir canciones", "es lo más fácil."],
+      supporting: `Usa el teclado de ${esWords.chords} diseñado para ello, completa los datos desde ${esWords.appleMusic} o importa desde la web.`,
+    },
+    "05-stage": {
+      eyebrow: "Modo escenario",
+      headline: ["Hecho para", "el escenario."],
+      supporting: `${capitalized(esWords.lyrics)} y ${esWords.chords} legibles, sin distracciones, cuando más importa.`,
+    },
+  },
+}
+
+/**
+ * Languages whose sets borrow another language's captures until their own are taken: the frames
+ * speak the language, the interface inside them does not yet. A stopgap so the listing has
+ * translated words at all — both builders announce every borrowed set, and a language's own
+ * captures replace the borrowed ones the moment they exist, device by device: German has its own
+ * iPhone and iPad captures and borrows only for the iPhone Duo. Delete an entry once it has captures.
+ */
+export const borrowedCaptures = {
+  de: "en",
+  fr: "en",
+  es: "en",
 }
 
 /// The languages the App Store sets can be built in, in upload order.
@@ -116,6 +210,14 @@ export const creativeCopy = {
   },
   de: {
     tagline: ["Deine Songtexte", "und Akkorde –", "immer mit dabei."],
+    search: "01-library",
+  },
+  fr: {
+    tagline: ["Tes paroles", "et tes accords,", "en fichiers."],
+    search: "01-library",
+  },
+  es: {
+    tagline: ["Tus letras", "y acordes,", "como archivos."],
     search: "01-library",
   },
 }
