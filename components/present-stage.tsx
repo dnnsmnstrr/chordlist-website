@@ -1,11 +1,12 @@
 "use client"
 
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { ArrowLeft, Maximize, Minimize, Smartphone } from "lucide-react"
 
 import { AMBIENT_SHUFFLE_EVENT } from "@/components/ambient-background"
 import { ChordlistIcon } from "@/components/chordlist-icon"
 import { ScreenshotGallery, type Screenshot } from "@/components/screenshot-gallery"
+import { PRESENT_NOTE_PARAM } from "@/lib/present-params"
 import { siteConfig } from "@/lib/site-config"
 import { commonCopy, presentCopy } from "@/locales/en"
 
@@ -16,14 +17,13 @@ type PresentStageProps = {
   /** The QR code as a single path on a `size` × `size` grid of modules. */
   code: { size: number; path: string }
   target: PresentTarget
+  /** The note as the URL had it when the page was rendered. */
+  initialNote: string
   screenshots: readonly Screenshot[]
 }
 
 /** Blank modules around the code. Scanners need four; the spec calls it the quiet zone. */
 const QUIET_ZONE = 4
-
-/** Where the note above the logo is kept, so a reload or a fullscreen toggle does not lose it. */
-const NOTE_STORAGE_KEY = "present.note"
 
 /** How long one background composition stays up before the next is dealt. */
 const BACKGROUND_SHUFFLE_MILLISECONDS = 30_000
@@ -31,7 +31,7 @@ const BACKGROUND_SHUFFLE_MILLISECONDS = 30_000
 const controlClassName =
   "flex items-center gap-2 rounded-md px-3 py-2 font-mono text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
 
-export function PresentStage({ code, target, screenshots }: PresentStageProps) {
+export function PresentStage({ code, target, initialNote, screenshots }: PresentStageProps) {
   const [isFlipped, setIsFlipped] = useState(false)
   const [showsScreens, setShowsScreens] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(false)
@@ -57,24 +57,19 @@ export function PresentStage({ code, target, screenshots }: PresentStageProps) {
   }, [])
 
   /*
-    Uncontrolled, and filled in after mount: the note lives in this browser only, so the server has
-    nothing to render for it, and writing the field directly avoids a state update inside an effect.
-    Storage can throw in a private window; the note then simply lasts as long as the page does.
+    Held in state rather than read back from the field, because the field unmounts while the screens
+    are showing. Every edit is written to the URL with `replaceState`, which keeps the other parameters
+    (`qr`, `code`), adds no history entry per keystroke, and does not re-render the server page — so a
+    reload, a bookmark, or a link sent to another screen comes back with the same note.
   */
-  const noteRef = useRef<HTMLInputElement>(null)
+  const [note, setNote] = useState(initialNote)
 
-  useEffect(() => {
-    try {
-      const stored = window.localStorage.getItem(NOTE_STORAGE_KEY)
-      if (stored && noteRef.current) noteRef.current.value = stored
-    } catch {}
-  }, [showsScreens])
-
-  const saveNote = useCallback((value: string) => {
-    try {
-      if (value) window.localStorage.setItem(NOTE_STORAGE_KEY, value)
-      else window.localStorage.removeItem(NOTE_STORAGE_KEY)
-    } catch {}
+  const updateNote = useCallback((value: string) => {
+    setNote(value)
+    const url = new URL(window.location.href)
+    if (value) url.searchParams.set(PRESENT_NOTE_PARAM, value)
+    else url.searchParams.delete(PRESENT_NOTE_PARAM)
+    window.history.replaceState(window.history.state, "", url)
   }, [])
 
   const toggleFullscreen = useCallback(() => {
@@ -104,11 +99,11 @@ export function PresentStage({ code, target, screenshots }: PresentStageProps) {
             {/* Empty, it shows nothing until hovered or focused, so an unused note never reads as
                 a stray placeholder on the big screen. Never below 16px, or iOS zooms on focus. */}
             <input
-              ref={noteRef}
+              value={note}
               type="text"
               aria-label={presentCopy.noteLabel}
               placeholder={presentCopy.notePlaceholder}
-              onChange={(event) => saveNote(event.target.value)}
+              onChange={(event) => updateNote(event.target.value)}
               onKeyDown={(event) => {
                 if (event.key === "Enter" || event.key === "Escape") event.currentTarget.blur()
               }}

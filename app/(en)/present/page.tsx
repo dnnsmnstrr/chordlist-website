@@ -4,6 +4,7 @@ import QRCode from "qrcode"
 import { PresentStage, type PresentTarget } from "@/components/present-stage"
 import type { Screenshot } from "@/components/screenshot-gallery"
 import { pageMetadata } from "@/lib/page-metadata"
+import { PRESENT_NOTE_PARAM } from "@/lib/present-params"
 import { offerCodeRedemptionLink, siteConfig } from "@/lib/site-config"
 import { presentCopy, pressCopy } from "@/locales/en"
 
@@ -66,6 +67,8 @@ type PresentPageProps = {
  * - `/present?qr=appstore` — the App Store listing.
  * - `/present?code=ABC123` — Apple's redeem page with that offer code filled in. It wins over `qr`.
  *
+ * `?note=Station%2007` sets the line above the logo; typing in it keeps the parameter in step.
+ *
  * A target whose link is not configured, or a code that is not one, falls back to the website rather
  * than failing: this is read off a URL typed on the spot, and a working page beats an error on a big
  * screen.
@@ -88,11 +91,14 @@ function presentTarget(params: Record<string, string | string[] | undefined>): P
 }
 
 export default async function PresentPage({ searchParams }: PresentPageProps) {
-  const target = presentTarget(await searchParams)
+  const params = await searchParams
+  const target = presentTarget(params)
+  const noteParam = params[PRESENT_NOTE_PARAM]
+  const note = (Array.isArray(noteParam) ? noteParam[0] : noteParam) ?? ""
 
   return (
     <main id="main-content" tabIndex={-1} className="min-h-screen bg-background text-foreground">
-      <PresentStage code={qrCode(target.url)} target={target} screenshots={screenshots} />
+      <PresentStage code={qrCode(target.url)} target={target} initialNote={note} screenshots={screenshots} />
     </main>
   )
 }
